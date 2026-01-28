@@ -1,0 +1,83 @@
+---
+# Security-first unified security framework with proper syntax for Deploy-System-Unified
+
+- name: Validate entropy prerequisites (idempotent)
+  ansible.builtin.import_tasks: entropy_monitoring.yml
+
+- name: Generate entropy-resistant process names (idempotent)
+  ansible.builtin.import_tasks: entropy_resistant_uuid.yml
+
+- name: Validate preflight requirements (idempotent)
+  ansible.builtin.import_role:
+    name: preflight
+
+- name: Precreate required directories (idempotent)
+  ansible.builtin.import_tasks: directory_precreation.yml
+
+- name: Validate filesystem security (idempotent)
+  ansible.builtin.import_tasks: filesystem_validation.yml
+
+- name: Validate kernel modules for security tools (idempotent)
+  ansible.builtin.import_tasks: kernel_module_validation.yml
+
+- name: Validate security tool kernel requirements (idempotent)
+  ansible.builtin.import_tasks: security_tool_kernel_validation.yml
+
+- name: Validate security tool filesystem interactions (idempotent)
+  ansible.builtin.import_tasks: security_tool_filesystem_validation.yml
+
+- name: Configure secure time synchronization (idempotent)
+  ansible.builtin.import_tasks: secure_chrony_config.yml
+
+- name: Apply OS-specific security configurations (idempotent)
+  ansible.builtin.include_tasks: "os_specific/{{ ansible_distribution | lower }}.yml"
+  when: 
+    - ansible_distribution is defined
+    - os_security_config_applied is not defined
+
+- name: Apply unified security policies (idempotent)
+  ansible.builtin.import_tasks: security_policies.yml
+
+- name: Configure security tooling (idempotent)
+  ansible.builtin.import_tasks: security_tooling.yml
+
+- name: Configure required entropy and security tools with proper validation (idempotent)
+  ansible.builtin.import_tasks: enhanced_security_with_required_tools.yml
+
+- name: Run enhanced security scanning (idempotent)
+  ansible.builtin.import_tasks: enhanced_security_scanning.yml
+
+- name: Apply sandboxing configurations (idempotent)
+  ansible.builtin.import_tasks: sandboxing.yml
+
+- name: Configure secure encryption with validation (idempotent)
+  ansible.builtin.import_tasks: secure_encryption_with_validation.yml
+
+- name: Manage secure temporary files with proper syntax (idempotent)
+  ansible.builtin.import_tasks: secure_temp_files.yml
+
+- name: Configure secure SSH information handling with proper syntax (idempotent)
+  ansible.builtin.import_tasks: secure_ssh_info.yml
+
+- name: Configure portable service management with proper syntax (idempotent)
+  ansible.builtin.import_tasks: portable_service_management.yml
+
+- name: Configure entropy-aware process naming (idempotent)
+  ansible.builtin.import_tasks: entropy_aware_process_naming.yml
+
+- name: Verify security posture (idempotent)
+  ansible.builtin.import_tasks: verification.yml
+
+- name: Set security framework applied flag
+  ansible.builtin.set_fact:
+    security_framework_applied: true
+    enhanced_security_scanning_complete: true
+    encryption_configured: true
+    entropy_management_configured: true
+    secure_process_naming_configured: true
+    rootkit_prevention_configured: true
+    entropy_enhancement_configured: true
+    secure_ssh_info_configured: true
+    portable_services_configured: true
+    distribution_aware_packages_configured: true
+    secure_temp_files_configured: true
