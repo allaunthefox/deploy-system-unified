@@ -269,12 +269,18 @@
   changed_when: "'SESSION_CREATED:true' in advanced_security_hardening_tmux_session_check.stdout"
   when: tmux_session_for_deployment | bool
 
+- name: Set TMUX session validity fact (idempotent)
+  ansible.builtin.set_fact:
+    advanced_security_hardening_tmux_session_ok: >-
+      {{ ('SESSION_CREATED:true' in advanced_security_hardening_tmux_session_check.stdout)
+         or ('SESSION_EXISTS:true' in advanced_security_hardening_tmux_session_check.stdout)
+         or ('TMUX_AVAILABLE:false' in advanced_security_hardening_tmux_session_check.stdout) }}
+  when: tmux_session_for_deployment | bool
+
 - name: Validate TMUX session creation (idempotent)
   ansible.builtin.assert:
     that:
-      - "'SESSION_CREATED:true' in advanced_security_hardening_tmux_session_check.stdout"
-      - "'SESSION_EXISTS:true' in advanced_security_hardening_tmux_session_check.stdout"
-      - "'TMUX_AVAILABLE:false' in advanced_security_hardening_tmux_session_check.stdout"
+      - advanced_security_hardening_tmux_session_ok | bool
     msg: "TMUX session creation failed - deployment may have reduced functionality"
   when: tmux_session_for_deployment | bool
 
