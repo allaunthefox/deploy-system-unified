@@ -5,12 +5,12 @@
   ansible.builtin.tempfile:
     state: directory
     suffix: deploy_secure
-  register: secure_temp_dir
+  register: security_framework_secure_temp_dir
   become: true
 
 - name: Set secure permissions on temporary directory (idempotent)
   ansible.builtin.file:
-    path: "{{ secure_temp_dir.path }}"
+    path: "{{ security_framework_secure_temp_dir.path }}"
     mode: '0700'
     owner: root
     group: root
@@ -55,20 +55,20 @@
     
     # Clean up temporary file
     rm -f "$temp_secret_file"
-  register: encryption_result
+  register: security_framework_encryption_result
   changed_when: false
-  failed_when: encryption_result.rc != 0 or 'ENCRYPTED_FILE:' not in encryption_result.stdout
+  failed_when: security_framework_encryption_result.rc != 0 or 'ENCRYPTED_FILE:' not in security_framework_encryption_result.stdout
   no_log: true
 
 - name: Verify encryption succeeded (idempotent)
   ansible.builtin.assert:
     that:
-      - "'ENCRYPTED_FILE:' in encryption_result.stdout"
+      - "'ENCRYPTED_FILE:' in security_framework_encryption_result.stdout"
     fail_msg: "Secret encryption failed - deployment halted"
 
 - name: Move encrypted secrets to final location (idempotent)
   ansible.builtin.copy:
-    src: "{{ encryption_result.stdout.split('ENCRYPTED_FILE:')[1].strip() }}"
+    src: "{{ security_framework_encryption_result.stdout.split('ENCRYPTED_FILE:')[1].strip() }}"
     dest: "/var/lib/deploy-system/secrets/encrypted_secrets.yml"
     mode: '0600'
     owner: root
@@ -79,7 +79,7 @@
 
 - name: Clean up secure temporary directory (idempotent)
   ansible.builtin.file:
-    path: "{{ secure_temp_dir.path }}"
+    path: "{{ security_framework_secure_temp_dir.path }}"
     state: absent
   become: true
-  when: secure_temp_dir.path is defined
+  when: security_framework_secure_temp_dir.path is defined

@@ -3,7 +3,7 @@
 
 - name: Check if security tools are installed (idempotent)
   ansible.builtin.command: "{{ item }} --version"
-  register: tool_check
+  register: security_framework_tool_check
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh", "chronyd", "checkov"]
   failed_when: false
   changed_when: false
@@ -23,13 +23,14 @@
     else
       echo "MISSING:{{ item }}"
     fi
-  register: tool_verification
+  register: security_framework_tool_verification
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh"]
   changed_when: false
   failed_when: false
 
 - name: Run comprehensive security scan with proper validation (idempotent)
   ansible.builtin.shell: |
+    set -o pipefail
     scan_results=""
     if command -v chkrootkit >/dev/null 2>&1; then
       chkrootkit_output=$(chkrootkit 2>&1)
@@ -57,31 +58,43 @@
       scan_results="$scan_results CHECKOV:$checkov_issues"
     fi
     echo "$scan_results"
-  register: comprehensive_scan
+  args:
+    executable: /bin/bash
+  register: security_framework_comprehensive_scan
   changed_when: false
   no_log: true
 
 - name: Parse comprehensive security scan results (idempotent)
   ansible.builtin.set_fact:
-    chkrootkit_infections: "{{ comprehensive_scan.stdout.split('CHKROOTKIT:')[1].split()[0] | default('0') | int if 'CHKROOTKIT:' in comprehensive_scan.stdout else 0 }}"
-    rkhunter_warnings: "{{ comprehensive_scan.stdout.split('RKHUNTER:')[1].split()[0] | default('0') | int if 'RKHUNTER:' in comprehensive_scan.stdout else 0 }}"
-    aide_changes: "{{ comprehensive_scan.stdout.split('AIDE:')[1].split()[0] | default('0') | int if 'AIDE:' in comprehensive_scan.stdout else 0 }}"
-    lynis_issues: "{{ comprehensive_scan.stdout.split('LYNIS:')[1].split()[0] | default('0') | int if 'LYNIS:' in comprehensive_scan.stdout else 0 }}"
-    checkov_issues: "{{ comprehensive_scan.stdout.split('CHECKOV:')[1].split()[0] | default('0') | int if 'CHECKOV:' in comprehensive_scan.stdout else 0 }}"
+    security_framework_chkrootkit_infections: >-
+      {{ security_framework_comprehensive_scan.stdout.split('CHKROOTKIT:')[1].split()[0] | default('0') | int
+         if 'CHKROOTKIT:' in security_framework_comprehensive_scan.stdout else 0 }}
+    security_framework_rkhunter_warnings: >-
+      {{ security_framework_comprehensive_scan.stdout.split('RKHUNTER:')[1].split()[0] | default('0') | int
+         if 'RKHUNTER:' in security_framework_comprehensive_scan.stdout else 0 }}
+    security_framework_aide_changes: >-
+      {{ security_framework_comprehensive_scan.stdout.split('AIDE:')[1].split()[0] | default('0') | int
+         if 'AIDE:' in security_framework_comprehensive_scan.stdout else 0 }}
+    security_framework_lynis_issues: >-
+      {{ security_framework_comprehensive_scan.stdout.split('LYNIS:')[1].split()[0] | default('0') | int
+         if 'LYNIS:' in security_framework_comprehensive_scan.stdout else 0 }}
+    security_framework_checkov_issues: >-
+      {{ security_framework_comprehensive_scan.stdout.split('CHECKOV:')[1].split()[0] | default('0') | int
+         if 'CHECKOV:' in security_framework_comprehensive_scan.stdout else 0 }}
 
 - name: Validate comprehensive security scan results (idempotent)
   ansible.builtin.assert:
     that:
-      - chkrootkit_infections == 0
-      - rkhunter_warnings <= 5  # Allow minor warnings but not major issues
-      - aide_changes == 0
-      - lynis_issues <= 10  # Allow minor issues but not major security problems
-      - checkov_issues == 0  # No critical infrastructure issues allowed
+      - security_framework_chkrootkit_infections == 0
+      - security_framework_rkhunter_warnings <= 5  # Allow minor warnings but not major issues
+      - security_framework_aide_changes == 0
+      - security_framework_lynis_issues <= 10  # Allow minor issues but not major security problems
+      - security_framework_checkov_issues == 0  # No critical infrastructure issues allowed
     fail_msg: |
       Comprehensive security scan detected issues:
-      - Chkrootkit infections: {{ chkrootkit_infections }}
-      - RKHunter warnings: {{ rkhunter_warnings }}
-      - AIDE changes: {{ aide_changes }}
-      - Lynis issues: {{ lynis_issues }}
-      - Checkov issues: {{ checkov_issues }}
+      - Chkrootkit infections: {{ security_framework_chkrootkit_infections }}
+      - RKHunter warnings: {{ security_framework_rkhunter_warnings }}
+      - AIDE changes: {{ security_framework_aide_changes }}
+      - Lynis issues: {{ security_framework_lynis_issues }}
+      - Checkov issues: {{ security_framework_checkov_issues }}
       - Deployment halted for security review
