@@ -1,0 +1,4 @@
+---
+- name: stub verification
+  ansible.builtin.debug:
+    msg: "stub"

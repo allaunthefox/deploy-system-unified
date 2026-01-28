@@ -67,7 +67,7 @@
     - name: Enhanced security verification with proper syntax (idempotent)
       ansible.builtin.debug:
         msg: "System deployed with enhanced security posture including secure temp files, proper error handling, portable services, FQCN compliance, distribution-aware packages, and syntax-fixed tasks"
-      when: secure_temp_files_configured | default(false)
+      when: security_framework_secure_temp_files_configured | default(false)
 
     - name: Final security verification (idempotent)
       ansible.builtin.debug:

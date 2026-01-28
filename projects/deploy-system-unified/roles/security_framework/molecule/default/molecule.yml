@@ -1,0 +1,19 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  - name: instance
+    image: docker.io/library/ubuntu:22.04
+    privileged: false
+
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+
+verifier:
+  name: ansible

@@ -71,13 +71,13 @@
 - name: Set security framework applied flag
   ansible.builtin.set_fact:
     security_framework_applied: true
-    enhanced_security_scanning_complete: true
-    encryption_configured: true
-    entropy_management_configured: true
-    secure_process_naming_configured: true
-    rootkit_prevention_configured: true
-    entropy_enhancement_configured: true
-    secure_ssh_info_configured: true
-    portable_services_configured: true
-    distribution_aware_packages_configured: true
-    secure_temp_files_configured: true
+    security_framework_enhanced_security_scanning_complete: true
+    security_framework_encryption_configured: true
+    security_framework_entropy_management_configured: true
+    security_framework_secure_process_naming_configured: true
+    security_framework_rootkit_prevention_configured: true
+    security_framework_entropy_enhancement_configured: true
+    security_framework_secure_ssh_info_configured: true
+    security_framework_portable_services_configured: true
+    security_framework_distribution_aware_packages_configured: true
+    security_framework_secure_temp_files_configured: true

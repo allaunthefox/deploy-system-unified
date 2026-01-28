@@ -1,0 +1,4 @@
+---
+- name: stub security_policies
+  ansible.builtin.debug:
+    msg: "stub"

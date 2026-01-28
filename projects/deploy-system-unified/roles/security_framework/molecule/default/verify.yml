@@ -1,0 +1,10 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Assert security framework flags are set
+      ansible.builtin.assert:
+        that:
+          - security_framework_applied | default(false)
+          - security_framework_secure_temp_files_configured | default(false)
+        fail_msg: "Security framework required flags not set"
