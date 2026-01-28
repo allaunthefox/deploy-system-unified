@@ -86,3 +86,14 @@ pip-wheel-metadata/
 *.DS_Store
 
 # End of file
+# SSH key material (ignore private keys)
+**/id_rsa
+**/id_dsa
+**/id_ecdsa
+**/id_ed25519
+**/id_*_codeberg
+**/id_*_github
+**/ssh-keys/
+**/ssh_keys/
+*.ppk
+# End SSH key ignores
