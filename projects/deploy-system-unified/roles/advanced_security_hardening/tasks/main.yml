@@ -5,13 +5,13 @@
   ansible.builtin.assert:
     that:
       - advanced_security_hardening_enabled | default(false)
-    fail_msg: "Advanced security hardening not enabled - skipping configuration"
+    msg: "Advanced security hardening not enabled - skipping configuration"
 
 - name: Create secure temporary directory for advanced security operations (idempotent)
   ansible.builtin.tempfile:
     state: directory
     suffix: advanced_security
-  register: advanced_security_temp_dir
+  register: advanced_security_hardening_temp_dir
   become: true
 
 - name: Set secure permissions on advanced security temporary directory (idempotent)
@@ -22,9 +22,20 @@
     group: root
   become: true
 
+- name: Compute SSH port range bounds (idempotent)
+  ansible.builtin.set_fact:
+    advanced_security_hardening_ssh_range_start: "{{ ssh_random_port_range_start | int }}"
+    advanced_security_hardening_ssh_range_end: "{{ ssh_random_port_range_end | int }}"
+  when: ssh_randomize_port | bool
+  delegate_to: localhost
+  run_once: true
+
 - name: Generate random SSH port if enabled (idempotent)
   ansible.builtin.set_fact:
-    advanced_security_hardening_random_ssh_port: "{{ ((ssh_random_port_range_start | int) + (999999 | random)) % ((ssh_random_port_range_end | int) - (ssh_random_port_range_start | int) + 1) + (ssh_random_port_range_start | int) }}"
+    advanced_security_hardening_random_ssh_port: >-
+      {{ ((advanced_security_hardening_ssh_range_start | int) + (999999 | random)) %
+         ((advanced_security_hardening_ssh_range_end | int) - (advanced_security_hardening_ssh_range_start | int) + 1)
+         + (advanced_security_hardening_ssh_range_start | int) }}
   when: ssh_randomize_port | bool
   delegate_to: localhost
   run_once: true
@@ -34,7 +45,7 @@
     path: /etc/ssh/sshd_config
     regexp: '^Port '
     line: "Port {{ advanced_security_hardening_random_ssh_port }}"
-    validate: '/usr/sbin/sshd -t -f %s'
+    validate: '/usr/sbin/sshd -t -f %s' 
   when: ssh_randomize_port | bool
   notify: restart sshd
   no_log: true
@@ -49,88 +60,135 @@
   when: ssh_randomize_port | bool
   run_once: true
 
-- name: Create secure temporary file with SSH connection info (idempotent)
-  ansible.builtin.shell: |
-    # Determine parent directory; fall back to system default if parent does not exist on this host
-    PARENT="{{ secure_temp_dir.path | default(advanced_security_temp_dir.path | default('/tmp')) }}"
-    if [ -d "$PARENT" ]; then
-      temp_file=$(mktemp -p "$PARENT" -t "ssh_connection_info_{{ inventory_hostname }}_XXXXXX")
-    else
-      temp_file=$(mktemp -t "ssh_connection_info_{{ inventory_hostname }}_XXXXXX")
-    fi
-    chmod 600 "$temp_file"
-    
-    # Write connection info to secure temporary file
-    cat > "$temp_file" << 'EOF'
-    ---
-    ssh_connection:
-      hostname: "{{ advanced_security_hardening_ssh_connection_info.hostname }}"
-      port: "{{ advanced_security_hardening_ssh_connection_info.port }}"
-      username: "{{ advanced_security_hardening_ssh_connection_info.username }}"
-      timestamp: "{{ advanced_security_hardening_ssh_connection_info.timestamp }}"
-    EOF
-    # Emit temp file marker so callers can access it reliably
-    echo "TEMP_FILE:$temp_file"
-    
-    # Encrypt the file using SOPS if available, otherwise Vault
-    if command -v sops >/dev/null 2>&1; then
-      encrypted_file="${temp_file}.sops.yml"
-      sops -e "$temp_file" > "$encrypted_file"
-    elif command -v ansible-vault >/dev/null 2>&1; then
-      encrypted_file="${temp_file}.vault.yml"
-      ansible-vault encrypt "$temp_file" --output="$encrypted_file"
-    else
-      echo "ERROR: No encryption tool available"
-      exit 1
-    fi
-    
-    # Verify encryption succeeded
-    if [ -f "$encrypted_file" ] && [ -s "$encrypted_file" ]; then
-      echo "ENCRYPTED_FILE:$encrypted_file"
-    else
-      echo "ERROR: Encryption failed"
-      exit 1
-    fi
-    
-    # Clean up temporary file
-    rm -f "$temp_file"
-  register: advanced_security_hardening_temp_file_creation
-  changed_when: false
-  failed_when: advanced_security_hardening_temp_file_creation.rc != 0 or 'TEMP_FILE:' not in advanced_security_hardening_temp_file_creation.stdout
-  when: ssh_randomize_port | bool
-  run_once: true
+- name: Create secure temporary file on controller for SSH connection info (idempotent)
+  ansible.builtin.tempfile:
+    state: file
+    prefix: "ssh_connection_info_{{ inventory_hostname | regex_replace('[^A-Za-z0-9_-]', '_') }}_"
+    suffix: ".yml"
+  register: advanced_security_hardening_temp_file
   delegate_to: localhost
+  run_once: true
   no_log: true
 
-- name: Verify secure temp file creation (idempotent)
-  ansible.builtin.assert:
-    that:
-      - "'TEMP_FILE:' in advanced_security_hardening_temp_file_creation.stdout"
-    fail_msg: "Secure temporary file creation failed"
+- name: Set secure permissions on advanced security temporary file (idempotent)
+  ansible.builtin.file:
+    path: "{{ advanced_security_hardening_temp_file.path }}"
+    mode: '0600'
+    owner: root
+    group: root
+  delegate_to: localhost
   when: ssh_randomize_port | bool
+  run_once: true
+
+- name: Copy SSH connection info to secure temp file (idempotent)
+  ansible.builtin.copy:
+    dest: "{{ advanced_security_hardening_temp_file.path }}"
+    content: |
+      ---
+      ssh_connection:
+        hostname: "{{ advanced_security_hardening_ssh_connection_info.hostname }}"
+        port: "{{ advanced_security_hardening_ssh_connection_info.port }}"
+        username: "{{ advanced_security_hardening_ssh_connection_info.username }}"
+        timestamp: "{{ advanced_security_hardening_ssh_connection_info.timestamp }}"
+    mode: '0600'
+    owner: root
+    group: root
+  delegate_to: localhost
+  register: advanced_security_hardening_temp_file_written
+  changed_when: false
+  no_log: true
+  when: ssh_randomize_port | bool
+  run_once: true
+
+- name: Encrypt SSH connection info with SOPS (idempotent)
+  ansible.builtin.shell: |
+    encrypted_file="{{ advanced_security_hardening_temp_file.path }}.sops.yml"
+    sops -e "{{ advanced_security_hardening_temp_file.path }}" > "$encrypted_file"
+  register: advanced_security_hardening_sops_encryption
+  changed_when: false
+  failed_when: advanced_security_hardening_sops_encryption.rc != 0
+  delegate_to: localhost
+  when:
+    - ssh_randomize_port | bool
+    - encryption_method == 'sops'
+    - advanced_security_hardening_temp_file is defined
+  no_log: true
+  run_once: true
+
+- name: Verify SOPS encryption succeeded and set path (idempotent)
+  ansible.builtin.stat:
+    path: "{{ advanced_security_hardening_temp_file.path }}.sops.yml"
+  register: advanced_security_hardening_sops_encrypted_stat
+  delegate_to: localhost
+  changed_when: false
+  when: encryption_method == 'sops' and ssh_randomize_port | bool
+  run_once: true
+
+- name: Set encrypted SSH info path for sops (idempotent)
+  ansible.builtin.set_fact:
+    advanced_security_hardening_encrypted_ssh_info_path: "{{ advanced_security_hardening_temp_file.path }}.sops.yml"
+  when:
+    - encryption_method == 'sops'
+    - advanced_security_hardening_sops_encrypted_stat is defined
+    - advanced_security_hardening_sops_encrypted_stat.stat.exists
+  delegate_to: localhost
+  run_once: true
+
+- name: Encrypt SSH connection info with Ansible Vault (idempotent)
+  ansible.builtin.shell: |
+    encrypted_file="{{ advanced_security_hardening_temp_file.path }}.vault.yml"
+    ansible-vault encrypt "{{ advanced_security_hardening_temp_file.path }}" --output="$encrypted_file"
+  register: advanced_security_hardening_vault_encryption
+  changed_when: false
+  failed_when: advanced_security_hardening_vault_encryption.rc != 0
+  delegate_to: localhost
+  when:
+    - ssh_randomize_port | bool
+    - encryption_method == 'vault'
+    - advanced_security_hardening_temp_file is defined
+  no_log: true
+  run_once: true
+
+- name: Verify Vault encryption succeeded and set path (idempotent)
+  ansible.builtin.stat:
+    path: "{{ advanced_security_hardening_temp_file.path }}.vault.yml"
+  register: advanced_security_hardening_vault_encrypted_stat
+  delegate_to: localhost
+  changed_when: false
+  when: encryption_method == 'vault' and ssh_randomize_port | bool
+  run_once: true
+
+- name: Set encrypted SSH info path for vault (idempotent)
+  ansible.builtin.set_fact:
+    advanced_security_hardening_encrypted_ssh_info_path: "{{ advanced_security_hardening_temp_file.path }}.vault.yml"
+  when:
+    - encryption_method == 'vault'
+    - advanced_security_hardening_vault_encrypted_stat is defined
+    - advanced_security_hardening_vault_encrypted_stat.stat.exists
+  delegate_to: localhost
   run_once: true
 
 - name: Verify encryption succeeded (idempotent)
   ansible.builtin.assert:
     that:
-      - "'ENCRYPTED_FILE:' in advanced_security_hardening_temp_file_creation.stdout"
-    fail_msg: "Encryption of temporary SSH info failed - deployment halted"
+      - advanced_security_hardening_encrypted_ssh_info_path is defined
+      - advanced_security_hardening_encrypted_ssh_info_path | length > 0
+    msg: "Encryption of temporary SSH info failed - deployment halted"
   when: ssh_randomize_port | bool
   run_once: true
 
-- name: Set encrypted SSH info path (idempotent)
-  ansible.builtin.set_fact:
-    advanced_security_hardening_encrypted_ssh_info_path: "{{ advanced_security_hardening_temp_file_creation.stdout.split('ENCRYPTED_FILE:')[1].strip() }}"
-  when:
-    - ssh_randomize_port | bool
-    - advanced_security_hardening_temp_file_creation.stdout is defined
-    - "'ENCRYPTED_FILE:' in advanced_security_hardening_temp_file_creation.stdout"
+- name: Clean up plaintext temporary SSH file (idempotent)
+  ansible.builtin.file:
+    path: "{{ advanced_security_hardening_temp_file.path }}"
+    state: absent
+  delegate_to: localhost
+  when: ssh_randomize_port | bool
   run_once: true
 
 
 - name: Rsync encrypted SSH connection info to specified destination (idempotent)
   ansible.posix.synchronize:
-src: "{{ advanced_security_hardening_encrypted_ssh_info_path }}"
+    src: "{{ advanced_security_hardening_encrypted_ssh_info_path }}"
     dest: "{{ ssh_rsync_destination }}"
     mode: pull
   when: 
@@ -214,8 +272,10 @@ src: "{{ advanced_security_hardening_encrypted_ssh_info_path }}"
 - name: Validate TMUX session creation (idempotent)
   ansible.builtin.assert:
     that:
-      - "'SESSION_CREATED:true' in advanced_security_hardening_tmux_session_check.stdout or 'SESSION_EXISTS:true' in advanced_security_hardening_tmux_session_check.stdout or 'TMUX_AVAILABLE:false' in advanced_security_hardening_tmux_session_check.stdout"
-    fail_msg: "TMUX session creation failed - deployment may have reduced functionality"
+      - "'SESSION_CREATED:true' in advanced_security_hardening_tmux_session_check.stdout"
+      - "'SESSION_EXISTS:true' in advanced_security_hardening_tmux_session_check.stdout"
+      - "'TMUX_AVAILABLE:false' in advanced_security_hardening_tmux_session_check.stdout"
+    msg: "TMUX session creation failed - deployment may have reduced functionality"
   when: tmux_session_for_deployment | bool
 
 - name: Clean up advanced security temporary directory (idempotent)
