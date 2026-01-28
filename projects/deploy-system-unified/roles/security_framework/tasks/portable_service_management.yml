@@ -3,12 +3,17 @@
 
 - name: Set distribution-specific service and package names (idempotent)
   ansible.builtin.set_fact:
-    time_sync_service: "{{ distro_service_mapping[ansible_distribution | lower].time_sync_service }}"
-    time_sync_package: "{{ distro_service_mapping[ansible_distribution | lower].time_sync_package }}"
-    entropy_service: "{{ distro_service_mapping[ansible_distribution | lower].entropy_service }}"
-    entropy_package: "{{ distro_service_mapping[ansible_distribution | lower].entropy_package }}"
-    rng_service: "{{ distro_service_mapping[ansible_distribution | lower].rng_service }}"
-    rng_package: "{{ distro_service_mapping[ansible_distribution | lower].rng_package }}"
+    time_sync_service: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('time_sync_service', 'chronyd') }}"
+    time_sync_package: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('time_sync_package', 'chrony') }}"
+    entropy_service: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('entropy_service', 'haveged') }}"
+    entropy_package: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('entropy_package', 'haveged') }}"
+    rng_service: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('rng_service', 'rngd') }}"
+    rng_package: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('rng_package', 'rng-tools') }}"
+
+- name: Warn if distro mapping missing (idempotent)
+  ansible.builtin.debug:
+    msg: "Distribution {{ ansible_distribution }} not present in mapping, using default service/package names"
+  when: ansible_distribution | lower not in preflight_distro_service_mapping
 
 - name: Install time synchronization service (portable)
   ansible.builtin.package:

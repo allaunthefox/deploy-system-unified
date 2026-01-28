@@ -25,7 +25,7 @@
       username: "{{ ssh_connection_info.username }}"
       timestamp: "{{ ssh_connection_info.timestamp }}"
       public_key: "{{ ssh_connection_info.public_key }}"
-EOF
+    EOF
     
     # Encrypt the SSH info
     if command -v sops >/dev/null 2>&1; then

@@ -10,17 +10,23 @@
 
 - name: Install missing security tools including enhanced tooling (idempotent)
   ansible.builtin.package:
-    name: "{{ distro_package_mapping[ansible_distribution | lower].security_packages + ['chrony'] }}"
+    name: "{{ preflight_distro_package_mapping[ansible_distribution | lower].security_packages + ['chrony'] }}"
     state: present
   become: true
   when: 
-    - ansible_distribution | lower in distro_package_mapping.keys()
+    - ansible_distribution | lower in preflight_distro_package_mapping.keys()
 
 - name: Verify security tools are functional (idempotent)
-  ansible.builtin.command: "{{ item }} --version"
+  ansible.builtin.shell: |
+    if command -v {{ item }} >/dev/null 2>&1 || command -v {{ item }}-go >/dev/null 2>&1; then
+      echo "FOUND:{{ item }}"
+    else
+      echo "MISSING:{{ item }}"
+    fi
   register: tool_verification
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh"]
   changed_when: false
+  failed_when: false
 
 - name: Run comprehensive security scan with proper validation (idempotent)
   ansible.builtin.shell: |

@@ -36,7 +36,7 @@
     # SSH and access configuration
     - role: security/access
       # Use the randomized port if enabled
-      access_sshd_port: "{{ random_ssh_port | default(2222) }}"
+      access_sshd_port: "{{ advanced_security_hardening_random_ssh_port | default(2222) }}"
     
     # Optional advanced security hardening for extra protection
     - role: advanced_security_hardening

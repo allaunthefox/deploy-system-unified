@@ -21,7 +21,7 @@
         - { path: "/etc/landlock", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/bubblewrap", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/firejail", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/chrony", mode: '0644', owner: 'root', group: 'root' }
+        - { path: "/etc/chrony", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/trivy", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/trufflehog", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/checkov", mode: '0755', owner: 'root', group: 'root' }

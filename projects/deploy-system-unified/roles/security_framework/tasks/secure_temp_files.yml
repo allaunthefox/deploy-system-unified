@@ -30,7 +30,7 @@
     database_password: "{{ database_password | default('') }}"
     api_token: "{{ api_token | default('') }}"
     # Add other sensitive data as needed
-EOF
+    EOF
     
     # Encrypt the file using SOPS if available, otherwise Vault
     if command -v sops >/dev/null 2>&1; then
