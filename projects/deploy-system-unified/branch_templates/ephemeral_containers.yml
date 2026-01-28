@@ -1,0 +1,84 @@
+---
+# Ephemeral Docker containers (security-first approach)
+# When to use: Temporary environments where security is paramount but persistence isn't needed
+# Example: CI/CD runners, security testing environments, temporary compute resources
+
+- name: Deploy secure ephemeral container
+  hosts: all
+  become: true
+  vars:
+    # Use advanced security hardening for ephemeral containers
+    advanced_security_hardening_enabled: true
+    
+    # Randomize SSH port for additional security in ephemeral environments
+    ssh_randomize_port: true
+    
+    # Since this is ephemeral, we don't need to rsync anywhere
+    ssh_rsync_destination: ""
+    
+    # Enable key rotation if needed (though less critical for ephemeral containers)
+    ssh_key_rotation_enabled: false
+    
+    # Ensure TMUX session is available during deployment
+    tmux_session_for_deployment: true
+    tmux_session_name: "ephemeral-session"
+    
+    # Use SOPS for encryption (fallback to vault if SOPS unavailable)
+    encryption_method: "sops"
+  
+  roles:
+    # Core system setup
+    - role: core/bootstrap
+    
+    # Security hardening (main security measures)
+    - role: security/hardening
+    
+    # SSH and access configuration
+    - role: security/access
+      # Use the randomized port if enabled
+      access_sshd_port: "{{ random_ssh_port | default(2222) }}"
+    
+    # Optional advanced security hardening for extra protection
+    - role: advanced_security_hardening
+  
+  post_tasks:
+    # Additional ephemeral-specific security tasks
+    - name: Configure ephemeral-specific security settings
+      block:
+        - name: Set up temporary security logs
+          tempfile:
+            state: directory
+          register: temp_security_logs
+        
+        - name: Configure audit logging for ephemeral container
+          lineinfile:
+            path: /etc/audit/rules.d/ephemeral.rules
+            line: "{{ item }}"
+            create: true
+          loop:
+            - "-w /etc/passwd -p wa -k etc_passwd_changes"
+            - "-w /etc/shadow -p wa -k etc_shadow_changes"
+            - "-w /etc/ssh/ -p wa -k ssh_config_changes"
+          notify: Restart auditd
+          
+        - name: Limit SSH connection attempts during ephemeral session
+          lineinfile:
+            path: /etc/ssh/sshd_config
+            regexp: "^MaxAuthTries"
+            line: "MaxAuthTries 3"
+            validate: "/usr/sbin/sshd -t -f %s"
+          notify: Restart sshd
+          no_log: true
+
+  handlers:
+    - name: Restart auditd
+      systemd:
+        name: auditd
+        state: restarted
+      listen: "restart auditd"
+    
+    - name: Restart sshd
+      systemd:
+        name: sshd
+        state: restarted
+      listen: "restart sshd"

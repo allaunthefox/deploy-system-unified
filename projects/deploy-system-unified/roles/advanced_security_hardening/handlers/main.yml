@@ -1,0 +1,8 @@
+---
+# handlers file for advanced_security_hardening role
+
+- name: Restart sshd
+  systemd:
+    name: sshd
+    state: restarted
+  listen: "restart sshd"
