@@ -1,0 +1,40 @@
+---
+# Secure time synchronization for Deploy-System-Unified
+
+- name: Install time synchronization service (idempotent)
+  ansible.builtin.package:
+    name: "{{ distro_service_mapping[ansible_distribution | lower].time_sync_package }}"
+    state: present
+  become: true
+  when: ansible_distribution | lower in distro_service_mapping.keys()
+
+- name: Configure secure time synchronization (idempotent)
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: "/etc/{{ distro_service_mapping[ansible_distribution | lower].time_sync_service }}/chrony.conf"
+    mode: '0644'
+    owner: root
+    group: root
+  become: true
+  notify: restart chrony
+
+- name: Enable and start time synchronization service (idempotent)
+  ansible.builtin.systemd:
+    name: "{{ distro_service_mapping[ansible_distribution | lower].time_sync_service }}"
+    enabled: true
+    state: started
+  become: true
+  when: ansible_service_mgr == 'systemd'
+
+- name: Verify time synchronization is working (idempotent)
+  ansible.builtin.command: chronyc tracking
+  register: time_sync_status
+  changed_when: false
+  become: true
+
+- name: Validate time synchronization quality (idempotent)
+  ansible.builtin.assert:
+    that:
+      - "'System time' in time_sync_status.stdout"
+      - "'Normal' in time_sync_status.stdout"  # Leap status normal
+    fail_msg: "Time synchronization not properly configured - checkpoint functionality may be unreliable"

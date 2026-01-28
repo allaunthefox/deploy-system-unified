@@ -21,8 +21,12 @@ By participating in this project, you agree to abide by our Code of Conduct.
 - Add tests if applicable
 
 ### Branch Templates
-- When creating profile branches, consider using the templates in `branch_templates/`
+- When creating profile deployments, consider using the templates in `branch_templates/`
+- Copy the appropriate template to your own deployment directory (separate from this repository)
 - These templates provide starting points for different use cases (ephemeral, production, development)
+- Remember that the main repository serves as a base layer with roles and base functionality
+- **Policy:** `projects/deploy-system-unified/main.yml` must remain a pristine base and **must not** include a top-level `roles:` list. Use `branch_templates/` for role-based deployments; CI will enforce this policy.
+
 
 ## Style Guides
 

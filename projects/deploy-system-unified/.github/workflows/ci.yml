@@ -24,6 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible-lint yamllint
 
+      - name: Ensure projects/deploy-system-unified/main.yml has no top-level roles
+        run: |
+          python projects/deploy-system-unified/scripts/check_no_roles_in_main.py projects/deploy-system-unified/main.yml
+
       - name: Run yamllint
         run: yamllint -c .yamllint.yml .
 

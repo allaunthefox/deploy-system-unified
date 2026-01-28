@@ -1,12 +1,13 @@
 ---
-# Security-first main playbook for Deploy-System-Unified with directory precreation first
+# Base layer playbook for Deploy-System-Unified
+# This provides the foundational setup that branches can extend
 
-- name: Deploy secure unified system with directory precreation first
+- name: Deploy base system foundation
   hosts: all
   become: true
-  
+
   pre_tasks:
-    - name: Precreate required directories (idempotent)
+    - name: Precreate essential directories (idempotent)
       ansible.builtin.file:
         path: "{{ item.path }}"
         state: directory
@@ -18,18 +19,7 @@
         - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
         - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
         - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/landlock", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/bubblewrap", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/firejail", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/chrony", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/trivy", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/trufflehog", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/checkov", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/tmp/deploy-system", mode: '1777', owner: 'root', group: 'root' }
-        - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
         - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
@@ -59,17 +49,10 @@
         mode: '0644'
       when: not preflight_flag.stat.exists
 
-  roles:
-    - role: security_framework
-      when: security_compliance_verified | default(false)
+  # No roles in the base layer - these are added in branches
 
   post_tasks:
-    - name: Enhanced security verification with proper syntax (idempotent)
+    - name: Base system verification (idempotent)
       ansible.builtin.debug:
-        msg: "System deployed with enhanced security posture including secure temp files, proper error handling, portable services, FQCN compliance, distribution-aware packages, and syntax-fixed tasks"
-      when: security_framework_secure_temp_files_configured | default(false)
-
-    - name: Final security verification (idempotent)
-      ansible.builtin.debug:
-        msg: "System deployed with verified security posture"
-      when: security_compliance_verified
+        msg: "Base system deployed with essential directories and preflight validation completed"
+      tags: [verification]

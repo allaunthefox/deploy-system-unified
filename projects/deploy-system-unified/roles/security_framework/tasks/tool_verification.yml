@@ -1,0 +1,23 @@
+---
+# Security tooling verification for Deploy-System-Unified
+
+- name: Verify security tools are installed (idempotent)
+  ansible.builtin.command: "{{ item }} --version"
+  register: tool_verification
+  loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh", "chronyd", "checkov"]
+  changed_when: false
+  failed_when: false
+
+- name: Report missing security tools (idempotent)
+  ansible.builtin.debug:
+    msg: "WARNING: Security tool {{ item.item }} not available on this system"
+  when: item.rc != 0
+  loop: "{{ tool_verification.results }}"
+
+- name: Verify all critical security tools are available (idempotent)
+  ansible.builtin.assert:
+    that:
+      - item.rc == 0
+    fail_msg: "Critical security tool {{ item.item }} not available - deployment halted"
+  loop: "{{ tool_verification.results }}"
+  when: item.item in ['chronyd', 'bubblewrap', 'firejail']  # Critical tools

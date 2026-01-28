@@ -28,16 +28,42 @@
   roles:
     # Core system setup
     - role: core/bootstrap
-    
+
     # Security hardening (main security measures)
     - role: security/hardening
-    
+
     # SSH and access configuration
     - role: security/access
       access_sshd_port: "{{ access_sshd_port }}"
-    
+
+    # Container runtime setup (Podman)
+    - role: containers/containers_runtime
+
+    # Container configuration (Quadlet)
+    - role: containers/containers_config
+
+    # Container quadlet definitions
+    - role: containers/containers_quadlets
+
+    # Caddy reverse proxy for container services
+    - role: containers/containers_caddy
+
     # Optional advanced security hardening (without port randomization)
     - role: advanced_security_hardening
+
+  post_tasks:
+    - name: Create production container directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
 
   handlers:
     - name: Restart sshd
@@ -45,3 +71,9 @@
         name: sshd
         state: restarted
       listen: "restart sshd"
+
+    - name: Restart caddy
+      systemd:
+        name: caddy
+        state: restarted
+      listen: "restart caddy"
