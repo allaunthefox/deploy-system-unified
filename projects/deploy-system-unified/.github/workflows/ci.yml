@@ -31,8 +31,14 @@ jobs:
       - name: Run yamllint
         run: yamllint -c .yamllint.yml .
 
-      - name: Run ansible-lint
-        run: ansible-lint -v
+      - name: Run ansible-lint (with custom rulesdir)
+        run: |
+          # ensure the custom rules are picked up (use -r for compatibility)
+          ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules .
+
+      - name: Run ansible-lint specifically on main.yml to enforce DSU001
+        run: |
+          ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules projects/deploy-system-unified/main.yml
 
       - name: Ansible syntax check
         run: ansible-playbook --syntax-check main.yml -i localhost, -c local
