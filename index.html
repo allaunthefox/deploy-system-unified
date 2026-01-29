@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lasting First Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Karla:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #1a1a1a;
+            --secondary-dark: #2a2a2a;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --accent: #8b7355;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: var(--text-primary);
+            font-family: 'Karla', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Subtle noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(139, 115, 85, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 115, 85, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            animation: slideUp 1s ease-out 0.3s both;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 700px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            animation: slideUp 1s ease-out 0.5s both;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+            color: var(--accent);
+            font-style: italic;
+            max-width: 650px;
+            animation: slideUp 1s ease-out 0.7s both;
+        }
+
+        /* Philosophy Section */
+        .philosophy {
+            padding: 120px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .philosophy-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        /* Pillars Section */
+        .pillars {
+            padding: 120px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .pillar {
+            padding: 40px 0;
+            transition: all 0.4s ease;
+        }
+
+        .pillar:hover {
+            transform: translateY(-5px);
+        }
+
+        .pillar-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .pillar-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 120px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            margin-top: 60px;
+        }
+
+        .contact-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .contact-detail {
+            margin-bottom: 20px;
+        }
+
+        .contact-label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .contact-value {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .contact-value a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+
+        .contact-value a:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0 40px;
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+        }
+
+        .status {
+            color: #4a4a4a;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            margin-top: 12px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .container {
+                padding: 0 40px;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .philosophy-text {
+                font-size: 1.3rem;
+            }
+
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 25px;
+            }
+
+            .hero {
+                min-height: 60vh;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .philosophy,
+            .pillars,
+            .contact {
+                padding: 80px 0;
+            }
+
+            .pillars-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <div class="logo">LASTING FIRST SOLUTIONS</div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">Establishing foundations for emerging developmental paradigms</h1>
+            <p class="hero-subtitle">
+                A dedicated entity addressing framework requirements as they materialize.
+            </p>
+            <p class="hero-description">
+                Adaptive frameworks for sustainable targets.
+            </p>
+        </section>
+
+        <!-- Philosophy Section -->
+        <section class="philosophy">
+            <div class="section-label">Our Foundation</div>
+            <p class="philosophy-text">
+                Lasting First Solutions operates on the principle that sustained advancement requires deliberate deployment of resources. 
+                We maintain preparatory capacity across multiple domains, establishing groundwork for forthcoming requirements. 
+                Our approach prioritizes systematic integrity and adaptive capacity, ensuring preparedness for conditions as they develop.
+            </p>
+        </section>
+
+        <!-- Pillars Section -->
+        <section class="pillars">
+            <div class="section-label">Core Domains</div>
+            <div class="pillars-grid">
+                <div class="pillar">
+                    <h3 class="pillar-title">Foundational</h3>
+                    <p class="pillar-description">
+                        Developing underlying architecture to support evolving systemic requirements and facilitate long-term positioning.
+                    </p>
+                </div>
+                <div class="pillar">
+                    <h3 class="pillar-title">Responsive</h3>
+                    <p class="pillar-description">
+                        Maintaining capabilities to address circumstances as they arise through internal resource distribution and methodology adaptation.
+                    </p>
+                </div>
+                <div class="pillar">
+                    <h3 class="pillar-title">Coordination</h3>
+                    <p class="pillar-description">
+                        Orchestrating the integration of tangible and intangible components across variable environments.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact">
+            <div class="section-label">Inquiries</div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>General Operations</h3>
+                    <div class="contact-detail">
+                        <div class="contact-label">Operational Coordination</div>
+                        <div class="contact-value">
+                            <a href="/cdn-cgi/l/email-protection#40232f2f3224292e2134292f2e002c213334292e272629323334332f2c3534292f2e336e232f2d"><span class="__cf_email__" data-cfemail="4625292934222f2827322f2928062a2735322f2821202f34353235292a33322f2928356825292b">[email&#160;protected]</span></a>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-label">Resource Allocation</div>
+                        <div class="contact-value">
+                            <a href="/cdn-cgi/l/email-protection#e6948395899394858395a68a8795928f8881808f94959295898a93928f898895c885898b"><span class="__cf_email__" data-cfemail="c6b4a3b5a9b3b4a5a3b586aaa7b5b2afa8a1a0afb4b5b2b5a9aab3b2afa9a8b5e8a5a9ab">[email&#160;protected]</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <h3>Strategic Functions</h3>
+                    <div class="contact-detail">
+                        <div class="contact-label">Infrastructure Initiatives</div>
+                        <div class="contact-value">
+                            <a href="/cdn-cgi/l/email-protection#8ae3e4ecf8ebf9fef8ffe9fefff8efcae6ebf9fee3e4edece3f8f9fef9e5e6fffee3e5e4f9a4e9e5e7"><span class="__cf_email__" data-cfemail="41282f273320323533342235343324012d203235282f262728333235322e2d3435282e2f326f222e2c">[email&#160;protected]</span></a>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-label">Partnership Development</div>
+                        <div class="contact-value">
+                            <a href="/cdn-cgi/l/email-protection#32425340465c5740415a5b4241725e5341465b5c55545b404146415d5e47465b5d5c411c515d5f"><span class="__cf_email__" data-cfemail="f4849586809a9186879c9d8487b4989587809d9a93929d868780879b9881809d9b9a87da979b99">[email&#160;protected]</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-content" style="margin-top: 40px;">
+                <div class="contact-info">
+                    <h3>Registered Location</h3>
+                    <div class="contact-detail">
+                        <div class="contact-label">Location</div>
+                        <div class="contact-value">United States of America</div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-label">Entity Type</div>
+                        <div class="contact-value">Private Ownership</div>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <h3>Procurement & Verification</h3>
+                    <div class="contact-detail">
+                        <div class="contact-label">Vendor Relations</div>
+                        <div class="contact-value">
+                            <a href="/cdn-cgi/l/email-protection#7e081b101a110c0d3e121f0d0a17101918170c0d0a0d11120b0a1711100d501d1113"><span class="__cf_email__" data-cfemail="ea9c8f848e859899aa868b999e83848d8c8398999e9985869f9e83858499c4898587">[email&#160;protected]</span></a>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-label">Account Verification</div>
+                        <div class="contact-value">
+                            <a href="/cdn-cgi/l/email-protection#93e5f6e1faf5faf0f2e7fafcfdd3fff2e0e7fafdf4f5fae1e0e7e0fcffe6e7fafcfde0bdf0fcfe"><span class="__cf_email__" data-cfemail="c5b3a0b7aca3aca6a4b1acaaab85a9a4b6b1acaba2a3acb7b6b1b6aaa9b0b1acaaabb6eba6aaa8">[email&#160;protected]</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-content" style="margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border);">
+                    <div class="contact-info">
+                        <h3>Business Affairs</h3>
+                        <div class="contact-detail">
+                            <div class="contact-label">Legal & Compliance</div>
+                            <div class="contact-value">
+                                <a href="/cdn-cgi/l/email-protection#670b0200060b270b0614130e0900010e15141314080b12130e0809144904080a"><span class="__cf_email__" data-cfemail="e9858c8e8885a985889a9d80878e8f809b9a9d9a86859c9d8086879ac78a8684">[email&#160;protected]</span></a>
+                            </div>
+                        </div>
+                        <div class="contact-detail">
+                            <div class="contact-label">Fiscal Administration</div>
+                            <div class="contact-value">
+                                <a href="/cdn-cgi/l/email-protection#46202f2827282523062a2735322f2821202f34353235292a33322f2928356825292b"><span class="__cf_email__" data-cfemail="deb8b7b0bfb0bdbb9eb2bfadaab7b0b9b8b7acadaaadb1b2abaab7b1b0adf0bdb1b3">[email&#160;protected]</span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <h3>Administrative Interface</h3>
+                        <div class="contact-detail">
+                            <div class="contact-label">Records Management</div>
+                            <div class="contact-value">
+                                <a href="mailto:records@lastingfirstsolutions.com">records@lastingfirstsolutions.com</a>
+                            </div>
+                        </div>
+                        <div class="contact-detail">
+                            <div class="contact-label">General Inquiries</div>
+                            <div class="contact-value">
+                                <a href="mailto:info@lastingfirstsolutions.com">info@lastingfirstsolutions.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">© 2026 LASTING FIRST SOLUTIONS</div>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Use</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="status">INFORMATION PROVIDED FOR REFERENCE PURPOSES</div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
