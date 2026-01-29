@@ -1,0 +1,29 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: .
+
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v1
+
+    # Note: DNS management has been moved to the private infra repo 'allaunthefox/lastingfirst-infra'.
+    # To update DNS for the domain, run the 'Update Porkbun DNS' workflow in that repo (workflow_dispatch),
+    # or call it from CI with appropriate cross-repo permissions.
