@@ -53,8 +53,19 @@ jobs:
               exit 0
             fi
             report=$(sed 's/```/` ` `/g' "$report_file")
-            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>\n\nIf you\'d like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR.")}')
-            http_code=$(curl -s -o /tmp/comment_response -w "%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments")
+            # write report snippet and full report to tmp files for debugging
+            echo "$report" | head -c 2000 > /tmp/report_snippet.txt || true
+            echo "$report" > /tmp/report_full.txt || true
+            # Build JSON body using Python for robust escaping
+            python - <<'PY' > /tmp/body.json
+import json
+with open('/tmp/report_full.txt','r',encoding='utf-8') as f:
+    rpt = f.read()
+body = {"body": "### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + rpt + "\n```\n</details>\n\nIf you'd like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR."}
+print(json.dumps(body))
+PY
+            cat /tmp/body.json || true
+            http_code=$(curl -s -o /tmp/comment_response -w "%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data @/tmp/body.json "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments")
             if [ "$http_code" -ne 201 ]; then
               echo "Failed to post comment: HTTP $http_code"
               echo "Response:"
