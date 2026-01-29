@@ -27,6 +27,11 @@ jobs:
       - name: List reports
         run: ls -l projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement || true
 
+      - name: Install jq (needed for report comments)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
       - name: Upload compliance report
         uses: actions/upload-artifact@v4
         with:
