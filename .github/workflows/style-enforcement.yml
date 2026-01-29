@@ -81,6 +81,16 @@ jobs:
             echo "Issues were detected; not posting success message"
           fi
 
+      - name: Upload PR comment debug artifacts
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-comment-debug
+          path: |
+            /tmp/comment_response
+            /tmp/body.json
+            /tmp/report_snippet.txt
+
       - name: Fail if enforcement found issues
         run: |
           if [ -f .enforce_status ]; then
