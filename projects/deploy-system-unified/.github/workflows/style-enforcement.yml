@@ -34,6 +34,27 @@ jobs:
           name: style-compliance-report
           path: dev_tools/tools/style-guide-enforcement/compliance_report_*.md
 
+      - name: Comment on PR with compliance report
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f .enforce_status ]; then
+            report_file=$(ls -t dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
+            if [ -z "$report_file" ]; then
+              echo "No report found to post"
+              exit 0
+            fi
+            # sanitize backticks to avoid breaking code fence in comment
+            report=$(sed 's/```/` ` `/g' "$report_file")
+            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>")}')
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
+          else
+            echo "No style issues detected; no comment posted"
+          fi
+
       - name: Fail if enforcement found issues
         run: |
           if [ -f .enforce_status ]; then
