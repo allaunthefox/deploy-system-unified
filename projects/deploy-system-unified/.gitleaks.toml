@@ -1,0 +1,13 @@
+# Minimal gitleaks configuration - tune for your org
+title = "gitleaks config"
+
+[repository]
+name = "deploy-system-unified"
+
+[[rules]]
+description = "AWS Access Key"
+regex = '''AKIA[0-9A-Z]{16}'''
+
+[[allowlist]]
+description = "Allow example/test secrets in docs"
+paths = ['^LLM_RESEARCH/']

@@ -1,0 +1,4 @@
+---
+- name: stub security_tool_kernel_validation
+  ansible.builtin.debug:
+    msg: "stub"

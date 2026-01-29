@@ -1,64 +1,58 @@
 ---
-# Main playbook for Deploy-System-Unified
-# This is the core playbook that maintains the clean, standard configuration
-# Designed for main branch with proven, stable security measures
-# This should remain minimal and not adopt experimental features
+# Base layer playbook for Deploy-System-Unified
+# This provides the foundational setup that branches can extend
 
-- name: Deploy secure unified system
+- name: Deploy base system foundation
   hosts: all
   become: true
-  vars:
-    # Minimal, stable security configuration for main branch
-    # Keep this simple and stable for the main branch
 
-    # SSH configuration (using standard non-default port for security)
-    # NOTE: Do not add experimental features like port randomization to main
-    access_sshd_port: 2222
-    access_sshd_permit_root_login: "prohibit-password"
-    access_sshd_password_authentication: false
-    
-    # Standard UFW firewall rules
-    access_ufw_rules:
-      - { port: "{{ access_sshd_port }}", proto: tcp, rule: allow, comment: "SSH on non-standard port" }
-      - { port: 80, proto: tcp, rule: allow, comment: "HTTP" }
-      - { port: 443, proto: tcp, rule: allow, comment: "HTTPS" }
-  
-  roles:
-    # Core system setup - only essential roles for main branch
-    - role: core/bootstrap
-
-    # Security hardening (essential, proven security measures)
-    - role: security/hardening
-
-    # SSH and access configuration (standard security - no experimental features)
-    - role: security/access
-      # Use standard hardened SSH configuration
-      access_sshd_port: "{{ access_sshd_port }}"
-
-    # Essential secrets management
-    - role: security/secrets
-
-    # Core container infrastructure (minimal, stable components)
-    - role: containers/containers_runtime
-    - role: containers/containers_caddy
-    - role: containers/containers_config
-    - role: containers/containers_quadlets
-
-    # Optional advanced security hardening based on inventory variables
-    - role: advanced_security_hardening
-
-  # Explicitly avoid any advanced security hardening in main
-  # Such features belong in branch templates, not main
   pre_tasks:
-    - name: Ensure advanced security hardening is disabled in main
-      assert:
-        that:
-          - not (advanced_security_hardening_enabled | default(false))
-        fail_msg: "Advanced security hardening should not be enabled in main branch"
+    - name: Precreate essential directories (idempotent)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '1777', owner: 'root', group: 'root' }
+        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
+      become: true
+      tags: [bootstrap, directories]
 
-  handlers:
-    - name: Restart sshd
-      systemd:
-        name: sshd
-        state: restarted
-      listen: "restart sshd"
+    - name: Set directory precreation flag (idempotent)
+      ansible.builtin.set_fact:
+        directories_precreated: true
+
+    - name: Check if preflight validation already completed (idempotent)
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+
+    - name: Include preflight checks if not already completed (idempotent)
+      ansible.builtin.import_role:
+        name: preflight
+      when: not preflight_flag.stat.exists
+      tags: [preflight]
+
+    - name: Create preflight completion flag (idempotent)
+      ansible.builtin.file:
+        path: /tmp/preflight_completed.flag
+        state: touch
+        mode: '0644'
+      when: not preflight_flag.stat.exists
+
+  # No roles in the base layer - these are added in branches
+
+  post_tasks:
+    - name: Base system verification (idempotent)
+      ansible.builtin.debug:
+        msg: "Base system deployed with essential directories and preflight validation completed"
+      tags: [verification]

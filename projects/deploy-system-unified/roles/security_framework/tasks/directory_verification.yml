@@ -1,0 +1,29 @@
+---
+# Directory verification for Deploy-System-Unified
+- name: Verify all required directories exist (idempotent)
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: dir_check
+  loop:
+    - /var/lib/deploy-system
+    - /var/lib/deploy-system/checkpoints
+    - /var/lib/deploy-system/backups
+    - /var/lib/deploy-system/logs
+    - /etc/landlock
+    - /etc/bubblewrap
+    - /etc/firejail
+    - /etc/chrony
+    - /etc/trivy
+    - /etc/trufflehog
+    - /etc/checkov
+    - /srv/containers
+    - /srv/containers/config
+    - /srv/containers/data
+    - /srv/containers/secrets
+- name: Validate directory permissions (idempotent)
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.isdir
+    fail_msg: "Directory {{ item.path }} does not exist or is not a directory"
+  loop: "{{ dir_check.results }}"

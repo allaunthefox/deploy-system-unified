@@ -1,0 +1,8 @@
+# Default (non-secret) placeholders for security_framework role
+# These defaults should remain empty in the repository; override them using
+# an encrypted file (Ansible Vault) or external secret manager.
+
+ssh_private_key: ""
+# database_password should come from an encrypted vault file
+database_password: ""
+api_token: ""

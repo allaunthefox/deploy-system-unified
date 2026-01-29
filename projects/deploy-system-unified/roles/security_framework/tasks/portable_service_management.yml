@@ -1,0 +1,124 @@
+---
+# Portable service management for Deploy-System-Unified with proper syntax
+- name: Set distribution-specific service and package names (idempotent)
+  ansible.builtin.set_fact:
+    security_framework_time_sync_service: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('time_sync_service', 'chronyd') }}"
+    security_framework_time_sync_package: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('time_sync_package', 'chrony') }}"
+    security_framework_entropy_service: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('entropy_service', 'haveged') }}"
+    security_framework_entropy_package: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('entropy_package', 'haveged') }}"
+    security_framework_rng_service: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('rng_service', 'rngd') }}"
+    security_framework_rng_package: "{{ preflight_distro_service_mapping.get(ansible_distribution | lower, {}).get('rng_package', 'rng-tools') }}"
+- name: Install time synchronization service (portable)
+  ansible.builtin.package:
+    name: "{{ security_framework_time_sync_package }}"
+    state: present
+  become: true
+- name: Enable and start time synchronization service (portable)
+  ansible.builtin.systemd:
+    name: "{{ security_framework_time_sync_service }}"
+    enabled: true
+    state: started
+  become: true
+  when: ansible_service_mgr == 'systemd'
+- name: Enable and start time synchronization service for OpenRC (portable)
+  ansible.builtin.service:
+    name: "{{ security_framework_time_sync_service }}"
+    enabled: true
+    state: started
+  become: true
+  when: ansible_service_mgr == 'openrc'
+- name: Install entropy enhancement services (portable)
+  ansible.builtin.package:
+    name:
+      - "{{ security_framework_entropy_package }}"
+      - "{{ security_framework_rng_package }}"
+    state: present
+  become: true
+- name: Enable and start entropy enhancement services (portable)
+  ansible.builtin.systemd:
+    name: "{{ item.service }}"
+    enabled: true
+    state: started
+  loop:
+    - { service: "{{ security_framework_entropy_service }}" }
+    - { service: "{{ security_framework_rng_service }}" }
+  become: true
+  when: ansible_service_mgr == 'systemd'
+- name: Enable and start entropy enhancement services for OpenRC (portable)
+  ansible.builtin.service:
+    name: "{{ item.service }}"
+    enabled: true
+    state: started
+  loop:
+    - { service: "{{ entropy_service }}" }
+    - { service: "{{ rng_service }}" }
+  become: true
+  when: ansible_service_mgr == 'openrc'
+- name: Validate service states (portable)
+  ansible.builtin.service_facts:
+- name: Verify required services are running (portable)
+  ansible.builtin.assert:
+    that:
+      - "'{{ time_sync_service }}' in ansible_facts.services and ansible_facts.services[time_sync_service].state == 'running'"
+      - "'{{ entropy_service }}' in ansible_facts.services and ansible_facts.services[entropy_service].state == 'running'"
+      - "'{{ rng_service }}' in ansible_facts.services and ansible_facts.services[rng_service].state == 'running'"
+    fail_msg: "Required services ({{ time_sync_service }}, {{ entropy_service }}, {{ rng_service }}) are not running"
+- name: Warn if distro mapping missing (idempotent)
+  ansible.builtin.debug:
+    msg: "Distribution {{ ansible_distribution }} not present in mapping, using default service/package names"
+  when: ansible_distribution | lower not in preflight_distro_service_mapping
+- name: Install time synchronization service (portable)
+  ansible.builtin.package:
+    name: "{{ time_sync_package }}"
+    state: present
+  become: true
+- name: Enable and start time synchronization service (portable)
+  ansible.builtin.systemd:
+    name: "{{ time_sync_service }}"
+    enabled: true
+    state: started
+  become: true
+  when: ansible_service_mgr == 'systemd'
+- name: Enable and start time synchronization service for OpenRC (portable)
+  ansible.builtin.service:
+    name: "{{ time_sync_service }}"
+    enabled: true
+    state: started
+  become: true
+  when: ansible_service_mgr == 'openrc'
+- name: Install entropy enhancement services (portable)
+  ansible.builtin.package:
+    name:
+      - "{{ entropy_package }}"
+      - "{{ rng_package }}"
+    state: present
+  become: true
+- name: Enable and start entropy enhancement services (portable)
+  ansible.builtin.systemd:
+    name: "{{ item.service }}"
+    enabled: true
+    state: started
+  loop:
+    - { service: "{{ entropy_service }}" }
+    - { service: "{{ rng_service }}" }
+  become: true
+  when: ansible_service_mgr == 'systemd'
+- name: Enable and start entropy enhancement services for OpenRC (portable)
+  ansible.builtin.service:
+    name: "{{ item.service }}"
+    enabled: true
+    state: started
+  loop:
+    - { service: "{{ entropy_service }}" }
+    - { service: "{{ rng_service }}" }
+  become: true
+  when: ansible_service_mgr == 'openrc'
+- name: Validate service states (portable)
+  ansible.builtin.service_facts:
+- name: Verify required services are running (portable)
+  ansible.builtin.assert:
+    that:
+      - "'{{ time_sync_service }}' in ansible_facts.services and ansible_facts.services[time_sync_service].state == 'running'"
+      - "'{{ entropy_service }}' in ansible_facts.services and ansible_facts.services[entropy_service].state == 'running'"
+      - "'{{ rng_service }}' in ansible_facts.services and ansible_facts.services[rng_service].state == 'running'"
+    fail_msg: "Required services ({{ time_sync_service }}, {{ entropy_service }}, {{ rng_service }}) are not running"

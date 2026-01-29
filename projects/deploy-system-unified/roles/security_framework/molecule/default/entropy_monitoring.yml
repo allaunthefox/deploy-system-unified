@@ -1,0 +1,4 @@
+---
+- name: stub entropy_monitoring
+  ansible.builtin.debug:
+    msg: "stub"

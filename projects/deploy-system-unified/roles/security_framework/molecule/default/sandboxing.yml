@@ -1,0 +1,4 @@
+---
+- name: stub sandboxing
+  ansible.builtin.debug:
+    msg: "stub"

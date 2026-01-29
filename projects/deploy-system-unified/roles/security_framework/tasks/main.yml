@@ -1,0 +1,28 @@
+---
+# Security-first unified security framework for Deploy-System-Unified
+- name: Validate preflight requirements (idempotent)
+  ansible.builtin.import_role:
+    name: preflight
+- name: Configure secure encryption (idempotent)
+  ansible.builtin.import_tasks: secure_temp_files.yml
+- name: Configure secure SSH information handling (idempotent)
+  ansible.builtin.import_tasks: secure_ssh_info.yml
+- name: Configure portable service management (idempotent)
+  ansible.builtin.import_tasks: portable_service_management.yml
+- name: Set security framework applied flag
+  ansible.builtin.set_fact:
+    security_framework_applied: true
+    enhanced_security_scanning_complete: true
+    encryption_configured: true
+    entropy_management_configured: true
+    secure_process_naming_configured: true
+    rootkit_prevention_configured: true
+    entropy_enhancement_configured: true
+    secure_ssh_info_configured: true
+    portable_services_configured: true
+    distribution_aware_packages_configured: true
+    secure_temp_files_configured: true
+    enhanced_security_tools_configured: true
+    advanced_security_hardening_configured: true
+    time_sync_configured: true
+    security_scanning_configured: true

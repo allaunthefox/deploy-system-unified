@@ -1,0 +1,72 @@
+---
+# Secure SSH information handling for Deploy-System-Unified with proper syntax
+- name: Generate secure SSH connection information (idempotent)
+  ansible.builtin.set_fact:
+    security_framework_ssh_connection_info:
+      hostname: "{{ inventory_hostname }}"
+      port: "{{ access_sshd_port | default(2222) }}"
+      username: "{{ ansible_user | default('root') }}"
+      timestamp: "{{ ansible_date_time.iso8601 }}"
+      public_key: "{{ lookup('file', '/etc/ssh/ssh_host_ed25519_key.pub') | default('not_available') }}"
+- name: Create encrypted SSH connection information with proper validation (idempotent)
+  ansible.builtin.shell: |
+    # Create secure temporary file in secure temp directory
+    temp_ssh_info=$(mktemp -p "{{ security_framework_secure_temp_dir.path | default('/tmp') }}" -t "ssh_info_XXXXXX")
+    chmod 600 "$temp_ssh_info"
+    # Write SSH connection info to secure file
+    cat > "$temp_ssh_info" << 'EOF'
+    ---
+    ssh_connection:
+      hostname: "{{ security_framework_ssh_connection_info.hostname }}"
+      port: "{{ security_framework_ssh_connection_info.port }}"
+      username: "{{ security_framework_ssh_connection_info.username }}"
+      timestamp: "{{ security_framework_ssh_connection_info.timestamp }}"
+      public_key: "{{ security_framework_ssh_connection_info.public_key }}"
+    EOF
+    # Encrypt the SSH info
+    if command -v sops >/dev/null 2>&1; then
+      sops -e "$temp_ssh_info" > "{{ temp_ssh_info }}.sops.yml"
+      encrypted_ssh_file="{{ temp_ssh_info }}.sops.yml"
+    elif command -v ansible-vault >/dev/null 2>&1; then
+      ansible-vault encrypt "$temp_ssh_info" --output="{{ temp_ssh_info }}.vault.yml"
+      encrypted_ssh_file="{{ temp_ssh_info }}.vault.yml"
+    else
+      echo "ERROR: No encryption tool available"
+      exit 1
+    fi
+    # Verify encryption succeeded
+    if [ -f "$encrypted_ssh_file" ] && [ -s "$encrypted_ssh_file" ]; then
+      echo "ENCRYPTED_SSH_FILE:$encrypted_ssh_file"
+    else
+      echo "ERROR: SSH info encryption failed"
+      exit 1
+    fi
+    # Clean up temporary file
+    rm -f "$temp_ssh_info"
+  register: security_framework_ssh_encryption_result
+  changed_when: false
+  failed_when: security_framework_ssh_encryption_result.rc != 0 or 'ENCRYPTED_SSH_FILE:' not in security_framework_ssh_encryption_result.stdout
+  no_log: true
+- name: Verify SSH encryption succeeded (idempotent)
+  ansible.builtin.assert:
+    that:
+      - "'ENCRYPTED_SSH_FILE:' in security_framework_ssh_encryption_result.stdout"
+    fail_msg: "SSH information encryption failed - deployment halted"
+- name: Move encrypted SSH info to secure location (idempotent)
+  ansible.builtin.copy:
+    src: "{{ security_framework_ssh_encryption_result.stdout.split('ENCRYPTED_SSH_FILE:')[1].strip() }}"
+    dest: "/var/lib/deploy-system/secrets/encrypted_ssh_info.yml"
+    mode: '0600'
+    owner: root
+    group: root
+    remote_src: true
+  become: true
+  no_log: true
+- name: Clean up temporary SSH encryption file (idempotent)
+  ansible.builtin.file:
+    path: "{{ security_framework_ssh_encryption_result.stdout.split('ENCRYPTED_SSH_FILE:')[1].strip() }}"
+    state: absent
+  become: true
+  when:
+    - security_framework_ssh_encryption_result.stdout.split('ENCRYPTED_SSH_FILE:')[1].strip() is defined
+    - security_framework_ssh_encryption_result.stdout.split('ENCRYPTED_SSH_FILE:')[1].strip() | length > 0

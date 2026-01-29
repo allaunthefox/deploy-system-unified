@@ -1,7 +1,9 @@
 ---
-# Ephemeral Docker containers (security-first approach)
+# Ephemeral containers (security-first approach with Podman/Quadlet)
 # When to use: Temporary environments where security is paramount but persistence isn't needed
 # Example: CI/CD runners, security testing environments, temporary compute resources
+
+- import_playbook: ../main.yml
 
 - name: Deploy secure ephemeral container
   hosts: all
@@ -9,47 +11,59 @@
   vars:
     # Use advanced security hardening for ephemeral containers
     advanced_security_hardening_enabled: true
-    
+
     # Randomize SSH port for additional security in ephemeral environments
     ssh_randomize_port: true
-    
+
     # Since this is ephemeral, we don't need to rsync anywhere
     ssh_rsync_destination: ""
-    
+
     # Enable key rotation if needed (though less critical for ephemeral containers)
     ssh_key_rotation_enabled: false
-    
+
     # Ensure TMUX session is available during deployment
     tmux_session_for_deployment: true
     tmux_session_name: "ephemeral-session"
-    
+
     # Use SOPS for encryption (fallback to vault if SOPS unavailable)
     encryption_method: "sops"
-  
+
   roles:
     # Core system setup
     - role: core/bootstrap
-    
+
     # Security hardening (main security measures)
     - role: security/hardening
-    
+
     # SSH and access configuration
     - role: security/access
       # Use the randomized port if enabled
-      access_sshd_port: "{{ random_ssh_port | default(2222) }}"
-    
+      access_sshd_port: "{{ advanced_security_hardening_random_ssh_port | default(2222) }}"
+
+    # Container runtime setup (Podman)
+    - role: containers/containers_runtime
+
+    # Container configuration (Quadlet)
+    - role: containers/containers_config
+
+    # Container quadlet definitions
+    - role: containers/containers_quadlets
+
+    # Caddy reverse proxy for container services
+    - role: containers/containers_caddy
+
     # Optional advanced security hardening for extra protection
     - role: advanced_security_hardening
-  
+
   post_tasks:
     # Additional ephemeral-specific security tasks
-    - name: Configure ephemeral-specific security settings
+    - name: Configure ephemeral-specific container security settings
       block:
         - name: Set up temporary security logs
           tempfile:
             state: directory
           register: temp_security_logs
-        
+
         - name: Configure audit logging for ephemeral container
           lineinfile:
             path: /etc/audit/rules.d/ephemeral.rules
@@ -59,8 +73,9 @@
             - "-w /etc/passwd -p wa -k etc_passwd_changes"
             - "-w /etc/shadow -p wa -k etc_shadow_changes"
             - "-w /etc/ssh/ -p wa -k ssh_config_changes"
+            - "-w /srv/containers -p wa -k container_dir_changes"
           notify: Restart auditd
-          
+
         - name: Limit SSH connection attempts during ephemeral session
           lineinfile:
             path: /etc/ssh/sshd_config
@@ -70,15 +85,34 @@
           notify: Restart sshd
           no_log: true
 
+        - name: Create ephemeral container directories
+          ansible.builtin.file:
+            path: "{{ item.path }}"
+            state: directory
+            mode: "{{ item.mode }}"
+            owner: "{{ item.owner | default('root') }}"
+            group: "{{ item.group | default('root') }}"
+          loop:
+            - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
+            - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
+            - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
+            - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
+
   handlers:
     - name: Restart auditd
       systemd:
         name: auditd
         state: restarted
       listen: "restart auditd"
-    
+
     - name: Restart sshd
       systemd:
         name: sshd
         state: restarted
       listen: "restart sshd"
+
+    - name: Restart caddy
+      systemd:
+        name: caddy
+        state: restarted
+      listen: "restart caddy"

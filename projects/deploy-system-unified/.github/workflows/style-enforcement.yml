@@ -1,0 +1,76 @@
+name: Style Guide Enforcement
+
+on:
+  push:
+    branches: [ main, 'ci/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  style-enforcement:
+    name: Run style guide enforcement
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+
+      - name: Run enforcement (generate report)
+        run: |
+          set -o pipefail
+          # Run in a way that always allows subsequent steps to run so we can upload the report
+          ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report || echo $? > .enforce_status
+        continue-on-error: true
+
+      - name: List reports
+        run: ls -l dev_tools/tools/style-guide-enforcement || true
+
+      - name: Upload compliance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: style-compliance-report
+          path: dev_tools/tools/style-guide-enforcement/compliance_report_*.md
+
+      - name: Comment on PR with compliance report
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f .enforce_status ]; then
+            report_file=$(ls -t dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
+            if [ -z "$report_file" ]; then
+              echo "No report found to post"
+              exit 0
+            fi
+            # sanitize backticks to avoid breaking code fence in comment
+            report=$(sed 's/```/` ` `/g' "$report_file")
+            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>\n\nIf you'd like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR.")}')
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
+          else
+            echo "No style issues detected; no comment posted"
+          fi
+
+      - name: Comment on PR on success
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ ! -f .enforce_status ]; then
+            body='{"body":"✅ Style enforcement passed. No issues detected. Good job!"}'
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
+          else
+            echo "Issues were detected; not posting success message"
+          fi
+      - name: Fail if enforcement found issues
+        run: |
+          if [ -f .enforce_status ]; then
+            echo "Style enforcement detected issues; failing job with code $(cat .enforce_status)"
+            exit $(cat .enforce_status)
+          fi
