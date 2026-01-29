@@ -18,6 +18,13 @@ jobs:
       - name: Make script executable
         run: chmod +x dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
 
+      - name: Install style tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yamllint ripgrep || true
+          python -m pip install --upgrade pip || true
+          python -m pip install --upgrade ansible-lint || true
+
       - name: Run enforcement (generate report)
         run: |
           set -o pipefail
