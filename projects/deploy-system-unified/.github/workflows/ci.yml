@@ -1,10 +1,11 @@
+---
 name: CI
 
 on:
   push:
-    branches: [ main, 'security/**' ]
+    branches: [main, 'security/**']
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   lint-and-scan:

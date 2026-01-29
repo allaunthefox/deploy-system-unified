@@ -95,12 +95,26 @@ enforce_yaml_standards() {
                 for file in "${yaml_files[@]}"; do
                     # Fix trailing spaces
                     sed -i 's/[[:space:]]*$//' "$file"
-                    
+
                     # Ensure file ends with newline
                     if [ -s "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
                         echo "" >> "$file"
+                        FIXED_ISSUES=$((FIXED_ISSUES + 1))
                     fi
-                    FIXED_ISSUES=$((FIXED_ISSUES + 1))
+
+                    # Add YAML document start '---' if missing at top of file
+                    if ! awk 'NF{print;exit}' "$file" | grep -qE '^---'; then
+                        sed -i '1s/^/---\n/' "$file"
+                        FIXED_ISSUES=$((FIXED_ISSUES + 1))
+                        warning "Inserted YAML document start into: $file"
+                    fi
+
+                    # Normalize common boolean values (True/False/Yes/No) to lowercase true/false
+                    # Only affects unquoted bare words following a colon
+                    perl -i -pe 's/(:\s*)(True|False|TRUE|FALSE|Yes|No|YES|NO|yes|no)\b/$1 . lc($2)/ge' "$file" && FIXED_ISSUES=$((FIXED_ISSUES + 1))
+
+                    # Remove unnecessary spaces inside square brackets (e.g., [ a, b ] -> [a, b])
+                    perl -i -0777 -pe 's/\[\s*([^\[\]]*?)\s*\]/[\1]/g' "$file" && FIXED_ISSUES=$((FIXED_ISSUES + 1))
                 done
                 success "Common YAML issues auto-fixed"
             fi
