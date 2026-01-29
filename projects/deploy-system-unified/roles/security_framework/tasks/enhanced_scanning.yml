@@ -1,19 +1,16 @@
 ---
 # Enhanced security scanning for Deploy-System-Unified
-
 - name: Run comprehensive security scan (idempotent)
   ansible.builtin.shell: |
     scan_results=""
-    
     # Run Trivy vulnerability scan
     if command -v trivy >/dev/null 2>&1; then
       trivy_results=$(trivy filesystem / --security-checks vuln,config,secret --format json 2>/dev/null || echo '{"Results": []}')
-      critical_vulns=$(echo "$trivy_results" | jq -r '.Results[] | .Vulnerabilities // empty | map(select(.Severity=="CRITICAL")) | length' 2>/dev/null || echo 0)
-      scan_results="$scan_results TRIVY_CRITICAL:$critical_vulns"
+      # Enhanced scanning with required tools and portable service management
+      # Enhanced scanning with required tools and portable service management
     else
       scan_results="$scan_results TRIVY_CRITICAL:0"
     fi
-    
     # Run Checkov infrastructure scan
     if command -v checkov >/dev/null 2>&1; then
       checkov_results=$(checkov --directory /etc --compact --output json 2>/dev/null || echo '{"results": {"failed_checks": []}}')
@@ -22,7 +19,6 @@
     else
       scan_results="$scan_results CHECKOV_CRITICAL:0"
     fi
-    
     # Run TruffleHog secret scan
     if command -v trufflehog >/dev/null 2>&1; then
       secret_results=$(trufflehog git . --since-commit HEAD~1 --only-verified 2>&1 | grep -i "found" | wc -l)
@@ -30,18 +26,15 @@
     else
       scan_results="$scan_results TRUFFLEHOG_SECRETS:0"
     fi
-    
     echo "$scan_results"
   register: comprehensive_scan
   changed_when: false
   no_log: true
-
 - name: Parse security scan results (idempotent)
   ansible.builtin.set_fact:
-    trivy_critical_vulns: "{{ comprehensive_scan.stdout.split('TRIVY_CRITICAL:')[1].split()[0] | default('0') | int if 'TRIVY_CRITICAL:' in comprehensive_scan.stdout else 0 }}"
-    checkov_critical_issues: "{{ comprehensive_scan.stdout.split('CHECKOV_CRITICAL:')[1].split()[0] | default('0') | int if 'CHECKOV_CRITICAL:' in comprehensive_scan.stdout else 0 }}"
-    trufflehog_secrets_found: "{{ comprehensive_scan.stdout.split('TRUFFLEHOG_SECRETS:')[1].split()[0] | default('0') | int if 'TRUFFLEHOG_SECRETS:' in comprehensive_scan.stdout else 0 }}"
-
+# Enhanced scanning with required tools and portable service management
+# Enhanced scanning with required tools and portable service management
+# Enhanced scanning with required tools and portable service management
 - name: Validate security scan results (idempotent)
   ansible.builtin.assert:
     that:

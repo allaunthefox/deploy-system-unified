@@ -1,1 +1,2 @@
-rulesdir: ansiblelint/rules
+rulesdir:
+  - ansiblelint/rules

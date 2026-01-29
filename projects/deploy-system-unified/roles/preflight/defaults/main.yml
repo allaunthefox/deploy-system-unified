@@ -1,8 +1,6 @@
 ---
 # Distribution-aware service and package mapping for Deploy-System-Unified
-
 # Note: Keys are lower-case to match ansible_distribution | lower
-
 preflight_distro_service_mapping:
   archlinux:
     time_sync_service: chronyd
@@ -39,8 +37,6 @@ preflight_distro_service_mapping:
     entropy_package: haveged
     rng_service: rngd
     rng_package: rng-tools
-
-
 preflight_distro_package_mapping:
   archlinux:
     security_packages:

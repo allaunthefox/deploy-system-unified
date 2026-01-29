@@ -3,6 +3,8 @@
 # When to use: Temporary environments where security is paramount but persistence isn't needed
 # Example: CI/CD runners, security testing environments, temporary compute resources
 
+- import_playbook: ../main.yml
+
 - name: Deploy secure ephemeral container
   hosts: all
   become: true

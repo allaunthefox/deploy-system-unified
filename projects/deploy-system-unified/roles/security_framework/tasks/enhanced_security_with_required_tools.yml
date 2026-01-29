@@ -1,21 +1,18 @@
 ---
 # Enhanced security with required tools and proper validation for Deploy-System-Unified
-
 - name: Check if security tools are installed (idempotent)
   ansible.builtin.command: "{{ item }} --version"
   register: security_framework_tool_check
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh", "chronyd", "checkov"]
   failed_when: false
   changed_when: false
-
 - name: Install missing security tools including enhanced tooling (idempotent)
   ansible.builtin.package:
     name: "{{ preflight_distro_package_mapping[ansible_distribution | lower].security_packages + ['chrony'] }}"
     state: present
   become: true
-  when: 
+  when:
     - ansible_distribution | lower in preflight_distro_package_mapping.keys()
-
 - name: Verify security tools are functional (idempotent)
   ansible.builtin.shell: |
     if command -v {{ item }} >/dev/null 2>&1 || command -v {{ item }}-go >/dev/null 2>&1; then
@@ -27,7 +24,6 @@
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh"]
   changed_when: false
   failed_when: false
-
 - name: Run comprehensive security scan with proper validation (idempotent)
   ansible.builtin.shell: |
     set -o pipefail
@@ -63,7 +59,6 @@
   register: security_framework_comprehensive_scan
   changed_when: false
   no_log: true
-
 - name: Parse comprehensive security scan results (idempotent)
   ansible.builtin.set_fact:
     security_framework_chkrootkit_infections: >-
@@ -81,7 +76,6 @@
     security_framework_checkov_issues: >-
       {{ security_framework_comprehensive_scan.stdout.split('CHECKOV:')[1].split()[0] | default('0') | int
          if 'CHECKOV:' in security_framework_comprehensive_scan.stdout else 0 }}
-
 - name: Validate comprehensive security scan results (idempotent)
   ansible.builtin.assert:
     that:

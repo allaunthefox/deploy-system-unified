@@ -1,0 +1,10 @@
+---
+# Main tasks for preflight role
+- name: Install baseline security packages (idempotent)
+  ansible.builtin.package:
+    name: "{{ preflight_distro_package_mapping[ansible_distribution | lower].security_packages }}"
+    state: present
+  when:
+    - ansible_distribution | lower in preflight_distro_package_mapping
+    - preflight_distro_package_mapping[ansible_distribution | lower].security_packages is defined
+  tags: [packages, security, baseline]

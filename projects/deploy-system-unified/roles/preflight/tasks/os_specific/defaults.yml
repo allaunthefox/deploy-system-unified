@@ -1,6 +1,5 @@
 ---
 # Distribution-aware service and package mapping for Deploy-System-Unified
-
 distro_service_mapping:
   archlinux:
     time_sync_service: chronyd
@@ -37,7 +36,6 @@ distro_service_mapping:
     entropy_package: haveged
     rng_service: rngd
     rng_package: rng-tools
-
 distro_package_mapping:
   archlinux:
     security_packages:

@@ -1,6 +1,5 @@
 ---
 # Directory verification for Deploy-System-Unified
-
 - name: Verify all required directories exist (idempotent)
   ansible.builtin.stat:
     path: "{{ item }}"
@@ -21,7 +20,6 @@
     - /srv/containers/config
     - /srv/containers/data
     - /srv/containers/secrets
-
 - name: Validate directory permissions (idempotent)
   ansible.builtin.assert:
     that:

@@ -1,13 +1,11 @@
 ---
 # Secure temporary file management for Deploy-System-Unified with proper syntax
-
 - name: Create secure temporary directory with restrictive permissions (idempotent)
   ansible.builtin.tempfile:
     state: directory
     suffix: deploy_secure
   register: security_framework_secure_temp_dir
   become: true
-
 - name: Set secure permissions on temporary directory (idempotent)
   ansible.builtin.file:
     path: "{{ security_framework_secure_temp_dir.path }}"
@@ -15,13 +13,11 @@
     owner: root
     group: root
   become: true
-
 - name: Create encrypted secrets file securely with proper validation (idempotent)
   ansible.builtin.shell: |
     # Create secure temporary file with restricted permissions
-    temp_secret_file=$(mktemp -p "{{ secure_temp_dir.path }}" -t "secret_XXXXXX")
+    temp_secret_file=$(mktemp -p "{{ security_framework_secure_temp_dir.path }}" -t "secret_XXXXXX")
     chmod 600 "$temp_secret_file"
-    
     # Write secrets to secure temporary file
     cat > "$temp_secret_file" << 'EOF'
     ---
@@ -31,19 +27,17 @@
     api_token: "{{ api_token | default('') }}"
     # Add other sensitive data as needed
     EOF
-    
     # Encrypt the file using SOPS if available, otherwise Vault
     if command -v sops >/dev/null 2>&1; then
-      sops -e "$temp_secret_file" > "{{ secure_temp_dir.path }}/encrypted_secrets.sops.yml"
-      encrypted_file="{{ secure_temp_dir.path }}/encrypted_secrets.sops.yml"
+      sops -e "$temp_secret_file" > "{{ security_framework_secure_temp_dir.path }}/encrypted_secrets.sops.yml"
+      encrypted_file="{{ security_framework_secure_temp_dir.path }}/encrypted_secrets.sops.yml"
     elif command -v ansible-vault >/dev/null 2>&1; then
-      ansible-vault encrypt "$temp_secret_file" --output="{{ secure_temp_dir.path }}/encrypted_secrets.vault.yml"
-      encrypted_file="{{ secure_temp_dir.path }}/encrypted_secrets.vault.yml"
+      ansible-vault encrypt "$temp_secret_file" --output="{{ security_framework_secure_temp_dir.path }}/encrypted_secrets.vault.yml"
+      encrypted_file="{{ security_framework_secure_temp_dir.path }}/encrypted_secrets.vault.yml"
     else
       echo "ERROR: No encryption tool available"
       exit 1
     fi
-    
     # Verify encryption succeeded
     if [ -f "$encrypted_file" ] && [ -s "$encrypted_file" ]; then
       echo "SUCCESS: Encrypted file created at $encrypted_file"
@@ -52,20 +46,17 @@
       echo "ERROR: Encryption failed"
       exit 1
     fi
-    
     # Clean up temporary file
     rm -f "$temp_secret_file"
   register: security_framework_encryption_result
   changed_when: false
   failed_when: security_framework_encryption_result.rc != 0 or 'ENCRYPTED_FILE:' not in security_framework_encryption_result.stdout
   no_log: true
-
 - name: Verify encryption succeeded (idempotent)
   ansible.builtin.assert:
     that:
       - "'ENCRYPTED_FILE:' in security_framework_encryption_result.stdout"
     fail_msg: "Secret encryption failed - deployment halted"
-
 - name: Move encrypted secrets to final location (idempotent)
   ansible.builtin.copy:
     src: "{{ security_framework_encryption_result.stdout.split('ENCRYPTED_FILE:')[1].strip() }}"
@@ -76,7 +67,6 @@
     remote_src: true
   become: true
   no_log: true
-
 - name: Clean up secure temporary directory (idempotent)
   ansible.builtin.file:
     path: "{{ security_framework_secure_temp_dir.path }}"

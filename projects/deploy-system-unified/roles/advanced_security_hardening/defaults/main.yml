@@ -1,23 +1,18 @@
 ---
 # Advanced Security Hardening Role Default Variables
-
 # Enable advanced security hardening features
 advanced_security_hardening_enabled: false
-
 # SSH port randomization settings
 ssh_randomize_port: false
 ssh_random_port_range_start: 10000
 ssh_random_port_range_end: 65535
 ssh_random_port_file_dest: "~/ssh_connection_info.sops.yml"
 ssh_rsync_destination: ""
-
 # SSH key rotation settings
 ssh_key_rotation_enabled: false
 ssh_key_rotation_interval_days: 90
-
 # Connection persistence settings
 tmux_session_for_deployment: true
 tmux_session_name: "deployment-session"
-
 # Encryption settings
 encryption_method: "sops"  # Options: sops, vault

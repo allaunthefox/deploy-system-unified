@@ -3,23 +3,25 @@
 # When to use: Development environments where convenience is balanced with basic security
 # Example: Developer workstations, testing environments, staging systems
 
+- import_playbook: ../main.yml
+
 - name: Deploy development environment with moderate security
   hosts: all
   become: true
   vars:
     # Moderate security hardening for development
     advanced_security_hardening_enabled: false  # Skip advanced hardening for convenience
-    
+
     # Standard SSH configuration for developer access
     ssh_randomize_port: false
     access_sshd_port: 2222
-    
+
     # No key rotation needed for development
     ssh_key_rotation_enabled: false
-    
+
     # Basic TMUX session for deployment
     tmux_session_for_deployment: false
-  
+
   roles:
     # Core system setup
     - role: core/bootstrap
