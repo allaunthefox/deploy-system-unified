@@ -48,13 +48,26 @@ jobs:
             fi
             # sanitize backticks to avoid breaking code fence in comment
             report=$(sed 's/```/` ` `/g' "$report_file")
-            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>")}')
+            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>\n\nIf you'd like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR.")}')
             curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
               --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
           else
             echo "No style issues detected; no comment posted"
           fi
 
+      - name: Comment on PR on success
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ ! -f .enforce_status ]; then
+            body='{"body":"✅ Style enforcement passed. No issues detected. Good job!"}'
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
+          else
+            echo "Issues were detected; not posting success message"
+          fi
       - name: Fail if enforcement found issues
         run: |
           if [ -f .enforce_status ]; then
