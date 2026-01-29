@@ -44,16 +44,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          set -x
           if [ -f .enforce_status ]; then
             report_file=$(ls -t projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
+            echo "PR_NUMBER=$PR_NUMBER report_file=$report_file"
             if [ -z "$report_file" ]; then
               echo "No report found to post"
               exit 0
             fi
             report=$(sed 's/```/` ` `/g' "$report_file")
-            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>\n\nIf you'd like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR.")}')
-            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
-              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
+            body=$(jq -Rs --arg file "$report" -n '{body: ("### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + $file + "\n```\n</details>\n\nIf you\'d like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR.")}')
+            http_code=$(curl -s -o /tmp/comment_response -w "%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments")
+            if [ "$http_code" -ne 201 ]; then
+              echo "Failed to post comment: HTTP $http_code"
+              echo "Response:"
+              cat /tmp/comment_response || true
+              echo "Continuing without failing the job"
+            else
+              echo "Comment posted successfully"
+            fi
           else
             echo "No style issues detected; no comment posted"
           fi
