@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Check if package cache was recently updated
+      ansible.builtin.stat:
+        path: /var/lib/apt/lists
+      register: apt_lists
+      when: ansible_os_family == 'Debian'
+
+    - name: Assert apt lists exist
+      ansible.builtin.assert:
+        that:
+          - apt_lists.stat.exists
+        fail_msg: "Package cache directory does not exist"
+      when: ansible_os_family == 'Debian'

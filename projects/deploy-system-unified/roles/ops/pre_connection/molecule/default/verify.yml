@@ -1,0 +1,9 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Assert random port fact is set
+      ansible.builtin.assert:
+        that:
+          - advanced_security_hardening_random_ssh_port is defined
+        fail_msg: "Random SSH port fact was not set"

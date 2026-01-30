@@ -1,0 +1,8 @@
+---
+# Defaults for security role
+access_sshd_port: 22
+access_permit_root_login: false
+access_password_auth: false
+security_hardening_enabled: true
+sshd_backup_config: true
+secrets_encryption_method: auto

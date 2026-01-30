@@ -1,0 +1,30 @@
+---
+# Tasks for security/mac_apparmor - Mandatory Access Control
+- name: Install AppArmor packages (Debian/Ubuntu)
+  ansible.builtin.package:
+    name:
+      - apparmor
+      - apparmor-utils
+      - apparmor-profiles
+    state: present
+  when: ansible_os_family == 'Debian'
+  become: true
+
+- name: Enable and start AppArmor service
+  ansible.builtin.systemd:
+    name: apparmor
+    enabled: true
+    state: started
+  when: ansible_os_family == 'Debian'
+  become: true
+
+- name: Enforce AppArmor at boot via GRUB
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=".*)apparmor=1 security=apparmor(.*")$'
+    line: '\1apparmor=1 security=apparmor\2'
+    backrefs: true
+  register: apparmor_grub
+  when: ansible_os_family == 'Debian'
+  become: true
+  notify: update grub

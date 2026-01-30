@@ -1,0 +1,32 @@
+---
+# Tasks for core/logging role - Mandatory Forensic Readiness
+- name: Ensure journald directory exists for persistence
+  ansible.builtin.file:
+    path: /var/log/journal
+    state: directory
+    mode: '0755'
+    owner: root
+    group: systemd-journal
+  become: true
+
+- name: Configure journald for forensic integrity and rate limiting
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^#?Storage=', line: 'Storage=persistent' }
+    - { regexp: '^#?Compress=', line: 'Storage=yes' }
+    - { regexp: '^#?Seal=', line: 'Seal=yes' }
+    - { regexp: '^#?ForwardToSyslog=', line: 'ForwardToSyslog=yes' }
+    - { regexp: '^#?RateLimitIntervalSec=', line: 'RateLimitIntervalSec=30s' }
+    - { regexp: '^#?RateLimitBurst=', line: 'RateLimitBurst=1000' }
+  become: true
+  notify: restart journald
+
+- name: Install systemd-journal-remote for log aggregation readiness
+  ansible.builtin.package:
+    name: systemd-journal-remote
+    state: present
+  become: true
+  ignore_errors: true # Some minimal distros might not have this package

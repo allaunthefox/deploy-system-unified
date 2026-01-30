@@ -1,0 +1,25 @@
+# Chrony configuration - Managed by Deploy-System-Unified
+# Use NTS (Network Time Security) for authenticated time sync
+server time.cloudflare.com nts iburst
+server nts.netnod.se nts iburst
+server ptbtime1.ptb.de nts iburst
+
+# Fallback to standard pool if NTS is unavailable (Optional, comment for strict NTS)
+pool pool.ntp.org iburst
+
+# Drift file
+driftfile /var/lib/chrony/chrony.drift
+
+# Allow stepping the system clock in the first three updates
+makestep 1.0 3
+
+# Enable kernel synchronization of the real-time clock (RTC)
+rtcsync
+
+# Security: Disable command access from outside
+authselectmode ignore
+cmdallow 127.0.0.1
+
+# Log changes
+logdir /var/log/chrony
+log measurements statistics tracking

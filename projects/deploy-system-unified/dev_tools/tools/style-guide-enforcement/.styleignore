@@ -1,0 +1,12 @@
+# Style Guide Exceptions
+# Used to exclude specific files from strict style/security enforcement
+#
+# Format:
+# # Reason for exclusion
+# path/to/file
+
+# Reason: Default variable definitions for scanning role need to define empty secrets
+roles/security/scanning/defaults/main.yml
+
+# Reason: Category-level directory for ops roles
+roles/ops

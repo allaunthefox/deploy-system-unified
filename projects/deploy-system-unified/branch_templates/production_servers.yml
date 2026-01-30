@@ -1,57 +1,25 @@
 ---
-# Production servers (balanced approach)
-# When to use: Production environments where both security and stability are critical
-# Example: Web servers, database servers, application servers
+# Production Container Host - Secure Solution Stack
+# Solution: Base Hardened Infrastructure + Container Workload
 
-- import_playbook: ../main.yml
+- ansible.builtin.import_playbook: base_hardened.yml
 
-- name: Deploy secure production server
+- name: Deploy Production Container Workload
   hosts: all
   become: true
-  vars:
-    # Standard security hardening for production
-    advanced_security_hardening_enabled: true
-
-    # Don't randomize SSH port in production (complicates monitoring and access)
-    ssh_randomize_port: false
-    access_sshd_port: 2222  # Standard non-default port for production
-
-    # Enable key rotation for long-running production systems
-    ssh_key_rotation_enabled: true
-    ssh_key_rotation_interval_days: 90
-
-    # Ensure TMUX session is available during deployment
-    tmux_session_for_deployment: true
-    tmux_session_name: "prod-deployment"
-
-    # Use SOPS for encryption
-    encryption_method: "sops"
-
   roles:
-    # Core system setup
-    - role: core/bootstrap
+    # Container Infrastructure Workload
+    - role: containers/runtime
+    - role: containers/config
+    - role: containers/quadlets
+    - role: containers/caddy
 
-    # Security hardening (main security measures)
-    - role: security/hardening
+    # Backup & Disaster Recovery
+    - role: backup/restic
+    - role: backup/rclone
 
-    # SSH and access configuration
-    - role: security/access
-      access_sshd_port: "{{ access_sshd_port }}"
-
-    # Container runtime setup (Podman)
-    - role: containers/containers_runtime
-
-    # Container configuration (Quadlet)
-    - role: containers/containers_config
-
-    # Container quadlet definitions
-    - role: containers/containers_quadlets
-
-    # Caddy reverse proxy for container services
-    - role: containers/containers_caddy
-
-    # Optional advanced security hardening (without port randomization)
-    - role: advanced_security_hardening
+    # Final Solution Integrity Verification
+    - role: security/scanning
 
   post_tasks:
     - name: Create production container directories
@@ -68,12 +36,6 @@
         - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
 
   handlers:
-    - name: Restart sshd
-      systemd:
-        name: sshd
-        state: restarted
-      listen: "restart sshd"
-
     - name: Restart caddy
       systemd:
         name: caddy

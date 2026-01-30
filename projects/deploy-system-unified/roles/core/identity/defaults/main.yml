@@ -1,0 +1,4 @@
+---
+# Defaults for core/identity role
+identity_set_hostname: true
+identity_domain: local

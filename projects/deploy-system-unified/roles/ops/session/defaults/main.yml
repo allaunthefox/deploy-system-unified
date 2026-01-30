@@ -1,0 +1,4 @@
+---
+# Defaults for ops/session role
+tmux_session_for_deployment: true
+tmux_session_name: "deployment-session"

@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Set distribution-specific service name
+      ansible.builtin.set_fact:
+        expected_service: "{{ 'chronyd' if ansible_distribution == 'Fedora' else 'chrony' }}"
+
+    - name: Assert chrony service is running
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services[expected_service + '.service'].state == 'running'
+        fail_msg: "Chrony service is not running"

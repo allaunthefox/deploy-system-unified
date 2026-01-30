@@ -1,0 +1,16 @@
+---
+# Tasks for backup/restic - Deduplicated Encrypted Backups
+- name: Install restic
+  ansible.builtin.package:
+    name: restic
+    state: present
+  become: true
+
+- name: Create restic cache directory
+  ansible.builtin.file:
+    path: /var/cache/restic
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+  become: true

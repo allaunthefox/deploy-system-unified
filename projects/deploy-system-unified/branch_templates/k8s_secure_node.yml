@@ -1,0 +1,15 @@
+---
+# K8s Secure Node - Orchestration Solution Stack
+# Solution: Base Hardened Infrastructure + K8s Node Readiness
+
+- ansible.builtin.import_playbook: base_hardened.yml
+
+- name: Deploy Kubernetes Readiness Workload
+  hosts: all
+  become: true
+  roles:
+    # K8s Preparation
+    - role: core/k8s_node
+
+    # Final Solution Integrity Verification
+    - role: security/scanning

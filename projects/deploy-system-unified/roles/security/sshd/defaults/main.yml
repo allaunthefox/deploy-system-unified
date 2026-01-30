@@ -1,0 +1,5 @@
+---
+# Defaults for security/sshd role
+sshd_backup_config: true
+sshd_disable_weak_keys: false
+sshd_use_strong_ciphers: true

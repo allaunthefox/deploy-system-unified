@@ -1,0 +1,52 @@
+---
+# Core systemd role - Systemd configuration and hardening
+- name: Ensure systemd is available
+  ansible.builtin.assert:
+    that:
+      - ansible_service_mgr == 'systemd'
+    msg: "This role requires systemd as the service manager"
+
+- name: Configure systemd journald
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^#?Storage=', line: 'Storage=persistent' }
+    - { regexp: '^#?Compress=', line: 'Compress=yes' }
+    - { regexp: '^#?SystemMaxUse=', line: 'SystemMaxUse=500M' }
+    - { regexp: '^#?SystemMaxFileSize=', line: 'SystemMaxFileSize=50M' }
+  become: true
+  notify: restart journald
+
+- name: Configure systemd resolved if available
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^#?DNS=', line: 'DNS=1.1.1.1 9.9.9.9' }
+    - { regexp: '^#?FallbackDNS=', line: 'FallbackDNS=8.8.8.8' }
+    - { regexp: '^#?DNSSEC=', line: 'DNSSEC=allow-downgrade' }
+    - { regexp: '^#?DNSOverTLS=', line: 'DNSOverTLS=opportunistic' }
+  become: true
+  failed_when: false
+  notify: restart resolved
+
+- name: Enable persistent journal storage
+  ansible.builtin.file:
+    path: /var/log/journal
+    state: directory
+    mode: '2755'
+    owner: root
+    group: systemd-journal
+  become: true
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: Set core systemd completion flag
+  ansible.builtin.set_fact:
+    core_systemd_complete: true

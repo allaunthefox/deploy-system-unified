@@ -1,0 +1,29 @@
+---
+# Tasks for security/file_integrity role - AIDE Initialization
+- name: Install AIDE
+  ansible.builtin.package:
+    name: aide
+    state: present
+  become: true
+
+- name: Check if AIDE database already exists
+  ansible.builtin.stat:
+    path: /var/lib/aide/aide.db.gz
+  register: aide_db_stat
+  become: true
+
+- name: Initialize AIDE database (Baseline)
+  ansible.builtin.command: aideinit
+  become: true
+  when: not aide_db_stat.stat.exists
+  async: 600 # AIDE init can take a long time
+  poll: 10
+
+- name: Ensure AIDE database is in place
+  ansible.builtin.copy:
+    src: /var/lib/aide/aide.db.new.gz
+    dest: /var/lib/aide/aide.db.gz
+    remote_src: true
+    mode: '0600'
+  become: true
+  when: not aide_db_stat.stat.exists

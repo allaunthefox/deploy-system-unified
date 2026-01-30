@@ -1,0 +1,11 @@
+---
+# Btrfs maintenance tasks
+- name: Schedule periodic Btrfs scrub
+  ansible.builtin.cron:
+    name: "Btrfs scrub for {{ item }}"
+    job: "/usr/bin/btrfs scrub start -B {{ item }}"
+    minute: "0"
+    hour: "2"
+    weekday: "0"
+  loop: "{{ btrfs_scrub_mounts | default(['/']) }}"
+  become: true

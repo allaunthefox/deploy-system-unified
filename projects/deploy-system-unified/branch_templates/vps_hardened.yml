@@ -1,0 +1,21 @@
+---
+# VPS Hardened - Cloud Infrastructure Solution Stack
+# Solution: Cloud Provider Sync + Base Hardened Infrastructure + VPS Optimization
+
+- name: Sync with Cloud Provider
+  hosts: all
+  become: true
+  roles:
+    - role: ops/cloud_init
+
+- ansible.builtin.import_playbook: base_hardened.yml
+
+- name: Deploy VPS Workload
+  hosts: all
+  become: true
+  roles:
+    # VPS Specialized Roles
+    - role: core/vps_optimization
+
+    # Final Solution Integrity Verification
+    - role: security/scanning

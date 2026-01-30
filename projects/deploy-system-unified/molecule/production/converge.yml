@@ -1,0 +1,2 @@
+---
+- import_playbook: ../../branch_templates/production_servers.yml

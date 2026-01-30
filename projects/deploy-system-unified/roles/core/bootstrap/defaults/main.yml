@@ -1,0 +1,3 @@
+---
+# Defaults for core/bootstrap role
+core_install_base_packages: true

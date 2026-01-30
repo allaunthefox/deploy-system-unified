@@ -1,0 +1,7 @@
+---
+# Defaults for security/hardening role
+security_hardening_enabled: true
+security_enable_ufw: true
+security_enable_fail2ban: true
+security_enable_auto_updates: true
+security_kernel_hardening: true

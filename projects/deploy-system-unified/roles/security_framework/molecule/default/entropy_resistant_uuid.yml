@@ -1,4 +1,0 @@
----
-- name: stub entropy_resistant_uuid
-  ansible.builtin.debug:
-    msg: "stub"

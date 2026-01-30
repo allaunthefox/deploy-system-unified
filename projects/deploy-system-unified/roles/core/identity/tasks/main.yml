@@ -1,0 +1,17 @@
+---
+# Tasks for core/identity - Entropy-Backed UUID Generation
+- name: Generate high-entropy UUID for virtualization object
+  ansible.builtin.shell: |
+    cat /proc/sys/kernel/random/uuid
+  register: generated_uuid_output
+  changed_when: false
+  # This provides a new UUID every time it is called, 
+  # or it can be gated by a condition.
+
+- name: Set object identity fact
+  ansible.builtin.set_fact:
+    object_uuid: "{{ generated_uuid_output.stdout }}"
+
+- name: Report generated identity
+  ansible.builtin.debug:
+    msg: "Object successfully assigned high-entropy UUID: {{ object_uuid }}"

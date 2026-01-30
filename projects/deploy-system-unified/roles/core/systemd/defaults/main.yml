@@ -1,0 +1,5 @@
+---
+# Defaults for core/systemd role
+systemd_configure_journald: true
+systemd_configure_resolved: true
+systemd_persistent_journal: true

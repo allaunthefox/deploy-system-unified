@@ -1,4 +1,0 @@
----
-- name: stub secure_chrony_config
-  ansible.builtin.debug:
-    msg: "stub"

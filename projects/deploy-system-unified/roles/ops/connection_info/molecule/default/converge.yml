@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    encryption_method: vault
+    ssh_rsync_destination: ""
+  roles:
+    - role: ops/connection_info

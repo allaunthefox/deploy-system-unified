@@ -1,0 +1,14 @@
+---
+# Handlers for containers/anubis
+- name: restart anubis
+  ansible.builtin.systemd:
+    name: anubis
+    state: restarted
+  become: true
+  listen: "restart anubis"
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  listen: "reload systemd"

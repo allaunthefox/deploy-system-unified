@@ -1,0 +1,59 @@
+---
+# Tasks for security/kernel role - Mandatory Sysctl Hardening
+- name: Apply kernel hardening parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-hardened.conf
+    reload: true
+  loop:
+    # Network Hardening
+    - { name: 'net.ipv4.conf.all.accept_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.secure_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.send_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.accept_source_route', value: '0' }
+    - { name: 'net.ipv4.conf.all.log_martians', value: '1' }
+    - { name: 'net.ipv4.tcp_syncookies', value: '1' }
+    - { name: 'net.ipv4.tcp_rfc1337', value: '1' }
+    # System Hardening
+    - { name: 'kernel.kptr_restrict', value: '2' }
+    - { name: 'kernel.dmesg_restrict', value: '1' }
+    - { name: 'kernel.printk', value: '3 3 3 3' }
+    - { name: 'kernel.unprivileged_bpf_disabled', value: '1' }
+    - { name: 'net.core.bpf_jit_harden', value: '2' }
+    - { name: 'dev.tty.ldisc_autoload', value: '0' }
+    - { name: 'vm.unprivileged_userfaultfd', value: '0' }
+    # Memory Hardening & Purging
+    - { name: 'kernel.panic_on_oops', value: '1' }
+    - { name: 'vm.swappiness', value: '1' } # Minimize swapping of sensitive memory to disk
+  become: true
+
+- name: Configure Kernel to zero memory on free (GRUB)
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=".*)init_on_free=1 page_poison=1 slab_nomerge(.*")$'
+    line: '\1init_on_free=1 page_poison=1 slab_nomerge\2'
+    backrefs: true
+  become: true
+  notify: update grub
+
+- name: Apply Bare Metal OS-Layer Hardening
+  block:
+    - name: Enable IOMMU for PCIe Isolation (Intel/AMD)
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=".*)(intel_iommu=on|amd_iommu=on) iommu=pt(.*")$'
+        line: '\1intel_iommu=on iommu=pt\2'
+        backrefs: true
+      notify: update grub
+
+    - name: Blacklist dangerous DMA-capable modules (Hardware Isolation)
+      ansible.builtin.copy:
+        content: |
+          blacklist firewire-ohci
+          blacklist thunderbolt
+        dest: /etc/modprobe.d/99-dma-isolation.conf
+        mode: '0644'
+  when: kernel_profile == "bare_metal"
+  become: true

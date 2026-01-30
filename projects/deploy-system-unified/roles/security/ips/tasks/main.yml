@@ -1,0 +1,30 @@
+---
+# Tasks for security/ips - Intrusion Prevention System (Fail2Ban)
+- name: Install Fail2Ban
+  ansible.builtin.package:
+    name: fail2ban
+    state: present
+  become: true
+
+- name: Configure Fail2Ban for SSH protection
+  ansible.builtin.copy:
+    content: |
+      [sshd]
+      enabled = {{ ips_fail2ban_sshd_enabled | lower }}
+      port    = {{ advanced_security_hardening_random_ssh_port | default(access_sshd_port) | default(22) }}
+      logpath = %(sshd_log)s
+      backend = %(sshd_backend)s
+      maxretry = {{ ips_fail2ban_sshd_maxretry }}
+      bantime  = {{ ips_fail2ban_sshd_bantime }}
+      findtime = {{ ips_fail2ban_sshd_findtime }}
+    dest: /etc/fail2ban/jail.d/99-sshd-hardened.local
+    mode: '0644'
+  become: true
+  notify: restart fail2ban
+
+- name: Enable and start Fail2Ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    enabled: true
+    state: started
+  become: true

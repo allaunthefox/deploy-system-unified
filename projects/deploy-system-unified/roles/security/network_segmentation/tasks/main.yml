@@ -1,0 +1,36 @@
+---
+# Tasks for security/network_segmentation - Container Isolation
+- name: Create Frontend Network Segment (Proxy Layer)
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/frontend.network
+    content: |
+      [Network]
+      Label=tier=frontend
+      Internal=false
+      Options=isolate=1
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
+- name: Create Backend Network Segment (Application Layer)
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/backend.network
+    content: |
+      [Network]
+      Label=tier=backend
+      Internal=true # No direct internet access for backend
+      Options=isolate=1
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
+- name: Create Management Network Segment (Logging/Forensics)
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/management.network
+    content: |
+      [Network]
+      Label=tier=management
+      Internal=true
+    mode: '0644'
+  become: true
+  notify: reload systemd

@@ -1,0 +1,5 @@
+---
+# Tasks for VLAN management
+- name: Report VLAN Configuration
+  ansible.builtin.debug:
+    msg: "VLAN tagging is managed via 802.1Q sub-interfaces on physical bridges."

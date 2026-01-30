@@ -1,0 +1,18 @@
+---
+# Defaults for core/time role
+time_service_mapping:
+  archlinux:
+    service: chronyd
+    package: chrony
+  debian:
+    service: chrony
+    package: chrony
+  ubuntu:
+    service: chrony
+    package: chrony
+  fedora:
+    service: chronyd
+    package: chrony
+  alpine:
+    service: chronyd
+    package: chrony

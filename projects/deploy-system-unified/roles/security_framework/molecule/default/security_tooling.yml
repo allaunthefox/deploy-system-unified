@@ -1,4 +1,0 @@
----
-- name: stub security_tooling
-  ansible.builtin.debug:
-    msg: "stub"

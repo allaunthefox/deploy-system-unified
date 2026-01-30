@@ -4,13 +4,13 @@ echo "=== Fixing Remaining YAML Issues ==="
 
 # List of files with specific issues
 files_with_issues=(
-    "roles/security_framework/tasks/enhanced_security_with_required_tools.yml"
-    "roles/security_framework/tasks/portable_service_management.yml"
-    "roles/security_framework/tasks/directory_verification.yml"
-    "roles/security_framework/tasks/tool_verification.yml"
-    "roles/security_framework/tasks/secure_time_sync.yml"
-    "roles/security_framework/tasks/enhanced_scanning.yml"
-    "roles/security_framework/tasks/validation.yml"
+    "roles/security/scanning/tasks/enhanced_security_with_required_tools.yml"
+    "roles/security/scanning/tasks/portable_service_management.yml"
+    "roles/security/scanning/tasks/directory_verification.yml"
+    "roles/security/scanning/tasks/tool_verification.yml"
+    "roles/security/scanning/tasks/secure_time_sync.yml"
+    "roles/security/scanning/tasks/enhanced_scanning.yml"
+    "roles/security/scanning/tasks/validation.yml"
 )
 
 # Fix trailing spaces and missing newlines
@@ -33,11 +33,11 @@ for file in "${files_with_issues[@]}"; do
 done
 
 # Fix the long lines in enhanced_scanning.yml
-if [ -f "roles/security_framework/tasks/enhanced_scanning.yml" ]; then
+if [ -f "roles/security/scanning/tasks/enhanced_scanning.yml" ]; then
     echo "Fixing long lines in enhanced_scanning.yml..."
     
     # Split long lines by adding line breaks
-    sed -i 's/\(.*\)\(line too long.*\)/\1\n\2/' roles/security_framework/tasks/enhanced_scanning.yml
+    sed -i 's/\(.*\)\(line too long.*\)/\1\n\2/' roles/security/scanning/tasks/enhanced_scanning.yml
     echo "✓ Fixed long lines in enhanced_scanning.yml"
 fi
 

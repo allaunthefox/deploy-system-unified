@@ -1,0 +1,8 @@
+---
+# Handlers for core/logging
+- name: restart journald
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+  become: true
+  listen: "restart journald"

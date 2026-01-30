@@ -1,0 +1,12 @@
+---
+# Defaults for security/access role
+access_sshd_port: 22
+
+# Conditional SSH Match rules (User-level IP restrictions)
+# Format:
+# - type: User (or Group/Host/Address)
+#   name: admin
+#   address: "10.0.50.0/24"
+#   options:
+#     - "PasswordAuthentication yes"
+ssh_match_rules: []
