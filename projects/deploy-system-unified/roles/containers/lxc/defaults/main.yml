@@ -1,0 +1,53 @@
+---
+# LXC GPU configuration variables
+# Enable GPU support for LXC containers
+lxc_enable_gpu_support: false
+# GPU vendor
+lxc_gpu_vendor: "nvidia"  # Options: nvidia, amd, intel
+# GPU slicing configuration
+lxc_gpu_slicing:
+  strategy: "auto"  # auto, mig, vgpu, time-slicing, sriov, level-zero, oneapi, passthrough
+  auto_strategy:
+    bare_metal: "mig"
+    virtual_host: "sriov"
+    virtual_guest: "passthrough"
+  # Strategy-specific configurations
+  mig: { enabled: false, profiles: ["1g.5gb"] }
+  vgpu: { enabled: false, profile: "", license_server: "" }
+  time_slicing: { enabled: false, max_instances: 4 }
+  sriov: { enabled: false, vf_count: 4 }
+  level_zero: { enabled: false, partitions: [] }
+  oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+  passthrough: { devices: [] }
+# GPU device configuration based on vendor
+lxc_gpu_default_configs:
+  nvidia:
+    devices: ["/dev/nvidia0", "/dev/nvidiactl", "/dev/nvidia-uvm"]
+    mounts: ["/usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro", "/usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro"]
+    capabilities: ["gpu", "compute"]
+  amd:
+    devices: ["/dev/dri/card0", "/dev/dri/renderD128"]
+    mounts: ["/dev/dri:/dev/dri:rw", "/dev/kfd:/dev/kfd:rw"]
+    capabilities: ["gpu", "compute"]
+  intel:
+    devices: ["/dev/dri/card0", "/dev/dri/renderD128"]
+    mounts: ["/dev/dri:/dev/dri:rw"]
+    capabilities: ["gpu", "video"]
+# Container-specific GPU configurations
+lxc_container_gpu_config: {}  # Key-value map of container names to GPU config
+# LXC container security settings
+lxc_gpu_security:
+  apparmor_profile: "lxc-container-default"
+  seccomp_profile: "lxc-container-default"
+  capabilities: ["CAP_SYS_ADMIN"]
+# LXC container resource limits
+lxc_gpu_resource_limits:
+  memory: "8Gi"
+  cpu: "4"
+  gpu: "1"
+# LXC container network settings
+lxc_gpu_network:
+  type: "veth"
+  link: "lxcbr0"
+  flags: "up"
+  hwaddr: "00:16:3e:xx:xx:xx"

@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nvidia-device-plugin-daemonset
+  namespace: {{ k8s_gpu_nvidia_device_plugin.namespace }}
+  labels:
+    app: nvidia-device-plugin
+    version: {{ k8s_gpu_nvidia_device_plugin.version }}
+spec:
+  selector:
+    matchLabels:
+      app: nvidia-device-plugin
+      version: {{ k8s_gpu_nvidia_device_plugin.version }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: nvidia-device-plugin
+        version: {{ k8s_gpu_nvidia_device_plugin.version }}
+    spec:
+      tolerations:
+        {{ k8s_gpu_device_plugin_tolerations | to_nice_yaml(indent=8) }}
+      containers:
+        - name: nvidia-device-plugin-ctr
+          image: {{ k8s_gpu_nvidia_device_plugin.image }}
+          args: ["--pass-device-specs"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+          resources:
+            limits:
+              cpu: {{ k8s_gpu_nvidia_device_plugin.resources.limits.cpu }}
+              memory: {{ k8s_gpu_nvidia_device_plugin.resources.limits.memory }}
+            requests:
+              cpu: {{ k8s_gpu_nvidia_device_plugin.resources.requests.cpu }}
+              memory: {{ k8s_gpu_nvidia_device_plugin.resources.requests.memory }}
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins

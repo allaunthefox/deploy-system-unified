@@ -1,0 +1,166 @@
+---
+# GPU slicing configuration
+- name: Determine GPU slicing strategy based on virtualization type (auto strategy)
+  ansible.builtin.set_fact:
+    containers_gpu_slicing_strategy: >-
+      {% if containers_gpu_slicing.strategy == "auto" %}
+        {% if not is_virtualized %}
+          {{ containers_gpu_slicing.auto_strategy.bare_metal }}
+        {% elif ansible_virtualization_role == "host" %}
+          {{ containers_gpu_slicing.auto_strategy.virtual_host }}
+        {% else %}
+          {{ containers_gpu_slicing.auto_strategy.virtual_guest }}
+        {% endif %}
+      {% else %}
+        {{ containers_gpu_slicing.strategy }}
+      {% endif %}
+  when: containers_enable_gpu_support
+- name: Configure NVIDIA MIG (bare metal only)
+  block:
+    - name: Enable NVIDIA MIG mode
+      ansible.builtin.command:
+        cmd: nvidia-smi -mig 1
+      register: nvidia_mig_enable
+      changed_when: true
+      failed_when: false
+      become: true
+    - name: Create MIG profiles
+      ansible.builtin.command:
+        cmd: nvidia-smi mig -cgi {{ item }} -C
+      register: nvidia_mig_create
+      changed_when: true
+      failed_when: false
+      become: true
+      loop: "{{ containers_gpu_slicing.mig.profiles | default(['1g.5gb']) }}"
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "mig"
+    - containers_gpu_vendor_detected == "nvidia"
+    - not is_virtualized
+- name: Configure NVIDIA time-slicing
+  block:
+    - name: Create NVIDIA time-slicing configuration file
+      ansible.builtin.template:
+        src: time_slicing_config.j2
+        dest: /etc/nvidia-container-runtime/config.toml
+        mode: '0644'
+      become: true
+    - name: Restart containerd service (if running)
+      ansible.builtin.systemd:
+        name: containerd
+        state: restarted
+      become: true
+      failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "time-slicing"
+    - containers_gpu_vendor_detected == "nvidia"
+- name: Configure AMD SR-IOV (bare metal and host)
+  block:
+    - name: Load AMD SR-IOV kernel module
+      community.general.modprobe:
+        name: amdgpu
+        params: "sriov_numvfs={{ containers_gpu_slicing.sriov.vf_count }}"
+        state: present
+      become: true
+    - name: Create AMD SR-IOV configuration file
+      ansible.builtin.template:
+        src: sriov_config.j2
+        dest: /etc/modprobe.d/amdgpu-sriov.conf
+        mode: '0644'
+      become: true
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "sriov"
+    - containers_gpu_vendor_detected == "amd"
+    - ansible_virtualization_role in ["host", ""]
+- name: Configure Intel Level Zero slicing (bare metal)
+  block:
+    - name: Install Intel Level Zero dependencies
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - intel-level-zero-gpu
+        - level-zero-tests
+      become: true
+    - name: Create Intel Level Zero configuration file
+      ansible.builtin.template:
+        src: level_zero_config.j2
+        dest: /etc/level-zero/level-zero.conf
+        mode: '0644'
+      become: true
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "level-zero"
+    - containers_gpu_vendor_detected == "intel"
+    - not is_virtualized
+- name: Configure Intel OneAPI support
+  block:
+    - name: Install Intel OneAPI toolkit
+      ansible.builtin.command:
+        cmd: "bash -c 'curl -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | apt-key add - && echo \"deb https://apt.repos.intel.com/oneapi all main\" > /etc/apt/sources.list.d/oneAPI.list && apt-get update && apt-get install -y intel-oneapi-{{ containers_gpu_slicing.oneapi.toolkit }}'"
+      register: intel_oneapi_install
+      changed_when: true
+      failed_when: false
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+    - name: Set Intel OneAPI environment variables
+      ansible.builtin.lineinfile:
+        path: /etc/profile.d/intel-oneapi.sh
+        line: "{{ item }}"
+        create: true
+        mode: '0755'
+      loop:
+        - 'source /opt/intel/oneapi/setvars.sh'
+      become: true
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "oneapi"
+    - containers_gpu_vendor_detected == "intel"
+- name: Configure GPU passthrough
+  block:
+    - name: Set passthrough devices based on vendor
+      ansible.builtin.set_fact:
+        containers_gpu_passthrough_devices: >-
+          {% if containers_gpu_vendor_detected == "nvidia" %}
+            {{ containers_gpu_slicing.passthrough.devices | default(["/dev/nvidia0", "/dev/nvidiactl", "/dev/nvidia-uvm"]) }}
+          {% elif containers_gpu_vendor_detected == "amd" %}
+            {{ containers_gpu_slicing.passthrough.devices | default(["/dev/dri/card0", "/dev/dri/renderD128", "/dev/kfd"]) }}
+          {% elif containers_gpu_vendor_detected == "intel" %}
+            {{ containers_gpu_slicing.passthrough.devices | default(["/dev/dri/card0", "/dev/dri/renderD128"]) }}
+          {% else %}
+            []
+          {% endif %}
+    - name: Grant container runtime access to GPU devices
+      ansible.builtin.lineinfile:
+        path: /etc/containers/containers.conf
+        regexp: "^#?device_cgroup_rules ="
+        line: 'device_cgroup_rules = [{{ containers_gpu_passthrough_devices | map("regex_replace", "^(.*)$", "\"c \\1 rwm\"") | join(", ") }}]'
+      become: true
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "passthrough"
+- name: Debug GPU slicing configuration
+  ansible.builtin.debug:
+    msg: |
+      GPU Slicing Configuration:
+        Strategy: {{ containers_gpu_slicing_strategy }}
+        Vendor: {{ containers_gpu_vendor_detected | upper }}
+        Virtualization Type: {{ ansible_virtualization_type | default('None') }}
+        Virtualization Role: {{ ansible_virtualization_role | default('None') }}
+        {% if containers_gpu_slicing_strategy == "mig" %}
+        MIG Profiles: {{ containers_gpu_slicing.mig.profiles | default(['1g.5gb']) }}
+        {% elif containers_gpu_slicing_strategy == "time-slicing" %}
+        Time-Slicing Instances: {{ containers_gpu_slicing.time_slicing.max_instances }}
+        {% elif containers_gpu_slicing_strategy == "sriov" %}
+        SR-IOV VF Count: {{ containers_gpu_slicing.sriov.vf_count }}
+        {% elif containers_gpu_slicing_strategy == "level-zero" %}
+        Level Zero Partitions: {{ containers_gpu_slicing.level_zero.partitions }}
+        {% elif containers_gpu_slicing_strategy == "oneapi" %}
+        OneAPI Toolkit: {{ containers_gpu_slicing.oneapi.toolkit }}
+        OneAPI Components: {{ containers_gpu_slicing.oneapi.components }}
+        {% elif containers_gpu_slicing_strategy == "passthrough" %}
+        Passthrough Devices: {{ containers_gpu_passthrough_devices }}
+        {% endif %}
+  when: containers_enable_gpu_support

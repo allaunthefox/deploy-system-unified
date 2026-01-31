@@ -1,0 +1,113 @@
+---
+# Kubernetes GPU device plugin deployment
+- name: Deploy NVIDIA GPU device plugin
+  block:
+    - name: Create NVIDIA GPU device plugin manifest
+      ansible.builtin.template:
+        src: nvidia-device-plugin.yml.j2
+        dest: /etc/kubernetes/manifests/nvidia-device-plugin-daemonset.yml
+        mode: '0644'
+      become: true
+    - name: Wait for NVIDIA device plugin to be ready
+      ansible.builtin.command:
+        cmd: kubectl wait daemonset/nvidia-device-plugin-daemonset --for=condition=available --timeout=60s -n {{ k8s_gpu_nvidia_device_plugin.namespace }}
+      register: nvidia_device_plugin_ready
+      changed_when: false
+      failed_when: false
+    - name: Debug NVIDIA device plugin status
+      ansible.builtin.debug:
+        msg: |
+          NVIDIA GPU Device Plugin Status:
+            Available: {{ nvidia_device_plugin_ready.stdout | default('Not available') }}
+            Error: {{ nvidia_device_plugin_ready.stderr | default('No error') }}
+  when:
+    - k8s_gpu_device_plugins_enabled
+    - k8s_gpu_nvidia_device_plugin.enabled
+    - containers_gpu_vendor_detected == "nvidia"
+- name: Deploy AMD GPU device plugin
+  block:
+    - name: Create AMD GPU device plugin manifest
+      ansible.builtin.template:
+        src: amd-device-plugin.yml.j2
+        dest: /etc/kubernetes/manifests/amd-device-plugin-daemonset.yml
+        mode: '0644'
+      become: true
+    - name: Wait for AMD device plugin to be ready
+      ansible.builtin.command:
+        cmd: kubectl wait daemonset/amd-device-plugin-daemonset --for=condition=available --timeout=60s -n {{ k8s_gpu_amd_device_plugin.namespace }}
+      register: amd_device_plugin_ready
+      changed_when: false
+      failed_when: false
+    - name: Debug AMD device plugin status
+      ansible.builtin.debug:
+        msg: |
+          AMD GPU Device Plugin Status:
+            Available: {{ amd_device_plugin_ready.stdout | default('Not available') }}
+            Error: {{ amd_device_plugin_ready.stderr | default('No error') }}
+  when:
+    - k8s_gpu_device_plugins_enabled
+    - k8s_gpu_amd_device_plugin.enabled
+    - containers_gpu_vendor_detected == "amd"
+- name: Deploy Intel GPU device plugin
+  block:
+    - name: Create Intel GPU device plugin manifest
+      ansible.builtin.template:
+        src: intel-gpu-plugin.yml.j2
+        dest: /etc/kubernetes/manifests/intel-gpu-plugin-daemonset.yml
+        mode: '0644'
+      become: true
+    - name: Wait for Intel device plugin to be ready
+      ansible.builtin.command:
+        cmd: kubectl wait daemonset/intel-gpu-plugin-daemonset --for=condition=available --timeout=60s -n {{ k8s_gpu_intel_device_plugin.namespace }}
+      register: intel_device_plugin_ready
+      changed_when: false
+      failed_when: false
+    - name: Debug Intel device plugin status
+      ansible.builtin.debug:
+        msg: |
+          Intel GPU Device Plugin Status:
+            Available: {{ intel_device_plugin_ready.stdout | default('Not available') }}
+            Error: {{ intel_device_plugin_ready.stderr | default('No error') }}
+  when:
+    - k8s_gpu_device_plugins_enabled
+    - k8s_gpu_intel_device_plugin.enabled
+    - containers_gpu_vendor_detected == "intel"
+- name: Apply GPU node labels
+  block:
+    - name: Set default GPU node labels based on vendor
+      ansible.builtin.set_fact:
+        k8s_gpu_node_labels: >-
+          {% if containers_gpu_vendor_detected == "nvidia" %}
+            {{ k8s_gpu_default_node_labels.nvidia }}
+          {% elif containers_gpu_vendor_detected == "amd" %}
+            {{ k8s_gpu_default_node_labels.amd }}
+          {% elif containers_gpu_vendor_detected == "intel" %}
+            {{ k8s_gpu_default_node_labels.intel }}
+          {% else %}
+            {{ k8s_gpu_node_labels }}
+          {% endif %}
+    - name: Apply GPU node labels
+      ansible.builtin.command:
+        cmd: kubectl label nodes {{ ansible_facts['hostname'] }} {{ item }} --overwrite
+      register: label_result
+      changed_when: true
+      failed_when: false
+      loop: "{{ k8s_gpu_node_labels }}"
+  when:
+    - k8s_gpu_device_plugins_enabled
+    - containers_gpu_vendor_detected in ["nvidia", "amd", "intel"]
+- name: Verify GPU resources available in Kubernetes
+  ansible.builtin.command:
+    cmd: kubectl describe node {{ ansible_facts['hostname'] }} | grep -A 10 "Capacity"
+  register: node_capacity
+  changed_when: false
+  failed_when: false
+  when:
+    - k8s_gpu_device_plugins_enabled
+- name: Debug GPU resources available in Kubernetes
+  ansible.builtin.debug:
+    msg: |
+      Kubernetes GPU Resources:
+        {{ node_capacity.stdout | default('No GPU resources detected') }}
+  when:
+    - k8s_gpu_device_plugins_enabled

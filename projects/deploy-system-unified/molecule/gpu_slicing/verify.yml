@@ -1,0 +1,24 @@
+---
+- name: Verify GPU Slicing Configuration
+  hosts: all
+  become: true
+  tasks:
+    - name: Verify DRI devices are accessible
+      ansible.builtin.command:
+        cmd: ls -la /dev/dri
+      register: dri_device_access
+      changed_when: false
+      failed_when: false
+
+    - name: Check if GPU slicing configuration files exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: slicing_config_files
+      loop:
+        - "/etc/nvidia-container-runtime/config.toml"
+        - "/etc/modprobe.d/amdgpu-sriov.conf"
+        - "/etc/level-zero/level-zero.conf"
+
+    - name: Display GPU slicing test results
+      ansible.builtin.debug:
+        msg: "GPU slicing verification completed"

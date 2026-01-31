@@ -1,0 +1,106 @@
+---
+- name: Converge GPU Slicing
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Set virtualization type for test environment
+      ansible.builtin.set_fact:
+        virt_type: "virtual-guest"
+
+    - name: Precreate essential directories (idempotent)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
+      become: true
+      tags: [bootstrap, directories]
+    - name: Set directory precreation flag (idempotent)
+      ansible.builtin.set_fact:
+        directories_precreated: true
+    - name: Check if preflight validation already completed (idempotent)
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Include preflight checks if not already completed (idempotent)
+      ansible.builtin.import_role:
+        name: preflight
+      vars:
+        preflight_require_systemd: false
+      when: not preflight_flag.stat.exists
+      tags: [preflight]
+    - name: Create preflight completion flag (idempotent)
+      ansible.builtin.file:
+        path: /tmp/preflight_completed.flag
+        state: touch
+        mode: '0644'
+      when: not preflight_flag.stat.exists
+
+  roles:
+    # Core system setup
+    - core/bootstrap
+    - core/identity
+    - core/logging
+
+    # GPU-specific configuration with slicing
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "nvidia"
+        containers_gpu_count: 1
+        containers_gpu_slicing:
+          strategy: "time-slicing"
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          time_slicing: { enabled: true, max_instances: 4 }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+          passthrough: { devices: [] }
+
+    - role: containers/quadlets
+      vars:
+        quadlet_enable_gpu_support: true
+        quadlet_gpu_vendor: "nvidia"
+        quadlet_gpu_slicing:
+          strategy: "time-slicing"
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          time_slicing: { enabled: true, max_instances: 4 }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+          passthrough: { devices: [] }
+        quadlet_gpu_capabilities: ["gpu", "compute"]
+        quadlet_container_gpu_config:
+          test_container:
+            capabilities: ["gpu", "compute"]
+            devices: ["/dev/nvidia0"]
+
+  post_tasks:
+    - name: Verify GPU slicing configuration
+      ansible.builtin.debug:
+        msg: |
+          GPU Slicing Configuration:
+            Vendor: {{ containers_gpu_vendor }}
+            Strategy: {{ containers_gpu_slicing.strategy }}
+            Time Slicing Instances: {{ containers_gpu_slicing.time_slicing.max_instances }}
+            Container Runtime: Podman with GPU support enabled
+            Quadlet GPU Support: {{ quadlet_enable_gpu_support }}

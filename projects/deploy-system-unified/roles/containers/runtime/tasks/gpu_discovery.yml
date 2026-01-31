@@ -1,0 +1,111 @@
+---
+# GPU discovery and detection logic
+- name: Detect GPU vendor and capabilities
+  block:
+    - name: Check for NVIDIA GPUs
+      ansible.builtin.command:
+        cmd: lspci -nn | grep -E "(NVIDIA|3D Controller)"
+      register: nvidia_gpu_info
+      changed_when: false
+      failed_when: false
+      become: false
+    - name: Check for AMD GPUs
+      ansible.builtin.command:
+        cmd: lspci -nn | grep -E "(AMD|ATI)"
+      register: amd_gpu_info
+      changed_when: false
+      failed_when: false
+      become: false
+    - name: Check for Intel GPUs
+      ansible.builtin.command:
+        cmd: lspci -nn | grep -E "(Intel|VGA compatible controller)"
+      register: intel_gpu_info
+      changed_when: false
+      failed_when: false
+      become: false
+    - name: Set GPU vendor fact
+      ansible.builtin.set_fact:
+        containers_gpu_vendor_detected: >-
+          {% if nvidia_gpu_info.stdout | length > 0 %}nvidia{% elif amd_gpu_info.stdout | length > 0 %}amd{% elif intel_gpu_info.stdout | length > 0 %}intel{% else %}none{% endif %}
+    - name: Set GPU count fact
+      ansible.builtin.set_fact:
+        containers_gpu_count_detected: >-
+          {{ (nvidia_gpu_info.stdout_lines | length) + (amd_gpu_info.stdout_lines | length) + (intel_gpu_info.stdout_lines | length) }}
+    - name: Set GPU device information fact
+      ansible.builtin.set_fact:
+        containers_gpu_device_info: >-
+          {{ nvidia_gpu_info.stdout_lines + amd_gpu_info.stdout_lines + intel_gpu_info.stdout_lines }}
+    - name: Detect NVIDIA GPU model
+      ansible.builtin.command:
+        cmd: nvidia-smi --query-gpu=name --format=csv,noheader
+      register: nvidia_gpu_model
+      changed_when: false
+      failed_when: false
+      become: false
+      when: containers_gpu_vendor_detected == "nvidia"
+    - name: Set NVIDIA GPU model fact
+      ansible.builtin.set_fact:
+        containers_gpu_nvidia_model: "{{ nvidia_gpu_model.stdout_lines }}"
+      when: containers_gpu_vendor_detected == "nvidia" and nvidia_gpu_model.stdout | length > 0
+    - name: Detect NVIDIA MIG support
+      ansible.builtin.command:
+        cmd: nvidia-smi -q | grep -E "(Multi-Instance GPU|Disabled|MIG)"
+      register: nvidia_mig_support
+      changed_when: false
+      failed_when: false
+      become: false
+      when: containers_gpu_vendor_detected == "nvidia"
+    - name: Set NVIDIA MIG support fact
+      ansible.builtin.set_fact:
+        containers_gpu_nvidia_mig_supported: "{{ 'Multi-Instance GPU' in nvidia_mig_support.stdout }}"
+      when: containers_gpu_vendor_detected == "nvidia" and nvidia_mig_support.stdout | length > 0
+    - name: Detect AMD GPU model
+      ansible.builtin.command:
+        cmd: lspci -nn -s $(lspci -nn | grep -E "(AMD|ATI)" | head -1 | cut -d' ' -f1) | cut -d':' -f3
+      register: amd_gpu_model
+      changed_when: false
+      failed_when: false
+      become: false
+      when: containers_gpu_vendor_detected == "amd"
+    - name: Set AMD GPU model fact
+      ansible.builtin.set_fact:
+        containers_gpu_amd_model: "{{ amd_gpu_model.stdout.strip() }}"
+      when: containers_gpu_vendor_detected == "amd" and amd_gpu_model.stdout | length > 0
+    - name: Detect Intel GPU model
+      ansible.builtin.command:
+        cmd: lspci -nn -s $(lspci -nn | grep -E "(Intel)" | head -1 | cut -d' ' -f1) | cut -d':' -f3
+      register: intel_gpu_model
+      changed_when: false
+      failed_when: false
+      become: false
+      when: containers_gpu_vendor_detected == "intel"
+    - name: Set Intel GPU model fact
+      ansible.builtin.set_fact:
+        containers_gpu_intel_model: "{{ intel_gpu_model.stdout.strip() }}"
+      when: containers_gpu_vendor_detected == "intel" and intel_gpu_model.stdout | length > 0
+    - name: Debug GPU discovery results
+      ansible.builtin.debug:
+        msg: |
+          GPU Discovery Results:
+            Vendor: {{ containers_gpu_vendor_detected | upper }}
+            Count: {{ containers_gpu_count_detected }}
+            Devices: {{ containers_gpu_device_info }}
+            {% if containers_gpu_vendor_detected == "nvidia" %}
+            NVIDIA Model: {{ containers_gpu_nvidia_model | default('Unknown') }}
+            MIG Supported: {{ containers_gpu_nvidia_mig_supported | default('Unknown') }}
+            {% elif containers_gpu_vendor_detected == "amd" %}
+            AMD Model: {{ containers_gpu_amd_model | default('Unknown') }}
+            {% elif containers_gpu_vendor_detected == "intel" %}
+            Intel Model: {{ containers_gpu_intel_model | default('Unknown') }}
+            {% else %}
+            No GPU devices detected
+            {% endif %}
+  when: containers_enable_gpu_support
+- name: Set default GPU vendor if not detected
+  ansible.builtin.set_fact:
+    containers_gpu_vendor_detected: "{{ containers_gpu_vendor }}"
+  when: containers_enable_gpu_support and (containers_gpu_vendor_detected is not defined or containers_gpu_vendor_detected == "none")
+- name: Set default GPU count if not detected
+  ansible.builtin.set_fact:
+    containers_gpu_count_detected: "{{ containers_gpu_count }}"
+  when: containers_enable_gpu_support and (containers_gpu_count_detected is not defined or containers_gpu_count_detected == 0)

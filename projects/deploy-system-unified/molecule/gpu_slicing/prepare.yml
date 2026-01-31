@@ -1,0 +1,83 @@
+---
+- name: Prepare GPU Slicing Test
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Update package cache
+      raw: apt-get update -qq
+
+    - name: Install sudo, pciutils, and Python3
+      raw: apt-get install -qq -y sudo pciutils python3
+
+    - name: Gather facts after installing sudo
+      ansible.builtin.setup:
+
+    - name: Install required packages (Debian)
+      ansible.builtin.apt:
+        name:
+          - pciutils
+        state: present
+        update_cache: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Install required packages (RedHat)
+      ansible.builtin.dnf:
+        name:
+          - pciutils
+        state: present
+      when: ansible_os_family == 'RedHat'
+
+    - name: Mock GPU devices for testing
+      ansible.builtin.file:
+        path: "/dev/nvidia0"
+        state: touch
+        mode: '0666'
+      failed_when: false
+
+    - name: Mock GPU control device
+      ansible.builtin.file:
+        path: "/dev/nvidiactl"
+        state: touch
+        mode: '0666'
+      failed_when: false
+
+    - name: Mock GPU UVM device
+      ansible.builtin.file:
+        path: "/dev/nvidia-uvm"
+        state: touch
+        mode: '0666'
+      failed_when: false
+
+    - name: Create dri directory
+      ansible.builtin.file:
+        path: "/dev/dri"
+        state: directory
+        mode: '0755'
+
+    - name: Mock DRI devices
+      ansible.builtin.file:
+        path: "/dev/dri/card0"
+        state: touch
+        mode: '0666'
+      failed_when: false
+
+    - name: Mock DRI render device
+      ansible.builtin.file:
+        path: "/dev/dri/renderD128"
+        state: touch
+        mode: '0666'
+      failed_when: false
+
+    - name: Mock KFD device
+      ansible.builtin.file:
+        path: "/dev/kfd"
+        state: touch
+        mode: '0666'
+      failed_when: false
+
+    - name: Mock NVIDIA MIG devices
+      ansible.builtin.file:
+        path: "/dev/nvidia-mig-0"
+        state: touch
+        mode: '0666'
+      failed_when: false

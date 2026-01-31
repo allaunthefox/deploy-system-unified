@@ -1,0 +1,225 @@
+---
+# LXC GPU configuration tasks
+- name: Determine LXC GPU slicing strategy based on virtualization type (auto strategy)
+  ansible.builtin.set_fact:
+    lxc_gpu_slicing_strategy: >-
+      {% if lxc_gpu_slicing.strategy == "auto" %}
+        {% if not is_virtualized %}
+          {{ lxc_gpu_slicing.auto_strategy.bare_metal }}
+        {% elif ansible_virtualization_role == "host" %}
+          {{ lxc_gpu_slicing.auto_strategy.virtual_host }}
+        {% else %}
+          {{ lxc_gpu_slicing.auto_strategy.virtual_guest }}
+        {% endif %}
+      {% else %}
+        {{ lxc_gpu_slicing.strategy }}
+      {% endif %}
+  when: lxc_enable_gpu_support
+- name: Configure LXC container for GPU passthrough
+  block:
+    - name: Set GPU devices based on vendor
+      ansible.builtin.set_fact:
+        lxc_gpu_passthrough_devices: >-
+          {% if lxc_gpu_vendor == "nvidia" %}
+            {{ lxc_gpu_slicing.passthrough.devices | default(lxc_gpu_default_configs.nvidia.devices) }}
+          {% elif lxc_gpu_vendor == "amd" %}
+            {{ lxc_gpu_slicing.passthrough.devices | default(lxc_gpu_default_configs.amd.devices) }}
+          {% elif lxc_gpu_vendor == "intel" %}
+            {{ lxc_gpu_slicing.passthrough.devices | default(lxc_gpu_default_configs.intel.devices) }}
+          {% else %}
+            []
+          {% endif %}
+    - name: Set GPU mounts based on vendor
+      ansible.builtin.set_fact:
+        lxc_gpu_passthrough_mounts: >-
+          {% if lxc_gpu_vendor == "nvidia" %}
+            {{ lxc_gpu_slicing.passthrough.mounts | default(lxc_gpu_default_configs.nvidia.mounts) }}
+          {% elif lxc_gpu_vendor == "amd" %}
+            {{ lxc_gpu_slicing.passthrough.mounts | default(lxc_gpu_default_configs.amd.mounts) }}
+          {% elif lxc_gpu_vendor == "intel" %}
+            {{ lxc_gpu_slicing.passthrough.mounts | default(lxc_gpu_default_configs.intel.mounts) }}
+          {% else %}
+            []
+          {% endif %}
+    - name: Set GPU capabilities based on vendor
+      ansible.builtin.set_fact:
+        lxc_gpu_passthrough_capabilities: >-
+          {% if lxc_gpu_vendor == "nvidia" %}
+            {{ lxc_gpu_slicing.passthrough.capabilities | default(lxc_gpu_default_configs.nvidia.capabilities) }}
+          {% elif lxc_gpu_vendor == "amd" %}
+            {{ lxc_gpu_slicing.passthrough.capabilities | default(lxc_gpu_default_configs.amd.capabilities) }}
+          {% elif lxc_gpu_vendor == "intel" %}
+            {{ lxc_gpu_slicing.passthrough.capabilities | default(lxc_gpu_default_configs.intel.capabilities) }}
+          {% else %}
+            []
+          {% endif %}
+    - name: Create LXC GPU configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/gpu.conf
+        mode: '0644'
+      become: true
+    - name: Apply GPU configuration to existing LXC containers
+      ansible.builtin.command:
+        cmd: lxc config set {{ item }} {{ lxc_gpu_passthrough_devices | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join('; ') }}
+      register: lxc_gpu_config_result
+      changed_when: true
+      failed_when: false
+      loop: "{{ lxc_container_gpu_config.keys() | list }}"
+      when: lxc_container_gpu_config | length > 0
+    - name: Restart LXC containers to apply GPU configuration
+      ansible.builtin.command:
+        cmd: lxc restart {{ item }}
+      register: lxc_restart_result
+      changed_when: true
+      failed_when: false
+      loop: "{{ lxc_container_gpu_config.keys() | list }}"
+      when: lxc_container_gpu_config | length > 0 and lxc_gpu_config_result.changed
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "passthrough"
+- name: Configure LXC container for NVIDIA MIG
+  block:
+    - name: Set MIG devices
+      ansible.builtin.set_fact:
+        lxc_gpu_mig_devices: []
+    - name: Discover NVIDIA MIG devices
+      ansible.builtin.command:
+        cmd: nvidia-smi mig -lgi
+      register: nvidia_mig_devices
+      changed_when: false
+      failed_when: false
+      become: true
+    - name: Parse NVIDIA MIG devices
+      ansible.builtin.set_fact:
+        lxc_gpu_mig_devices: "{{ nvidia_mig_devices.stdout | regex_findall('GPU-\\w+-\\w+-\\w+-\\w+-\\w+') }}"
+      when: nvidia_mig_devices.stdout | length > 0
+    - name: Create LXC MIG configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/mig.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "mig"
+    - lxc_gpu_vendor == "nvidia"
+    - not is_virtualized
+- name: Configure LXC container for NVIDIA vGPU
+  block:
+    - name: Set vGPU device
+      ansible.builtin.set_fact:
+        lxc_gpu_vgpu_device: "/dev/dri/renderD128"
+    - name: Create LXC vGPU configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/vgpu.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "vgpu"
+    - lxc_gpu_vendor == "nvidia"
+    - is_virtualized
+- name: Configure LXC container for AMD SR-IOV
+  block:
+    - name: Set SR-IOV devices
+      ansible.builtin.set_fact:
+        lxc_gpu_sriov_devices: []
+    - name: Discover AMD SR-IOV devices
+      ansible.builtin.command:
+        cmd: lspci -nn | grep -E "(AMD|ATI)" | grep -E "(Virtual|SR-IOV)"
+      register: amd_sriov_devices
+      changed_when: false
+      failed_when: false
+      become: true
+    - name: Parse AMD SR-IOV devices
+      ansible.builtin.set_fact:
+        lxc_gpu_sriov_devices: "{{ amd_sriov_devices.stdout_lines | map('split', ' ') | map('first') | list }}"
+      when: amd_sriov_devices.stdout | length > 0
+    - name: Create LXC SR-IOV configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/sriov.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "sriov"
+    - lxc_gpu_vendor == "amd"
+    - ansible_virtualization_role in ["host", ""]
+- name: Configure LXC container for Intel Level Zero
+  block:
+    - name: Install Intel Level Zero dependencies
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - intel-level-zero-gpu
+        - level-zero-tests
+      become: true
+    - name: Create LXC Level Zero configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/level-zero.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "level-zero"
+    - lxc_gpu_vendor == "intel"
+    - not is_virtualized
+- name: Configure LXC container for Intel OneAPI
+  block:
+    - name: Install Intel OneAPI toolkit
+      ansible.builtin.command:
+        cmd: "bash -c 'curl -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | apt-key add - && echo \"deb https://apt.repos.intel.com/oneapi all main\" > /etc/apt/sources.list.d/oneAPI.list && apt-get update && apt-get install -y intel-oneapi-{{ lxc_gpu_slicing.oneapi.toolkit }}'"
+      register: intel_oneapi_install
+      changed_when: true
+      failed_when: false
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+    - name: Set Intel OneAPI environment variables
+      ansible.builtin.lineinfile:
+        path: /etc/profile.d/intel-oneapi.sh
+        line: "{{ item }}"
+        create: true
+        mode: '0755'
+      loop:
+        - 'source /opt/intel/oneapi/setvars.sh'
+      become: true
+    - name: Create LXC OneAPI configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/oneapi.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "oneapi"
+    - lxc_gpu_vendor == "intel"
+- name: Debug LXC GPU configuration
+  ansible.builtin.debug:
+    msg: |
+      LXC GPU Configuration:
+        Strategy: {{ lxc_gpu_slicing_strategy }}
+        Vendor: {{ lxc_gpu_vendor | upper }}
+        Virtualization Type: {{ ansible_virtualization_type | default('None') }}
+        Virtualization Role: {{ ansible_virtualization_role | default('None') }}
+        {% if lxc_gpu_slicing_strategy == "passthrough" %}
+        Passthrough Devices: {{ lxc_gpu_passthrough_devices }}
+        Passthrough Mounts: {{ lxc_gpu_passthrough_mounts }}
+        Passthrough Capabilities: {{ lxc_gpu_passthrough_capabilities }}
+        {% elif lxc_gpu_slicing_strategy == "mig" %}
+        MIG Devices: {{ lxc_gpu_mig_devices }}
+        {% elif lxc_gpu_slicing_strategy == "vgpu" %}
+        vGPU Device: {{ lxc_gpu_vgpu_device }}
+        {% elif lxc_gpu_slicing_strategy == "sriov" %}
+        SR-IOV Devices: {{ lxc_gpu_sriov_devices }}
+        {% elif lxc_gpu_slicing_strategy == "level-zero" %}
+        Level Zero Partitions: {{ lxc_gpu_slicing.level_zero.partitions }}
+        {% elif lxc_gpu_slicing_strategy == "oneapi" %}
+        OneAPI Toolkit: {{ lxc_gpu_slicing.oneapi.toolkit }}
+        OneAPI Components: {{ lxc_gpu_slicing.oneapi.components }}
+        {% endif %}
+  when: lxc_enable_gpu_support

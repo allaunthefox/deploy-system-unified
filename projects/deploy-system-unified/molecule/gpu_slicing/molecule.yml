@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: gpu_slicing_instance
+    image: docker.io/library/ubuntu:22.04
+    privileged: true
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+  lint:
+    name: ansible-lint
+  playbooks:
+    converge: converge.yml
+verifier:
+  name: ansible
