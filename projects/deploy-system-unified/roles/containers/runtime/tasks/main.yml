@@ -56,35 +56,25 @@
     dest: /etc/containers/policy.json
     content: |
       {
-        "default": [
-          {
+        "default": [{
             "type": "reject"
-          }
-        ],
+          }],
         "transports": {
           "docker": {
-            "docker.io/library": [
-              {
+            "docker.io/library": [{
                 "type": "insecureAcceptAnything"
-              }
-            ],
-            "quay.io": [
-              {
+              }],
+            "quay.io": [{
                 "type": "insecureAcceptAnything"
-              }
-            ],
-            "ghcr.io": [
-              {
+              }],
+            "ghcr.io": [{
                 "type": "insecureAcceptAnything"
-              }
-            ]
+              }]
           },
           "docker-daemon": {
-            "": [
-              {
+            "": [{
                 "type": "insecureAcceptAnything"
-              }
-            ]
+              }]
           }
         }
       }
