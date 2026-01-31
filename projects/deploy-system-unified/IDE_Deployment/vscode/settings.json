@@ -1,103 +1,25 @@
 {
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.formatOnSave": true,
-  "files.encoding": "utf8",
-  "files.eol": "\n",
-  "files.insertFinalNewline": true,
-  "files.trimFinalNewlines": true,
-  "files.trimTrailingWhitespace": true,
-  "search.exclude": {
-    "**/.git": true,
-    "**/.ansible": true,
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/build": true,
-    "**/.venv": true,
-    "**/__pycache__": true,
-    "**/tests/*_pycache_*": true
-  },
-  "files.exclude": {
-    "**/.git": true,
-    "**/.ansible": true,
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/build": true,
-    "**/.venv": true,
-    "**/__pycache__": true,
-    "**/tests/*_pycache_*": true
-  },
-  "[yaml]": {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "redhat.vscode-yaml"
-  },
-  "[ansible]": {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "redhat.ansible"
-  },
-  "[python]": {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "ms-python.python"
-  },
-  "[markdown]": {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "davidanson.vscode-markdownlint"
-  },
-  "ansible.ansiblePath": "/usr/bin/ansible",
-  "ansible.lintPath": "/usr/bin/ansible-lint",
-  "ansible.ansibleLintConfigFile": ".ansible-lint.yml",
   "ansible.python.interpreterPath": "/usr/bin/python3",
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
-  "python.linting.pylintArgs": [
-    "--rcfile=.pylintrc"
-  ],
-  "python.formatting.provider": "black",
-  "python.formatting.blackArgs": [
-    "--line-length=160"
-  ],
-  "python.sortImports.args": [
-    "--profile", "black"
-  ],
-  "yaml.schemas": {
-    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible-role-meta.json": "**/meta/main.yml",
-    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible-playbook.json": "**/*.playbook.yml",
-    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible-task.json": "**/tasks/main.yml"
+  "python.defaultInterpreterPath": "/usr/bin/python3",
+  "ansible.validation.lint.enabled": true,
+  "ansible.validation.lint.path": "ansible-lint",
+  "files.associations": {
+    "*.yml": "ansible",
+    "*.yaml": "ansible",
+    "inventory.ini": "ini",
+    ".secrets.baseline": "json"
   },
-  "yaml.customTags": [
-    "!vault"
+  "editor.formatOnSave": true,
+  "editor.rulers": [
+    160
   ],
-  "workbench.colorTheme": "Shades of Purple",
-  "workbench.iconTheme": "vscode-icons",
-  "terminal.integrated.shell.linux": "/bin/bash",
-  "terminal.integrated.env.linux": {
-    "ANSIBLE_CONFIG": "./ansible.cfg",
-    "PYTHONPATH": "${workspaceFolder}/lib:${PYTHONPATH}"
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "remote.SSH.defaultForwardAgent": false,
+  "remote.SSH.remotePlatform": {
+    "contabo_vps": "linux"
   },
-  "debug.allowBreakpointsEverywhere": true,
-  "debug.inlineValues": true,
-  "git.autoStash": true,
-  "git.enableSmartCommit": true,
-  "gitlens.codeLens.enabled": true,
-  "gitlens.currentLine.enabled": true,
-  "gitlens.hovers.currentLine.over": "line",
-  "github.copilot.enable": {
-    "*": true,
-    "yaml": true,
-    "ansible": true,
-    "python": true
-  },
-  "github.copilot.language": {
-    "yaml": "ansible",
-    "ansible": "ansible",
-    "python": "python"
-  }
+  "remote.SSH.port": 2222,
+  "antigravity.enabled": true,
+  "antigravity.configFile": "${workspaceFolder}/antigravity.json"
 }

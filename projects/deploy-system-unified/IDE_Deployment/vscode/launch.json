@@ -2,102 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Ansible Playbook",
+      "name": "Debug Ansible Playbook (Site)",
       "type": "python",
       "request": "launch",
       "program": "/usr/bin/ansible-playbook",
       "args": [
-        "${file}",
         "-i",
         "inventory/validation.ini",
-        "-v"
+        "site.yml"
       ],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "ANSIBLE_CONFIG": "${workspaceFolder}/ansible.cfg",
-        "PYTHONPATH": "${workspaceFolder}/lib:${PYTHONPATH}"
-      },
       "justMyCode": false
     },
     {
-      "name": "Debug Ansible Lint",
+      "name": "Lint Project",
       "type": "python",
       "request": "launch",
       "program": "/usr/bin/ansible-lint",
       "args": [
-        "${file}"
+        "."
       ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "ANSIBLE_CONFIG": "${workspaceFolder}/ansible.cfg"
-      }
-    },
-    {
-      "name": "Debug Python Script",
-      "type": "python",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/lib:${PYTHONPATH}"
-      },
-      "justMyCode": false
-    },
-    {
-      "name": "Debug Molecule Test",
-      "type": "python",
-      "request": "launch",
-      "program": "/usr/bin/molecule",
-      "args": [
-        "test",
-        "-s",
-        "default",
-        "-p",
-        "security"
-      ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "ANSIBLE_CONFIG": "${workspaceFolder}/ansible.cfg"
-      },
-      "justMyCode": false
-    },
-    {
-      "name": "Run Playbook: Test Security Role",
-      "type": "python",
-      "request": "launch",
-      "program": "/usr/bin/ansible-playbook",
-      "args": [
-        "test_security_role.yml",
-        "-i",
-        "inventory/validation.ini",
-        "-v"
-      ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "ANSIBLE_CONFIG": "${workspaceFolder}/ansible.cfg"
-      }
-    },
-    {
-      "name": "Run Playbook: Test SSH Forwarding",
-      "type": "python",
-      "request": "launch",
-      "program": "/usr/bin/ansible-playbook",
-      "args": [
-        "test_sshd_forwarding.yml",
-        "-i",
-        "inventory/validation.ini",
-        "-v"
-      ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "ANSIBLE_CONFIG": "${workspaceFolder}/ansible.cfg"
-      }
+      "console": "integratedTerminal"
     }
   ]
 }
