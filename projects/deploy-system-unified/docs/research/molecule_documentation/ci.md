@@ -1,17 +1,14 @@
 # Continuous integration
-
 Molecule output will use `ANSI` colors if stdout is an interactive TTY
 and `TERM` value seems to support it. You can define `PY_COLORS=1` to
 force use of `ANSI` colors, which can be handy for some CI systems.
 
 ## GitHub Actions
-
 [GitHub Actions](https://github.com/features/actions) runs a CI
 pipeline, much like any others, that's built into GitHub.
 
 An action to clone a repo as `molecule_demo`, and run `molecule test` in
 ubuntu.
-
 {% raw %}
 
 ```yaml
@@ -25,7 +22,6 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: ["3.10", "3.11"]
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -44,7 +40,6 @@ jobs:
 ```
 
 {% endraw %}
-
 If you need access to requirements in private repositories, [create a
 token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 with the required privileges, then define a `GIT_CREDENTIALS` secret for
@@ -53,7 +48,6 @@ your repository with a value looking like
 following step before "Test with molecule".
 
 {% raw %}
-
 ```yaml
 - name: Setup git credentials
   uses: fusion-engineering/setup-git-credentials@v2
@@ -62,12 +56,10 @@ following step before "Test with molecule".
 ```
 
 {% endraw %}
-
 ## Travis CI
 
 [Travis](https://travis-ci.com/) is a CI platform, which can be used to
 test Ansible roles.
-
 A `.travis.yml` testing a role named foo1 with the Docker driver.
 
 ```yaml
@@ -82,7 +74,6 @@ install:
 script:
   - molecule test
 ```
-
 A `.travis.yml` using [Tox](https://tox.readthedocs.io/en/latest) as
 described below.
 
@@ -97,19 +88,16 @@ install:
 script:
   - tox
 ```
-
 ## Gitlab CI
 
 [Gitlab](https://gitlab.com) includes its own CI. Pipelines are usually
 defined in `.gitlab-ci.yml` file in the top folder of a repository, to
 be run on Gitlab Runners.
-
 Here is an example using Docker in Docker
 
 ```yaml
 ---
 image: docker:stable-dind
-
 services:
   - docker:dind
 
@@ -123,7 +111,6 @@ before_script:
   - python3 -m pip install ansible molecule-plugins[docker]
   - ansible --version
   - molecule --version
-
 molecule:
   stage: test
   script:
@@ -134,14 +121,12 @@ GitLab Runner is used to run your jobs and send the results back to
 GitLab. By tagging a Runner for the types of jobs it can handle, you can
 make sure shared Runners will only run the jobs they are equipped to
 run.
-
 Here is another example using Docker, virtualenv and tags on Centos 7.
 
 ```yaml
 ---
 stages:
   - test
-
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip"
   GIT_STRATEGY: clone
@@ -150,7 +135,6 @@ cache:
   paths:
     - .pip/
     - virtenv/
-
 before_script:
   - python -V
   - pip install virtualenv
@@ -168,7 +152,6 @@ molecule:
   script:
     - molecule test
 ```
-
 ## Azure Pipelines
 
 [Azure
@@ -180,7 +163,6 @@ within Azure on self-hosted runners if you intend on using the
 Version
 Task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-python-version?view=azure-devops)
 documentation.
-
 ```yaml
 ---
 trigger:
@@ -188,7 +170,6 @@ trigger:
 
 pool:
   vmImage: ubuntu-16.04
-
 steps:
   - checkout: git://project-name/role-name
     path: role-name
@@ -196,13 +177,11 @@ steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: "3.10"
-
   - script: python3 -m pip install "molecule[lint]" "python-vagrant" "molecule-vagrant" "ansible"
     displayName: Install dependencies
 
   - script: python3 -m pip install "python-tss-sdk"
     displayName: Role-specific dependencies
-
   - script: |
       export PATH="$PATH:/home/<user>/.local/bin/"
       cd $(Agent.BuildDirectory)/role-name
@@ -220,12 +199,10 @@ the `cd $(Agent.BuildDirectory)/role-name` which ensures you are in the
 correct directory regardless of format. Check the [Azure Build
 Variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables-devops-services)
 documentation for more detailed information on these.
-
 The `export PATH` is required to ensure you can use the
 `molecule`/`ansible` shell scripts. Azure doesn't add these by default.
 
 ## Jenkins Pipeline
-
 [Jenkins](https://jenkins.io/doc/book/pipeline/jenkinsfile) projects can
 also be defined in a file, by default named `Jenkinsfile` in the top
 folder of a repository. Two syntax are available, Declarative and
@@ -234,7 +211,6 @@ virtualenv and testing an Ansible role via Molecule.
 
 ```groovy
 pipeline {
-
   agent {
     // Node setup : minimal centos7, plugged into Jenkins, and
     // git config --global http.sslVerify false
@@ -246,7 +222,6 @@ pipeline {
   }
 
   stages {
-
     stage ('Get latest code') {
       steps {
         checkout scm
@@ -265,7 +240,6 @@ pipeline {
         '''
       }
     }
-
     stage ('Display versions') {
       steps {
         sh '''
@@ -286,12 +260,10 @@ pipeline {
         '''
       }
     }
-
   }
 
 }
 ```
-
 The following Jenkinsfile uses the [Ansible Dev Tools](https://docs.ansible.com/projects/dev-tools/container/) image.
 
 ```groovy
@@ -302,7 +274,6 @@ pipeline {
       args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
-
   stages {
 
     stage ('Display versions') {
@@ -315,7 +286,6 @@ pipeline {
         '''
       }
     }
-
     stage ('Molecule test') {
       steps {
         sh 'sudo molecule test --all'
@@ -325,14 +295,12 @@ pipeline {
   } // close stages
 }   // close pipeline
 ```
-
 !!! note
 
     For Jenkins to work properly using a Multibranch Pipeline
     or a GitHub Organization - as used by Blue Ocean, the role
     name in the scenario converge.yml should be changed to perform a lookup
     of the role root directory. For example :
-
     ``` yaml
     {% raw %}
     ---
@@ -346,7 +314,6 @@ pipeline {
     This is the cleaner of the current choices. See
     [issue1567_comment](https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722)
     for additional detail.
-
 ## Tox
 
 [Tox](https://tox.wiki/en/latest/) is a generic virtualenv
@@ -355,7 +322,6 @@ management, and test command line tool.
 with
 [Factors](https://tox.wiki/en/latest/config.html#factors-and-factor-conditional-settings)
 and Molecule, to perform scenario tests.
-
 To test the role against multiple versions of Ansible.
 
 ```ini
@@ -363,7 +329,6 @@ To test the role against multiple versions of Ansible.
 minversion = 1.8
 envlist = py{27}-ansible{20,21,22}
 skipsdist = true
-
 [testenv]
 passenv = *
 deps =
@@ -376,7 +341,6 @@ commands =
 ```
 
 To view the factor generated tox environments run `tox -l`.
-
 If using the [\--parallel
 functionality](https://tox.wiki/en/latest/config.html#cmdoption-tox-p)
 of Tox (version 3.7 onwards), Molecule must be made aware of the
@@ -389,7 +353,6 @@ environment variable, it's the name of our tox env.
 minversion = 3.7
 envlist = py{36}_ansible{23,24}
 skipsdist = true
-
 [testenv]
 deps =
     -rrequirements.txt
@@ -405,7 +368,6 @@ setenv =
 You also must include the `TOX_ENVNAME` variable in name of each
 platform in `molecule.yml` configuration file. This way, their names
 won't create any conflict.
-
 ```yaml
 ---
 dependency:
@@ -424,3 +386,4 @@ provisioner:
 verifier:
   name: testinfra
 ```
+

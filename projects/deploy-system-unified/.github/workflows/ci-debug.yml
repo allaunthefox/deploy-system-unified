@@ -1,6 +1,5 @@
 ---
 name: CI Debug
-
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -10,7 +9,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   debug:
     name: Debug job
@@ -18,7 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Simple start marker
         run: |
           echo "CI debug: job started" > debug.txt
@@ -30,3 +27,4 @@ jobs:
         with:
           name: ci-debug
           path: debug.txt
+

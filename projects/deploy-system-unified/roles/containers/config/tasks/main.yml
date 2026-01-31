@@ -13,7 +13,6 @@
     - /srv/containers/configs
     - /var/lib/containers
   become: true
-
 - name: Configure container storage
   ansible.builtin.copy:
     dest: /etc/containers/storage.conf
@@ -22,16 +21,13 @@
       driver = "overlay"
       runroot = "/run/containers/storage"
       graphroot = "/var/lib/containers/storage"
-
       [storage.options]
       additionalimagestores = []
       size = ""
-
       [storage.options.overlay]
       mountopt = "nodev,metacopy=on"
     mode: '0644'
   become: true
-
 - name: Configure container networking
   ansible.builtin.copy:
     dest: /etc/containers/containers.conf
@@ -40,17 +36,14 @@
       log_driver = "journald"
       log_size_max = 10485760
       pids_limit = 2048
-
       [network]
       network_backend = "netavark"
-
       [engine]
       runtime = "crun"
       cgroup_manager = "systemd"
       events_logger = "journald"
     mode: '0644'
   become: true
-
 - name: Enable container lingering for service users
   ansible.builtin.command:
     cmd: "loginctl enable-linger {{ item }}"
@@ -58,7 +51,6 @@
   changed_when: true
   become: true
   when: container_linger_users is defined and container_linger_users | length > 0
-
 - name: Set containers config completion flag
   ansible.builtin.set_fact:
     containers_config_complete: true

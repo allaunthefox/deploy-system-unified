@@ -28,7 +28,7 @@
     - { name: 'kernel.panic_on_oops', value: '1' }
     - { name: 'vm.swappiness', value: '1' } # Minimize swapping of sensitive memory to disk
   become: true
-
+  tags: [security, kernel]
 - name: Configure Kernel to zero memory on free (GRUB)
   ansible.builtin.lineinfile:
     path: /etc/default/grub
@@ -37,7 +37,7 @@
     backrefs: true
   become: true
   notify: update grub
-
+  tags: [security, kernel]
 - name: Apply Bare Metal OS-Layer Hardening
   block:
     - name: Enable IOMMU for PCIe Isolation (Intel/AMD)
@@ -47,7 +47,6 @@
         line: '\1intel_iommu=on iommu=pt\2'
         backrefs: true
       notify: update grub
-
     - name: Blacklist dangerous DMA-capable modules (Hardware Isolation)
       ansible.builtin.copy:
         content: |
@@ -57,3 +56,4 @@
         mode: '0644'
   when: kernel_profile == "bare_metal"
   become: true
+  tags: [security, kernel]

@@ -6,7 +6,6 @@
     state: present
   when: ansible_os_family == 'Debian'
   become: true
-
 - name: Create timeshift configuration directory
   ansible.builtin.file:
     path: /etc/timeshift

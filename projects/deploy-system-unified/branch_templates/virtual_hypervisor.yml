@@ -1,9 +1,7 @@
 ---
 # Virtual Hypervisor - Secure Solution Stack
 # Solution: Base Hardened Infrastructure + QEMU/KVM Virtualization
-
 - ansible.builtin.import_playbook: base_hardened.yml
-
 - name: Deploy Virtualization Workload
   hosts: all
   become: true
@@ -12,6 +10,5 @@
     - role: core/qemu
     - role: core/virt_networking
     - role: core/virt_storage
-
     # Final Solution Integrity Verification
     - role: security/scanning

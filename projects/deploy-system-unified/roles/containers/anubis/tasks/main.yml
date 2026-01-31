@@ -8,7 +8,6 @@
       Description=Anubis Web AI Firewall
       After=network-online.target
       Wants=network-online.target
-
       [Container]
       Image={{ anubis_image }}
       ContainerName={{ anubis_container_name }}
@@ -16,20 +15,17 @@
       Environment=PORT=8080
       Environment=TARGET={{ anubis_target_url }}
       Environment=DIFFICULTY={{ anubis_difficulty }}
-
       [Service]
       Restart=always
       TimeoutStartSec=300
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
   become: true
-  notify: 
+  notify:
     - reload systemd
     - restart anubis
   when: anubis_enabled | bool
-
 - name: Enable and start Anubis service
   ansible.builtin.systemd:
     name: anubis

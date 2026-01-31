@@ -1,10 +1,8 @@
 # Molecule Drivers
-
 ## Overview
 Molecule drivers define the platform where test instances are created. Each driver provides a different way to create and manage test environments.
 
 ## Supported Drivers
-
 ### Docker Driver
 The most common driver for container-based testing:
 ```yaml
@@ -28,7 +26,6 @@ driver:
   name: podman
   host: localhost
 ```
-
 ### Vagrant Driver
 Virtual machine driver using Vagrant:
 ```yaml
@@ -50,7 +47,6 @@ driver:
   image: ami-12345678
   instance_type: t2.micro
 ```
-
 ### GCE Driver
 Google Cloud Platform driver:
 ```yaml
@@ -70,14 +66,12 @@ driver:
   location: East US
   vm_size: Standard_B1s
 ```
-
 ## Driver Configuration Options
 
 ### Common Options
 - `name`: Driver name
 - `options`: Driver-specific options
 - `safe_files`: Files to preserve during destroy
-
 ### Docker/Podman Options
 - `volumes`: Volume mounts
 - `tmpfs`: Temporary file systems
@@ -91,7 +85,6 @@ driver:
 - `memory`: VM memory allocation
 - `cpus`: Number of CPUs
 - `provider`: Virtualization provider
-
 ### Cloud Provider Options
 - `region`: Geographic region
 - `instance_type`: VM size/type
@@ -106,7 +99,6 @@ Choose a driver based on:
 - **Resources**: Available system resources
 - **Access**: Required access level
 - **Cost**: Cloud vs local resources
-
 ## Custom Drivers
 Molecule supports custom drivers for specialized platforms. Custom drivers implement the driver interface and provide platform-specific functionality.
 

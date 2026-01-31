@@ -1,5 +1,4 @@
 # Molecule Best Practices
-
 ## Testing Philosophy
 
 ### Test Pyramid
@@ -7,7 +6,6 @@ Apply the testing pyramid concept to Molecule testing:
 - **Unit Tests**: Individual tasks and components
 - **Integration Tests**: Role interactions and dependencies
 - **System Tests**: End-to-end functionality
-
 ### Test Early and Often
 - Run tests frequently during development
 - Use continuous integration
@@ -15,7 +13,6 @@ Apply the testing pyramid concept to Molecule testing:
 - Verify idempotence regularly
 
 ## Scenario Design
-
 ### Single Responsibility
 Each scenario should test one specific aspect:
 - Platform-specific testing
@@ -29,14 +26,12 @@ Design scenarios that represent production environments:
 - Similar configurations
 - Matching dependencies
 - Comparable resources
-
 ## Test Writing
 
 ### Descriptive Test Names
 Use clear, descriptive names for tests:
 - `test_web_server_running` instead of `test_1`
 - `test_ssl_configuration_valid` instead of `test_ssl`
-
 ### Atomic Tests
 Keep tests focused on a single concern:
 - One assertion per test when possible
@@ -50,7 +45,6 @@ Ensure tests cover:
 - Configuration changes
 - Service restarts
 - Security settings
-
 ## Configuration Management
 
 ### Version Control
@@ -58,7 +52,6 @@ Keep Molecule configuration in version control:
 - Track changes to test configurations
 - Maintain history of test scenarios
 - Enable collaboration
-
 ### Consistent Configuration
 Use consistent configuration patterns:
 - Standard directory structure
@@ -66,7 +59,6 @@ Use consistent configuration patterns:
 - Shared configuration templates
 
 ## Performance Optimization
-
 ### Efficient Resource Usage
 Optimize resource usage in tests:
 - Use minimal base images
@@ -80,7 +72,6 @@ Optimize for fast feedback:
 - Fast test execution
 - Immediate failure detection
 - Clear error messages
-
 ## Security Considerations
 
 ### Secure Testing
@@ -89,7 +80,6 @@ Implement security in tests:
 - Verify access controls
 - Validate encryption settings
 - Check authentication
-
 ### Isolated Environments
 Use isolated test environments:
 - Separate from production
@@ -98,7 +88,6 @@ Use isolated test environments:
 - Proper cleanup
 
 ## Continuous Integration
-
 ### Integration with CI/CD
 Integrate Molecule tests into CI/CD pipelines:
 - Automated testing on commits
@@ -112,7 +101,6 @@ Use parallel execution for faster results:
 - Distributed testing
 - Resource optimization
 - Faster feedback
-
 ## Documentation
 
 ### Scenario Documentation
@@ -121,7 +109,6 @@ Document each scenario:
 - Required resources
 - Expected outcomes
 - Known limitations
-
 ### Test Documentation
 Document test expectations:
 - What is being tested
@@ -130,7 +117,6 @@ Document test expectations:
 - Failure conditions
 
 ## Maintenance
-
 ### Regular Updates
 Keep tests current:
 - Update for role changes
@@ -144,7 +130,6 @@ Monitor test health:
 - Measure execution time
 - Identify flaky tests
 - Review test coverage
-
 ## Error Handling
 
 ### Clear Error Messages
@@ -153,7 +138,6 @@ Provide clear error messages:
 - Context information
 - Suggested fixes
 - Relevant logs
-
 ### Graceful Degradation
 Handle errors gracefully:
 - Clean up resources
@@ -162,7 +146,6 @@ Handle errors gracefully:
 - Report failures clearly
 
 ## Resource Management
-
 ### Efficient Cleanup
 Clean up resources properly:
 - Destroy instances after tests

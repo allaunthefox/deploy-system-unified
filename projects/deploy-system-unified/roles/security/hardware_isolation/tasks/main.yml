@@ -9,7 +9,6 @@
   register: iommu_grub
   become: true
   notify: update grub
-
 - name: Blacklist dangerous DMA-capable modules
   ansible.builtin.copy:
     content: |

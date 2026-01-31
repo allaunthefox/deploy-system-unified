@@ -1,10 +1,8 @@
 # Molecule Verifiers
-
 ## Overview
 Molecule verifiers are used to validate that your Ansible roles have correctly configured the test instances. They run after the converge step to verify the system state.
 
 ## Supported Verifiers
-
 ### TestInfra
 The default verifier using Python test framework:
 ```yaml
@@ -24,7 +22,6 @@ Example test file (`tests/test_default.py`):
 def test_pkg_installed(host):
     pkg = host.package('nginx')
     assert pkg.is_installed
-
 def test_svc_running(host):
     svc = host.service('nginx')
     assert svc.is_running
@@ -34,7 +31,6 @@ def test_port_listening(host):
     sock = host.socket("tcp://0.0.0.0:80")
     assert sock.is_listening
 ```
-
 ### Goss
 Lightweight and fast verification tool using YAML:
 ```yaml
@@ -49,7 +45,6 @@ Example Goss file (`test/integration/default/goss.yaml`):
 package:
   nginx:
     installed: true
-
 service:
   nginx:
     enabled: true
@@ -58,7 +53,6 @@ service:
 port:
   tcp:80:
     listening: true
-
 process:
   nginx:
     running: true
@@ -67,7 +61,6 @@ user:
   nginx:
     exists: true
 ```
-
 ### InSpec
 Infrastructure testing framework by Chef:
 ```yaml
@@ -81,7 +74,6 @@ Example InSpec control (`test/integration/default/controls/sample.rb`):
 describe package('nginx') do
   it { should be_installed }
 end
-
 describe service('nginx') do
   it { should be_installed }
   it { should be_enabled }
@@ -92,7 +84,6 @@ describe port(80) do
   it { should be_listening }
 end
 ```
-
 ### Serverspec
 Ruby-based testing framework:
 ```yaml
@@ -102,7 +93,6 @@ verifier:
 ```
 
 ## Verifier Configuration
-
 ### TestInfra Options
 - `options`: Command-line options for pytest
 - `env`: Environment variables
@@ -114,7 +104,6 @@ verifier:
 - `playbook`: Custom playbook for Goss
 - `test_binary`: Path to goss binary
 - `goss_config`: Path to goss configuration
-
 ### InSpec Options
 - `directory`: InSpec test directory
 - `options`: Command-line options for inspec
@@ -122,7 +111,6 @@ verifier:
 - `sudo`: Whether to run with sudo
 
 ## Verification Strategies
-
 ### Functional Testing
 Verify that services are running and responding:
 - Check service status
@@ -136,7 +124,6 @@ Verify security configurations:
 - Validate user accounts
 - Verify security settings
 - Test access controls
-
 ### Compliance Testing
 Verify compliance with standards:
 - Check configuration files
@@ -145,7 +132,6 @@ Verify compliance with standards:
 - Test security policies
 
 ## Best Practices
-
 ### Test Structure
 - Organize tests by functionality
 - Use descriptive test names
@@ -158,7 +144,6 @@ Verify compliance with standards:
 - Test expected outcomes
 - Verify state changes
 - Check error conditions
-
 ### Test Maintenance
 - Keep tests up-to-date with role changes
 - Run tests regularly

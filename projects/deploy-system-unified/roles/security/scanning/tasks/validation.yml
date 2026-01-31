@@ -8,13 +8,11 @@
       - enhanced_security_tools_configured | default(false)
       - security_scanning_configured | default(false)
     fail_msg: "Not all security scanning components properly configured - deployment incomplete"
-
 - name: Verify directory precreation was successful (idempotent)
   ansible.builtin.assert:
     that:
       - directories_precreated | default(false)
     fail_msg: "Directory precreation failed - system may be in inconsistent state"
-
 - name: Verify scanning tool directories exist (idempotent)
   ansible.builtin.stat:
     path: "{{ item }}"
@@ -24,7 +22,6 @@
     - /var/lib/deploy-system/backups
     - /etc/trivy
     - /etc/checkov
-
 - name: Validate all required directories exist (idempotent)
   ansible.builtin.assert:
     that:
@@ -32,7 +29,6 @@
       - item.stat.isdir
     fail_msg: "Required directory {{ item.path }} does not exist"
   loop: "{{ final_dir_check.results }}"
-
 - name: Set final security compliance flag (idempotent)
   ansible.builtin.set_fact:
     security_compliance_verified: true

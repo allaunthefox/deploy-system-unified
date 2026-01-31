@@ -1,16 +1,13 @@
 # Development Style Guide
-
 To maintain consistency and ensure clean linting across the Deploy-System-Unified project, all contributions must adhere to the following style requirements. These standards are enforced via the `make lint` suite.
 
 ## 🛠 General Standards
-
 *   **Extensions**: Use `.yml` for all YAML files, not `.yaml`.
 *   **EOF Newlines**: Every file (YAML, Markdown, Jinja2, etc.) must end with exactly one newline character.
 *   **Trailing Whitespace**: No lines should have trailing spaces or tabs.
 *   **Indentation**: Use spaces for indentation, never tabs.
 
 ## 📄 YAML Standards
-
 *   **Indentation**: Use 2 spaces for indentation.
 *   **Booleans**: Always use `true` or `false` (lowercase). Avoid `yes`, `no`, `on`, `off`.
 *   **Line Length**: Aim for a maximum of 160 characters per line.
@@ -28,7 +25,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     # BAD
     ansible.builtin.file: path=/tmp/file state=touch
     ```
-
 *   **Checkpoint and Resume Pattern**: Implement clear conditional logic for checkpoint creation and resume operations
     ```yaml
     # GOOD - Conditional checkpoint and resume pattern
@@ -40,7 +36,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     - name: Set deployment mode based on checkpoint existence
       ansible.builtin.set_fact:
         deployment_mode: "{{ 'resume' if checkpoint_file.stat.exists else 'fresh' }}"
-
     - name: Read checkpoint data if resuming from existing checkpoint
       ansible.builtin.slurp:
         src: /var/lib/deploy-system/checkpoints/deployment_checkpoint.json
@@ -52,7 +47,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
         resume_from_task: "{{ (checkpoint_data.content | b64decode | from_json).next_task }}"
         completed_roles: "{{ (checkpoint_data.content | b64decode | from_json).completed_roles }}"
       when: deployment_mode == "resume"
-
     - name: Run deployment with conditional resume capability
       block:
         - name: Run bootstrap role if not already completed
@@ -64,7 +58,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
           ansible.builtin.import_role:
             name: users
           when: deployment_mode == "fresh" or "users" not in (completed_roles | default([]))
-
         # ... other roles ...
 
         - name: Update checkpoint after major phase completion
@@ -82,7 +75,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
             mode: '0644'
             owner: root
             group: root
-
       rescue:
         - name: Handle deployment failure and create checkpoint
           block:
@@ -105,7 +97,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     ```
 
 ## 📝 Markdown Standards
-
 *   **Code Blocks**: Every fenced code block (represented by three backticks) MUST have a language specified (e.g., `yaml`, `bash`).
 *   **Headings**:
     *   No trailing punctuation (like colons `:`) at the end of heading lines.
@@ -114,7 +105,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 *   **Links**: Ensure all internal link fragments (`#anchor`) are valid and match existing headers.
 
 ## 🤖 Ansible & Jinja2 Standards
-
 ### Role Metadata
 *   **meta/main.yml**: Every role MUST have a valid metadata file containing:
     *   `author`, `description`, `license` (prefer MIT), and `min_ansible_version` (at least 2.15).
@@ -194,7 +184,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     *   Verify all dependencies are properly declared
     *   Confirm role functionality in isolated environments
     *   Validate metadata completeness and accuracy
-
 ### Task Naming
 *   **Descriptive Names**: Every task and handler MUST have a `name` key that clearly describes its purpose.
 *   **Uniqueness**: Ensure task names are unique within a role to facilitate debugging and logging.
@@ -213,7 +202,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     *   The included file path changes based on variables
     *   You want the tasks to be evaluated during execution time
 *   **Performance Considerations**: Static inclusion (`import_*`) happens at parse time and is more efficient for content that's always needed. Dynamic inclusion (`include_*`) happens at runtime and is more flexible for conditional content.
-
 ### Conditionals and Flow Control
 *   **Blocks**: Use blocks with rescue and always sections for error handling:
     ```yaml
@@ -239,7 +227,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 ### Privilege Escalation
 *   **Explicit Become**: Specify `become: true` only where needed. Use `become_user` or `become_method` if it deviates from the default root escalation.
 *   **Scope**: Apply `become` at the task level rather than the block level unless all tasks in the block require escalation.
-
 ### Module Selection
 *   **Specialized over Generic**: Always prefer specialized modules over `command` or `shell`.
     *   Use `ansible.builtin.file` for creating directories or deleting files.
@@ -265,7 +252,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
         state: present
         update_cache: true
       when: ansible_facts['pkg_mgr'] | default('') == 'apt'
-
     - name: Install packages (DNF)
       ansible.builtin.dnf:
         name: "{{ role_name_packages }}"
@@ -284,7 +270,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     *   Use appropriate collection modules (e.g., `community.general.pacman`)
     *   Use the generic `ansible.builtin.package` module when no distribution-specific configuration is required
     *   For packages that only exist on specific distributions, use the distribution-specific module directly
-
 ### Logic & Facts
 *   **Jinja2 Delimiters**: Never use `{{ ...  }}` inside a `when` statement.
 *   **Complex Logic**: Use `ansible.builtin.set_fact` to break down complex expressions into readable variables before using them in tasks.
@@ -292,7 +277,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 ### File Permissions
 *   **Explicit Mode**: Always specify `mode` for `file`, `copy`, and `template` tasks.
 *   **String Format**: Use symbolic (e.g., `u=rw,g=r,o=r`) or 4-digit octal (e.g., `'0644'`) strings for modes. Always wrap octal modes in quotes to avoid YAML interpreting them as base-8 integers.
-
 ### Shell Tasks
 *   **Pipefail**: Any shell command using pipes (`|`) must have pipefail enabled. Use the Ansible-native `pipefail: true` argument where supported. If the linter continues to flag a task, include `set -o pipefail` at the beginning of the shell script and ensure `executable: /bin/bash` is set.
     ```yaml
@@ -308,7 +292,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 ### Error Handling
 *   **Avoid `ignore_errors: true`**: Use `failed_when` or `check_mode` instead. If a task is expected to fail under certain conditions, handle it explicitly.
 *   **Rescue Blocks**: Use `block` and `rescue` for complex multi-task error recovery.
-
 ### Security & Sensitive Data
 *   **Masking**: Always use `no_log: true` for any task handling passwords, tokens, API keys, or private keys.
 *   **Variables**: Never put secrets in `defaults/` or `vars/` files. Use `vault.yml` or environment variables.
@@ -328,7 +311,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     ```yaml
     # GOOD - Secure default
     validate_certs: "{{ api_validate_certs | default(true) }}"
-
     # AVOID - Insecure default
     validate_certs: "{{ api_validate_certs | default(false) }}"
     ```
@@ -341,7 +323,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
         name: my-pkg
         state: latest # noqa package-latest
     ```
-
 ### Error Handling & Block Patterns
 *   **Block Error Handling**: Always include `rescue` and `always` sections when using `block` for critical operations:
     ```yaml
@@ -379,7 +360,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     ```
 
 ## 🐚 Shell Script Standards (*.sh)
-
 *   **Header**: Every script must start with a proper shebang and strict error handling:
     ```bash
     #!/bin/bash
@@ -414,7 +394,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 *   **Functions**: Use functions for code organization:
     ```bash
     #!/bin/bash
-
     # Function definitions at top
     log_message() {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >&2
@@ -425,12 +404,10 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
         log_message "Starting script..."
         # script logic here
     }
-
     main "$@"
     ```
 
 ## 📁 Variable Naming
-
 *   **Prefixing**: Role-specific variables should be prefixed with the role name (e.g., `bootstrap_hostname` instead of just `hostname`).
 *   **Casing**: Use `snake_case` for all variable names.
 *   **Variable Scope and Naming Conventions**:
@@ -458,7 +435,6 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     echo "{{ "{{ "   }} variable_name {{ " }}" }}"
     # This renders as: echo "{{ variable_name }}" in the generated script
     ```
-
 ### Podman Quadlets
 *   **Structure**: Quadlet files (`.container`, `.network`, etc.) must follow standard systemd unit formatting.
 *   **Headers**: Do NOT include shell headers like `set -o pipefail` at the top of Quadlet templates; these are unit files, not scripts.
@@ -470,19 +446,16 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     *   This ensures proper validation while maintaining template functionality
 
 ## 🔍 Validation
-
 Before submitting any changes, always run the full linting suite from the project root:
 
 ```bash
 make lint
 ```
-
 If your changes involve documentation only, you can run:
 
 ```bash
 make lint-markdown
 ```
-
 ## 🐍 Python Code Standards
 
 *   **Shebang**: Python scripts should start with `#!/usr/bin/env python3` when intended to be executable.
@@ -492,13 +465,11 @@ make lint-markdown
 *   **Docstrings**: Include docstrings for modules, classes, and functions following the Google or Sphinx style.
 *   **PEP 8 Compliance**: Follow PEP 8 style guidelines for naming, spacing, and formatting.
 *   **Ansible Plugin Standards**: For Ansible plugins (modules, callbacks, filters), follow Ansible's plugin development standards including proper class structure and documentation.
-
 ## ⚙️ Configuration Files Standards
 
 *   **INI Files**: Use `.ini` extension for INI-style configuration files. Maintain consistent section headers with `[section_name]` format.
 *   **JSON Files**: Use proper indentation (2 spaces) and ensure valid JSON syntax. Include trailing commas where appropriate for maintainability.
 *   **System Configuration Files**: When creating system configuration files in `files/` directories, follow the target system's conventions and include appropriate comments explaining settings.
-
 ## 🐳 Container Standards
 
 *   **Dockerfiles**:
@@ -507,7 +478,6 @@ make lint-markdown
     *   Use `--no-install-recommends` with package managers when possible.
     *   Set `DEBIAN_FRONTEND=noninteractive` for Debian-based images to avoid prompts.
 *   **Quadlet Files**: Follow systemd unit file format for Podman quadlet files. Place resource limits in `[Service]` section, not `[Container]` section.
-
 ## 📁 Directory Structure Standards
 
 *   **Roles Organization**: Organize roles with standard Ansible role structure (tasks, handlers, templates, files, vars, defaults, meta).
@@ -517,7 +487,6 @@ make lint-markdown
     *   Task files go in `tasks/` directory
     *   Variable files go in `vars/` or `defaults/` directories
 *   **Inventory Structure**: Place inventory files in the `inventory/` directory with appropriate group and host variable organization.
-
 ## 🧪 Molecule Testing Standards
 
 *   **Scenario Structure**: Organize Molecule tests with clear scenario names that reflect the test purpose:
@@ -525,7 +494,6 @@ make lint-markdown
     * `integration` - Multi-component integration test
     * `convergence` - Idempotency test
     * `side_effect` - State change validation test
-
 *   **Molecule Configuration**:
     * Use `molecule.yml` for scenario-specific configuration
     * Include proper dependency management with `requirements.yml` for roles and `collections.yml` for collections
@@ -539,7 +507,6 @@ make lint-markdown
     * Use `podman` driver when available for container-based testing
     * Use `docker` driver as fallback when podman is not available
     * Use `delegated` driver for existing infrastructure testing
-
 *   **Playbook Integration**:
     * Use `converge.yml` for role/application deployment
     * Use `prepare.yml` for infrastructure preparation
@@ -550,7 +517,6 @@ make lint-markdown
     * Always test idempotency with `molecule idempotence`
     * Use `molecule test` for complete test cycle (create, converge, idempotency, verify, destroy)
     * Implement proper cleanup in `cleanup.yml` for external resource management
-
 *   **Verification**:
     * Use `testinfra` for host-based validation
     * Use `goss` for declarative system state validation
@@ -558,7 +524,6 @@ make lint-markdown
     * Test edge cases and error conditions
 
 ## 🧩 Placeholder Values Standards
-
 When using placeholder values in templates, configuration files, or for validation purposes, use appropriate realistic values that maintain validation integrity:
 
 ### Template Placeholders
@@ -568,7 +533,6 @@ When using placeholder values in templates, configuration files, or for validati
     *   Boolean placeholders: `true`/`false`
     *   List placeholders: `["item1", "item2"]`
     *   Dictionary placeholders: `{"key": "value"}`
-
 ### Configuration File Placeholders
 *   **IP Addresses**: Use standard reserved addresses:
     *   IPv4: `192.0.2.1`, `198.51.100.1`, `203.0.113.1` (TEST-NET-1, TEST-NET-2, TEST-NET-3)
@@ -590,7 +554,6 @@ When using placeholder values in templates, configuration files, or for validati
 *   **Ports**: Use reserved test ports:
     *   `1024-65535` range for non-privileged ports
     *   Avoid well-known ports (0-1023)
-
 ### Container/Service Placeholders
 *   **Service Names**: Use descriptive test names:
     *   `test-service`, `demo-app`, `validation-container`
@@ -601,7 +564,6 @@ When using placeholder values in templates, configuration files, or for validati
     *   Password: `testpassword`, `changeme`, `password123` (never in production!)
 
 ## 🧰 Common Patterns & Conventions
-
 ### Default Values in Jinja2
 *   **Safe Defaults**: Always provide safe defaults for undefined variables:
     *   Use `variable | default('safe_value')` pattern
@@ -616,7 +578,6 @@ When using placeholder values in templates, configuration files, or for validati
     # AVOID
     my_variable: "{{ 'value_if_true' if some_condition else 'value_if_false' }}"
     ```
-
 ### Error Handling Patterns
 *   **Try-Catch Equivalents**: Use proper Ansible error handling:
     *   Use `block`/`rescue`/`always` for complex error handling
@@ -636,7 +597,6 @@ When using placeholder values in templates, configuration files, or for validati
     *   Use quoted octal notation: `'0644'`, `'0755'`, `'0600'`
     *   Use symbolic notation when appropriate: `u=rw,g=r,o=r`
     *   Set proper ownership: `owner: user`, `group: group`
-
 ### Performance Patterns
 *   **Efficiency**: Optimize for performance:
     *   Use `delegate_to: localhost` for local tasks
@@ -656,7 +616,6 @@ When using placeholder values in templates, configuration files, or for validati
     *   Use `default` scenario for basic functionality
     *   Use `integration` scenario for multi-component testing
     *   Use `convergence` scenario for idempotency testing
-
 ## 📝 Git & Version Control Standards
 
 ### Commit Messages
@@ -680,30 +639,25 @@ When using placeholder values in templates, configuration files, or for validati
     ```bash
     # GOOD
     feat(users): add SSH key generation capability
-
     Adds automated SSH key generation for new users with proper permissions
     and configuration for secure access.
 
     fixes #123
-
     # GOOD
     fix(sshd): resolve authentication bypass vulnerability
 
     Corrects SSH configuration that allowed authentication bypass in certain
     edge cases with specific client configurations.
-
     closes #456
 
     # GOOD
     docs(style-guide): add Git standards section
-
     Adds comprehensive Git and version control standards to the style guide
     to ensure consistent collaboration practices.
 
     # AVOID
     "Fixed bug" or "Updated docs" or "Bug fix" or "Made changes"
     ```
-
 ### Branch Naming
 *   **Feature branches**: `feature/descriptive-name` (e.g., `feature/add-gpu-support`)
 *   **Bug fixes**: `fix/issue-description` (e.g., `fix/ssh-authentication-bypass`)
@@ -717,7 +671,6 @@ When using placeholder values in templates, configuration files, or for validati
 *   **Review**: Require at least one approval before merging
 *   **CI**: All CI checks must pass before merging
 *   **Changelog**: Update CHANGELOG.md if user-facing changes are included
-
 ### Version Tagging
 *   **Format**: Use semantic versioning (MAJOR.MINOR.PATCH)
 *   **Prefix**: Use `v` prefix (e.g., `v1.2.0`)
@@ -727,7 +680,6 @@ When using placeholder values in templates, configuration files, or for validati
     ```
 
 ## 📦 Dependency Management Standards
-
 ### Ansible Collection Dependencies
 *   **Requirements File**: Use `collections.yml` for collection dependencies
 *   **Version Pinning**: Pin to specific versions for production stability
@@ -781,7 +733,6 @@ When using placeholder values in templates, configuration files, or for validati
 *   **Galaxy Roles**: When using Galaxy roles, always specify version for reproducibility
 *   **Installation**: Use `ansible-galaxy role install -r requirements.yml` for installation
 *   **Verification**: Test role compatibility after dependency updates
-
 ### System Dependencies
 *   **Detection**: Check for required system packages before installation
     ```yaml
@@ -811,7 +762,6 @@ When using placeholder values in templates, configuration files, or for validati
 *   **Cleanup**: Remove unnecessary dependencies after installation if they're only needed for setup
 
 ## 🔍 Logging & Debugging Standards
-
 ### Debug Tasks
 *   **Verbosity Control**: Use `verbosity` parameter to control when debug tasks appear:
     ```yaml
@@ -875,7 +825,6 @@ When using placeholder values in templates, configuration files, or for validati
           - "duration: {{ operation_duration }}s"
           - "result: {{ operation_result }}"
     ```
-
 ### Debugging Conventions
 *   **Task Naming**: Use descriptive names that indicate debugging purpose (e.g., "Debug: variable_name content")
 *   **Conditional Debugging**: Use when conditions to enable/disable debugging
@@ -883,7 +832,6 @@ When using placeholder values in templates, configuration files, or for validati
 *   **Performance Impact**: Minimize performance impact of debug tasks by using `changed_when: false`
 
 ## 🚀 Preflight Setup Standards
-
 ### Preflight Checks
 *   **Purpose**: Preflight checks validate system readiness before running critical operations
 *   **Placement**: Place preflight checks in `.ci/preflight_*.sh` scripts or `roles/preflight/tasks/main.yml`
@@ -926,7 +874,6 @@ When using placeholder values in templates, configuration files, or for validati
         exit 1
     fi
     ```
-
 ### Prerequisite Validation
 *   **Package Managers**: Verify required package managers are available:
     ```bash
@@ -968,7 +915,6 @@ When using placeholder values in templates, configuration files, or for validati
         msg: "WARNING: System restart required after these changes. Set 'system_restart_allowed: true' to proceed automatically."
       when: system_restart_required | default(false) and not system_restart_allowed | default(false)
     ```
-
 ### Preflight Script Standards
 *   **Header**: Use proper shebang and error handling:
     ```bash
@@ -1000,14 +946,12 @@ When using placeholder values in templates, configuration files, or for validati
         exit 0
     fi
     ```
-
 ## 🔄 CI/CD Integration Standards
 
 ### Pipeline Structure
 *   **Stages**: Organize pipelines into clear stages (build, test, deploy, verify)
 *   **Parallelization**: Run independent tests in parallel to reduce execution time
 *   **Artifacts**: Preserve important outputs for debugging and verification
-
 ### Automated Testing
 *   **Trigger Conditions**: Run tests on all PRs, specific branches, and schedule
 *   **Test Coverage**: Ensure all roles have Molecule tests
@@ -1018,14 +962,12 @@ When using placeholder values in templates, configuration files, or for validati
 *   **Blue-Green**: Use for zero-downtime deployments where possible
 *   **Rolling**: Use for distributed systems with multiple nodes
 *   **Canary**: Use for gradual rollout of changes to subset of nodes
-
 ### Rollback Procedures
 *   **Automatic Rollback**: Implement automatic rollback on test failures
 *   **Manual Rollback**: Document manual rollback procedures
 *   **State Preservation**: Preserve system state during rollback operations
 
 ## 📚 Documentation Standards
-
 ### README.md Structure
 Every role must include a README.md with:
 1. **Description**: Brief purpose statement
@@ -1045,7 +987,6 @@ bootstrap_username: deploy  # Primary deployment user account
 bootstrap_uid: 1000          # User ID (integer, 1000-65535)
 bootstrap_create_home: true  # Create home directory (boolean)
 ```
-
 ### CHANGELOG Format
 *   **Semantic Versioning**: Follow semantic versioning in changelog
 *   **Categories**: Group changes under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
@@ -1057,14 +998,12 @@ bootstrap_create_home: true  # Create home directory (boolean)
 *   **Location**: Store in `docs/adrs/` directory
 *   **Numbering**: Sequential numbering with descriptive filenames
 *   **Status**: Track decision status (proposed, accepted, superseded, deprecated)
-
 ## ⚡ Performance & Optimization Guidelines
 
 ### Task Execution Optimization
 *   **Fact Gathering**: Use `gather_facts: false` when facts aren't needed
 *   **Conditional Execution**: Use `when` clauses to skip unnecessary tasks
 *   **Idempotency**: Design tasks to be idempotent to avoid unnecessary changes
-
 ### Parallelization Guidelines
 *   **Strategy Selection**: Use `strategy: free` for independent tasks, `strategy: linear` for dependent tasks
 *   **Fork Control**: Adjust `--forks` based on target system capacity
@@ -1074,14 +1013,12 @@ bootstrap_create_home: true  # Create home directory (boolean)
 *   **Memory Usage**: Monitor and optimize memory consumption during execution
 *   **Disk Space**: Consider disk space requirements for temporary files
 *   **Network Bandwidth**: Minimize network transfers where possible
-
 ## 🌐 Cross-Platform Compatibility
 
 ### Path Handling
 *   **Separators**: Use `ansible.builtin.path_join` for cross-platform path construction
 *   **Normalization**: Use `ansible.builtin.abs` and `ansible.builtin.dirname` for path manipulation
 *   **Variables**: Use `ansible_facts` for platform-specific paths (e.g., `ansible_facts.python.executable`)
-
 ### Line Ending Considerations
 *   **Templates**: Use appropriate line endings for target platform
 *   **Scripts**: Ensure shell scripts have proper line endings (Unix-style LF)
@@ -1091,14 +1028,12 @@ bootstrap_create_home: true  # Create home directory (boolean)
 *   **Variable Names**: Use lowercase with underscores (snake_case) to avoid case issues
 *   **File Names**: Use lowercase with underscores for consistency
 * **Paths**: Be aware of case sensitivity differences between platforms
-
 ## 🔐 Secret Management Beyond Vault
 
 ### External Secret Managers
 *   **Integration**: Support integration with HashiCorp Vault, AWS Secrets Manager, Azure Key Vault
 *   **Fallback**: Implement Vault file fallback when external managers unavailable
 *   **Caching**: Implement secure caching for external secret retrieval
-
 ### Secret Rotation
 *   **Strategies**: Implement automated secret rotation where possible
 *   **Notification**: Notify stakeholders of upcoming secret rotations
@@ -1108,14 +1043,12 @@ bootstrap_create_home: true  # Create home directory (boolean)
 *   **Lifespan**: Limit lifespan of temporary credentials
 *   **Cleanup**: Automatically clean up expired temporary credentials
 *   **Access**: Restrict access to temporary credentials to necessary processes only
-
 ## 📊 Monitoring & Observability
 
 ### Execution Metrics
 *   **Timing**: Use `profile_tasks` callback to monitor task execution time
 *   **Metrics**: Collect and report execution metrics for performance analysis
 *   **Baseline**: Establish performance baselines for regression detection
-
 ### Callback Plugins
 *   **Selection**: Use appropriate callback plugins for different monitoring needs
 *   **Configuration**: Configure callbacks for both development and production
@@ -1125,11 +1058,9 @@ bootstrap_create_home: true  # Create home directory (boolean)
 *   **Prometheus**: Export metrics in Prometheus format when possible
 *   **Logging Systems**: Integrate with centralized logging systems (ELK, Graylog)
 *   **Alerting**: Implement alerting for critical failures and performance degradation
-
 ## 🚨 Assume Nothing Philosophy
 
 Following Ansible's core design principle, all automation must operate under the "assume nothing" philosophy:
-
 ### Explicit Configuration Requirements
 * **Never assume defaults**: Always explicitly configure values rather than relying on implicit defaults
 * **Validate prerequisites**: Check for required resources, permissions, and dependencies before proceeding
@@ -1147,7 +1078,6 @@ Following Ansible's core design principle, all automation must operate under the
       - target_directory | length > 0
       - target_directory is string
     fail_msg: "target_directory must be defined as a non-empty string"
-
 - name: Validate directory exists and is accessible
   ansible.builtin.stat:
     path: "{{ target_directory }}"
@@ -1160,7 +1090,6 @@ Following Ansible's core design principle, all automation must operate under the
     src: files/config.conf
     dest: "{{ target_directory }}/config.conf"
 ```
-
 ### Connection and Authentication
 * **Connection validation**: Always verify connectivity before executing tasks
 * **Authentication verification**: Confirm authentication methods work before proceeding
@@ -1168,14 +1097,12 @@ Following Ansible's core design principle, all automation must operate under the
 * **Facts validation**: Always verify that required facts are available before using them; use `| default()` filters safely
 
 ## 🔒 Security-First Defaults
-
 All configurations must default to the most secure settings:
 
 ### Certificate Validation
 * **Always validate**: Default `validate_certs: true` for all SSL/TLS connections
 * **Explicit exceptions**: Only disable certificate validation with proper justification and documentation
 * **Secure protocols**: Default to latest secure protocol versions
-
 ### Network Security
 * **Restrictive firewalls**: Default to deny-all rules with explicit allowances
 * **Service exposure**: Minimize service exposure by default
@@ -1185,7 +1112,6 @@ All configurations must default to the most secure settings:
 * **Least privilege**: Default to minimal required permissions
 * **Explicit escalation**: Only escalate privileges when explicitly required
 * **Audit trail**: Maintain audit trails for all privileged operations
-
 ## ✅ Strict Validation Patterns
 
 ### Pre-flight Validation
@@ -1195,7 +1121,6 @@ All configurations must default to the most secure settings:
 * **Permission validation**: Verify required permissions before executing tasks
 * **Configuration validation**: Validate configuration parameters before applying them
 * **Connectivity verification**: Test connectivity to required services and endpoints
-
 ### Runtime Validation
 * **Input sanitization**: Sanitize and validate all inputs before processing
 * **State verification**: Verify system state after each operation
@@ -1209,14 +1134,12 @@ All configurations must default to the most secure settings:
 * **Clean-up verification**: Confirm all temporary resources were cleaned up
 * **Service health checks**: Verify that services are running correctly after changes
 * **Functional validation**: Test that affected systems function as expected after changes
-
 ## ❗ Robust Error Handling
 
 ### Fail-Safe Defaults
 * **Safe failure modes**: Design systems to fail in a safe state
 * **Graceful degradation**: Implement graceful degradation when components fail
 * **Recovery procedures**: Provide clear recovery procedures for common failure scenarios
-
 ### Comprehensive Error Detection
 * **Multi-layer validation**: Implement validation at multiple layers (input, processing, output)
 * **Early detection**: Detect and report errors as early as possible
@@ -1230,14 +1153,12 @@ All configurations must default to the most secure settings:
 * **Partial failures**: Design operations to handle partial failures gracefully without leaving systems in inconsistent states
 * **Unexpected responses**: Validate API responses and command outputs before processing them
 * **Deployment interruptions**: Implement checkpoint and resume functionality to handle deployment interruptions
-
 ## 🛡 Disaster Recovery & Backup Standards
 
 ### Configuration Backup
 *   **Automation**: Automate backup of critical configuration files
 *   **Retention**: Implement appropriate retention policies for backups
 *   **Verification**: Regularly verify backup integrity and restoration procedures
-
 ### State Recovery
 *   **Idempotency**: Ensure playbooks can recover to desired state from any intermediate state
 *   **Rollback Playbooks**: Maintain dedicated rollback playbooks for emergency situations
@@ -1263,7 +1184,6 @@ All configurations must default to the most secure settings:
 *   **Progress Tracking**: Update checkpoints after each major phase completion
 *   **Failure Handling**: Create checkpoints when failures occur to enable recovery
 *   **Log Integration**: Update deployment logs when checkpoints are created or resumed from
-
 ### Testing Procedures
 *   **Regular Testing**: Regularly test disaster recovery procedures
 *   **Simulation**: Simulate various failure scenarios for comprehensive testing
@@ -1271,7 +1191,6 @@ All configurations must default to the most secure settings:
 *   **Documentation**: Document recovery time objectives (RTO) and recovery point objectives (RPO)
 
 ## 🤖 LLM Guidance
-
 This section is for AI assistants helping with this repository.
 
 1.  **Read First**: Before modifying any file, read its existing content and this style guide. Adhere strictly to the established patterns.
@@ -1284,11 +1203,9 @@ This section is for AI assistants helping with this repository.
     *   Ensure all shell tasks use `set -o pipefail`.
 6.  **Jinja2 Escaping**: Be extremely careful with character sequences like `${#` and `{{` in templates. Use the escaping patterns defined in the "Ansible & Jinja2 Standards" section.
 7.  **Deduplication**: If you notice massive duplication in documentation (like in `usage.md`), proactively deduplicate it using Python scripts or surgical edits.
-
 ### Conflict Resolution Hierarchy
 
 When multiple standards appear to conflict, apply this hierarchy:
-
 1.  **Security** > All other considerations
 2.  **Idempotency** > Portability, Performance, Convenience
 3.  **Portability** > Performance, Convenience
@@ -1296,7 +1213,6 @@ When multiple standards appear to conflict, apply this hierarchy:
 5.  **Convenience** (lowest priority)
 
 ### Fail Closed Principles
-
 When uncertain about implementation choices, default to the most secure and conservative option:
 
 *   **Unknown Variables**: Default to secure values (e.g., `false`, `disabled`, `deny`)
@@ -1305,11 +1221,9 @@ When uncertain about implementation choices, default to the most secure and cons
 *   **Permission Defaults**: Choose restrictive permissions over permissive
 *   **Network Access**: Choose deny-all over allow-all when uncertain
 *   **Service Exposure**: Choose minimal exposure over maximum functionality
-
 ### LLM Operating Mode
 
 Follow these strict operating principles:
-
 *   **No Invented Files**: Do not create files that were not explicitly requested
 *   **No Rule Relaxation**: Do not relax rules for brevity or convenience
 *   **No Omitted Metadata**: Do not silently omit required metadata or configuration elements
@@ -1318,7 +1232,6 @@ Follow these strict operating principles:
 *   **No Scope Expansion**: Do not expand the scope of requested changes beyond what was specified
 
 ### LLM Priority Guidelines
-
 When working with LLMs on this codebase, prioritize these elements with clear intent and goals:
 
 *   **Clear Intent Communication**: Use explicit, unambiguous language when describing the purpose of code changes
@@ -1329,11 +1242,9 @@ When working with LLMs on this codebase, prioritize these elements with clear in
 *   **Transparent Decision Making**: Clearly document the reasoning behind each technical decision
 *   **Focused Scope Management**: Stay within the bounds of the requested task while achieving the intended outcome
 *   **Verifiable Outcomes**: Ensure all changes produce measurable, verifiable results that meet the stated goals
-
 ### Strict Upgrade Policies
 
 When implementing upgrades, follow these strict policies that prioritize security and system integrity over backward compatibility:
-
 *   **Zero-Downtime Upgrades**: Always implement rolling updates that maintain service availability
 *   **Immutable Infrastructure**: Treat systems as immutable after deployment; redeploy rather than modify in-place
 *   **Version Pinning**: Pin all dependencies to specific versions to prevent unexpected updates
@@ -1346,7 +1257,6 @@ When implementing upgrades, follow these strict policies that prioritize securit
 *   **Configuration Validation**: Validate all configurations after upgrades to ensure correctness
 
 ### LLM Application of "Assume Nothing" Philosophy
-
 When implementing the "assume nothing" philosophy, LLMs should follow these specific directives:
 
 *   **Validate Before Action**: Always verify prerequisites exist before performing operations
@@ -1356,3 +1266,4 @@ When implementing the "assume nothing" philosophy, LLMs should follow these spec
 *   **Error Anticipation**: Plan for and handle potential failures at every step of execution
 *   **State Verification**: Confirm system state before and after operations to ensure expected outcomes
 *   **Requirement Validation**: Explicitly check that all requirements are met before beginning any process
+

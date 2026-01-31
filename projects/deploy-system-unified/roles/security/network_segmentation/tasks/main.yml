@@ -11,7 +11,6 @@
     mode: '0644'
   become: true
   notify: reload systemd
-
 - name: Create Backend Network Segment (Application Layer)
   ansible.builtin.copy:
     dest: /etc/containers/systemd/backend.network
@@ -23,7 +22,6 @@
     mode: '0644'
   become: true
   notify: reload systemd
-
 - name: Create Management Network Segment (Logging/Forensics)
   ansible.builtin.copy:
     dest: /etc/containers/systemd/management.network

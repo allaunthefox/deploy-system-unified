@@ -1,9 +1,7 @@
 # Ansible Playbooks
-
 Playbooks are Ansible's configuration, deployment, and orchestration language. They can describe a policy you want your remote systems to enforce, or a set of steps in a general IT workflow.
 
 ## Structure
-
 Playbooks are written in YAML format and consist of one or more 'plays' in a list.
 
 ```yaml
@@ -13,7 +11,6 @@ Playbooks are written in YAML format and consist of one or more 'plays' in a lis
   become: yes
   vars:
     http_port: 80
-
   tasks:
     - name: Ensure apache is installed
       package:
@@ -26,11 +23,9 @@ Playbooks are written in YAML format and consist of one or more 'plays' in a lis
         state: started
         enabled: yes
 ```
-
 ## Plays
 
 A play is an ordered set of tasks to be applied to hosts selected by an inventory.
-
 ### Key Components:
 - `hosts`: Defines the host pattern for the play
 - `name`: Human-readable description of the play
@@ -40,7 +35,6 @@ A play is an ordered set of tasks to be applied to hosts selected by an inventor
 - `roles`: Roles to apply to the hosts
 
 ## Tasks
-
 Tasks are the units of action in Ansible. Each task calls a module.
 
 ### Task Attributes:
@@ -51,11 +45,9 @@ Tasks are the units of action in Ansible. Each task calls a module.
 - `loop`: Iterate over a list
 - `register`: Save output to a variable
 - `notify`: Notify handlers
-
 ## Variables
 
 Variables in Ansible can come from multiple sources with different precedence levels.
-
 ### Variable Precedence (Highest to Lowest):
 1. Extras vars (-e/--extra-vars)
 2. Task vars
@@ -70,7 +62,6 @@ Variables in Ansible can come from multiple sources with different precedence le
 11. Role defaults
 
 ## Conditionals
-
 Conditionals allow you to control the execution of tasks based on certain conditions.
 
 ```yaml
@@ -80,11 +71,9 @@ Conditionals allow you to control the execution of tasks based on certain condit
     state: present
   when: ansible_distribution == "Ubuntu"
 ```
-
 ## Loops
 
 Loops allow you to repeat tasks multiple times with different values.
-
 ```yaml
 - name: Install multiple packages
   package:
@@ -97,7 +86,6 @@ Loops allow you to repeat tasks multiple times with different values.
 ```
 
 ## Handlers
-
 Handlers are special tasks that run only when notified by other tasks.
 
 ```yaml
@@ -106,7 +94,6 @@ Handlers are special tasks that run only when notified by other tasks.
     src: nginx.conf
     dest: /etc/nginx/nginx.conf
   notify: restart nginx
-
 handlers:
   - name: restart nginx
     service:
@@ -115,7 +102,6 @@ handlers:
 ```
 
 ## Tags
-
 Tags allow you to run specific parts of a playbook.
 
 ```yaml
@@ -127,7 +113,6 @@ Tags allow you to run specific parts of a playbook.
     - web
     - install
 ```
-
 ## Error Handling
 
 Ansible provides several mechanisms for error handling:

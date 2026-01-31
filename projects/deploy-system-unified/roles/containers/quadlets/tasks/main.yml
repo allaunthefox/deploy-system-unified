@@ -8,7 +8,6 @@
     owner: root
     group: root
   become: true
-
 - name: Create quadlet network configuration
   ansible.builtin.copy:
     dest: /etc/containers/systemd/deploy-network.network
@@ -22,7 +21,6 @@
     mode: '0644'
   become: true
   when: quadlet_create_network | default(true)
-
 - name: Deploy custom quadlet files
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -32,12 +30,10 @@
   become: true
   when: quadlet_custom_files is defined and quadlet_custom_files | length > 0
   notify: reload systemd
-
 - name: Reload systemd to pick up quadlets
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
-
 - name: List generated quadlet services
   ansible.builtin.command:
     cmd: systemctl list-unit-files --type=service | grep -E '\.container|\.pod'
@@ -45,11 +41,9 @@
   changed_when: false
   failed_when: false
   become: true
-
 - name: Display available quadlet services
   ansible.builtin.debug:
     msg: "Available quadlet services: {{ quadlet_services.stdout_lines | default([]) }}"
-
 - name: Set containers quadlets completion flag
   ansible.builtin.set_fact:
     containers_quadlets_complete: true

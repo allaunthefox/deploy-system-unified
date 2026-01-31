@@ -1,7 +1,6 @@
 ---
 # Defaults for security/kernel role
 kernel_profile: "generic" # generic or bare_metal
-
 # Hardware-specific hardening (only applied if profile is bare_metal)
 kernel_enable_iommu: true
 kernel_restrict_dma: true

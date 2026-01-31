@@ -6,7 +6,6 @@
     state: restarted
   become: true
   listen: "restart endlessh"
-
 - name: reload systemd
   ansible.builtin.systemd:
     daemon_reload: true

@@ -18,21 +18,18 @@
     - { regexp: '^#?ClientAliveCountMax ', line: 'ClientAliveCountMax 2' }
   become: true
   notify: restart sshd
-
 - name: Ensure SSH service is running
   ansible.builtin.systemd:
     name: sshd
     enabled: true
     state: started
   become: true
-  when: ansible_service_mgr == 'systemd'
-
+  when: ansible_facts['service_mgr'] == 'systemd'
 - name: Create wheel group if not exists
   ansible.builtin.group:
     name: wheel
     state: present
   become: true
-
 - name: Configure sudo for wheel group
   ansible.builtin.lineinfile:
     path: /etc/sudoers
@@ -40,7 +37,6 @@
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
   become: true
-
 - name: Configure SSH Match blocks (User-level IP restrictions)
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
@@ -56,8 +52,7 @@
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
   notify: restart sshd
-  when: ssh_match_rules | length > 0
-
+  when: ssh_match_rules is defined and ssh_match_rules | length > 0
 - name: Set access configuration completion flag
   ansible.builtin.set_fact:
     security_access_complete: true

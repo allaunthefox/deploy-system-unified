@@ -1,0 +1,136 @@
+---
+# Contabo Cloud VPS 30 SSD - Production-Ready Hardened Configuration
+# Solution: Cloud Provider Sync + Base Hardened Infrastructure + Contabo-Specific VPS Optimization
+# Target Instance: Cloud VPS 30 SSD (8 vCPU, 24 GB RAM, 800 GB SSD)
+- name: Sync with Cloud Provider (Contabo)
+  hosts: all
+  become: true
+  roles:
+    - role: ops/cloud_init
+- ansible.builtin.import_playbook: base_hardened.yml
+- name: Deploy Contabo Cloud VPS 30 SSD Workload
+  hosts: all
+  become: true
+  vars:
+    # VPS Provider Identification
+    vps_provider: "contabo"
+    # Allow TCP forwarding for VPS environments (required for Contabo)
+    sshd_allow_tcp_forwarding: true
+    # Instance-Specific Resource Optimization (8 vCPU / 24 GB RAM)
+    # Virtual Memory Settings (optimized for Contabo's shared cloud resources)
+    vm_dirty_ratio: "10"
+    vm_dirty_background_ratio: "5"
+    vm_swappiness: 10
+    vm_min_free_kbytes: 21474836
+    vm_dirty_background_bytes: 1073741824
+    vm_dirty_bytes: 4294967296
+    # Btrfs Subvolume Configuration for 800 GB SSD
+    btrfs_subvolumes:
+      - { path: "/@", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@" }
+      - { path: "/@home", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@home" }
+      - { path: "/@var", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var" }
+      - { path: "/@var/log", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var/log" }
+      - { path: "/@var/cache", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var/cache" }
+      - { path: "/@srv", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@srv" }
+      - { path: "/@tmp", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@tmp" }
+    # Btrfs Advanced Features
+    btrfs_auto_defrag: true
+    btrfs_scrub: weekly
+    btrfs_balance: monthly
+    # Firewall Configuration - Allow Caddy web ports (HTTP/3 UDP support)
+    firewall_enabled: true
+    firewall_allowed_tcp_ports:
+      - 2222
+      - 80
+      - 443
+    firewall_allowed_udp_ports:
+      - 443
+    # Container Runtime Configuration
+    containers_install_podman: true
+    containers_enable_socket: true
+    # Caddy Reverse Proxy Configuration
+    caddy_generate_config: true
+    caddy_acme_email: admin@contabo-vps-30.example.com
+    # Caddyfile configuration for reverse proxy
+    caddy_config: |
+      # Caddyfile - Contabo Cloud VPS 30 SSD - Managed by Deploy-System-Unified
+      {
+        admin off
+        email {{ caddy_acme_email }}
+        log {
+          output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+            roll_keep_for 720h
+          }
+          format json
+        }
+        servers :443 {
+          protocols h1 h2 h3
+        }
+      }
+      # Default catch-all for HTTP
+      :80 {
+        respond "Contabo Cloud VPS 30 SSD - Web Service" 200
+      }
+      # Example: Reverse proxy to internal application
+      # example.com {
+      #   reverse_proxy 127.0.0.1:8080
+      # }
+      # Example: Reverse proxy to containerized application
+      # app.example.com {
+      #   reverse_proxy app-container:8080
+      # }
+    # Backup Retention Policies
+    timeshift_retention:
+      hourly: 6
+      daily: 7
+      weekly: 4
+      monthly: 3
+
+    restic_retention:
+      keep_last: 7
+      keep_daily: 7
+      keep_weekly: 4
+      keep_monthly: 3
+    # System Monitoring
+    system_monitoring_enabled: true
+    monitoring_tools:
+      - prometheus
+      - node_exporter
+      - grafana
+  roles:
+    # VPS Specialized Roles
+    - role: core/vps_optimization
+    # Storage Optimization for 800 GB SSD
+    - role: core/storage_btrfs
+    # System Tuning
+    - role: core/disk_tuning
+    - role: core/entropy
+    - role: core/logging
+    - role: core/updates
+    - role: core/time
+    # Containerization Stack
+    - role: containers/runtime
+    - role: containers/config
+    - role: containers/quadlets
+    - role: containers/caddy
+    # Backup Configuration
+    - role: backup/timeshift
+    - role: backup/restic
+    - role: backup/rclone
+    # Enhanced Security Configuration
+    - role: security/firewall
+    - role: security/sshd
+    - role: security/hardening
+    - role: security/kernel
+    - role: security/scanning
+    - role: security/audit_integrity
+    - role: security/resource_protection
+    # Networking Configuration
+    - role: core/virt_networking
+  post_tasks:
+    - name: Verify Contabo-specific configuration
+      ansible.builtin.debug:
+        msg: "Contabo Cloud VPS 30 SSD configuration applied successfully"
+      tags: [verification]

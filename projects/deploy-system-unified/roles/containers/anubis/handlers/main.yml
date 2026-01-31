@@ -6,7 +6,6 @@
     state: restarted
   become: true
   listen: "restart anubis"
-
 - name: reload systemd
   ansible.builtin.systemd:
     daemon_reload: true

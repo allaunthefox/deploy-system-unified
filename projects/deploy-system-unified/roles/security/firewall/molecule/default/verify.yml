@@ -7,7 +7,6 @@
       register: ufw_status
       changed_when: false
       become: true
-
     - name: Assert UFW is enabled
       ansible.builtin.assert:
         that:

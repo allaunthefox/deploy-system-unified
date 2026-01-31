@@ -1,12 +1,12 @@
 ---
 # Tasks for security/resource_protection - DoS and Resource Exhaustion Mitigation
-
 - name: Validate minimum resource requirements
   ansible.builtin.assert:
     that:
       - ansible_memtotal_mb >= resource_min_ram_mb[virt_type] | default(resource_min_ram_mb['default'])
-    fail_msg: "Insufficient RAM for {{ virt_type | upper }} environment. Required: {{ resource_min_ram_mb[virt_type] | default(resource_min_ram_mb['default']) }}MB"
-
+    fail_msg: |-
+      Insufficient RAM for {{ virt_type | upper }} environment.
+      Required: {{ resource_min_ram_mb[virt_type] | default(resource_min_ram_mb['default']) }}MB
 - name: Configure system-wide ulimits for process isolation
   ansible.builtin.copy:
     content: |
@@ -19,7 +19,6 @@
     dest: /etc/security/limits.d/99-resource-protection.conf
     mode: '0644'
   become: true
-
 - name: Enforce Systemd global resource limits
   ansible.builtin.lineinfile:
     path: /etc/systemd/system.conf

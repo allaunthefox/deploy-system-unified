@@ -1,5 +1,4 @@
 ---
 # Main site playbook for Deploy-System-Unified
 # This is the base layer - copy a branch template to site.yml for specific deployments
-
 - import_playbook: main.yml

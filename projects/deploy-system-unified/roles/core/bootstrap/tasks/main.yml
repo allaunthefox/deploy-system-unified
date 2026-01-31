@@ -8,13 +8,11 @@
       - distribution
       - os_family
       - pkg_mgr
-
 - name: Set distribution-specific variables
   ansible.builtin.set_fact:
     core_pkg_manager: "{{ ansible_facts['pkg_mgr'] }}"
     core_os_family: "{{ ansible_facts['os_family'] }}"
     core_distribution: "{{ ansible_facts['distribution'] | lower }}"
-
 - name: Ensure base packages are installed (Debian/Ubuntu)
   ansible.builtin.apt:
     name:
@@ -27,7 +25,6 @@
     update_cache: true
   when: core_os_family == 'Debian'
   become: true
-
 - name: Ensure base packages are installed (RedHat/CentOS)
   ansible.builtin.dnf:
     name:
@@ -39,7 +36,6 @@
     state: present
   when: core_os_family == 'RedHat'
   become: true
-
 - name: Ensure base packages are installed (Arch)
   community.general.pacman:
     name:
@@ -51,7 +47,6 @@
     state: present
   when: core_distribution == 'archlinux'
   become: true
-
 - name: Create standard system directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -62,20 +57,16 @@
     - /usr/local/sbin
     - /opt
   become: true
-
 - name: Detect Virtualization Environment
   ansible.builtin.set_fact:
     virt_type: "{{ ansible_virtualization_type | default('bare-metal') | lower }}"
     is_virtualized: "{{ true if (ansible_virtualization_role | default('host') == 'guest') else false }}"
-
 - name: Report Virtualization Profile
   ansible.builtin.debug:
     msg: "Environment detected as {{ virt_type | upper }} (Guest: {{ is_virtualized }})."
-
 - name: Generate high-entropy Deployment ID (Forensic Primary Key)
   ansible.builtin.set_fact:
     deployment_id: "{{ (ansible_date_time.iso8601_micro + (999999999 | random | string)) | sha256sum | head -c 16 }}"
-
 - name: Set bootstrap completion flag
   ansible.builtin.set_fact:
     core_bootstrap_complete: true

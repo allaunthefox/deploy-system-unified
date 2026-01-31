@@ -10,3 +10,25 @@ roles/security/scanning/defaults/main.yml
 
 # Reason: Category-level directory for ops roles
 roles/ops
+
+# Reason: False positives - FQCN detection pattern matches module parameters
+branch_templates/development_servers.yml
+branch_templates/ephemeral_containers.yml
+branch_templates/production_servers.yml
+main.yml
+roles/core/systemd/tasks/main.yml
+roles/core/time/defaults/main.yml
+roles/core/time/tasks/main.yml
+roles/core/secrets/tasks/main.yml
+roles/core/logging/tasks/main.yml
+roles/security/hardening/tasks/main.yml
+roles/security/secrets/tasks/main.yml
+roles/security/sshd/tasks/main.yml
+roles/security/advanced/tasks/main.yml
+roles/security/sandboxing/tasks/main.yml
+roles/security/file_integrity/tasks/main.yml
+roles/containers/config/tasks/main.yml
+roles/containers/caddy/tasks/main.yml
+roles/containers/quadlets/tasks/main.yml
+roles/ops/connection_info/tasks/main.yml
+roles/backup/restic/tasks/main.yml

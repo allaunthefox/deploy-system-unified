@@ -1,5 +1,4 @@
 # Molecule Scenarios
-
 ## Overview
 Scenarios in Molecule allow you to test your Ansible roles under different conditions, configurations, or environments. Each scenario represents a unique testing situation.
 
@@ -11,7 +10,6 @@ The default scenario is located at `molecule/default/` and contains:
 - `destroy.yml`: Playbook to run during destruction (optional)
 - `create.yml`: Playbook to run during creation (optional)
 - `prepare.yml`: Playbook to run during preparation (optional)
-
 ## Creating Custom Scenarios
 Custom scenarios can be created using:
 ```bash
@@ -19,7 +17,6 @@ molecule init scenario -r role_name scenario_name
 ```
 
 ## Common Scenario Types
-
 ### Platform Scenarios
 Test on different operating systems:
 - `molecule/ubuntu/`
@@ -32,7 +29,6 @@ Test different configurations:
 - `molecule/minimal/`: Minimal configuration
 - `molecule/full/`: Full configuration
 - `molecule/ha/`: High availability configuration
-
 ### Integration Scenarios
 Test integration with other services:
 - `molecule/integration/`: Integration tests
@@ -46,7 +42,6 @@ Each scenario has its own `molecule.yml` file that can override:
 - Provisioner settings
 - Verifier configuration
 - Test sequence options
-
 ## Running Specific Scenarios
 Run a specific scenario with:
 ```bash
@@ -62,7 +57,6 @@ scenario:
   name: dependent_scenario
   parent: base_scenario
 ```
-
 ## Parallel Execution
 Multiple scenarios can be run in parallel:
 ```bash

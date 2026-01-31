@@ -3,3 +3,6 @@
 sshd_backup_config: true
 sshd_disable_weak_keys: false
 sshd_use_strong_ciphers: true
+sshd_allow_tcp_forwarding: false
+sshd_allow_agent_forwarding: false
+sshd_allow_x11_forwarding: false

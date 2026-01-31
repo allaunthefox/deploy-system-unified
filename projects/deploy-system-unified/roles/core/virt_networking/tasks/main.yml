@@ -3,11 +3,9 @@
 - name: Assign Network UUID
   ansible.builtin.import_role:
     name: core/identity
-
 - name: Import VLAN tasks
   ansible.builtin.import_tasks: vlan.yml
   tags: [virt, networking, vlan]
-
 - name: Import VXLAN tasks
   ansible.builtin.import_tasks: vxlan.yml
   tags: [virt, networking, vxlan]

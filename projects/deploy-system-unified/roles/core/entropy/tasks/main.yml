@@ -8,7 +8,6 @@
     state: present
   become: true
   when: ansible_distribution | lower in entropy_service_mapping.keys()
-
 - name: Enable and start entropy enhancement services (idempotent)
   ansible.builtin.systemd:
     name: "{{ item }}"
@@ -21,10 +20,8 @@
   when:
     - ansible_service_mgr == 'systemd'
     - ansible_distribution | lower in entropy_service_mapping.keys()
-
 - name: Validate entropy services are running (idempotent)
   ansible.builtin.service_facts:
-
 - name: Verify entropy services status
   ansible.builtin.assert:
     that:

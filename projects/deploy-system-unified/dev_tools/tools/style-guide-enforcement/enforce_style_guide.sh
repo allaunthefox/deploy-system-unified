@@ -218,11 +218,11 @@ enforce_ansible_standards() {
 # Enforce FQCN (Fully Qualified Collection Names)
 enforce_fqcn_standards() {
     log "Enforcing FQCN standards..."
-    
+
     local short_form_matches=()
     # Matches lines like '  apt:', '  - copy:', but NOT '    group:' or '    user:' under a module
     local better_pattern='^\s+(- )?(apt|dnf|copy|template|service|systemd|shell|command|file|stat|user|group|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):'
-    
+
     if command -v rg >/dev/null 2>&1; then
         while IFS= read -r file; do
             short_form_matches+=("$file")
@@ -233,14 +233,24 @@ enforce_fqcn_standards() {
         done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
     fi
 
-    if [ ${#short_form_matches[@]} -gt 0 ]; then
-        warning "Found ${#short_form_matches[@]} file(s) with potential non-FQCN module calls"
-        for file in "${short_form_matches[@]}"; do
+    # Filter out ignored files
+    local filtered_matches=()
+    for file in "${short_form_matches[@]}"; do
+        local relative_path
+        relative_path=$(realpath --relative-to="$PROJECT_ROOT" "$file")
+        if [ ! -f "$STYLE_IGNORE" ] || ! grep -qx "$relative_path" "$STYLE_IGNORE"; then
+            filtered_matches+=("$file")
+        fi
+    done
+
+    if [ ${#filtered_matches[@]} -gt 0 ]; then
+        warning "Found ${#filtered_matches[@]} file(s) with potential non-FQCN module calls"
+        for file in "${filtered_matches[@]}"; do
             warning "  - $file"
         done
-        TOTAL_ISSUES=$((TOTAL_ISSUES + ${#short_form_matches[@]}))
+        TOTAL_ISSUES=$((TOTAL_ISSUES + ${#filtered_matches[@]}))
     fi
-    
+
     success "FQCN standards checked"
 }
 

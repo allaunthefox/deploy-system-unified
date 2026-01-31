@@ -11,7 +11,17 @@
     # Prevent conflict: skip if a granular rule for this port already exists
     - firewall_additional_rules | length == 0 or (item | string) not in (firewall_additional_rules | map(attribute='port') | map('string') | list)
   become: true
-
+- name: Allow configured UDP ports (UFW)
+  community.general.ufw:
+    rule: allow
+    port: "{{ item | string }}"
+    proto: udp
+  loop: "{{ firewall_allowed_udp_ports | default([]) }}"
+  when:
+    - ansible_os_family == 'Debian'
+    # Prevent conflict: skip if a granular rule for this port already exists
+    - firewall_additional_rules | length == 0 or (item | string) not in (firewall_additional_rules | map(attribute='port') | map('string') | list)
+  become: true
 - name: Apply granular IP-restricted firewall rules (UFW)
   community.general.ufw:
     rule: allow

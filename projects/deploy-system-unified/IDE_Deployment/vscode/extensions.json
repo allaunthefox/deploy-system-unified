@@ -1,0 +1,26 @@
+{
+  "recommendations": [
+    "redhat.ansible",
+    "redhat.vscode-yaml",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "davidanson.vscode-markdownlint",
+    "eamodio.gitlens",
+    "github.copilot",
+    "github.copilot-chat",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+    "codezombiech.gitignore",
+    "mechatroner.rainbow-csv",
+    "ahmadawais.shades-of-purple",
+    "ms-vscode.makefile-tools",
+    "ms-azuretools.vscode-containers",
+    "gitlab.gitlab-workflow"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "ms-vscode.vscode-javascript-next",
+    "ms-vscode.vscode-css-languageservice",
+    "ms-vscode.vscode-html-languageservice"
+  ]
+}

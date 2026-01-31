@@ -4,14 +4,12 @@
   ansible.builtin.command: swapoff -a
   become: true
   changed_when: false
-
 - name: Remove SWAP from fstab
   ansible.builtin.replace:
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+.*)$'
     replace: '# \1'
   become: true
-
 - name: Load Kubernetes required kernel modules
   community.general.modprobe:
     name: "{{ item }}"
@@ -20,7 +18,6 @@
     - overlay
     - br_netfilter
   become: true
-
 - name: Configure sysctl for Kubernetes networking
   ansible.posix.sysctl:
     name: "{{ item.name }}"
@@ -33,7 +30,6 @@
     - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
     - { name: 'net.ipv4.ip_forward', value: '1' }
   become: true
-
 - name: Create directory for Kubernetes manifests
   ansible.builtin.file:
     path: /etc/kubernetes/manifests

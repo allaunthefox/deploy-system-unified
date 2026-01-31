@@ -1,5 +1,4 @@
 # Molecule Getting Started
-
 ## Overview
 Molecule is a tool that aids in the development and testing of Ansible roles. It automates the process of testing roles across multiple instances, operating systems, and distributions.
 
@@ -8,7 +7,6 @@ Install Molecule using pip:
 ```bash
 pip install molecule
 ```
-
 ## Basic Commands
 - `molecule init`: Initialize a new role or scenario
 - `molecule create`: Create instances
@@ -23,7 +21,6 @@ pip install molecule
 2. Write your Ansible tasks in the role
 3. Configure molecule.yml for your testing needs
 4. Run `molecule test` to execute the full test sequence
-
 ## Test Sequence
 Molecule executes the following sequence:
 1. **Dependency**: Install dependencies

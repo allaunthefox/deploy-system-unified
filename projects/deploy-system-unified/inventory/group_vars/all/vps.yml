@@ -1,0 +1,18 @@
+---
+# VPS-specific configuration for Deploy-System-Unified
+# Force Contabo provider detection for Proxmox/KVM instances
+# This is necessary because ansible_system_vendor returns "QEMU" rather than "Contabo"
+vps_provider: "contabo"
+# Enable TCP forwarding for Contabo VPS environments
+# Required for VPNs, tunnels, and network operations
+sshd_allow_tcp_forwarding: true
+
+# Proxmox/KVM specific optimizations
+vps_optimization:
+  # Network optimization for Contabo's virtual bridge environment
+  mtu: 1450
+  # IO scheduler for virtual disks (none/noop recommended for SSDs)
+  io_scheduler: "none"
+  # Virtual memory optimization for shared cloud resources
+  dirty_ratio: 10
+  dirty_background_ratio: 5

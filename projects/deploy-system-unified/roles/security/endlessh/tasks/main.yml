@@ -5,14 +5,12 @@
     name: endlessh
     state: present
   become: true
-
 - name: Create Endlessh configuration directory
   ansible.builtin.file:
     path: /etc/endlessh
     state: directory
     mode: '0755'
   become: true
-
 - name: Configure Endlessh
   ansible.builtin.template:
     src: config.j2
@@ -20,7 +18,6 @@
     mode: '0644'
   become: true
   notify: restart endlessh
-
 - name: Allow Endlessh to bind to privileged ports
   community.general.capabilities:
     path: /usr/bin/endlessh
@@ -28,14 +25,12 @@
     state: present
   become: true
   ignore_errors: true
-
 - name: Ensure Endlessh systemd override directory exists
   ansible.builtin.file:
     path: /etc/systemd/system/endlessh.service.d
     state: directory
     mode: '0755'
   become: true
-
 - name: Configure Endlessh to run on port {{ endlessh_port }} (systemd override)
   ansible.builtin.copy:
     content: |
@@ -46,10 +41,9 @@
     dest: /etc/systemd/system/endlessh.service.d/override.conf
     mode: '0644'
   become: true
-  notify: 
+  notify:
     - reload systemd
     - restart endlessh
-
 - name: Enable and start Endlessh service
   ansible.builtin.systemd:
     name: endlessh

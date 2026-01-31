@@ -1,13 +1,10 @@
 # Molecule Documentation
-
 This directory contains documentation for Molecule, based on the current official documentation from the Molecule project.
 
 ## Overview
-
 Molecule is a project designed to aid in the development and testing of Ansible roles. Molecule provides support for testing with multiple instances, operating systems and distributions, virtualization providers, test frameworks and more.
 
 ## Key Features
-
 ### Test Framework Integration
 - Integration with testinfra, Goss, InSpec, and other testing frameworks
 - Support for custom testing frameworks
@@ -18,7 +15,6 @@ Molecule is a project designed to aid in the development and testing of Ansible 
 - Vagrant VM driver
 - Cloud provider drivers (AWS, Azure, GCP, etc.)
 - Custom driver support
-
 ### Scenario Testing
 - Multiple test scenarios for different configurations
 - Isolated test environments
@@ -28,7 +24,6 @@ Molecule is a project designed to aid in the development and testing of Ansible 
 - Integration with Ansible Galaxy
 - Collection dependency management
 - Custom dependency resolution
-
 ## Architecture
 
 ### Test Sequence
@@ -42,7 +37,6 @@ Molecule executes the following sequence:
 7. **Verify**: Verify the system
 8. **Cleanup**: Cleanup instances
 9. **Destroy**: Destroy instances
-
 ### Configuration
 Molecule configuration is stored in `molecule.yml` files which define:
 - Driver configuration
@@ -52,7 +46,6 @@ Molecule configuration is stored in `molecule.yml` files which define:
 - Scenario options
 
 ## Usage
-
 ### Basic Commands
 - `molecule init`: Initialize a new role or scenario
 - `molecule create`: Create instances
@@ -67,7 +60,6 @@ Molecule configuration is stored in `molecule.yml` files which define:
 - `converge.yml`: Playbook for converge step
 - `verify.yml`: Playbook for verify step
 - `requirements.yml`: Dependency requirements
-
 ## Best Practices
 
 ### Role Development
@@ -75,7 +67,6 @@ Molecule configuration is stored in `molecule.yml` files which define:
 - Implement comprehensive verification
 - Test idempotence regularly
 - Use appropriate drivers for testing
-
 ### Testing Strategy
 - Test on multiple platforms
 - Verify both positive and negative cases

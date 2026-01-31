@@ -1,11 +1,9 @@
 ---
 # Base layer playbook for Deploy-System-Unified
 # This provides the foundational setup that branches can extend
-
 - name: Deploy base system foundation
   hosts: all
   become: true
-
   pre_tasks:
     - name: Validate System Identity (FQDN Enforcement)
       ansible.builtin.assert:
@@ -14,7 +12,6 @@
           - ansible_fqdn != "localhost"
           - ansible_fqdn != "localhost.localdomain"
         fail_msg: "System must have a valid FQDN configured for secure deployment."
-
     - name: Precreate essential directories (idempotent)
       ansible.builtin.file:
         path: "{{ item.path }}"
@@ -34,31 +31,25 @@
         - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
       become: true
       tags: [bootstrap, directories]
-
     - name: Set directory precreation flag (idempotent)
       ansible.builtin.set_fact:
         directories_precreated: true
-
     - name: Check if preflight validation already completed (idempotent)
       ansible.builtin.stat:
         path: /tmp/preflight_completed.flag
       register: preflight_flag
-
     - name: Include preflight checks if not already completed (idempotent)
       ansible.builtin.import_role:
         name: preflight
       when: not preflight_flag.stat.exists
       tags: [preflight]
-
     - name: Create preflight completion flag (idempotent)
       ansible.builtin.file:
         path: /tmp/preflight_completed.flag
         state: touch
         mode: '0644'
       when: not preflight_flag.stat.exists
-
   # No roles in the base layer - these are added in branches
-
   post_tasks:
     - name: Base system verification (idempotent)
       ansible.builtin.debug:

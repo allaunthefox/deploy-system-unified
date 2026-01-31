@@ -9,7 +9,6 @@
     state: present
   when: ansible_os_family == 'Debian'
   become: true
-
 - name: Enable and start AppArmor service
   ansible.builtin.systemd:
     name: apparmor
@@ -17,7 +16,6 @@
     state: started
   when: ansible_os_family == 'Debian'
   become: true
-
 - name: Enforce AppArmor at boot via GRUB
   ansible.builtin.lineinfile:
     path: /etc/default/grub

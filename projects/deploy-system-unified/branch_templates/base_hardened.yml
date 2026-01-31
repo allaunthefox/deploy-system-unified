@@ -1,14 +1,12 @@
 ---
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
-
 - name: Apply Secure Infrastructure Base
   hosts: all
   become: true
   roles:
     # Operations Pre-Flight (Controller-side)
     - role: ops/pre_connection
-
     # Core system setup (The Foundational Base)
     - role: core/repositories
     - role: core/updates
@@ -18,7 +16,6 @@
     - role: core/time
     - role: core/entropy
     - role: core/secrets
-
     # Security Baseline (Establish Default-Deny First)
     - role: security/firewall
     - role: security/mac_apparmor
@@ -28,7 +25,6 @@
     - role: security/access
       access_sshd_port: "{{ access_sshd_port | default(22) }}"
     - role: security/file_integrity
-
     # Advanced Security & Isolation Measures
     - role: security/sandboxing
     - role: security/firejail
@@ -38,7 +34,6 @@
     - role: security/endlessh
     - role: security/ips
     - role: security/advanced
-
     # Operations Utilities
     - role: ops/session
     - role: ops/connection_info

@@ -6,13 +6,11 @@
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
   become: true
-
 - name: Update package cache (RedHat/Fedora)
   ansible.builtin.dnf:
     update_cache: true
   when: ansible_os_family == 'RedHat'
   become: true
-
 - name: Update package cache (Arch)
   community.general.pacman:
     update_cache: true

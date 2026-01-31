@@ -4,7 +4,6 @@
   ansible.builtin.command: udevadm control --reload-rules
   become: true
   listen: "reload udev"
-
 - name: reload sysctl
   ansible.builtin.command: sysctl -p /etc/sysctl.d/99-contabo-networking.conf
   become: true

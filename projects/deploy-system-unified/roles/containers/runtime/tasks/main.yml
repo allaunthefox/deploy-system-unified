@@ -7,11 +7,11 @@
       - podman-compose
       - slirp4netns
       - fuse-overlayfs
+      - apparmor-utils
     state: present
     update_cache: true
   when: ansible_facts['os_family'] == 'Debian'
   become: true
-
 - name: Install Podman on RedHat/CentOS
   ansible.builtin.dnf:
     name:
@@ -19,10 +19,10 @@
       - podman-compose
       - slirp4netns
       - fuse-overlayfs
+      - selinux-policy-targeted
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   become: true
-
 - name: Install Podman on Arch
   community.general.pacman:
     name:
@@ -33,30 +33,98 @@
     state: present
   when: ansible_facts['distribution'] | lower == 'archlinux'
   become: true
-
+- name: Configure container security settings
+  ansible.builtin.copy:
+    dest: /etc/containers/containers.conf
+    content: |
+      [containers]
+      log_driver = "journald"
+      log_size_max = 10485760
+      pids_limit = 2048
+      userns = "auto"
+      signature_policy = "/etc/containers/policy.json"
+      [network]
+      network_backend = "netavark"
+      [engine]
+      runtime = "crun"
+      cgroup_manager = "systemd"
+      events_logger = "journald"
+    mode: '0644'
+  become: true
+- name: Configure container signature policy
+  ansible.builtin.copy:
+    dest: /etc/containers/policy.json
+    content: |
+      {
+        "default": [
+          {
+            "type": "reject"
+          }
+        ],
+        "transports": {
+          "docker": {
+            "docker.io/library": [
+              {
+                "type": "insecureAcceptAnything"
+              }
+            ],
+            "quay.io": [
+              {
+                "type": "insecureAcceptAnything"
+              }
+            ],
+            "ghcr.io": [
+              {
+                "type": "insecureAcceptAnything"
+              }
+            ]
+          },
+          "docker-daemon": {
+            "": [
+              {
+                "type": "insecureAcceptAnything"
+              }
+            ]
+          }
+        }
+      }
+    mode: '0644'
+  become: true
+- name: Enable AppArmor for containers (Debian/Ubuntu)
+  ansible.builtin.command:
+    cmd: aa-enforce /etc/apparmor.d/containers/*
+  register: apparmor_result
+  changed_when: true
+  failed_when: false
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+- name: Enable SELinux for containers (RedHat/CentOS)
+  ansible.builtin.command:
+    cmd: setsebool -P container_use_cephfs 1 container_use_nfs 1
+  register: selinux_result
+  changed_when: true
+  failed_when: false
+  become: true
+  when: ansible_facts['os_family'] == 'RedHat'
 - name: Create podman configuration directory
   ansible.builtin.file:
     path: /etc/containers
     state: directory
     mode: '0755'
   become: true
-
 - name: Configure container registries
   ansible.builtin.copy:
     dest: /etc/containers/registries.conf
     content: |
       # Container registries configuration
       unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io"]
-
       [[registry]]
       prefix = "docker.io"
       location = "docker.io"
-
       [[registry.mirror]]
       location = "mirror.gcr.io"
     mode: '0644'
   become: true
-
 - name: Enable podman socket for rootless containers
   ansible.builtin.systemd:
     name: podman.socket
@@ -65,7 +133,6 @@
     scope: user
   become: false
   failed_when: false
-
 - name: Set containers runtime completion flag
   ansible.builtin.set_fact:
     containers_runtime_complete: true

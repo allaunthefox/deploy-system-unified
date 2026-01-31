@@ -1,50 +1,41 @@
 # Workflow Reference
-
 This document provides a comprehensive reference for Molecule's actions, sequences, and subcommands in the ansible-native approach.
 
 ## Overview
-
 When running Molecule, you must provide a **subcommand** that determines what action or sequence of actions will be executed.
 
 ```bash
 molecule <subcommand> [options]
 ```
-
 Each subcommand executes either:
 
 - **A single action** - Runs one specific playbook
 - **A sequence** - Runs an ordered list of actions
-
 ### Execution Flow
 
 **Subcommand** → **Sequence** → **Actions** → **Playbooks**
-
 1. **Subcommands** are the commands to execute (e.g., `molecule test`, `molecule converge`)
 2. **Sequences** are ordered lists of actions that can be customized in configuration
 3. **Actions** correspond to individual playbooks containing tasks, roles, or other playbooks
 4. **Playbooks** contain the actual Ansible tasks that perform the work
 
 ### Example Flow
-
 ```bash
 molecule test
 ```
 
 This executes the `test` sequence:
-
 ```
 dependency → cleanup → destroy → syntax → create → prepare → converge → idempotence → side_effect → verify → cleanup → destroy
 ```
 
 Each action runs its corresponding playbook:
-
 - `create` → `create.yml` (tasks to provision testing resources)
 - `converge` → `converge.yml` (tasks to apply configuration under test)
 - `verify` → `verify.yml` (tasks to validate results)
 - etc.
 
 ### Customization
-
 Sequences can be customized in the configuration:
 
 ```yaml
@@ -55,15 +46,12 @@ scenario:
     - verify
     - destroy
 ```
-
 This provides complete control over what actions run and in what order for any given subcommand.
 
 ## Actions
-
 Actions are individual playbooks that perform specific testing lifecycle tasks. Each action has a distinct purpose and can be executed independently or as part of a sequence.
 
 ### Create
-
 **Purpose**: Provision and initialize testing resources.
 
 ```yaml
@@ -77,7 +65,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       containers.podman.podman_network:
         name: molecule-test-network
         state: present
-
     - name: Launch test containers
       containers.podman.podman_container:
         name: "{% raw %}{{ item }}{% endraw %}"
@@ -94,11 +81,9 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         timeout: 30
       loop: "{% raw %}{{ groups['test_resources'] }}{% endraw %}"
 ```
-
 ### Prepare
 
 **Purpose**: Configure testing resources and install dependencies before testing.
-
 ```yaml
 # prepare.yml
 ---
@@ -116,7 +101,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
           - curl
           - jq
         state: present
-
     - name: Create test directories
       ansible.builtin.file:
         path: /opt/test-data
@@ -130,11 +114,9 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       with_fileglob:
         - "files/test-configs/*"
 ```
-
 ### Converge
 
 **Purpose**: Apply the configuration or code being tested.
-
 ```yaml
 # converge.yml
 ---
@@ -154,7 +136,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         dest: /etc/myapp/app.conf
         mode: "0644"
       notify: restart application service
-
     - name: Ensure services are running
       ansible.builtin.systemd:
         name: "{% raw %}{{ item }}{% endraw %}"
@@ -170,11 +151,9 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         name: myapp
         state: restarted
 ```
-
 ### Verify
 
 **Purpose**: Test that the applied configuration works as expected.
-
 ```yaml
 # verify.yml
 ---
@@ -193,7 +172,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       ansible.builtin.stat:
         path: /etc/myapp/app.conf
       register: config_file
-
     - name: Assert configuration is correct
       ansible.builtin.assert:
         that:
@@ -206,7 +184,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         cmd: curl -s http://localhost:8080/api/status
       register: api_response
       changed_when: false
-
     - name: Validate API response format
       ansible.builtin.assert:
         that:
@@ -214,7 +191,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
 ```
 
 ### Idempotence
-
 **Purpose**: Verify that running converge twice produces no changes (idempotency test).
 
 ```yaml
@@ -222,11 +198,9 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
 # No separate playbook needed - Molecule handles this automatically
 # The test passes if the second converge run reports zero changes
 ```
-
 ### Side Effect
 
 **Purpose**: Test interactions with external systems or simulate failure conditions.
-
 ```yaml
 # side_effect.yml
 ---
@@ -245,7 +219,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         url: "http://{% raw %}{{ ansible_host }}{% endraw %}:8080/health"
         method: GET
         status_code: [200, 503]
-
     - name: Restore network connectivity
       ansible.builtin.iptables:
         chain: OUTPUT
@@ -261,11 +234,9 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         retries: 5
         delay: 2
 ```
-
 ### Cleanup
 
 **Purpose**: Remove temporary files and reset testing resources to clean state.
-
 ```yaml
 # cleanup.yml
 ---
@@ -289,7 +260,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         - /tmp/test-data
         - /opt/test-logs
         - /var/cache/test-artifacts
-
     - name: Reset configuration to defaults
       ansible.builtin.copy:
         src: default.conf
@@ -302,11 +272,9 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       become_user: postgres
       ignore_errors: true
 ```
-
 ### Destroy
 
 **Purpose**: Remove all testing resources and clean up infrastructure.
-
 ```yaml
 # destroy.yml
 ---
@@ -326,7 +294,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       containers.podman.podman_network:
         name: molecule-test-network
         state: absent
-
     - name: Clean up cloud resources
       amazon.aws.ec2_instance:
         instance_ids: "{% raw %}{{ hostvars[item].instance_id }}{% endraw %}"
@@ -340,19 +307,15 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         path: "{% raw %}{{ molecule_ephemeral_directory }}{% endraw %}"
         state: absent
 ```
-
 ## Sequences
 
 Sequences define the order and combination of actions to execute for different testing workflows.
-
 ## Sequences Without Shared State
 
 In non-shared state mode (default), each scenario manages its own complete lifecycle.
-
 ### Default Test Sequence
 
 The standard comprehensive testing sequence:
-
 ```yaml
 scenario:
   test_sequence:
@@ -367,7 +330,6 @@ scenario:
 ```
 
 ### Component Test Sequence
-
 For testing individual components without full lifecycle:
 
 ```yaml
@@ -380,11 +342,9 @@ scenario:
     - verify
     - cleanup
 ```
-
 ### Development Sequence
 
 Quick iteration cycle for development:
-
 ```yaml
 scenario:
   test_sequence:
@@ -393,7 +353,6 @@ scenario:
 ```
 
 ### Integration Test Sequence
-
 For testing with external dependencies:
 
 ```yaml
@@ -407,11 +366,9 @@ scenario:
     - cleanup
     - destroy
 ```
-
 ## Sequences With Shared State
 
 With `shared_state: true`, the default scenario manages infrastructure while component scenarios focus on testing.
-
 ### Lifecycle Management Sequence (Default Scenario)
 
 ```yaml
@@ -422,7 +379,6 @@ scenario:
     - create
     - destroy
 ```
-
 ### Component Testing Sequences
 
 ```yaml
@@ -432,7 +388,6 @@ scenario:
   test_sequence:
     - converge
     - verify
-
 # scenarios/role2/molecule.yml
 ---
 scenario:
@@ -450,11 +405,9 @@ scenario:
     - converge
     - verify
 ```
-
 ### Sequence Inheritance
 
 #### Global Configuration (config.yml)
-
 ```yaml
 ---
 ansible:
@@ -470,12 +423,10 @@ scenario:
     - converge
     - verify
     - destroy
-
 shared_state: true
 ```
 
 #### Scenario-Specific Override (scenarios/unit/molecule.yml)
-
 ```yaml
 ---
 scenario:
@@ -488,7 +439,6 @@ scenario:
 ```
 
 #### Complete Scenario Override (scenarios/integration/molecule.yml)
-
 ```yaml
 ---
 ansible:
@@ -504,12 +454,10 @@ scenario:
     - verify
     - cleanup
     - destroy
-
 shared_state: false # Override global setting
 ```
 
 ### Shared State Sequences
-
 #### Default Scenario (Lifecycle Manager)
 
 ```yaml
@@ -520,7 +468,6 @@ scenario:
     - create
     - destroy
 ```
-
 #### Component Scenarios
 
 ```yaml
@@ -530,7 +477,6 @@ scenario:
   test_sequence:
     - converge
     - verify
-
 # scenarios/role2/molecule.yml
 ---
 scenario:
@@ -548,15 +494,12 @@ scenario:
     - converge
     - verify
 ```
-
 ## Subcommands
 
 Molecule subcommands map to either complete sequences or individual actions.
-
 ### Sequence Commands
 
 These commands execute complete sequences of actions:
-
 #### `molecule test`
 
 - **Purpose**: Execute the full test sequence
@@ -566,114 +509,96 @@ These commands execute complete sequences of actions:
   - Always starts fresh (destroys existing resources)
   - Runs all actions in sequence order
   - Stops on first failure unless `--destroy=never`
-
 #### `molecule check`
 
 - **Purpose**: Perform a dry-run of the provisioning sequence
 - **Sequence**: `dependency`, `cleanup`, `destroy`, `syntax`, `create`, `prepare`, `converge`
 - **Usage**: `molecule check [scenario-name]`
 - **Behavior**: Validates configuration without permanent changes
-
 #### `molecule converge`
 
 - **Purpose**: Execute the convergence sequence
 - **Sequence**: `dependency`, `create`, `prepare`, `converge`
 - **Usage**: `molecule converge [scenario-name]`
 - **Behavior**: Ensures resources exist and applies configuration
-
 #### `molecule create`
 
 - **Purpose**: Execute the creation sequence
 - **Sequence**: `dependency`, `create`, `prepare`
 - **Usage**: `molecule create [scenario-name]`
 - **Behavior**: Sets up testing resources and prepares them
-
 #### `molecule destroy`
 
 - **Purpose**: Execute the destruction sequence
 - **Sequence**: `dependency`, `cleanup`, `destroy`
 - **Usage**: `molecule destroy [scenario-name]`
 - **Behavior**: Cleans up and removes all testing resources
-
 ### Direct Action Commands
 
 These commands execute single actions only:
-
 #### `molecule prepare`
 
 - **Action**: `prepare`
 - **Purpose**: Configure existing resources for testing
 - **Usage**: `molecule prepare [scenario-name]`
 - **Behavior**: Runs prepare playbook only, resources must already exist
-
 #### `molecule verify`
 
 - **Action**: `verify`
 - **Purpose**: Run verification tests only
 - **Usage**: `molecule verify [scenario-name]`
 - **Behavior**: Tests current state without changes
-
 #### `molecule idempotence`
 
 - **Action**: `idempotence`
 - **Purpose**: Test idempotency by running converge twice
 - **Usage**: `molecule idempotence [scenario-name]`
 - **Behavior**: Runs converge, then converge again, expects no changes
-
 #### `molecule side-effect`
 
 - **Action**: `side_effect`
 - **Purpose**: Execute side effect testing
 - **Usage**: `molecule side-effect [scenario-name]`
 - **Behavior**: Runs side_effect playbook only
-
 #### `molecule cleanup`
 
 - **Action**: `cleanup`
 - **Purpose**: Clean up test artifacts without destroying resources
 - **Usage**: `molecule cleanup [scenario-name]`
 - **Behavior**: Runs cleanup playbook only
-
 #### `molecule syntax`
 
 - **Action**: `syntax`
 - **Purpose**: Check playbook syntax
 - **Usage**: `molecule syntax [scenario-name]`
 - **Behavior**: Validates Ansible syntax without execution
-
 #### `molecule dependency`
 
 - **Action**: `dependency`
 - **Purpose**: Install role dependencies
 - **Usage**: `molecule dependency [scenario-name]`
 - **Behavior**: Downloads and installs required dependencies only
-
 ### Utility Commands
 
 These commands provide information and access:
-
 #### `molecule list`
 
 - **Purpose**: Display scenario information and status
 - **Usage**: `molecule list [scenario-name]`
 - **Behavior**: Shows current state of instances
-
 #### `molecule login`
 
 - **Purpose**: Log into a running instance
 - **Usage**: `molecule login [--host hostname] [scenario-name]`
 - **Behavior**: Opens shell session to instance
-
 #### `molecule matrix`
 
 - **Purpose**: Display test matrix for scenarios
 - **Usage**: `molecule matrix [subcommand] [scenario-name]`
 - **Behavior**: Shows sequence of actions for given subcommand
-
 ### Command Groups
 
 #### Development Workflow
-
 ```bash
 # Quick iteration cycle
 molecule create
@@ -683,13 +608,11 @@ molecule verify
 # Make changes, then repeat
 molecule converge
 molecule verify
-
 # Clean up when done
 molecule destroy
 ```
 
 #### Full Testing Workflow
-
 ```bash
 # Complete test suite
 molecule test
@@ -704,27 +627,23 @@ molecule verify
 molecule cleanup
 molecule destroy
 ```
-
 #### Debugging Workflow
 
 ```bash
 # Create and access resources
 molecule create
 molecule prepare
-
 # Debug interactively
 molecule login
 
 # Test changes
 molecule converge
 molecule verify
-
 # Leave resources for investigation
 # (skip destroy)
 ```
 
 #### Multi-Scenario Testing
-
 ```bash
 # Test specific scenarios
 molecule test --scenario unit
@@ -734,11 +653,9 @@ molecule test --scenario performance
 # Test all scenarios
 molecule test --all
 ```
-
 ### Command Behavior with Shared State
 
 #### With `shared_state: true`
-
 ```bash
 # Default scenario manages lifecycle
 molecule create --scenario default
@@ -746,14 +663,12 @@ molecule create --scenario default
 # Component scenarios use existing resources
 molecule converge --scenario role1
 molecule verify --scenario role1
-
 molecule converge --scenario role2
 molecule verify --scenario role2
 
 # Default scenario cleans up
 molecule destroy --scenario default
 ```
-
 #### Without `shared_state` (default)
 
 ```bash
@@ -762,11 +677,9 @@ molecule test --scenario role1  # Creates, tests, destroys
 molecule test --scenario role2  # Creates, tests, destroys
 molecule test --scenario role3  # Creates, tests, destroys
 ```
-
 ### Advanced Command Usage
 
 #### Selective Testing
-
 ```bash
 # Skip destroy for debugging
 molecule test --destroy=never
@@ -774,14 +687,12 @@ molecule test --destroy=never
 # Test with specific verbosity
 molecule test -v
 molecule converge -vvv
-
 # Force recreation
 molecule destroy
 molecule test
 ```
 
 #### Parallel Execution
-
 ```bash
 # Test multiple scenarios in parallel
 molecule test --scenario unit &
@@ -790,7 +701,6 @@ wait
 ```
 
 #### Environment-Specific Testing
-
 ```bash
 # Test with environment variables
 MOLECULE_DOCKER_HOST=tcp://remote:2376 molecule test
@@ -798,3 +708,4 @@ TEST_DATABASE_URL=postgresql://test-db molecule verify
 ```
 
 This comprehensive reference covers all aspects of Molecule's action and sequence system, providing both the conceptual understanding and practical examples needed for effective ansible-native testing workflows.
+

@@ -6,3 +6,9 @@
     state: restarted
   become: true
   listen: "restart journald"
+- name: restart rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: restarted
+  become: true
+  listen: "restart rsyslog"

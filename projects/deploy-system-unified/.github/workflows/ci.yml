@@ -1,6 +1,5 @@
 ---
 name: CI
-
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -10,7 +9,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   lint-and-scan:
     name: Lint, syntax-check & secret scan
@@ -18,7 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -28,15 +25,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ansible-lint yamllint pytest
-
       - name: Run unit tests (ansible-lint rule tests)
         run: |
           pytest -q ansiblelint/tests || true
-
       - name: Ensure projects/deploy-system-unified/main.yml has no top-level roles
         run: |
           python projects/deploy-system-unified/scripts/check_no_roles_in_main.py projects/deploy-system-unified/main.yml
-
       - name: Run yamllint
         run: yamllint -c .yamllint.yml .
 
@@ -44,15 +38,13 @@ jobs:
         run: |
           # ensure the custom rules are picked up (use -r for compatibility)
           ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules .
-
       - name: Run ansible-lint specifically on main.yml to enforce DSU001
         run: |
           ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules projects/deploy-system-unified/main.yml
-
       - name: Ansible syntax check
         run: ansible-playbook --syntax-check projects/deploy-system-unified/main.yml -i localhost, -c local
-
       - name: Run gitleaks (secret scanning)
         uses: zricethezav/gitleaks-action@v2
         with:
           args: --redact
+

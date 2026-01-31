@@ -1,5 +1,4 @@
 ## Sharing Across Scenarios
-
 Playbooks and tests can be shared across scenarios.
 
 ```bash
@@ -22,12 +21,10 @@ shared-tests
 │   └── ubuntu-upstart
 │       └── molecule.yml
 ```
-
 Tests and playbooks can be shared across scenarios.
 
 In this example the `tests` directory lives in a shared
 location and `molecule.yml` points to the shared tests.
-
 ```yaml
 verifier:
   name: testinfra
@@ -37,7 +34,6 @@ verifier:
 In this second example the actions `create`,
 `destroy`, `converge` and `prepare`
 are loaded from a shared directory.
-
 ```yaml
 provisioner:
   name: ansible
@@ -47,3 +43,4 @@ provisioner:
     converge: ../resources/playbooks/converge.yml
     prepare: ../resources/playbooks/prepare.yml
 ```
+

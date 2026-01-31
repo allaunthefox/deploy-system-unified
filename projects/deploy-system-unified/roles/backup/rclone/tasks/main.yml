@@ -5,7 +5,6 @@
     name: rclone
     state: present
   become: true
-
 - name: Create rclone configuration directory
   ansible.builtin.file:
     path: /etc/rclone

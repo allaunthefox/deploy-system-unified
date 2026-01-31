@@ -10,19 +10,16 @@
       loop:
         - /srv/containers
         - /srv/containers/config
-
     - name: Validate development directories
       ansible.builtin.assert:
         that:
           - item.stat.exists
       loop: "{{ dev_dirs.results }}"
-
     - name: Check SSHD config for port 2222
       ansible.builtin.command: grep "Port 2222" /etc/ssh/sshd_config
       register: sshd_port_check
       failed_when: false
       changed_when: false
-
     - name: Validate SSHD port
       ansible.builtin.assert:
         that:

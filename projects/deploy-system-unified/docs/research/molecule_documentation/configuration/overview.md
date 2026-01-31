@@ -1,10 +1,8 @@
 # Molecule Configuration
-
 ## Molecule.yml Structure
 The main configuration file for Molecule is `molecule.yml`. It defines how Molecule should test your Ansible roles.
 
 ## Main Configuration Sections
-
 ### Dependency
 Configures dependency management for roles and collections:
 ```yaml
@@ -23,7 +21,6 @@ driver:
   name: docker
   # or podman, vagrant, ec2, gce, azure, etc.
 ```
-
 ### Platforms
 Defines the operating systems to test on:
 ```yaml
@@ -44,7 +41,6 @@ provisioner:
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 ```
-
 ### Verifier
 Configures how tests will be run:
 ```yaml
@@ -64,7 +60,6 @@ molecule/
 └── integration/
     └── molecule.yml
 ```
-
 ## Common Configuration Options
 
 ### Driver Options
@@ -72,7 +67,6 @@ molecule/
 - `options`: Driver-specific options
 - `volumes`: Volume mounts for containers
 - `tmpfs`: Temporary file systems
-
 ### Platform Options
 - `name`: Instance name
 - `image`: Base image for container/vm
@@ -86,7 +80,6 @@ molecule/
 - `playbooks`: Custom playbook paths
 - `inventory`: Custom inventory options
 - `env`: Environment variables
-
 ### Verifier Options
 - `name`: Verifier name (testinfra, goss, inspec, etc.)
 - `options`: Verifier-specific options

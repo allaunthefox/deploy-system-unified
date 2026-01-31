@@ -1,0 +1,34 @@
+---
+- name: Test VPS Optimization Role
+  hosts: localhost
+  become: true
+  gather_facts: true
+  vars:
+    vps_provider: "contabo"
+  roles:
+    - role: core/vps_optimization
+  tasks:
+    - name: Verify MTU is set to 1450
+      ansible.builtin.command: ip link show eth0
+      register: mtu_result
+      changed_when: false
+      failed_when: "'mtu 1450' not in mtu_result.stdout"
+    - name: Verify sysctl settings for contabo
+      ansible.builtin.command: sysctl -p /etc/sysctl.d/99-contabo-networking.conf
+      register: sysctl_result
+      changed_when: false
+    - name: Display current MTU (using command)
+      ansible.builtin.shell: ip link show eth0 | grep -o "mtu [0-9]*" | cut -d' ' -f2
+      register: mtu_cmd_result
+      changed_when: false
+    - name: Display MTU value
+      ansible.builtin.debug:
+        msg: "Current MTU: {{ mtu_cmd_result.stdout }}"
+    - name: Display current rp_filter settings (using command)
+      ansible.builtin.command: sysctl net.ipv4.conf.all.rp_filter
+      register: rp_filter_result
+      changed_when: false
+
+    - name: Display rp_filter value
+      ansible.builtin.debug:
+        msg: "rp_filter settings: {{ rp_filter_result.stdout.split('=')[1] | trim }}"

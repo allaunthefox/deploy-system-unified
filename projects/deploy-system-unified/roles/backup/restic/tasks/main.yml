@@ -5,7 +5,6 @@
     name: restic
     state: present
   become: true
-
 - name: Create restic cache directory
   ansible.builtin.file:
     path: /var/cache/restic

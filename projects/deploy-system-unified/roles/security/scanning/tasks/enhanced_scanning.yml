@@ -6,8 +6,8 @@
     # Run Trivy vulnerability scan
     if command -v trivy >/dev/null 2>&1; then
       trivy_results=$(trivy filesystem / --security-checks vuln,config,secret --format json 2>/dev/null || echo '{"Results": []}')
-      # Enhanced scanning with required tools and portable service management
-      # Enhanced scanning with required tools and portable service management
+      trivy_critical=$(echo "$trivy_results" | jq -r '.Results[] | select(.Severity == "CRITICAL")' | wc -l)
+      scan_results="$scan_results TRIVY_CRITICAL:$trivy_critical"
     else
       scan_results="$scan_results TRIVY_CRITICAL:0"
     fi

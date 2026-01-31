@@ -1,9 +1,7 @@
 ---
 # Bare Metal Hardened - Physical Infrastructure Solution Stack
 # Solution: Base Hardened Infrastructure + Hardware Support + Disk Tuning
-
 - ansible.builtin.import_playbook: base_hardened.yml
-
 - name: Deploy Bare Metal Workload
   hosts: all
   become: true
@@ -15,6 +13,5 @@
     - role: core/hardware_support
     - role: core/disk_tuning
     - role: core/storage_btrfs
-
     # Final Solution Integrity Verification
     - role: security/scanning

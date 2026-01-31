@@ -6,7 +6,6 @@
     state: present
   when: ansible_os_family == 'Debian'
   become: true
-
 - name: Configure UFW defaults
   community.general.ufw:
     direction: "{{ item.direction }}"
@@ -16,10 +15,8 @@
     - { direction: 'outgoing', policy: 'allow' }
   when: ansible_os_family == 'Debian'
   become: true
-
 - name: Import port-specific access rules
   ansible.builtin.import_tasks: access_rules.yml
-
 - name: Enable UFW
   community.general.ufw:
     state: enabled

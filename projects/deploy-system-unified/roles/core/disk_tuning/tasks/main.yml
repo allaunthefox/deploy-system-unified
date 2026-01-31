@@ -7,7 +7,6 @@
     state: started
   become: true
   ignore_errors: true
-
 - name: Set I/O scheduler for physical disks (mq-deadline)
   ansible.builtin.copy:
     content: |

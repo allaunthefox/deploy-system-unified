@@ -13,11 +13,10 @@
     - /srv/containers/caddy/data
     - /srv/containers/caddy/logs
   become: true
-
 - name: Create Caddyfile
   ansible.builtin.copy:
     dest: /srv/containers/caddy/Caddyfile
-    content: |
+    content: "{{ caddy_config | default('''
       # Caddyfile - Managed by Deploy-System-Unified
       {
         admin off
@@ -31,17 +30,16 @@
           format json
         }
       }
-
       # Default catch-all
       :80 {
-        respond "Hello from Deploy-System-Unified" 200
+        respond \"Hello from Deploy-System-Unified\" 200
       }
+    ''') }}"
     mode: '0644'
     owner: root
     group: root
   become: true
   when: caddy_generate_config | default(true)
-
 - name: Create Caddy container quadlet
   ansible.builtin.copy:
     dest: /etc/containers/systemd/caddy.container
@@ -50,27 +48,31 @@
       Description=Caddy Reverse Proxy
       After=network-online.target
       Wants=network-online.target
-
       [Container]
       Image=docker.io/library/caddy:latest
       ContainerName=caddy
       PublishPort=80:80
       PublishPort=443:443
+      PublishPort=443:443/udp
       Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       Volume=/srv/containers/caddy/data:/data:Z
       Volume=/srv/containers/caddy/config:/config:Z
       Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
-
       [Service]
       Restart=always
       TimeoutStartSec=300
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
   become: true
   notify: reload systemd
-
+- name: Enable HTTP/3 support in Caddyfile
+  ansible.builtin.lineinfile:
+    path: /srv/containers/caddy/Caddyfile
+    regexp: '^        admin off'
+    line: '        admin off\n        servers :443 {\n            protocols h1 h2 h3\n        }'
+  become: true
+  when: caddy_generate_config | default(true)
 - name: Set containers caddy completion flag
   ansible.builtin.set_fact:
     containers_caddy_complete: true
