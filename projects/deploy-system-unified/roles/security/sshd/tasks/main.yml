@@ -53,6 +53,14 @@
     - { path: '/etc/ssh/ssh_host_rsa_key.pub', mode: '0644' }
   become: true
   failed_when: false
+- name: Comment out unmanaged SSH authentication settings
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^(PermitRootLogin|PasswordAuthentication)\s+'
+    replace: '# \1 '
+    validate: '/usr/sbin/sshd -t -f %s'
+  become: true
+
 - name: Configure enhanced SSH security settings
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
