@@ -7,6 +7,9 @@ vps_provider: "contabo"
 # Required for VPNs, tunnels, and network operations
 sshd_allow_tcp_forwarding: true
 
+# Set SSH port to 2222 to match inventory configuration
+access_sshd_port: 2222
+
 # Proxmox/KVM specific optimizations
 vps_optimization:
   # Network optimization for Contabo's virtual bridge environment
