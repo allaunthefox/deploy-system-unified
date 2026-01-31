@@ -1,0 +1,71 @@
+---
+# Tasks for containers/runtime role
+- name: Install Podman on Debian/Ubuntu
+  ansible.builtin.apt:
+    name:
+      - podman
+      - podman-compose
+      - slirp4netns
+      - fuse-overlayfs
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Install Podman on RedHat/CentOS
+  ansible.builtin.dnf:
+    name:
+      - podman
+      - podman-compose
+      - slirp4netns
+      - fuse-overlayfs
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+  become: true
+
+- name: Install Podman on Arch
+  community.general.pacman:
+    name:
+      - podman
+      - podman-compose
+      - slirp4netns
+      - fuse-overlayfs
+    state: present
+  when: ansible_facts['distribution'] | lower == 'archlinux'
+  become: true
+
+- name: Create podman configuration directory
+  ansible.builtin.file:
+    path: /etc/containers
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Configure container registries
+  ansible.builtin.copy:
+    dest: /etc/containers/registries.conf
+    content: |
+      # Container registries configuration
+      unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io"]
+
+      [[registry]]
+      prefix = "docker.io"
+      location = "docker.io"
+
+      [[registry.mirror]]
+      location = "mirror.gcr.io"
+    mode: '0644'
+  become: true
+
+- name: Enable podman socket for rootless containers
+  ansible.builtin.systemd:
+    name: podman.socket
+    enabled: true
+    state: started
+    scope: user
+  become: false
+  failed_when: false
+
+- name: Set containers runtime completion flag
+  ansible.builtin.set_fact:
+    containers_runtime_complete: true

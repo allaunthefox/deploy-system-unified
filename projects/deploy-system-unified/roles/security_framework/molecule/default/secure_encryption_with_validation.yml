@@ -1,4 +1,0 @@
----
-- name: stub secure_encryption_with_validation
-  ansible.builtin.debug:
-    msg: "stub"

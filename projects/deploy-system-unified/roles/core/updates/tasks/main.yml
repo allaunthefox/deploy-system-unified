@@ -1,0 +1,34 @@
+---
+# Tasks for core/updates - Automatic Security Patching
+- name: Configure Unattended-Upgrades (Debian/Ubuntu)
+  block:
+    - name: Install unattended-upgrades
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: present
+        update_cache: true
+
+    - name: Ensure unattended-upgrades is enabled
+      ansible.builtin.copy:
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        mode: '0644'
+  when: ansible_os_family == 'Debian'
+  become: true
+
+- name: Configure DNF-Automatic (RedHat/Fedora)
+  block:
+    - name: Install dnf-automatic
+      ansible.builtin.package:
+        name: dnf-automatic
+        state: present
+
+    - name: Enable dnf-automatic timer
+      ansible.builtin.systemd:
+        name: dnf-automatic.timer
+        enabled: true
+        state: started
+  when: ansible_os_family == 'RedHat'
+  become: true

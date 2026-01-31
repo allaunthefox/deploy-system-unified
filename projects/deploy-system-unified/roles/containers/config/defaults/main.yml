@@ -1,0 +1,3 @@
+---
+# Defaults for containers/config role
+container_linger_users: []

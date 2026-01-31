@@ -1,0 +1,8 @@
+---
+# Defaults for containers/anubis role
+anubis_enabled: true
+anubis_port: 8080
+anubis_difficulty: 5
+anubis_target_url: "http://app:80" # The application to protect
+anubis_image: "ghcr.io/techarohq/anubis:latest"
+anubis_container_name: "anubis-gatekeeper"

@@ -1,0 +1,6 @@
+---
+# Defaults for security/ips - Fail2Ban customization
+ips_fail2ban_sshd_maxretry: 3
+ips_fail2ban_sshd_bantime: 24h # Increased from 1h for persistent offenders
+ips_fail2ban_sshd_findtime: 5m # Shortened from 10m to catch rapid bursts faster
+ips_fail2ban_sshd_enabled: true

@@ -1,0 +1,4 @@
+---
+# Defaults for containers/runtime role
+containers_install_podman: true
+containers_enable_socket: true

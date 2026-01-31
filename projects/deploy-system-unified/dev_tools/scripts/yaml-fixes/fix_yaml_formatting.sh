@@ -4,19 +4,19 @@
 
 echo "=== Fixing YAML Formatting Violations ==="
 
-# Phase 1: Fix trailing spaces in advanced_security_hardening
+# Phase 1: Fix trailing spaces in security/advanced
 echo "Phase 1: Fixing trailing spaces..."
-if [ -f "roles/advanced_security_hardening/tasks/main.yml" ]; then
+if [ -f "roles/security/advanced/tasks/main.yml" ]; then
     # Use sed to remove trailing spaces
-    sed -i 's/[[:space:]]*$//' roles/advanced_security_hardening/tasks/main.yml
-    echo "✓ Fixed trailing spaces in advanced_security_hardening/tasks/main.yml"
+    sed -i 's/[[:space:]]*$//' roles/security/advanced/tasks/main.yml
+    echo "✓ Fixed trailing spaces in security/advanced/tasks/main.yml"
 else
-    echo "⚠ File not found: roles/advanced_security_hardening/tasks/main.yml"
+    echo "⚠ File not found: roles/security/advanced/tasks/main.yml"
 fi
 
-# Phase 2: Fix indentation issues in security_framework
-echo "Phase 2: Fixing indentation issues in security_framework..."
-if [ -f "roles/security_framework/tasks/main.yml" ]; then
+# Phase 2: Fix indentation issues in security/scanning
+echo "Phase 2: Fixing indentation issues in security/scanning..."
+if [ -f "roles/security/scanning/tasks/main.yml" ]; then
     # Use awk to fix indentation from 4 spaces to 2 spaces for specific patterns
     # This targets lines that are part of task blocks but incorrectly indented
     awk '
@@ -52,13 +52,13 @@ if [ -f "roles/security_framework/tasks/main.yml" ]; then
     }
     # Pass through all other lines unchanged
     { print }
-    ' roles/security_framework/tasks/main.yml > roles/security_framework/tasks/main.yml.tmp
+    ' roles/security/scanning/tasks/main.yml > roles/security/scanning/tasks/main.yml.tmp
     
     # Replace original file with fixed version
-    mv roles/security_framework/tasks/main.yml.tmp roles/security_framework/tasks/main.yml
-    echo "✓ Fixed indentation in security_framework/tasks/main.yml"
+    mv roles/security/scanning/tasks/main.yml.tmp roles/security/scanning/tasks/main.yml
+    echo "✓ Fixed indentation in security/scanning/tasks/main.yml"
 else
-    echo "⚠ File not found: roles/security_framework/tasks/main.yml"
+    echo "⚠ File not found: roles/security/scanning/tasks/main.yml"
 fi
 
 # Phase 3: Additional cleanup for any remaining issues

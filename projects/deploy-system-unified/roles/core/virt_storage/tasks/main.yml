@@ -1,0 +1,5 @@
+---
+# Main tasks for virt_storage - Separated concerns
+- name: Assign Storage UUID
+  ansible.builtin.import_role:
+    name: core/identity

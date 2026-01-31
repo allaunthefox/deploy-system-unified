@@ -1,0 +1,32 @@
+---
+name: CI Debug
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+      - "ci/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  debug:
+    name: Debug job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Simple start marker
+        run: |
+          echo "CI debug: job started" > debug.txt
+          uname -a >> debug.txt
+          date >> debug.txt
+
+      - name: Upload debug artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-debug
+          path: debug.txt

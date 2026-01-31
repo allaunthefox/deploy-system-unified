@@ -1,0 +1,9 @@
+---
+# Main tasks for storage_btrfs - Separated concerns
+- name: Import subvolume tasks
+  ansible.builtin.import_tasks: subvolumes.yml
+  tags: [storage, btrfs, subvolumes]
+
+- name: Import maintenance tasks
+  ansible.builtin.import_tasks: maintenance.yml
+  tags: [storage, btrfs, maintenance]

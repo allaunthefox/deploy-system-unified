@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Check if tmux session exists
+      ansible.builtin.command: tmux has-session -t deployment-session
+      register: tmux_check
+      changed_when: false
+      failed_when: false
+
+    - name: Assert tmux session exists
+      ansible.builtin.assert:
+        that:
+          - tmux_check.rc == 0
+        fail_msg: "Tmux session 'deployment-session' does not exist"

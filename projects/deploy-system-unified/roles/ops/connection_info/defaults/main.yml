@@ -1,0 +1,6 @@
+---
+# Defaults for ops/connection_info role
+encryption_method: "sops" # sops or vault
+ssh_rsync_destination: ""
+ssh_randomize_port: false
+access_sshd_port: 22

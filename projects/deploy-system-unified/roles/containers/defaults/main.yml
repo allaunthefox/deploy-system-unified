@@ -1,0 +1,6 @@
+---
+# Defaults for containers role
+containers_install_podman: true
+caddy_generate_config: true
+quadlet_create_network: true
+container_linger_users: []

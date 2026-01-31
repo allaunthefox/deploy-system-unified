@@ -1,0 +1,6 @@
+---
+# Handlers for core/disk_tuning
+- name: reload udev
+  ansible.builtin.command: udevadm control --reload-rules
+  become: true
+  listen: "reload udev"

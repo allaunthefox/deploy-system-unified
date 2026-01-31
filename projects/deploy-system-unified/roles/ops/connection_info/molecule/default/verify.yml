@@ -1,0 +1,11 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Assert connection info facts are set
+      ansible.builtin.assert:
+        that:
+          - ssh_connection_info is defined
+          - ssh_connection_info.hostname is defined
+          - ssh_connection_info.port is defined
+        fail_msg: "Connection info facts are not properly set"

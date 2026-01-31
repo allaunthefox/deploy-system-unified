@@ -1,4 +1,0 @@
----
-- name: stub enhanced_security_scanning
-  ansible.builtin.debug:
-    msg: "stub"

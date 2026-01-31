@@ -9,3 +9,12 @@ repos:
     hooks:
       - id: ansible-lint
         args: ['-v']
+
+  - repo: local
+    hooks:
+      - id: style-guide-enforcement
+        name: Style Guide Enforcement
+        entry: bash dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+        language: system
+        pass_filenames: false
+        always_run: true

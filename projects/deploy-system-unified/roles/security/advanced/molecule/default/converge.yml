@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    advanced_security_hardening_enabled: true
+    ssh_randomize_port: true
+    ssh_random_port_range_start: 10000
+    ssh_random_port_range_end: 20000
+  roles:
+    - role: security/advanced

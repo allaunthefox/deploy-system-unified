@@ -31,9 +31,9 @@ find roles/ -name "*.yml" -exec yamllint {} \; 2>&1 | grep -E "(error|warning)" 
 
 ## Files Fixed
 
-- `roles/advanced_security_hardening/tasks/main.yml`
-- `roles/security_framework/tasks/main.yml`
-- All security framework task files in `roles/security_framework/tasks/`
+- `roles/security/advanced/tasks/main.yml`
+- `roles/security/scanning/tasks/main.yml`
+- All security scanning task files in `roles/security/scanning/tasks/`
 
 ## Validation
 

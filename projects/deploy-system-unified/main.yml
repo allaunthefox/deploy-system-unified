@@ -7,6 +7,14 @@
   become: true
 
   pre_tasks:
+    - name: Validate System Identity (FQDN Enforcement)
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn is defined
+          - ansible_fqdn != "localhost"
+          - ansible_fqdn != "localhost.localdomain"
+        fail_msg: "System must have a valid FQDN configured for secure deployment."
+
     - name: Precreate essential directories (idempotent)
       ansible.builtin.file:
         path: "{{ item.path }}"
@@ -19,7 +27,7 @@
         - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
         - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
         - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/tmp/deploy-system", mode: '1777', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }

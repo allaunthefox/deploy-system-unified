@@ -1,0 +1,63 @@
+---
+# Security access role - SSH and user access configuration
+- name: Configure SSH daemon
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    validate: '/usr/sbin/sshd -t -f %s'
+  loop:
+    - { regexp: '^#?Port ', line: 'Port {{ access_sshd_port | default(22) }}' }
+    - { regexp: '^#?PermitRootLogin ', line: 'PermitRootLogin no' }
+    - { regexp: '^#?PasswordAuthentication ', line: 'PasswordAuthentication no' }
+    - { regexp: '^#?PubkeyAuthentication ', line: 'PubkeyAuthentication yes' }
+    - { regexp: '^#?PermitEmptyPasswords ', line: 'PermitEmptyPasswords no' }
+    - { regexp: '^#?X11Forwarding ', line: 'X11Forwarding no' }
+    - { regexp: '^#?MaxAuthTries ', line: 'MaxAuthTries 3' }
+    - { regexp: '^#?ClientAliveInterval ', line: 'ClientAliveInterval 300' }
+    - { regexp: '^#?ClientAliveCountMax ', line: 'ClientAliveCountMax 2' }
+  become: true
+  notify: restart sshd
+
+- name: Ensure SSH service is running
+  ansible.builtin.systemd:
+    name: sshd
+    enabled: true
+    state: started
+  become: true
+  when: ansible_service_mgr == 'systemd'
+
+- name: Create wheel group if not exists
+  ansible.builtin.group:
+    name: wheel
+    state: present
+  become: true
+
+- name: Configure sudo for wheel group
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  become: true
+
+- name: Configure SSH Match blocks (User-level IP restrictions)
+  ansible.builtin.blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED SSH MATCH RULES"
+    insertafter: EOF
+    block: |
+      {% for rule in ssh_match_rules %}
+      Match {{ rule.type | default('User') }} {{ rule.name }}{% if rule.address is defined %} Address {{ rule.address }}{% endif %}
+      {% for option in rule.options | default([]) %}
+          {{ option }}
+      {% endfor %}
+      {% endfor %}
+    validate: '/usr/sbin/sshd -t -f %s'
+  become: true
+  notify: restart sshd
+  when: ssh_match_rules | length > 0
+
+- name: Set access configuration completion flag
+  ansible.builtin.set_fact:
+    security_access_complete: true

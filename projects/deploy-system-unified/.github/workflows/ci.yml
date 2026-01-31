@@ -1,10 +1,15 @@
+---
 name: CI
 
+# yamllint disable-line rule:truthy
 on:
   push:
-    branches: [ main, 'security/**' ]
+    branches:
+      - main
+      - "security/**"
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   lint-and-scan:
@@ -45,7 +50,7 @@ jobs:
           ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules projects/deploy-system-unified/main.yml
 
       - name: Ansible syntax check
-        run: ansible-playbook --syntax-check main.yml -i localhost, -c local
+        run: ansible-playbook --syntax-check projects/deploy-system-unified/main.yml -i localhost, -c local
 
       - name: Run gitleaks (secret scanning)
         uses: zricethezav/gitleaks-action@v2

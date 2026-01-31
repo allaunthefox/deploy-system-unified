@@ -1,0 +1,55 @@
+---
+# Container quadlets role - Systemd quadlet management
+- name: Ensure quadlet directory exists
+  ansible.builtin.file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+
+- name: Create quadlet network configuration
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/deploy-network.network
+    content: |
+      [Network]
+      NetworkName=deploy-net
+      Driver=bridge
+      Subnet={{ quadlet_network_subnet | default('10.89.0.0/24') }}
+      Gateway={{ quadlet_network_gateway | default('10.89.0.1') }}
+      IPRange={{ quadlet_network_iprange | default('10.89.0.0/24') }}
+    mode: '0644'
+  become: true
+  when: quadlet_create_network | default(true)
+
+- name: Deploy custom quadlet files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/containers/systemd/{{ item | basename }}"
+    mode: '0644'
+  loop: "{{ quadlet_custom_files | default([]) }}"
+  become: true
+  when: quadlet_custom_files is defined and quadlet_custom_files | length > 0
+  notify: reload systemd
+
+- name: Reload systemd to pick up quadlets
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: List generated quadlet services
+  ansible.builtin.command:
+    cmd: systemctl list-unit-files --type=service | grep -E '\.container|\.pod'
+  register: quadlet_services
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Display available quadlet services
+  ansible.builtin.debug:
+    msg: "Available quadlet services: {{ quadlet_services.stdout_lines | default([]) }}"
+
+- name: Set containers quadlets completion flag
+  ansible.builtin.set_fact:
+    containers_quadlets_complete: true

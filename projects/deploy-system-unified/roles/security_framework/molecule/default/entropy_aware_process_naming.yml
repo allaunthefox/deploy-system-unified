@@ -1,4 +1,0 @@
----
-- name: stub entropy_aware_process_naming
-  ansible.builtin.debug:
-    msg: "stub"

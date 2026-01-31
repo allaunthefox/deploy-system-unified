@@ -1,4 +1,0 @@
----
-- name: stub filesystem_validation
-  ansible.builtin.debug:
-    msg: "stub"

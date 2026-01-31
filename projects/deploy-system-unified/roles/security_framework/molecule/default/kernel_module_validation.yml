@@ -1,4 +1,0 @@
----
-- name: stub kernel_module_validation
-  ansible.builtin.debug:
-    msg: "stub"

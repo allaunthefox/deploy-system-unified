@@ -1,49 +1,18 @@
 ---
-# Development environments (flexibility approach)
-# When to use: Development environments where convenience is balanced with basic security
-# Example: Developer workstations, testing environments, staging systems
+# Development Workstation - Flexible Solution Stack
+# Solution: Base Hardened Infrastructure + Dev Container Workload
 
-- import_playbook: ../main.yml
+- ansible.builtin.import_playbook: base_hardened.yml
 
-- name: Deploy development environment with moderate security
+- name: Deploy Development Container Workload
   hosts: all
   become: true
-  vars:
-    # Moderate security hardening for development
-    advanced_security_hardening_enabled: false  # Skip advanced hardening for convenience
-
-    # Standard SSH configuration for developer access
-    ssh_randomize_port: false
-    access_sshd_port: 2222
-
-    # No key rotation needed for development
-    ssh_key_rotation_enabled: false
-
-    # Basic TMUX session for deployment
-    tmux_session_for_deployment: false
-
   roles:
-    # Core system setup
-    - role: core/bootstrap
-
-    # Security hardening (main security measures)
-    - role: security/hardening
-
-    # SSH and access configuration
-    - role: security/access
-      access_sshd_port: "{{ access_sshd_port }}"
-
-    # Container runtime setup (Podman) - for development containers
-    - role: containers/containers_runtime
-
-    # Container configuration (Quadlet) - for development containers
-    - role: containers/containers_config
-
-    # Container quadlet definitions - for development containers
-    - role: containers/containers_quadlets
-
-    # Caddy reverse proxy for container services
-    - role: containers/containers_caddy
+    # Container Infrastructure Workload (Flexible)
+    - role: containers/runtime
+    - role: containers/config
+    - role: containers/quadlets
+    - role: containers/caddy
 
   post_tasks:
     - name: Create development container directories
@@ -60,12 +29,6 @@
         - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
 
   handlers:
-    - name: Restart sshd
-      systemd:
-        name: sshd
-        state: restarted
-      listen: "restart sshd"
-
     - name: Restart caddy
       systemd:
         name: caddy

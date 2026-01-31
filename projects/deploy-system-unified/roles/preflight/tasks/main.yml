@@ -1,10 +1,105 @@
 ---
-# Main tasks for preflight role
-- name: Install baseline security packages (idempotent)
-  ansible.builtin.package:
-    name: "{{ preflight_distro_package_mapping[ansible_distribution | lower].security_packages }}"
-    state: present
+# Preflight role - Validation and readiness checks ONLY
+# Package installation has been moved to core/bootstrap
+
+- name: Gather minimum facts for preflight checks
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - distribution
+      - os_family
+      - pkg_mgr
+      - service_mgr
+
+- name: Validate distribution is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] | lower in ['archlinux', 'debian', 'ubuntu', 'fedora', 'alpine', 'centos', 'rocky', 'almalinux']
+    fail_msg: "Unsupported distribution: {{ ansible_facts['distribution'] }}"
+    success_msg: "Distribution {{ ansible_facts['distribution'] }} is supported"
+
+- name: Validate systemd is available
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['service_mgr'] == 'systemd'
+    fail_msg: "This deployment requires systemd as the service manager"
+    success_msg: "systemd service manager confirmed"
+  when: preflight_require_systemd | default(true)
+
+- name: Check for minimum memory
+  ansible.builtin.assert:
+    that:
+      - ansible_memtotal_mb | default(0) >= preflight_min_memory_mb | default(512)
+    fail_msg: "Insufficient memory: {{ ansible_memtotal_mb }}MB < {{ preflight_min_memory_mb | default(512) }}MB"
+    success_msg: "Memory check passed: {{ ansible_memtotal_mb }}MB available"
+  when: preflight_check_memory | default(false)
+
+- name: Check for required binaries
+  ansible.builtin.command:
+    cmd: "command -v {{ item }}"
+  loop: "{{ preflight_required_binaries | default([]) }}"
+  register: preflight_binary_check
+  changed_when: false
+  failed_when: false
+  when: preflight_required_binaries is defined and preflight_required_binaries | length > 0
+
+- name: Validate required binaries exist
+  ansible.builtin.assert:
+    that:
+      - item.rc == 0
+    fail_msg: "Required binary not found: {{ item.item }}"
+  loop: "{{ preflight_binary_check.results | default([]) }}"
+  when: preflight_binary_check.results is defined
+
+- name: Check network connectivity
+  ansible.builtin.uri:
+    url: "{{ preflight_connectivity_check_url | default('https://1.1.1.1') }}"
+    method: HEAD
+    timeout: 10
+  register: preflight_network_check
+  failed_when: false
+  changed_when: false
+  when: preflight_check_network | default(false)
+
+- name: Validate network connectivity
+  ansible.builtin.assert:
+    that:
+      - preflight_network_check.status is defined
+      - preflight_network_check.status < 400
+    fail_msg: "Network connectivity check failed"
+    success_msg: "Network connectivity confirmed"
   when:
-    - ansible_distribution | lower in preflight_distro_package_mapping
-    - preflight_distro_package_mapping[ansible_distribution | lower].security_packages is defined
-  tags: [packages, security, baseline]
+    - preflight_check_network | default(false)
+    - preflight_network_check is defined
+
+- name: Install KVM checker (Bare Metal only)
+  ansible.builtin.package:
+    name: cpu-checker
+    state: present
+  become: true
+  when: virt_type == "bare-metal"
+
+- name: Validate KVM Hardware Acceleration (Bare Metal only)
+  ansible.builtin.command: kvm-ok
+  register: kvm_check
+  changed_when: false
+  failed_when: false
+  become: true
+  when: virt_type == "bare-metal"
+
+- name: Assert KVM is functional
+  ansible.builtin.assert:
+    that:
+      - kvm_check.rc == 0
+    fail_msg: "KVM acceleration is not supported or enabled in BIOS. Virtualization roles will fail."
+  when: 
+    - virt_type == "bare-metal"
+    - "'virtual_hypervisor' in ansible_play_name or 'bare_metal' in ansible_play_name"
+
+- name: Set preflight completion facts
+  ansible.builtin.set_fact:
+    preflight_complete: true
+    preflight_distribution: "{{ ansible_facts['distribution'] }}"
+    preflight_os_family: "{{ ansible_facts['os_family'] }}"
+    preflight_pkg_mgr: "{{ ansible_facts['pkg_mgr'] }}"

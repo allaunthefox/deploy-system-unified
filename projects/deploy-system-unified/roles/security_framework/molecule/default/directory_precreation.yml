@@ -1,4 +1,0 @@
----
-- name: stub directory_precreation
-  ansible.builtin.debug:
-    msg: "stub"

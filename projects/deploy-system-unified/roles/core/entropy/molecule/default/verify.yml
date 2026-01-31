@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert haveged service is running
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['haveged.service'].state == 'running'
+        fail_msg: "haveged service is not running"

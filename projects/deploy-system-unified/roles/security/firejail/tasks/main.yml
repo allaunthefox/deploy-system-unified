@@ -1,0 +1,21 @@
+---
+# Tasks for security/firejail - Application Sandboxing
+- name: Install Firejail
+  ansible.builtin.package:
+    name: firejail
+    state: present
+  become: true
+
+- name: Ensure Firejail profile directory exists
+  ansible.builtin.file:
+    path: /etc/firejail
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Create local Firejail configuration directory
+  ansible.builtin.file:
+    path: /usr/local/etc/firejail
+    state: directory
+    mode: '0755'
+  become: true
