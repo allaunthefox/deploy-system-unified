@@ -72,9 +72,9 @@
       MaxAuthTries 3
       MaxSessions 10
       PermitEmptyPasswords no
-      PermitRootLogin no
+      PermitRootLogin {{ sshd_permit_root_login }}
       PubkeyAuthentication yes
-      PasswordAuthentication no
+      PasswordAuthentication {{ sshd_password_authentication }}
       ChallengeResponseAuthentication no
       UsePAM yes
       UseDNS no

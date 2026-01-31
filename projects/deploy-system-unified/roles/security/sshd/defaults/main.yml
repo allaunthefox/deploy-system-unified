@@ -6,3 +6,5 @@ sshd_use_strong_ciphers: true
 sshd_allow_tcp_forwarding: false
 sshd_allow_agent_forwarding: false
 sshd_allow_x11_forwarding: false
+sshd_permit_root_login: "prohibit-password"
+sshd_password_authentication: "no"
