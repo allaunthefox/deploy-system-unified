@@ -2,3 +2,97 @@
 # Defaults for containers/runtime role
 containers_install_podman: true
 containers_enable_socket: true
+# GPU support configuration
+containers_enable_gpu_support: false
+containers_gpu_vendor: "nvidia"  # Options: nvidia, amd, intel
+containers_gpu_count: 1
+# GPU slicing configuration
+containers_gpu_slicing:
+  strategy: "auto"  # auto, mig, vgpu, time-slicing, sriov, level-zero, oneapi, passthrough
+  auto_strategy:
+    bare_metal: "mig"
+    virtual_host: "sriov"
+    virtual_guest: "passthrough"
+  # Strategy-specific configurations
+  mig: { enabled: false }
+  vgpu: { enabled: false, profile: "", license_server: "" }
+  time_slicing: { enabled: false, max_instances: 4 }
+  sriov: { enabled: false, vf_count: 4 }
+  level_zero: { enabled: false, partitions: [] }
+  oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+  passthrough: { devices: [] }
+# Runtime-specific GPU slicing configuration
+containers_gpu_slicing.kubernetes:
+  enabled: true
+  device_plugins:
+    - name: "nvidia-device-plugin"
+      version: "v0.13.0"
+      image: "nvcr.io/nvidia/k8s-device-plugin:v0.13.0"
+  node_labels:
+    - "nvidia.com/gpu.count={{ containers_gpu_count }}"
+containers_gpu_slicing.podman:
+  enabled: true
+  quadlet:
+    capabilities: ["CAP_SYS_ADMIN"]
+    device_cgroups: ["/dev/nvidia*", "/dev/dri"]
+    mounts: ["/usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro"]
+containers_gpu_slicing.lxc:
+  enabled: true
+  config:
+    cgroup2:
+      devices:
+        allow: ["/dev/nvidia*", "/dev/dri"]
+      memory: "8Gi"
+      cpu: "4"
+# GPU profile definitions
+containers_gpu_profiles:
+  # NVIDIA GPU profiles
+  nvidia:
+    driver_packages:
+      debian: ["nvidia-driver", "nvidia-container-toolkit"]
+      redhat: ["nvidia-driver", "nvidia-container-toolkit"]
+      arch: ["nvidia", "nvidia-container-toolkit"]
+    runtime_config:
+      crun:
+        enabled: true
+        config_path: "/usr/share/containers/containers.conf"
+      runc:
+        enabled: false
+    capabilities: ["gpu"]
+    device_cgroups: ["/dev/nvidia*"]
+    mount_points: ["/usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro", "/usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro"]
+  # AMD GPU profiles
+  amd:
+    driver_packages:
+      debian: ["mesa-utils", "rocm-amdgpu-pro"]
+      redhat: ["mesa-utils", "rocm-amdgpu-pro"]
+      arch: ["mesa", "rocm"]
+    runtime_config:
+      crun:
+        enabled: true
+        config_path: "/usr/share/containers/containers.conf"
+      runc:
+        enabled: false
+    capabilities: ["gpu"]
+    device_cgroups: ["/dev/dri"]
+    mount_points: ["/dev/dri:/dev/dri:rw", "/dev/kfd:/dev/kfd:rw"]
+  # Intel GPU profiles
+  intel:
+    driver_packages:
+      debian: ["intel-gpu-tools", "intel-media-va-driver"]
+      redhat: ["intel-gpu-tools", "intel-media-driver"]
+      arch: ["intel-media-driver", "libva-intel-driver"]
+    runtime_config:
+      crun:
+        enabled: true
+        config_path: "/usr/share/containers/containers.conf"
+      runc:
+        enabled: false
+    capabilities: ["gpu"]
+    device_cgroups: ["/dev/dri"]
+    mount_points: ["/dev/dri:/dev/dri:rw"]
+# Default GPU device selectors
+containers_gpu_device_selectors:
+  - "vendor==NVIDIA"
+  - "vendor==AMD"
+  - "vendor==Intel"

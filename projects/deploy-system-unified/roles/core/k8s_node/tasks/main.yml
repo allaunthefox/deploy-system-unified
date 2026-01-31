@@ -36,3 +36,6 @@
     state: directory
     mode: '0755'
   become: true
+- name: Deploy GPU device plugins
+  ansible.builtin.include_tasks: gpu.yml
+  when: k8s_gpu_device_plugins_enabled

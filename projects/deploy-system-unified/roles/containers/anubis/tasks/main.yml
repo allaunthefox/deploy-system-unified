@@ -15,6 +15,16 @@
       Environment=PORT=8080
       Environment=TARGET={{ anubis_target_url }}
       Environment=DIFFICULTY={{ anubis_difficulty }}
+      {% if quadlet_enable_gpu_support %}
+      # GPU support configuration
+      Capabilities={{ quadlet_gpu_capabilities | join(' ') }}
+      {% for device in quadlet_gpu_devices | default(quadlet_gpu_default_configs[quadlet_gpu_vendor]['devices']) %}
+      Device={{ device }}
+      {% endfor %}
+      {% for mount in quadlet_gpu_default_configs[quadlet_gpu_vendor]['mounts'] %}
+      Volume={{ mount }}
+      {% endfor %}
+      {% endif %}
       [Service]
       Restart=always
       TimeoutStartSec=300
@@ -26,10 +36,11 @@
     - reload systemd
     - restart anubis
   when: anubis_enabled | bool
-- name: Enable and start Anubis service
+- name: Enable and start Anubis service (if systemd is available and running)
   ansible.builtin.systemd:
     name: anubis
     enabled: true
     state: started
   become: true
-  when: anubis_enabled | bool
+  when: anubis_enabled | bool and ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
+  failed_when: false  # Ignore failures if systemd isn't available

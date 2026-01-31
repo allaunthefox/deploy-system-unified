@@ -16,7 +16,7 @@
 - name: Create Caddyfile
   ansible.builtin.copy:
     dest: /srv/containers/caddy/Caddyfile
-    content: "{{ caddy_config | default('''
+    content: |
       # Caddyfile - Managed by Deploy-System-Unified
       {
         admin off
@@ -32,9 +32,8 @@
       }
       # Default catch-all
       :80 {
-        respond \"Hello from Deploy-System-Unified\" 200
+        respond "Hello from Deploy-System-Unified" 200
       }
-    ''') }}"
     mode: '0644'
     owner: root
     group: root
@@ -58,6 +57,16 @@
       Volume=/srv/containers/caddy/data:/data:Z
       Volume=/srv/containers/caddy/config:/config:Z
       Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
+      {% if quadlet_enable_gpu_support %}
+      # GPU support configuration
+      Capabilities={{ quadlet_gpu_capabilities | join(' ') }}
+      {% for device in quadlet_gpu_devices | default(quadlet_gpu_default_configs[quadlet_gpu_vendor]['devices']) %}
+      Device={{ device }}
+      {% endfor %}
+      {% for mount in quadlet_gpu_default_configs[quadlet_gpu_vendor]['mounts'] %}
+      Volume={{ mount }}
+      {% endfor %}
+      {% endif %}
       [Service]
       Restart=always
       TimeoutStartSec=300

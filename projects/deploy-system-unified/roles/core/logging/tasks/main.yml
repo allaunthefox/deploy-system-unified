@@ -6,7 +6,7 @@
     state: directory
     mode: '0755'
     owner: root
-    group: systemd-journal
+    group: "{{ 'systemd-journal' if ansible_facts['service_mgr'] == 'systemd' else 'root' }}"
   become: true
 - name: Configure journald for forensic integrity and rate limiting
   ansible.builtin.lineinfile:
@@ -24,12 +24,21 @@
     - { regexp: '^#?MaxRetentionSec=', line: 'MaxRetentionSec=30day' }
   become: true
   notify: restart journald
+  when: ansible_facts['service_mgr'] == 'systemd'
 - name: Install systemd-journal-remote for log aggregation readiness
   ansible.builtin.package:
     name: systemd-journal-remote
     state: present
   become: true
   ignore_errors: true # Some minimal distros might not have this package
+  when: ansible_facts['service_mgr'] == 'systemd'
+- name: Ensure rsyslog configuration directory exists (Debian/Ubuntu)
+  ansible.builtin.file:
+    path: /etc/rsyslog.d
+    state: directory
+    mode: '0755'
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
 - name: Configure rsyslog for centralized log shipping (Debian/Ubuntu)
   ansible.builtin.copy:
     dest: /etc/rsyslog.d/50-centralized-logging.conf
@@ -40,6 +49,13 @@
   become: true
   when: ansible_facts['os_family'] == 'Debian'
   notify: restart rsyslog
+- name: Ensure rsyslog configuration directory exists (RedHat/CentOS)
+  ansible.builtin.file:
+    path: /etc/rsyslog.d
+    state: directory
+    mode: '0755'
+  become: true
+  when: ansible_facts['os_family'] == 'RedHat'
 - name: Configure rsyslog for centralized log shipping (RedHat/CentOS)
   ansible.builtin.copy:
     dest: /etc/rsyslog.d/50-centralized-logging.conf
@@ -56,14 +72,16 @@
     state: started
     enabled: true
   become: true
-  when: ansible_facts['os_family'] == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian' and ansible_facts['service_mgr'] == 'systemd'
+  failed_when: false
 - name: Ensure rsyslog is running and enabled (RedHat/CentOS)
   ansible.builtin.systemd:
     name: rsyslog
     state: started
     enabled: true
   become: true
-  when: ansible_facts['os_family'] == 'RedHat'
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['service_mgr'] == 'systemd'
+  failed_when: false
 - name: Create logrotate configuration for application logs
   ansible.builtin.copy:
     dest: /etc/logrotate.d/applications

@@ -5,3 +5,39 @@ quadlet_network_subnet: "10.89.0.0/24"
 quadlet_network_gateway: "10.89.0.1"
 quadlet_network_iprange: "10.89.0.0/24"
 quadlet_custom_files: []
+# GPU support for containers
+quadlet_enable_gpu_support: false
+quadlet_gpu_vendor: "nvidia"  # Options: nvidia, amd, intel
+quadlet_gpu_devices: []  # List of specific GPU devices to passthrough (e.g., ["/dev/nvidia0", "/dev/nvidia1"])
+quadlet_gpu_capabilities: ["gpu"]  # Capabilities to grant (gpu, compute, video, display, etc.)
+# GPU slicing configuration
+quadlet_gpu_slicing:
+  strategy: "auto"  # auto, mig, vgpu, time-slicing, sriov, level-zero, oneapi, passthrough
+  auto_strategy:
+    bare_metal: "mig"
+    virtual_host: "sriov"
+    virtual_guest: "passthrough"
+  # Strategy-specific configurations
+  mig: { enabled: false, profiles: ["1g.5gb"] }
+  vgpu: { enabled: false, profile: "", license_server: "" }
+  time_slicing: { enabled: false, max_instances: 4 }
+  sriov: { enabled: false, vf_count: 4 }
+  level_zero: { enabled: false, partitions: [] }
+  oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+  passthrough: { devices: [] }
+# Default GPU device configuration based on vendor
+quadlet_gpu_default_configs:
+  nvidia:
+    devices: ["/dev/nvidia0", "/dev/nvidiactl", "/dev/nvidia-uvm"]
+    mounts: ["/usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro", "/usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro"]
+    capabilities: ["gpu", "compute"]
+  amd:
+    devices: ["/dev/dri/card0", "/dev/dri/renderD128"]
+    mounts: ["/dev/dri:/dev/dri:rw", "/dev/kfd:/dev/kfd:rw"]
+    capabilities: ["gpu", "compute"]
+  intel:
+    devices: ["/dev/dri/card0", "/dev/dri/renderD128"]
+    mounts: ["/dev/dri:/dev/dri:rw"]
+    capabilities: ["gpu", "video"]
+# Container-specific GPU configurations
+quadlet_container_gpu_config: {}  # Key-value map of container names to GPU config

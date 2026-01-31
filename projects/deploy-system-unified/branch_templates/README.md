@@ -9,9 +9,15 @@ This directory contains ready-to-use Ansible playbooks for different deployment 
 2. **production_servers.yml** - For stable production environments
    - Use case: Web servers, databases, application servers
    - Features: SSH key rotation, standard security measures, Podman/Quadlet container management, Caddy reverse proxy
+
 3. **development_servers.yml** - For development and testing environments
    - Use case: Developer workstations, testing, staging
    - Features: Basic security with convenience prioritized, Podman/Quadlet container management, Caddy reverse proxy
+
+4. **gpu_workstations.yml** - For GPU-accelerated environments
+   - Use case: AI/ML, data processing, visualization, GPU computing
+   - Features: GPU driver installation, container GPU support, CUDA toolkit, optimized system settings, NVIDIA/AMD/Intel GPU profiles
+   - Supported GPUs: NVIDIA (CUDA), AMD (ROCm), Intel (OpenCL)
 
 ## Usage
 To use any of these templates, copy the appropriate template to your own deployment directory (separate from this repository):

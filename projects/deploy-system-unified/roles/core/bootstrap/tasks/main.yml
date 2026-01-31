@@ -66,7 +66,7 @@
     msg: "Environment detected as {{ virt_type | upper }} (Guest: {{ is_virtualized }})."
 - name: Generate high-entropy Deployment ID (Forensic Primary Key)
   ansible.builtin.set_fact:
-    deployment_id: "{{ (ansible_date_time.iso8601_micro + (999999999 | random | string)) | sha256sum | head -c 16 }}"
+    deployment_id: "{{ ansible_date_time.iso8601_micro | hash('sha256') | truncate(16, True, '') }}"
 - name: Set bootstrap completion flag
   ansible.builtin.set_fact:
     core_bootstrap_complete: true

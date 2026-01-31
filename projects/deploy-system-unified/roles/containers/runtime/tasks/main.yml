@@ -4,7 +4,6 @@
   ansible.builtin.apt:
     name:
       - podman
-      - podman-compose
       - slirp4netns
       - fuse-overlayfs
       - apparmor-utils
@@ -16,7 +15,6 @@
   ansible.builtin.dnf:
     name:
       - podman
-      - podman-compose
       - slirp4netns
       - fuse-overlayfs
       - selinux-policy-targeted
@@ -27,7 +25,6 @@
   community.general.pacman:
     name:
       - podman
-      - podman-compose
       - slirp4netns
       - fuse-overlayfs
     state: present
@@ -123,6 +120,70 @@
     scope: user
   become: false
   failed_when: false
+- name: Install GPU drivers and container toolkit (NVIDIA)
+  ansible.builtin.package:
+    name: "{{ containers_gpu_profiles[containers_gpu_vendor]['driver_packages'][ansible_facts['os_family'] | lower] }}"
+    state: present
+  when: containers_enable_gpu_support and containers_gpu_vendor == "nvidia"
+  become: true
+  failed_when: false
+- name: Install GPU drivers and container toolkit (AMD)
+  ansible.builtin.package:
+    name: "{{ containers_gpu_profiles[containers_gpu_vendor]['driver_packages'][ansible_facts['os_family'] | lower] }}"
+    state: present
+  when: containers_enable_gpu_support and containers_gpu_vendor == "amd"
+  become: true
+  failed_when: false
+- name: Install GPU drivers and container toolkit (Intel)
+  ansible.builtin.package:
+    name: "{{ containers_gpu_profiles[containers_gpu_vendor]['driver_packages'][ansible_facts['os_family'] | lower] }}"
+    state: present
+  when: containers_enable_gpu_support and containers_gpu_vendor == "intel"
+  become: true
+  failed_when: false
+- name: Configure NVIDIA container toolkit
+  ansible.builtin.command:
+    cmd: nvidia-ctk runtime configure --runtime=crun
+  register: nvidia_config_result
+  changed_when: true
+  failed_when: false
+  become: true
+  when: containers_enable_gpu_support and containers_gpu_vendor == "nvidia"
+- name: Configure container runtime for GPU support (NVIDIA)
+  ansible.builtin.lineinfile:
+    path: /etc/containers/containers.conf
+    regexp: "^#?default_capabilities ="
+    line: 'default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE", "gpu"]'
+  become: true
+  when: containers_enable_gpu_support and containers_gpu_vendor == "nvidia"
+- name: Configure container runtime for GPU support (AMD/Intel)
+  ansible.builtin.lineinfile:
+    path: /etc/containers/containers.conf
+    regexp: "^#?default_capabilities ="
+    line: 'default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE", "gpu"]'
+  become: true
+  when: containers_enable_gpu_support and containers_gpu_vendor in ["amd", "intel"]
+- name: Discover GPU devices and capabilities
+  ansible.builtin.include_tasks: gpu_discovery.yml
+  when: containers_enable_gpu_support
+- name: Validate GPU slicing configuration
+  ansible.builtin.include_tasks: gpu_validation.yml
+  when: containers_enable_gpu_support
+- name: Configure GPU slicing
+  ansible.builtin.include_tasks: gpu_slicing.yml
+  when: containers_enable_gpu_support
+- name: Report GPU configuration status
+  ansible.builtin.debug:
+    msg: |
+      {% if containers_enable_gpu_support %}
+      GPU support enabled:
+        Vendor: {{ containers_gpu_vendor_detected | upper }}
+        Strategy: {{ containers_gpu_slicing_strategy | default('passthrough') }}
+        Count: {{ containers_gpu_count_detected }}
+        Device Info: {{ containers_gpu_device_info }}
+      {% else %}
+      GPU support disabled. Set containers_enable_gpu_support: true to enable.
+      {% endif %}
 - name: Set containers runtime completion flag
   ansible.builtin.set_fact:
     containers_runtime_complete: true

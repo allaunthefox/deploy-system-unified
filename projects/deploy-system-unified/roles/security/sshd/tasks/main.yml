@@ -60,7 +60,6 @@
     replace: '# \1 '
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
-
 - name: Configure enhanced SSH security settings
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config

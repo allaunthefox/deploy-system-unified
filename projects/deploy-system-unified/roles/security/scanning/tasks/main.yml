@@ -21,7 +21,7 @@
 - name: Validate clock precision
   ansible.builtin.assert:
     that:
-      - chrony_sync_check.rc == 0
+    - chrony_sync_check.rc == 0
     fail_msg: "System clock is not synchronized. Forensic logs and certificate validation may fail."
 - name: Run enhanced security scanning (idempotent)
   ansible.builtin.import_tasks: enhanced_scanning.yml

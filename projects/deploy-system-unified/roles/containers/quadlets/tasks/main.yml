@@ -34,6 +34,8 @@
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
+  when: ansible_facts['service_mgr'] == 'systemd'
+  failed_when: false
 - name: List generated quadlet services
   ansible.builtin.command:
     cmd: systemctl list-unit-files --type=service | grep -E '\.container|\.pod'
@@ -41,9 +43,11 @@
   changed_when: false
   failed_when: false
   become: true
+  when: ansible_facts['service_mgr'] == 'systemd'
 - name: Display available quadlet services
   ansible.builtin.debug:
     msg: "Available quadlet services: {{ quadlet_services.stdout_lines | default([]) }}"
+  when: ansible_facts['service_mgr'] == 'systemd'
 - name: Set containers quadlets completion flag
   ansible.builtin.set_fact:
     containers_quadlets_complete: true
