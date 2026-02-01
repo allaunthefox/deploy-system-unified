@@ -24,6 +24,13 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### [3. Deployment](./deployment/EXAMPLES.md)
 *   **Solution Stacks**: How to use the Production, Development, and Ephemeral templates.
 *   **Variables**: Configuring randomized ports, IP restrictions, and secrets.
+
+### [4. GPU Slicing](./gpu_slicing_setup.md)
+*   **GPU Support**: NVIDIA, AMD, and Intel GPU configuration
+*   **Slicing Strategies**: MIG, SR-IOV, time-slicing, and passthrough
+*   **Container Integration**: Kubernetes, LXC, and Podman with GPU acceleration
+*   **Branch Templates**: GPU-specific deployment configurations
+
 ---
 
 ## 🤖 LLM & RAG Support
