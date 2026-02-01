@@ -24,6 +24,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### [3. Deployment](./deployment/EXAMPLES.md)
 *   **Solution Stacks**: How to use the Production, Development, and Ephemeral templates.
 *   **Variables**: Configuring randomized ports, IP restrictions, and secrets.
+*   **Potential Problems**: [Issues to consider when deploying profile combinations](./deployment/POTENTIAL_PROBLEMS.md).
 
 ### [4. GPU Slicing](./gpu_slicing_setup.md)
 *   **GPU Support**: NVIDIA, AMD, and Intel GPU configuration
