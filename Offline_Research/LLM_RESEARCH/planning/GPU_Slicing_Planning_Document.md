@@ -402,11 +402,11 @@ containers_gpu_slicing.lxc:
 7. `/roles/containers/runtime/vars/nvidia_gpu_models.yml` - NVIDIA GPU model profiles
 8. `/roles/containers/runtime/vars/amd_gpu_models.yml` - AMD GPU model profiles
 9. `/roles/containers/runtime/vars/intel_gpu_models.yml` - Intel GPU model profiles
-10. `/roles/core/k8s_node/tasks/gpu.yml` - Kubernetes GPU device plugin deployment
-11. `/roles/core/k8s_node/defaults/gpu.yml` - Kubernetes GPU configuration variables
-12. `/roles/core/k8s_node/templates/nvidia-device-plugin.yml.j2` - NVIDIA device plugin manifest
-13. `/roles/core/k8s_node/templates/amd-device-plugin.yml.j2` - AMD device plugin manifest
-14. `/roles/core/k8s_node/templates/intel-gpu-plugin.yml.j2` - Intel GPU device plugin manifest
+10. `/roles/orchestration/k8s_node/tasks/gpu.yml` - Kubernetes GPU device plugin deployment
+11. `/roles/orchestration/k8s_node/defaults/gpu.yml` - Kubernetes GPU configuration variables
+12. `/roles/orchestration/k8s_node/templates/nvidia-device-plugin.yml.j2` - NVIDIA device plugin manifest
+13. `/roles/orchestration/k8s_node/templates/amd-device-plugin.yml.j2` - AMD device plugin manifest
+14. `/roles/orchestration/k8s_node/templates/intel-gpu-plugin.yml.j2` - Intel GPU device plugin manifest
 15. `/roles/containers/lxc/defaults/main.yml` - LXC GPU configuration variables
 16. `/roles/containers/lxc/tasks/main.yml` - LXC GPU configuration tasks
 17. `/roles/containers/lxc/templates/lxc-gpu-config.j2` - LXC GPU configuration template

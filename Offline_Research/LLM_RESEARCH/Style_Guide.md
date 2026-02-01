@@ -886,7 +886,7 @@ When using placeholder values in templates, configuration files, or for validati
 
 ### Preflight Checks
 *   **Purpose**: Preflight checks validate system readiness before running critical operations
-*   **Placement**: Place preflight checks in `.ci/preflight_*.sh` scripts or `roles/preflight/tasks/main.yml`
+*   **Placement**: Place preflight checks in `.ci/preflight_*.sh` scripts or `roles/ops/preflight/tasks/main.yml`
 *   **Scope**: Validate:
     * System requirements (kernel version, available memory, disk space)
     * Prerequisites (required packages, services, permissions)

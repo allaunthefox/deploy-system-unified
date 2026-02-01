@@ -29,8 +29,8 @@ This document outlines the architecture for implementing GPU slicing capabilitie
 ### Intel
 | Technology | GPU Models | Type | Key Features |
 |------------|-----------|------|--------------|
-| SR-IOV | Data Center GPU Flex, Max series | Hardware | Virtual Functions, PCIe passthrough |
-| Level Zero API | All Intel GPUs | Software | API-level partitioning, scheduler-based sharing |
+| SR-IOV | Data Center GPU Flex/Max series (see roles/containers/runtime/vars/intel_gpu_models.yml) | Hardware | Virtual Functions, PCIe passthrough |
+| Level Zero API | Arc, Flex/Max, and Xe iGPUs (see roles/containers/runtime/vars/intel_gpu_models.yml) | Software | API-level partitioning, scheduler-based sharing |
 
 ## Architecture Components
 
