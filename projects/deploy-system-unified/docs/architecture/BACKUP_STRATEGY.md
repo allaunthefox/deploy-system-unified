@@ -17,7 +17,7 @@ This project implements a tiered backup strategy to ensure data persistence and 
 - **Logic**: Syncs local backup repositories (created by restic) to encrypted cloud providers (S3, B2, Drive).
 
 ## 🛠 Operational Workflow
-1. **Infrastructure**: `core/storage_btrfs` provides the snapshots capability.
+1. **Infrastructure**: `storage/filesystems/btrfs` provides the snapshots capability.
 2. **Workload**: `backup/restic` packages the application data.
 3. **Exfiltration**: `backup/rclone` pushes the data out of the failure domain.
 

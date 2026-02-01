@@ -6,7 +6,7 @@
   vars:
     vps_provider: "contabo"
   roles:
-    - role: core/vps_optimization
+    - role: hardware/virtual_guest
   tasks:
     - name: Verify MTU is set to 1450
       ansible.builtin.command: ip link show eth0

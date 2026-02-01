@@ -1,0 +1,41 @@
+---
+# Generic GPU Setup for x86_64
+# Falls back to standard Mesa / Vulkan software rendering or generic drivers
+
+- name: Define Generic Graphics packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    generic_graphics_packages:
+      - mesa-utils
+      - vulkan-tools
+      - libgl1-mesa-dri
+      - libglx-mesa0
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Define Generic Graphics packages (RedHat/Fedora)
+  ansible.builtin.set_fact:
+    generic_graphics_packages:
+      - mesa-demos
+      - vulkan-tools
+      - mesa-dri-drivers
+      - mesa-libGL
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Define Generic Graphics packages (Alpine)
+  ansible.builtin.set_fact:
+    generic_graphics_packages:
+      - mesa-demos
+      - vulkan-tools
+      - mesa-dri-gallium
+      - mesa-va-gallium
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Install Generic Graphics Stack
+  ansible.builtin.package:
+    name: "{{ generic_graphics_packages }}"
+    state: present
+  become: true
+  when: generic_graphics_packages is defined
+
+- name: Log Generic Setup
+  ansible.builtin.debug:
+    msg: "Installed generic x86_64 graphics stack (Mesa/Vulkan). Acceleration depends on kernel hardware detection."

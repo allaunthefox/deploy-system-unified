@@ -22,7 +22,7 @@ These templates import a Base Layer and add a specific application workload.
 
 ## 🔒 Security Architecture
 ### Layered Defense
-1.  **L3/L4 (Firewall)**: Established *first* with a default-deny policy via `security/firewall`.
+1.  **L3/L4 (Firewall)**: Established *first* with a default-deny policy via `networking/firewall`.
 2.  **L7 (Access)**: Identity-based restrictions using SSH Match blocks via `security/access`.
 3.  **Audit**: Immutable, chrony-verified logs for every deployment event.
 4.  **Verification**: Post-deployment integrity scanning via `security/scanning`.

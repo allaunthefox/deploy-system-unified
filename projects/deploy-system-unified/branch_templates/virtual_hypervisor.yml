@@ -6,9 +6,11 @@
   hosts: all
   become: true
   roles:
+    # Physical Network Optimization
+    - role: networking/physical
     # Virtualization Stack
-    - role: core/qemu
-    - role: core/virt_networking
-    - role: core/virt_storage
+    - role: virtualization/kvm
+    - role: networking/virtual
+    - role: virtualization/storage
     # Final Solution Integrity Verification
     - role: security/scanning

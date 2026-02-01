@@ -97,20 +97,19 @@
       keep_weekly: 4
       keep_monthly: 3
     # System Monitoring
-    system_monitoring_enabled: true
-    monitoring_tools:
-      - prometheus
-      - node_exporter
-      - grafana
+    monitoring_enable_node_exporter: true
+    monitoring_enable_smartmon: true
+    monitoring_node_exporter_port: 9100
   roles:
     # VPS Specialized Roles
-    - role: core/vps_optimization
+    - role: hardware/virtual_guest
     # Storage Optimization for 800 GB SSD
-    - role: core/storage_btrfs
+    - role: storage/filesystems/btrfs
     # System Tuning
-    - role: core/disk_tuning
+    - role: hardware/storage_tuning
     - role: core/entropy
     - role: core/logging
+    - role: ops/monitoring
     - role: core/updates
     - role: core/time
     # Containerization Stack
@@ -119,11 +118,11 @@
     - role: containers/quadlets
     - role: containers/caddy
     # Backup Configuration
-    - role: backup/timeshift
-    - role: backup/restic
-    - role: backup/rclone
+    - role: storage/backup/timeshift
+    - role: storage/backup/restic
+    - role: storage/backup/rclone
     # Enhanced Security Configuration
-    - role: security/firewall
+    - role: networking/firewall
     - role: security/sshd
     - role: security/hardening
     - role: security/kernel
@@ -131,7 +130,7 @@
     - role: security/audit_integrity
     - role: security/resource_protection
     # Networking Configuration
-    - role: core/virt_networking
+    - role: networking/virtual
   post_tasks:
     - name: Verify Contabo-specific configuration
       ansible.builtin.debug:

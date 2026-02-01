@@ -24,9 +24,14 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### [3. Deployment](./deployment/EXAMPLES.md)
 *   **Solution Stacks**: How to use the Production, Development, and Ephemeral templates.
 *   **Variables**: Configuring randomized ports, IP restrictions, and secrets.
+*   **[Architecture & Vendor Profiles](./deployment/ARCH_VENDOR_PROFILES.md)**: Explicit arch/vendor selection to avoid x86-only assumptions.
+*   **[Hardware Compatibility Matrix](./deployment/HARDWARE_COMPATIBILITY_MATRIX.md)**: Supported CPU/GPU combinations and platform tiers.
+*   **[GPU Interaction Matrix](./deployment/GPU_INTERACTION_MATRIX.md)**: Behavior in VM, Container, and Hybrid environments.
+*   **[OS Configuration](./deployment/OS_CONFIGURATION.md)**: The "Single Source of Truth" for fleet-wide OS settings.
+*   **[GPU Stack Setup](./deployment/GPU_STACK_SETUP.md)**: Detailed guide for installing unified GPU drivers and compute stacks.
 *   **Potential Problems**: [Issues to consider when deploying profile combinations](./deployment/POTENTIAL_PROBLEMS.md).
 
-### [4. GPU Slicing](./gpu_slicing_setup.md)
+### [4. GPU Slicing](./deployment/GPU_SLICING.md)
 *   **GPU Support**: NVIDIA, AMD, and Intel GPU configuration
 *   **Slicing Strategies**: MIG, SR-IOV, time-slicing, and passthrough
 *   **Container Integration**: Kubernetes, LXC, and Podman with GPU acceleration
@@ -35,6 +40,6 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ---
 
 ## 🤖 LLM & RAG Support
-For AI assistants and RAG systems, see the **[LLM Map](./LLM_MAP.md)** for high-density context loading.
+For AI assistants and RAG systems, see the **[LLM Map](./development/LLM_MAP.md)** for high-density context loading.
 Knowledge base research can be found in the sibling `LLM_RESEARCH` directory.
 

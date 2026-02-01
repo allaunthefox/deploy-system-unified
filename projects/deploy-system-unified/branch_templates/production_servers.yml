@@ -7,13 +7,14 @@
   become: true
   roles:
     # Container Infrastructure Workload
+    - role: hardware/sas
     - role: containers/runtime
     - role: containers/config
     - role: containers/quadlets
     - role: containers/caddy
     # Backup & Disaster Recovery
-    - role: backup/restic
-    - role: backup/rclone
+    - role: storage/backup/restic
+    - role: storage/backup/rclone
     # Final Solution Integrity Verification
     - role: security/scanning
   post_tasks:

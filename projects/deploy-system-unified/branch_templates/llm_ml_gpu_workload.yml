@@ -42,7 +42,7 @@
       register: preflight_flag
     - name: Include preflight checks if not already completed (idempotent)
       ansible.builtin.import_role:
-        name: preflight
+        name: ops/preflight
       when: not preflight_flag.stat.exists
       tags: [preflight]
     - name: Create preflight completion flag (idempotent)
@@ -59,7 +59,7 @@
     - core/logging
 
     # Kubernetes node setup (for Kubernetes environments) - Skipped for test environment
-    # - role: core/k8s_node
+    # - role: orchestration/k8s_node
     #   vars:
     #     k8s_gpu_device_plugins_enabled: true
     #     k8s_gpu_nvidia_device_plugin:

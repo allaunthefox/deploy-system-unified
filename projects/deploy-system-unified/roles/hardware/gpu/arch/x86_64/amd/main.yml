@@ -1,0 +1,117 @@
+---
+# AMD GPU Setup for x86_64
+
+- name: Define AMD Graphics Packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - libgl1-mesa-dri
+      - libglx-mesa0
+      - mesa-vulkan-drivers
+      - mesa-va-drivers
+      - mesa-vdpau-drivers
+    amd_packages_host:
+      - firmware-amd-graphics
+  when: ansible_os_family == 'Debian'
+
+- name: Define AMD Graphics Packages (RHEL/Fedora)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - mesa-dri-drivers
+      - mesa-vulkan-drivers
+      - mesa-libEGL
+      - mesa-libGL
+    amd_packages_host:
+      - amd-gpu-firmware
+  when: ansible_os_family == 'RedHat'
+
+- name: Define AMD Graphics Packages (Alpine)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - mesa-va-gallium
+      - mesa-vdpau-gallium
+      - mesa-vulkan-ati
+      - libdrm-amdgpu
+    amd_packages_host:
+      - linux-firmware-amdgpu
+  when: ansible_os_family == 'Alpine'
+
+- name: Define AMD Graphics Packages (Arch Linux)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - mesa
+      - xf86-video-amdgpu
+      - vulkan-radeon
+      - libva-mesa-driver
+      - mesa-vdpau
+    amd_packages_host:
+      - linux-firmware
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install AMD Graphics Stack
+  ansible.builtin.package:
+    name: "{{ amd_packages_common + (amd_packages_host if not (_gpu_is_container|default(false)) else []) }}"
+    state: present
+  become: true
+  ignore_errors: true
+
+- name: Ensure AMDGPU kernel module is loaded
+  community.general.modprobe:
+    name: amdgpu
+    state: present
+  become: true
+  when: 
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Set AMDGPU power profiles (if supported)
+
+
+- name: Set AMDGPU power profiles (if supported)
+  ansible.builtin.shell:
+    cmd: "echo 'compute' > /sys/class/drm/card0/device/power_dpm_force_performance_level"
+  become: true
+  ignore_errors: true
+  when:
+    - gpu_stack_mode == 'server'
+    - not _gpu_is_container | default(false)
+    - ansible_virtualization_role != 'guest' # unlikely to work in VM without passthrough
+  ignore_errors: true
+
+- name: Setup AMD ROCm Repository (Debian/Ubuntu)
+  block:
+    - name: Download AMD ROCm GPG key
+      ansible.builtin.get_url:
+        url: https://repo.radeon.com/rocm/rocm.gpg.key
+        dest: /etc/apt/keyrings/rocm.gpg
+        mode: '0644'
+
+    - name: Add AMD ROCm repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/{{ rocm_version | default('6.0') }} {{ ansible_distribution_release }} main"  # yamllint disable-line rule:line-length
+        state: present
+        filename: rocm
+
+  become: true
+  when:
+    - ansible_os_family == 'Debian'
+    - gpu_stack_enable_rocm | default(false) | bool
+
+- name: Setup AMD ROCm Repository (RHEL/Fedora)
+  ansible.builtin.yum_repository:
+    name: rocm
+    description: AMD ROCm Repository
+    baseurl: "https://repo.radeon.com/rocm/rhel{{ ansible_distribution_major_version }}/{{ rocm_version | default('6.0') }}/main"
+    gpgcheck: true
+    gpgkey: https://repo.radeon.com/rocm/rocm.gpg.key
+    enabled: true
+  become: true
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu_stack_enable_rocm | default(false) | bool
+
+- name: Install AMD ROCm Stack
+  ansible.builtin.package:
+    name: rocm-hip-sdk
+    state: present
+  become: true
+  when: gpu_stack_enable_rocm | default(false) | bool

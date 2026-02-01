@@ -17,7 +17,7 @@
     - role: core/entropy
     - role: core/secrets
     # Security Baseline (Establish Default-Deny First)
-    - role: security/firewall
+    - role: networking/firewall
     - role: security/mac_apparmor
     - role: security/kernel
     - role: security/hardware_isolation
@@ -29,9 +29,9 @@
     - role: security/sandboxing
     - role: security/firejail
     - role: security/resource_protection
-    - role: security/network_segmentation
-    - role: security/inter_pod_encryption
-    - role: security/endlessh
+    - role: networking/container_networks
+    - role: networking/vpn_mesh
+    - role: networking/services/endlessh
     - role: security/ips
     - role: security/advanced
     # Operations Utilities

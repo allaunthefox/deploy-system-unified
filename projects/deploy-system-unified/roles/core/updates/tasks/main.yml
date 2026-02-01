@@ -29,3 +29,15 @@
         state: started
   when: ansible_os_family == 'RedHat'
   become: true
+- name: Configure Updates (Arch Linux)
+  block:
+    - name: Ensure keyring is up to date (Arch)
+      community.general.pacman:
+        name: archlinux-keyring
+        state: latest
+        update_cache: true
+    - name: Warn about automatic updates on Rolling Release
+      ansible.builtin.debug:
+        msg: "Skipping automatic system updates on Arch Linux. Rolling releases require manual intervention (pacman -Syu)."
+  when: ansible_distribution == 'Archlinux'
+  become: true

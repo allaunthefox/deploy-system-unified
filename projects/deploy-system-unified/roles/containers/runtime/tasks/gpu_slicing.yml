@@ -1,5 +1,10 @@
 ---
 # GPU slicing configuration
+
+- name: Detect Container Environment (Internal)
+  ansible.builtin.set_fact:
+    _con_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+
 - name: Determine GPU slicing strategy based on virtualization type (auto strategy)
   ansible.builtin.set_fact:
     containers_gpu_slicing_strategy: >-
@@ -55,6 +60,8 @@
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "time-slicing"
     - containers_gpu_vendor_detected == "nvidia"
+    - not _con_is_container
+
 - name: Configure AMD SR-IOV (bare metal and host)
   block:
     - name: Load AMD SR-IOV kernel module

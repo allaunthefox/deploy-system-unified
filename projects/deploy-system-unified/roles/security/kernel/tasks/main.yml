@@ -1,5 +1,10 @@
 ---
 # Tasks for security/kernel role - Mandatory Sysctl Hardening
+
+- name: Detect Virtualization Environment (Internal)
+  ansible.builtin.set_fact:
+    _sec_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+
 - name: Apply kernel hardening parameters
   ansible.posix.sysctl:
     name: "{{ item.name }}"
@@ -28,6 +33,7 @@
     - { name: 'kernel.panic_on_oops', value: '1' }
     - { name: 'vm.swappiness', value: '1' } # Minimize swapping of sensitive memory to disk
   become: true
+  when: not _sec_is_container
   tags: [security, kernel]
 - name: Configure Kernel to zero memory on free (GRUB)
   ansible.builtin.lineinfile:

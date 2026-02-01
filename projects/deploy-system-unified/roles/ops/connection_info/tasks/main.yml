@@ -3,9 +3,7 @@
 - name: Determine SSH port for connection info
   ansible.builtin.set_fact:
     connection_info_port: >-
-      {{ advanced_security_hardening_random_ssh_port
-         if (ssh_randomize_port | default(false) | bool and advanced_security_hardening_random_ssh_port is defined)
-         else access_sshd_port | default(22) }}
+      {{ system_ssh_port | default(22) }}
 - name: Create SSH connection info (idempotent)
   ansible.builtin.set_fact:
     ssh_connection_info:

@@ -1,0 +1,83 @@
+---
+# Defaults for networking/physical
+
+interface_capabilities: {}
+
+# General Settings
+networking_physical_install_tools: true
+networking_physical_manage_mtu: true
+
+# Jumbo Frames Configuration (for Fiber/SFP+)
+networking_physical_jumbo_frames_enabled: true
+networking_physical_jumbo_mtu: 9000
+
+# Ring Buffer Tuning (High Throughput)
+networking_physical_ring_tuning_enabled: true
+networking_physical_rx_ring_size: 2048
+networking_physical_tx_ring_size: 2048
+
+# Offload Settings
+networking_physical_offload_tuning_enabled: true
+networking_physical_enable_tso: true # TCP Segmentation Offload
+networking_physical_enable_gso: true # Generic Segmentation Offload
+networking_physical_enable_lro: false # Large Receive Offload (often problematic with forwarding)
+
+# Hardware Type Defaults (Auto-detection overrides)
+# Can force types for testing:
+# networking_physical_force_type: "fiber"
+
+# Performance Profiles
+# Automatically detected based on interface speed if not forcibly set.
+# Tuning tiers: 1g, 2.5g, 10g, 25g, 40g, 100g
+networking_physical_profiles:
+  "1000": # 1Gbps
+    ring_rx: 512
+    ring_tx: 512
+    netdev_backlog: 1000
+    rmem_max: 16777216
+    wmem_max: 16777216
+    tcp_rmem: "4096 87380 16777216"
+    tcp_wmem: "4096 65536 16777216"
+  "2500": # 2.5Gbps
+    ring_rx: 1024
+    ring_tx: 1024
+    netdev_backlog: 5000
+    rmem_max: 26214400
+    wmem_max: 26214400
+    tcp_rmem: "4096 87380 26214400"
+    tcp_wmem: "4096 65536 26214400"
+  "10000": # 10Gbps
+    ring_rx: 2048
+    ring_tx: 2048
+    netdev_backlog: 30000
+    rmem_max: 33554432
+    wmem_max: 33554432
+    tcp_rmem: "4096 87380 33554432"
+    tcp_wmem: "4096 65536 33554432"
+  "25000": # 25Gbps
+    ring_rx: 4096
+    ring_tx: 4096
+    netdev_backlog: 50000
+    rmem_max: 67108864
+    wmem_max: 67108864
+    tcp_rmem: "4096 87380 67108864"
+    tcp_wmem: "4096 65536 67108864"
+  "40000": # 40Gbps
+    ring_rx: 4096
+    ring_tx: 4096
+    netdev_backlog: 60000
+    rmem_max: 67108864
+    wmem_max: 67108864
+    tcp_rmem: "4096 87380 67108864"
+    tcp_wmem: "4096 65536 67108864"
+  "100000": # 100Gbps
+    ring_rx: 8192
+    ring_tx: 8192
+    netdev_backlog: 250000
+    rmem_max: 134217728
+    wmem_max: 134217728
+    tcp_rmem: "4096 87380 134217728"
+    tcp_wmem: "4096 65536 134217728"
+
+# Fallback defaults if exact speed match isn't found
+networking_physical_default_profile: "1000"

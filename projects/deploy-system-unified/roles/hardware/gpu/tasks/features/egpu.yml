@@ -1,0 +1,81 @@
+---
+# eGPU Support (Thunderbolt/USB4 or OCuLink)
+
+# --- Thunderbolt/USB4 Config ---
+- name: Configure Thunderbolt eGPU Support
+  when: gpu_stack_egpu_interface | default('thunderbolt') == 'thunderbolt'
+  block:
+    - name: Define Thunderbolt packages (Debian/Ubuntu)
+      ansible.builtin.set_fact:
+        egpu_packages:
+          - bolt
+          - thunderbolt-tools
+      when: ansible_os_family == 'Debian'
+
+    - name: Define Thunderbolt packages (RedHat/Fedora)
+      ansible.builtin.set_fact:
+        egpu_packages:
+          - bolt
+      when: ansible_os_family == 'RedHat'
+
+    - name: Define Thunderbolt packages (Alpine)
+      ansible.builtin.set_fact:
+        egpu_packages:
+          - bolt
+          - udev
+      when: ansible_os_family == 'Alpine'
+
+    - name: Install Thunderbolt management tools
+      ansible.builtin.package:
+        name: "{{ egpu_packages }}"
+        state: present
+      become: true
+      when: egpu_packages is defined
+
+    - name: Enable and start bolt service
+      ansible.builtin.service:
+        name: bolt
+        enabled: true
+        state: started
+      become: true
+      ignore_errors: true
+
+    - name: Authorize Thunderbolt devices (Optional - All)
+      ansible.builtin.shell: |
+        if command -v boltctl >/dev/null 2>&1; then
+          for device in $(boltctl list | grep uuid | awk '{print $2}'); do
+            boltctl enroll $device
+          done
+        fi
+      become: true
+      changed_when: false
+      when: gpu_stack_egpu_auto_enroll | default(false)
+
+# --- OCuLink Config ---
+- name: Configure OCuLink eGPU Support
+  when: gpu_stack_egpu_interface | default('thunderbolt') == 'oculink'
+  block:
+    - name: Install OCuLink dependencies (pciutils)
+      ansible.builtin.package:
+        name: pciutils
+        state: present
+      become: true
+
+    - name: Create OCuLink PCI Rescan Script
+      ansible.builtin.copy:
+        dest: /usr/local/bin/gpu-rescan
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          # Rescan PCI bus for OCuLink eGPU detection
+          echo "Rescanning PCI bus..."
+          echo 1 > /sys/bus/pci/rescan
+          echo "Done. Check dmesg or lspci for new devices."
+      become: true
+
+    - name: Ensure pciehp module is loaded (if modular)
+      ansible.builtin.modprobe:
+        name: pciehp
+        state: present
+      become: true
+      ignore_errors: true # Often built-in, might fail if not compiled as module

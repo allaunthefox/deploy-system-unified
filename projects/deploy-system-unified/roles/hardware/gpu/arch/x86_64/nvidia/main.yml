@@ -1,0 +1,93 @@
+---
+# NVIDIA GPU Setup for x86_64
+
+- name: Determine NVIDIA driver package name (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - nvidia-driver
+      - nvidia-smi
+      - nvidia-cuda-toolkit
+  when: ansible_os_family == 'Debian'
+
+- name: Determine NVIDIA driver package name (RHEL/Fedora)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - akmod-nvidia
+      - xorg-x11-drv-nvidia-cuda
+  when: ansible_os_family == 'RedHat'
+
+- name: Determine NVIDIA driver package name (Alpine)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - nvidia-driver
+      - nvidia-cuda
+      - nvidia-container-toolkit
+  when: ansible_os_family == 'Alpine'
+
+- name: Determine NVIDIA driver package name (Arch Linux)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - nvidia
+      - nvidia-utils
+      - nvidia-settings
+      - cuda
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install NVIDIA drivers
+  ansible.builtin.package:
+    name: "{{ nvidia_driver_packages }}"
+    state: present
+  become: true
+  ignore_errors: true
+  notify:
+    - Update initramfs (placeholder)
+  when: 
+    - nvidia_driver_packages is defined
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Enable NVIDIA Persistence Daemon
+  ansible.builtin.systemd:
+    name: nvidia-persistenced
+    enabled: true
+    state: started
+  become: true
+  ignore_errors: true # Service name might vary or not be available immediately
+  when: 
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Configure NVIDIA kernel parameters (ensure proprietary modules load)
+  ansible.builtin.copy:
+    content: |
+      options nvidia NVreg_PreserveVideoMemoryAllocations=1
+      options nvidia NVreg_TemporaryFilePath=/var/tmp
+    dest: /etc/modprobe.d/nvidia-options.conf
+    mode: '0644'
+  become: true
+  when: 
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+
+- name: Setup NVIDIA CUDA Repository (RHEL/Fedora)
+  ansible.builtin.yum_repository:
+    name: cuda-rhel{{ ansible_distribution_major_version }}
+    description: NVIDIA CUDA Repository
+    baseurl: https://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version }}/x86_64/
+    gpgcheck: true
+    gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version }}/x86_64/D42D0685.pub
+    enabled: true
+  become: true
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu_stack_enable_cuda | default(false) | bool
+
+- name: Install NVIDIA CUDA Toolkit
+  ansible.builtin.package:
+    name: "{{ 'nvidia-cuda-toolkit' if ansible_os_family == 'Debian' else 'cuda-toolkit' }}"
+    state: present
+  become: true
+  when: gpu_stack_enable_cuda | default(false) | bool
+
+

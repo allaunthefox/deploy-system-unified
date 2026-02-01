@@ -2,7 +2,7 @@
 # Security/Scanning role - Focused on system validation and vulnerability scanning
 - name: Validate preflight requirements (idempotent)
   ansible.builtin.import_role:
-    name: preflight
+    name: ops/preflight
 - name: Verify directory structure (idempotent)
   ansible.builtin.import_tasks: directory_verification.yml
 - name: Configure security tools (idempotent)

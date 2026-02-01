@@ -1,0 +1,39 @@
+---
+# Defaults for hardware/gpu
+
+# Enable/Disable the role
+gpu_stack_enable: false
+
+# GPU Vendor Selection: nvidia, amd, intel, mali, adreno, img, generic
+# Can be a string ("nvidia") or a list (["nvidia", "intel"]) for mixed environments.
+gpu_stack_vendor: generic
+
+# GPU Mode: server (headless/compute), desktop (graphics/display), hybrid
+gpu_stack_mode: server
+
+# GPU Reservation: host (host uses GPU), vfio (GPU reserved for VM passthrough)
+# If 'vfio', kernel modules will not be loaded by this role.
+gpu_stack_reservation: host
+
+# Auto-detect architecture if possible (uses ansible_architecture)
+# Can be overridden: x86_64, aarch64, riscv64
+# Note: Should map to folders in arch/ directory. Logic in tasks/main.yml normalizes
+# common variations (e.g. amd64 -> x86_64, arm64 -> aarch64).
+gpu_stack_arch: "{{ ansible_architecture }}"
+
+# Advanced Features (Integration flags)
+gpu_stack_enable_egpu: false         # Enable support for External GPUs (Thunderbolt/USB4/OCuLink)
+gpu_stack_egpu_interface: thunderbolt # Connection type: thunderbolt (default), oculink
+gpu_stack_enable_rdma: false         # Enable Remote Direct Memory Access support
+gpu_stack_enable_dp_alt_mode: false  # Enable DisplayPort Alt Mode handling
+
+# Compute Stack Enablement
+gpu_stack_enable_oneapi: false       # Enable Intel OneAPI Base Toolkit (or runtime)
+gpu_stack_enable_cuda: false         # Enable NVIDIA CUDA Toolkit (compiler/dev tools)
+gpu_stack_enable_rocm: false         # Enable AMD ROCm SDK
+
+
+# Variable Namespacing:
+# All variables internal to this role should be prefixed with gpu_stack_ or specific
+# vendor prefixes (nvidia_, intel_, etc.) contained only within their specific
+# inclusion files to avoid global namespace collisions.

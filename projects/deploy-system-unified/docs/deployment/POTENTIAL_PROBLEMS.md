@@ -74,7 +74,7 @@ This document identifies potential issues that may arise when deploying combinat
 **Problem**: Some security roles may have overlapping functionality, potentially leading to conflicts.
 
 **Example**:
-- `security/firewall` and `security/network_segmentation` both configure iptables rules
+- `networking/firewall` and `networking/container_networks` both configure iptables rules
 - `security/hardening` and `security/resource_protection` may set overlapping kernel parameters
 
 **Solution**:
@@ -100,7 +100,7 @@ This document identifies potential issues that may arise when deploying combinat
 **Problem**: Network-related profiles may set conflicting configuration.
 
 **Example**:
-- `core/virt_networking` and `security/network_segmentation` both configure network interfaces
+- `networking/virtual` and `networking/container_networks` both configure network interfaces
 - `access_sshd_port` variable may be set differently in multiple profiles
 
 **Solution**:

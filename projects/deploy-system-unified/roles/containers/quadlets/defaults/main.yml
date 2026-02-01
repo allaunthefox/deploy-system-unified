@@ -5,6 +5,8 @@ quadlet_network_subnet: "10.89.0.0/24"
 quadlet_network_gateway: "10.89.0.1"
 quadlet_network_iprange: "10.89.0.0/24"
 quadlet_custom_files: []
+# Architecture override (explicit target architecture)
+quadlet_arch_override: ""
 # GPU support for containers
 quadlet_enable_gpu_support: false
 quadlet_gpu_vendor: "nvidia"  # Options: nvidia, amd, intel

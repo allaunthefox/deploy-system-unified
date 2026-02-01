@@ -30,6 +30,16 @@
     state: present
   when: ansible_facts['distribution'] | lower == 'archlinux'
   become: true
+
+- name: Enable IPv4 forwarding for container networking
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_file: /etc/sysctl.d/90-podman.conf
+    state: present
+    reload: true
+  become: true
+
 - name: Configure container security settings
   ansible.builtin.copy:
     dest: /etc/containers/containers.conf

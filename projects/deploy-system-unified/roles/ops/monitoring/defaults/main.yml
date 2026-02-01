@@ -1,0 +1,22 @@
+---
+# Defaults for ops/monitoring
+
+# Feature Flags
+monitoring_enable_node_exporter: true
+monitoring_enable_smartmon: true
+monitoring_enable_nvme_cli: true
+
+# Node Exporter Configuration
+monitoring_node_exporter_version: "1.7.0"
+monitoring_node_exporter_port: 9100
+monitoring_node_exporter_collectors:
+  - systemd
+  - processes
+  - filesystem
+  - cpu
+  - meminfo
+  - loadavg
+  - netdev
+
+# Smartmon Configuration
+monitoring_smartd_interval: 1800  # Check every 30 minutes

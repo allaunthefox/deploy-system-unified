@@ -1,0 +1,53 @@
+---
+# Hybrid Graphics Setup (Prime / Optimus / Switcheroo)
+# Configures interaction between Integrated (iGPU) and Discrete (dGPU) cards.
+
+- name: Setup NVIDIA Prime (Debian/Ubuntu)
+  block:
+    - name: Install nvidia-prime
+      ansible.builtin.package:
+        name: nvidia-prime
+        state: present
+      become: true
+
+    - name: Configure Prime Profile (Hybrid/On-Demand)
+      ansible.builtin.command: prime-select on-demand
+      become: true
+      changed_when: false
+      when: gpu_stack_mode == 'hybrid'
+
+    - name: Configure Prime Profile (Performance/Discrete)
+      ansible.builtin.command: prime-select nvidia
+      become: true
+      changed_when: false
+      when: gpu_stack_mode == 'desktop'
+
+    - name: Configure Prime Profile (Power Saving/Integrated)
+      ansible.builtin.command: prime-select intel
+      become: true
+      changed_when: false
+      when: gpu_stack_mode == 'power' # Hypothetical mode, or if user explicitly wants to disable dGPU logic via some other var
+  when:
+    - ansible_os_family == 'Debian'
+    - "'nvidia' in _gpu_vendor_list"
+    - "('intel' in _gpu_vendor_list) or ('amd' in _gpu_vendor_list)"
+    - not _gpu_is_container | default(false)
+
+- name: Setup Switcheroo Control (RedHat/Fedora)
+  block:
+    - name: Install switcheroo-control
+      ansible.builtin.package:
+        name: switcheroo-control
+        state: present
+      become: true
+    
+    - name: Enable switcheroo-control service
+      ansible.builtin.systemd:
+        name: switcheroo-control
+        enabled: true
+        state: started
+      become: true
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu_stack_mode == 'hybrid'
+    - not _gpu_is_container | default(false)

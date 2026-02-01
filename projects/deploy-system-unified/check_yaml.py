@@ -3,7 +3,7 @@ import yaml
 import sys
 
 try:
-    with open('roles/core/vps_optimization/tasks/providers/contabo.yml', 'rb') as f:
+    with open('roles/hardware/virtual_guest/tasks/providers/contabo.yml', 'rb') as f:
         content = f.read()
         print("File content:", repr(content.decode('utf-8')))
         data = yaml.safe_load(content)

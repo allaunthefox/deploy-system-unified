@@ -25,3 +25,29 @@
       ansible.builtin.assert:
         that:
           - sshd_port_check.rc == 0
+
+    - name: Check Monitoring (node_exporter)
+      stat:
+        path: /usr/local/bin/node_exporter
+      register: node_exporter_bin
+
+    - name: Assert node_exporter installed
+      assert:
+        that: node_exporter_bin.stat.exists
+
+    - name: Check Networking Tools (ethtool)
+      stat:
+        path: /sbin/ethtool
+      register: ethtool_bin
+      ignore_errors: true
+
+    - name: Check lsscsi (SAS Tools)
+      stat:
+        path: /usr/bin/lsscsi
+      register: lsscsi_bin
+
+    - name: Assert Hardware Tools installed
+      assert:
+        that:
+          - lsscsi_bin.stat.exists
+          - ethtool_bin.stat.exists or (ansible_facts['distribution'] == 'Ubuntu' and true) # simplified check

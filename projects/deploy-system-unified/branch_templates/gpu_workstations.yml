@@ -42,7 +42,7 @@
       register: preflight_flag
     - name: Include preflight checks if not already completed (idempotent)
       ansible.builtin.import_role:
-        name: preflight
+        name: ops/preflight
       when: not preflight_flag.stat.exists
       tags: [preflight]
     - name: Create preflight completion flag (idempotent)
@@ -57,7 +57,9 @@
     - core/bootstrap
     - core/identity
     - core/logging
-    - security/firewall
+    - role: ops/monitoring
+    - role: networking/physical
+    - networking/firewall
     - security/hardening
     - security/access
 
@@ -65,7 +67,8 @@
     - role: containers/runtime
       vars:
         containers_enable_gpu_support: true
-        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        containers_arch_override: "x86_64"  # Set explicitly per target (x86_64, arm64, riscv64)
+        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed (Intel model list: roles/containers/runtime/vars/intel_gpu_models.yml)
         containers_gpu_count: 1
         containers_gpu_slicing:
           strategy: "auto"
@@ -83,7 +86,8 @@
     - role: containers/quadlets
       vars:
         quadlet_enable_gpu_support: true
-        quadlet_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        quadlet_arch_override: "x86_64"  # Set explicitly per target (x86_64, arm64, riscv64)
+        quadlet_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed (Intel model list: roles/containers/runtime/vars/intel_gpu_models.yml)
         quadlet_gpu_slicing:
           strategy: "auto"
           auto_strategy:

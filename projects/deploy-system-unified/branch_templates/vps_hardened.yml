@@ -15,6 +15,6 @@
     sshd_allow_tcp_forwarding: true
   roles:
     # VPS Specialized Roles
-    - role: core/vps_optimization
+    - role: hardware/virtual_guest
     # Final Solution Integrity Verification
     - role: security/scanning

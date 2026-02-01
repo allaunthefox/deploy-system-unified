@@ -1,0 +1,113 @@
+---
+# Tasks for networking/physical
+
+- name: Install networking tools
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ethtool
+    - lshw
+    - irqbalance # Essential for multi-queue/high-speed NICs
+  when: networking_physical_install_tools
+  become: true
+
+- name: Detect physical interfaces
+  ansible.builtin.set_fact:
+    physical_interfaces: >-
+      {{
+        ansible_interfaces
+        | map('regex_replace', '^', 'ansible_')
+        | map('extract', ansible_facts)
+        | select('defined')
+        | selectattr('type', 'defined')
+        | selectattr('type', 'equalto', 'ether')
+        | map(attribute='device')
+        | list
+      }}
+
+- name: Gather ethtool facts for physical interfaces
+  ansible.builtin.command: "ethtool {{ item }}"
+  register: ethtool_output
+  changed_when: false
+  failed_when: false
+  loop: "{{ physical_interfaces }}"
+  become: true
+
+- name: Parse Interface Types and Capabilities
+  ansible.builtin.set_fact:
+    interface_capabilities: "{{ interface_capabilities | default({}) | combine({ item.item: {
+      'port_type': (item.stdout | regex_search('Port: ([a-zA-Z ]+)', '\\1') | first | default('Unknown') | trim),
+      'link_detected': (item.stdout | regex_search('Link detected: ([a-zA-Z]+)', '\\1') | first | default('no') | trim),
+      'speed': (item.stdout | regex_search('Speed: ([0-9]+)Mb/s', '\\1') | first | default('0') | int)
+    }}) }}"
+  loop: "{{ ethtool_output.results }}"
+  when: item.rc == 0
+
+- name: Debug Interface Capabilities
+  ansible.builtin.debug:
+    var: interface_capabilities
+    verbosity: 1
+
+# --- System-Wide Kernel Tuning (Based on Fastest Interface) ---
+
+- name: Determine Max Interface Speed
+  ansible.builtin.set_fact:
+    max_interface_speed: "{{ interface_capabilities.values() | map(attribute='speed') | map('int') | max | default(1000) }}"
+
+- name: Select Performance Profile
+  ansible.builtin.set_fact:
+    active_profile: "{{ networking_physical_profiles[max_interface_speed|string] | default(networking_physical_profiles[networking_physical_default_profile]) }}"
+
+- name: Apply High-Speed Kernel Tuning (Sysctl)
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/98-networking-performance.conf
+    reload: "{{ ansible_virtualization_type not in ['docker', 'podman', 'container'] }}"
+  ignore_errors: "{{ ansible_virtualization_type in ['docker', 'podman', 'container'] }}"
+  loop:
+    - { name: 'net.core.rmem_max', value: "{{ active_profile.rmem_max }}" }
+    - { name: 'net.core.wmem_max', value: "{{ active_profile.wmem_max }}" }
+    - { name: 'net.core.netdev_max_backlog', value: "{{ active_profile.netdev_backlog }}" }
+    - { name: 'net.ipv4.tcp_rmem', value: "{{ active_profile.tcp_rmem }}" }
+    - { name: 'net.ipv4.tcp_wmem', value: "{{ active_profile.tcp_wmem }}" }
+  become: true
+  when: networking_physical_ring_tuning_enabled
+
+# --- Per-Interface Tuning (Jumbo Frames & Ring Buffers) ---
+
+- name: Apply Jumbo Frames to High Speed/Fiber Interfaces
+  ansible.builtin.command: "ip link set dev {{ item.key }} mtu {{ networking_physical_jumbo_mtu }}"
+  loop: "{{ interface_capabilities | dict2items }}"
+  when: 
+    - networking_physical_manage_mtu
+    - networking_physical_jumbo_frames_enabled
+    - item.value.link_detected == 'yes'
+    - (item.value.speed | int) >= 10000 or item.value.port_type in ['FIBRE', 'Direct Attach Copper', 'DA']
+  become: true
+  notify: restart networkmanager
+
+- name: Tune Ring Buffers (Adaptive per Interface Speed)
+  ansible.builtin.command: >-
+    ethtool -G {{ item.key }} 
+    rx {{ (networking_physical_profiles[item.value.speed|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_rx }} 
+    tx {{ (networking_physical_profiles[item.value.speed|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_tx }}
+  loop: "{{ interface_capabilities | dict2items }}"
+  when:
+    - networking_physical_ring_tuning_enabled
+    - item.value.link_detected == 'yes'
+  become: true
+  ignore_errors: true # Hardware might not support specific ring sizes
+
+- name: Apply Offload Settings (TSO/GSO)
+  ansible.builtin.command: >
+    ethtool -K {{ item.key }} 
+    tso {{ 'on' if networking_physical_enable_tso else 'off' }} 
+    gso {{ 'on' if networking_physical_enable_gso else 'off' }}
+  loop: "{{ interface_capabilities | dict2items }}"
+  when:
+    - networking_physical_offload_tuning_enabled
+    - item.value.link_detected == 'yes'
+  become: true

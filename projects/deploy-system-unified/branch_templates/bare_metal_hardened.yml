@@ -10,8 +10,10 @@
     kernel_profile: "bare_metal"
   roles:
     # Bare Metal Specialized Roles
-    - role: core/hardware_support
-    - role: core/disk_tuning
-    - role: core/storage_btrfs
+    - role: networking/physical
+    - role: hardware/sas
+    - role: hardware/firmware
+    - role: hardware/storage_tuning
+    - role: storage/filesystems/btrfs
     # Final Solution Integrity Verification
     - role: security/scanning

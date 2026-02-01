@@ -17,3 +17,15 @@
     state: directory
     mode: '0755'
   become: true
+
+- name: Configure Firejail GPU Access (Globals)
+  ansible.builtin.copy:
+    content: |
+      # Enable GPU acceleration for all Firejail sandboxes
+      noblacklist /dev/dri
+      noblacklist /dev/nvidia*
+      noblacklist /dev/kfd
+    dest: /etc/firejail/globals.local
+    mode: '0644'
+  become: true
+  when: firejail_enable_gpu | default(false)

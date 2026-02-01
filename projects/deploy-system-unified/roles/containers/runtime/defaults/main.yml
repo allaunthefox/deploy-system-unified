@@ -2,6 +2,8 @@
 # Defaults for containers/runtime role
 containers_install_podman: true
 containers_enable_socket: true
+# Architecture override (explicit target architecture)
+containers_arch_override: ""
 # GPU support configuration
 containers_enable_gpu_support: false
 containers_gpu_vendor: "nvidia"  # Options: nvidia, amd, intel

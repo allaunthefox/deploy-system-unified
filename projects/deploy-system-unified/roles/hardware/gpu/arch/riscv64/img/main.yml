@@ -1,0 +1,24 @@
+---
+# Imagination Technologies (IMG) GPU Setup for riscv64
+# Target: BXE-4-32 (StarFive VisionFive 2) and others
+
+- name: Install Firmware for IMG GPU (StarFive/Generic)
+  ansible.builtin.package:
+    name:
+      - firmware-img-gpu # Hypothetical package name, varies by distro
+    state: present
+  become: true
+  ignore_errors: true # Package availability on RISC-V works is volatile
+
+- name: Check for PVR kernel module
+  ansible.builtin.shell: lsmod | grep -E "j721e_rogue|pvr"
+  register: pvr_module
+  ignore_errors: true
+  changed_when: false
+
+- name: Warning for IMG GPU support
+  ansible.builtin.debug:
+    msg: >-
+      IMG GPU support on RISC-V often requires vendor-specific kernels.
+      Ensure your kernel includes the PowerVR/IMG BXE drivers.
+      Detected Module: {{ pvr_module.stdout | default('None') }}

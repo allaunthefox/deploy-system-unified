@@ -1,0 +1,17 @@
+---
+# Handlers for hardware/sas
+
+- name: update initramfs
+  ansible.builtin.command: update-initramfs -u
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: update initramfs (rhel)
+  ansible.builtin.command: dracut -f
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: update initramfs (arch)
+  ansible.builtin.command: mkinitcpio -P
+  become: true
+  when: ansible_os_family == "Archlinux"

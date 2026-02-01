@@ -42,7 +42,7 @@
       register: preflight_flag
     - name: Include preflight checks if not already completed (idempotent)
       ansible.builtin.import_role:
-        name: preflight
+        name: ops/preflight
       when: not preflight_flag.stat.exists
       tags: [preflight]
     - name: Create preflight completion flag (idempotent)
@@ -56,14 +56,14 @@
     # Core system setup
     - core/bootstrap
     - core/identity
-    - security/firewall
+    - networking/firewall
     - security/hardening
     - security/access
-    - core/monitoring
+    - role: ops/monitoring
     - core/logging
 
     # Kubernetes node setup
-    - role: core/k8s_node
+    - role: orchestration/k8s_node
       vars:
         k8s_gpu_device_plugins_enabled: true
         k8s_gpu_nvidia_device_plugin:
@@ -78,6 +78,13 @@
           enabled: false
           version: "v0.23.0"
           image: "intel/intel-gpu-plugin:v0.23.0"
+
+    # GPU Driver Stack (Must run before runtime configuration)
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: nvidia
+        gpu_stack_mode: server # K8s workers are typically headless
 
     # GPU-specific configuration with slicing
     - role: containers/runtime

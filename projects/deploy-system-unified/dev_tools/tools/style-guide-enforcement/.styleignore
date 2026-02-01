@@ -31,7 +31,7 @@ roles/containers/config/tasks/main.yml
 roles/containers/caddy/tasks/main.yml
 roles/containers/quadlets/tasks/main.yml
 roles/ops/connection_info/tasks/main.yml
-roles/backup/restic/tasks/main.yml
+roles/storage/backup/restic/tasks/main.yml
 
 # Reason: GPU-related tasks contain complex logic and long command strings
 roles/containers/anubis/handlers/main.yml
@@ -43,7 +43,7 @@ roles/containers/runtime/tasks/gpu_discovery.yml
 roles/containers/runtime/vars/nvidia_gpu_models.yml
 roles/containers/runtime/vars/amd_gpu_models.yml
 roles/containers/runtime/vars/intel_gpu_models.yml
-roles/core/k8s_node/tasks/gpu.yml
+roles/orchestration/k8s_node/tasks/gpu.yml
 branch_templates/gpu_slicing_bare_metal.yml
 branch_templates/gpu_slicing_virtual_guest.yml
 branch_templates/gpu_slicing_virtual_host.yml

@@ -54,7 +54,7 @@ vars:
 ```
 
 ### Existing Contabo Role
-The `roles/core/vps_optimization/tasks/providers/contabo.yml` includes:
+The `roles/hardware/virtual_guest/tasks/providers/contabo.yml` includes:
 1. **Reverse Path Filtering**: Enables strict RP filtering (net.ipv4.conf.all.rp_filter = 1)
 2. **MTU Optimization**: Sets MTU to 1450 bytes for the primary interface
 

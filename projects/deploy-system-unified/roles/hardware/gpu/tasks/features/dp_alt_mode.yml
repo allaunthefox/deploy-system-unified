@@ -1,0 +1,33 @@
+---
+# DisplayPort Alt Mode Support
+# Ensures USB-C and display diagnostics tools are available
+
+- name: Install USB and Display Diagnostics
+  ansible.builtin.package:
+    name:
+      - usbutils
+      - hwinfo
+    state: present
+  become: true
+
+- name: Check for USB Type-C Class support in kernel
+  ansible.builtin.stat:
+    path: /sys/class/typec
+  register: typec_sysfs
+
+- name: Log Type-C Support Status
+  ansible.builtin.debug:
+    msg: >-
+      USB Type-C subsystem detected: {{ typec_sysfs.stat.exists }}.
+      If present, kernel can manage DP Alt Mode negotiation.
+      If missing, ensure 'typec' and 'typec_displayport' modules are loaded.
+
+- name: Load Type-C DisplayPort modules (if available)
+  community.general.modprobe:
+    name: typec_displayport
+    state: present
+  become: true
+  ignore_errors: true
+  when: 
+    - typec_sysfs.stat.exists
+    - not _gpu_is_container | default(false)

@@ -13,49 +13,45 @@
     core_pkg_manager: "{{ ansible_facts['pkg_mgr'] }}"
     core_os_family: "{{ ansible_facts['os_family'] }}"
     core_distribution: "{{ ansible_facts['distribution'] | lower }}"
+
+- name: Construct Base Package List
+  ansible.builtin.set_fact:
+    _bootstrap_packages: "{{ system_base_packages.common + (system_base_packages[core_os_family] | default([])) }}"
+
 - name: Ensure base packages are installed (Debian/Ubuntu)
   ansible.builtin.apt:
-    name:
-      - sudo
-      - curl
-      - wget
-      - ca-certificates
-      - gnupg
+    name: "{{ _bootstrap_packages }}"
     state: present
     update_cache: true
   when: core_os_family == 'Debian'
   become: true
+
 - name: Ensure base packages are installed (RedHat/CentOS)
   ansible.builtin.dnf:
-    name:
-      - sudo
-      - curl
-      - wget
-      - ca-certificates
-      - gnupg2
+    name: "{{ _bootstrap_packages }}"
     state: present
   when: core_os_family == 'RedHat'
   become: true
+
 - name: Ensure base packages are installed (Arch)
   community.general.pacman:
-    name:
-      - sudo
-      - curl
-      - wget
-      - ca-certificates
-      - gnupg
+    name: "{{ _bootstrap_packages }}"
     state: present
   when: core_distribution == 'archlinux'
+  become: true
+
+- name: Ensure base packages are installed (Alpine)
+  community.general.apk:
+    name: "{{ _bootstrap_packages }}"
+    state: present
+  when: core_os_family == 'Alpine'
   become: true
 - name: Create standard system directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: '0755'
-  loop:
-    - /usr/local/bin
-    - /usr/local/sbin
-    - /opt
+  loop: "{{ system_standard_directories }}"
   become: true
 - name: Detect Virtualization Environment
   ansible.builtin.set_fact:

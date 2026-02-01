@@ -1,5 +1,19 @@
 ---
 # GPU discovery and detection logic
+- name: Normalize container GPU architecture
+  ansible.builtin.set_fact:
+    containers_gpu_arch: >-
+      {{
+        'arm64' if (containers_arch_override | default('') | length > 0 and containers_arch_override in ['aarch64', 'arm64']) or
+                   (containers_arch_override | default('') | length == 0 and ansible_architecture in ['aarch64', 'arm64']) else
+        'x86_64' if (containers_arch_override | default('') | length > 0 and containers_arch_override in ['x86_64', 'amd64']) or
+                    (containers_arch_override | default('') | length == 0 and ansible_architecture in ['x86_64', 'amd64']) else
+        'riscv64' if (containers_arch_override | default('') | length > 0 and containers_arch_override in ['riscv64', 'riscv']) or
+                     (containers_arch_override | default('') | length == 0 and ansible_architecture in ['riscv64', 'riscv']) else
+        (containers_arch_override if containers_arch_override | default('') | length > 0 else ansible_architecture)
+      }}
+  when: containers_enable_gpu_support
+
 - name: Detect GPU vendor and capabilities
   block:
     - name: Check for NVIDIA GPUs
@@ -87,6 +101,7 @@
       ansible.builtin.debug:
         msg: |
           GPU Discovery Results:
+            Architecture: {{ containers_gpu_arch | default('unknown') }}
             Vendor: {{ containers_gpu_vendor_detected | upper }}
             Count: {{ containers_gpu_count_detected }}
             Devices: {{ containers_gpu_device_info }}

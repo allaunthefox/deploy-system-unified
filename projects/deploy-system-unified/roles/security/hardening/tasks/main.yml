@@ -1,61 +1,35 @@
 ---
 # Security hardening role - Enhanced core security configurations
+# Note: Firewalls are managed by networking/firewall
+# Note: Updates are managed by core/updates
+# Note: IPS/Fail2Ban is managed by security/ips
+# Note: Audit Integrity is managed by security/audit_integrity
+
 - name: Ensure security-related packages are installed (Debian/Ubuntu)
   ansible.builtin.apt:
     name:
-      - ufw
-      - fail2ban
-      - unattended-upgrades
-      - apt-listchanges
       - libpam-tmpdir
       - auditd
     state: present
   when: ansible_facts['os_family'] == 'Debian'
   become: true
+
 - name: Ensure security-related packages are installed (RedHat/CentOS)
   ansible.builtin.dnf:
     name:
-      - firewalld
-      - fail2ban
-      - dnf-automatic
       - audit
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   become: true
-- name: Enable and start UFW (Debian/Ubuntu)
-  community.general.ufw:
-    state: enabled
-    policy: deny
-    direction: incoming
-  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Ensure security-related packages are installed (Arch Linux)
+  community.general.pacman:
+    name:
+      - audit
+    state: present
+  when: ansible_distribution == 'Archlinux'
   become: true
-- name: Allow SSH through UFW
-  community.general.ufw:
-    rule: allow
-    port: "{{ access_sshd_port | default('22') }}"
-    proto: tcp
-  when: ansible_facts['os_family'] == 'Debian'
-  become: true
-- name: Enable fail2ban service
-  ansible.builtin.systemd:
-    name: fail2ban
-    enabled: true
-    state: started
-  become: true
-  when: ansible_facts['service_mgr'] == 'systemd'
-- name: Configure automatic security updates (Debian/Ubuntu)
-  ansible.builtin.copy:
-    dest: /etc/apt/apt.conf.d/20auto-upgrades
-    content: |
-      APT::Periodic::Update-Package-Lists "1";
-      APT::Periodic::Unattended-Upgrade "1";
-      APT::Periodic::AutocleanInterval "7";
-      APT::Periodic::Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
-      APT::Periodic::Unattended-Upgrade::Remove-Unused-Dependencies "true";
-      APT::Periodic::Unattended-Upgrade::Automatic-Reboot "false";
-    mode: '0644'
-  when: ansible_facts['os_family'] == 'Debian'
-  become: true
+
 - name: Configure auditd service
   ansible.builtin.systemd:
     name: auditd
@@ -63,6 +37,7 @@
     state: started
   become: true
   when: ansible_facts['service_mgr'] == 'systemd'
+
 - name: Harden file system permissions
   block:
     - name: Set secure permissions on sensitive files

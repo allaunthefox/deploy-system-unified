@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    hardware_sas_install_tools: true
+    hardware_sas_load_drivers: false
+  tasks:
+    - name: Update apt cache (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: "Include hardware/sas"
+      include_role:
+        name: "hardware/sas"
+

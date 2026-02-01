@@ -1,0 +1,95 @@
+---
+# Intel GPU Setup for x86_64 (OS Agnostic)
+
+- name: Define Intel driver packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    intel_driver_packages:
+      - intel-media-driver
+      - libmfx1
+      - intel-gpu-tools
+      - i965-va-driver
+  when: ansible_os_family == 'Debian'
+
+- name: Define Intel driver packages (RedHat/Fedora)
+  ansible.builtin.set_fact:
+    intel_driver_packages:
+      - intel-media-driver
+      - libmfx
+      - intel-gpu-tools
+      - libva-intel-driver
+  when: ansible_os_family == 'RedHat'
+
+- name: Define Intel driver packages (Alpine)
+  ansible.builtin.set_fact:
+    intel_driver_packages:
+      - intel-media-driver
+      - libva-intel-driver
+      - libva-utils
+      - intel-gpu-tools
+  when: ansible_os_family == 'Alpine'
+
+- name: Define Intel driver packages (Arch Linux)
+  ansible.builtin.set_fact:
+    intel_driver_packages:
+      - intel-media-driver
+      - libva-intel-driver
+      - intel-gpu-tools
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install Intel GPU firmware and drivers
+  ansible.builtin.package:
+    name: "{{ intel_driver_packages | default(['intel-media-driver']) }}"
+    state: present
+  become: true
+  ignore_errors: true # Ignore if package name mismatch on unknown distros
+
+- name: Configure HuC/GuC firmware loading
+  ansible.builtin.copy:
+    content: "options i915 enable_guc=3"
+    dest: /etc/modprobe.d/i915.conf
+    mode: '0644'
+  become: true
+  notify: Update initramfs (placeholder)
+  when: 
+    - ansible_os_family in ['Debian', 'RedHat'] # only where i915 is kernel standard
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Setup Intel OneAPI Repository (Debian/Ubuntu)
+  block:
+    - name: Download Intel OneAPI GPG key
+      ansible.builtin.get_url:
+        url: https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        dest: /usr/share/keyrings/oneapi-archive-keyring.gpg
+        mode: '0644'
+
+    - name: Add Intel OneAPI repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main"
+        state: present
+        filename: oneapi
+  become: true
+  when:
+    - ansible_os_family == 'Debian'
+    - gpu_stack_enable_oneapi | default(false) | bool
+
+- name: Setup Intel OneAPI Repository (RHEL/Fedora)
+  ansible.builtin.yum_repository:
+    name: oneAPI
+    description: Intel OneAPI repository
+    baseurl: https://yum.repos.intel.com/oneapi
+    gpgcheck: true
+    repo_gpgcheck: true
+    gpgkey: https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+    enabled: true
+  become: true
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu_stack_enable_oneapi | default(false) | bool
+
+- name: Install Intel OneAPI Base Toolkit
+  ansible.builtin.package:
+    name: intel-basekit
+    state: present
+  become: true
+  when: gpu_stack_enable_oneapi | default(false) | bool

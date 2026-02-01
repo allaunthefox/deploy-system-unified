@@ -59,6 +59,7 @@ htmlcov/
 .venv/
 venv/
 .env/
+molecule_venv/
 
 # Packaging / build
 dist/

@@ -1,0 +1,13 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if lsscsi binary exists
+      stat:
+        path: /usr/bin/lsscsi
+      register: lsscsi_bin
+
+    - name: Assert lsscsi installed
+      assert:
+        that: lsscsi_bin.stat.exists

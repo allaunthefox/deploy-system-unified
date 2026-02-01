@@ -11,11 +11,11 @@ Comingling occurs when a single Role or Task tries to manage multiple logical co
 
 ### ✅ Modular Patterns (The Unified Way)
 *   **`core/time`**: Only manages NTP/Chrony.
-*   **`security/firewall`**: Only manages the L3/L4 perimeter.
+*   **`networking/firewall`**: Only manages the L3/L4 perimeter.
 *   **`ops/connection_info`**: Only manages operator reporting and encryption.
 ## 🛠 Why this matters
 1.  **Forensic Clarity**: When a log says `core/time` failed, you know exactly what is wrong. You don't have to guess if the "Security Framework" failed due to a network error or a bad config.
-2.  **Auditability**: Security auditors can review `security/firewall` without having to parse through unrelated package installation logic.
+2.  **Auditability**: Security auditors can review `networking/firewall` without having to parse through unrelated package installation logic.
 3.  **Flexibility**: You can swap `core/time` for a different time sync method without touching any security roles.
 
 ## 🤖 Enforcement

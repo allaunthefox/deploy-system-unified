@@ -7,6 +7,6 @@
   become: true
   roles:
     # K8s Preparation
-    - role: core/k8s_node
+    - role: orchestration/k8s_node
     # Final Solution Integrity Verification
     - role: security/scanning

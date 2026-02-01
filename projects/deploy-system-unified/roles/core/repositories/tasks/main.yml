@@ -1,5 +1,42 @@
 ---
 # Tasks for core/repositories role
+
+- name: Enable Contrib and Non-Free repositories (Debian/Ubuntu)
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list
+    regexp: '^(deb(?:-src)?\s+http://\S+\s+\w+)((\s+main)(?:\s+contrib)?(?:\s+non-free)?(?:\s+non-free-firmware)?)$'
+    replace: '\1\2 contrib non-free non-free-firmware'
+  become: true
+  when: ansible_os_family == 'Debian'
+  ignore_errors: true # Best effort, sources.list formats vary
+
+- name: Check if RPMFusion is installed (RedHat/Fedora)
+  ansible.builtin.command: dnf repolist
+  register: dnf_repolist
+  changed_when: false
+  when: ansible_os_family == 'RedHat'
+
+- name: Install RPMFusion Free/NonFree (Fedora)
+  ansible.builtin.dnf:
+    name:
+      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm
+      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+    disable_gpg_check: true
+  become: true
+  when:
+    - ansible_distribution == 'Fedora'
+    - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
+  ignore_errors: true
+
+- name: Enable Community Repository (Alpine)
+  ansible.builtin.replace:
+    path: /etc/apk/repositories
+    regexp: '^#\s*(http.*/community)$'
+    replace: '\1'
+  become: true
+  when: ansible_os_family == 'Alpine'
+
 - name: Update package cache (Debian/Ubuntu)
   ansible.builtin.apt:
     update_cache: true
@@ -15,4 +52,9 @@
   community.general.pacman:
     update_cache: true
   when: ansible_distribution | lower == 'archlinux'
+  become: true
+- name: Update package cache (Alpine)
+  community.general.apk:
+    update_cache: true
+  when: ansible_os_family == 'Alpine'
   become: true

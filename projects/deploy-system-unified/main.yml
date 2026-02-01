@@ -40,7 +40,7 @@
       register: preflight_flag
     - name: Include preflight checks if not already completed (idempotent)
       ansible.builtin.import_role:
-        name: preflight
+        name: ops/preflight
       when: not preflight_flag.stat.exists
       tags: [preflight]
     - name: Create preflight completion flag (idempotent)

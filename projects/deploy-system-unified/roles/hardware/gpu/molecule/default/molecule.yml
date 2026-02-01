@@ -1,0 +1,28 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: instance
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+    pre_build_image: true
+    volumes:
+
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    command: /lib/systemd/systemd
+    tmps:
+      - /run
+      - /tmp
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      deprecation_warnings: False
+  env:
+    # Point to the 'roles' directory of the project so 'hardware/gpu' can be resolved
+    ANSIBLE_ROLES_PATH: ../../../../
+verifier:
+
+  name: ansible

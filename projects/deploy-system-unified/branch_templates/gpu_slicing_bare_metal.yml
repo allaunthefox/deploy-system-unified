@@ -42,7 +42,7 @@
       register: preflight_flag
     - name: Include preflight checks if not already completed (idempotent)
       ansible.builtin.import_role:
-        name: preflight
+        name: ops/preflight
       when: not preflight_flag.stat.exists
       tags: [preflight]
     - name: Create preflight completion flag (idempotent)
@@ -56,11 +56,20 @@
     # Core system setup
     - core/bootstrap
     - core/identity
-    - security/firewall
+    - role: networking/physical
+    - networking/firewall
     - security/hardening
     - security/access
-    - core/monitoring
+    - role: ops/monitoring
     - core/logging
+
+    # GPU Driver Stack (Must run before container runtime)
+    - role: hardware/sas
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: nvidia
+        gpu_stack_mode: server
 
     # GPU-specific configuration with MIG slicing
     - role: containers/runtime
