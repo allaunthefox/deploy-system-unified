@@ -1,9 +1,13 @@
 ---
 # Defaults for containers/media
 
+# Multi-Tenancy / Instance Identification
+media_instance_name: "default"
+media_port_offset: 0
+
 media_stack_enable: true
-media_root_dir: /srv/media
-media_config_dir: /srv/containers/media_config
+media_root_dir: "/srv/media/{{ media_instance_name }}"
+media_config_dir: "/srv/containers/media_config/{{ media_instance_name }}"
 
 # User/Group for media permissions (Podman rootless or mapped)
 # We typically run containers as root (Quadlet default) mapping to host users if needed.
@@ -40,7 +44,7 @@ transmission_port_peer: 51413
 # Networking
 # If true, all containers share a pod (e.g., 'media-pod') for local communication
 media_pod_enable: true
-media_pod_name: media_pod
+media_pod_name: "media_pod_{{ media_instance_name }}"
 
 # Reverse Proxy Configuration (Gatekeeper Mode)
 # If true:

@@ -1,5 +1,36 @@
 ---
 # Container quadlets role - Systemd quadlet management
+
+- name: Ensure checkpoint directory exists
+  ansible.builtin.file:
+    path: /var/lib/deploy-system/checkpoints
+    state: directory
+    mode: '0700'
+  become: true
+
+- name: Check for Quadlet checkpoint
+  ansible.builtin.stat:
+    path: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
+  register: quadlet_checkpoint_stat
+  become: true
+
+- name: Read existing checkpoint
+  ansible.builtin.slurp:
+    src: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
+  register: checkpoint_content
+  when: quadlet_checkpoint_stat.stat.exists
+  become: true
+
+- name: Restore object UUID from checkpoint
+  ansible.builtin.set_fact:
+    object_uuid: "{{ (checkpoint_content.content | b64decode | from_json).uuid }}"
+  when: quadlet_checkpoint_stat.stat.exists
+
+- name: Generate new Network UUID (if no checkpoint)
+  ansible.builtin.import_role:
+    name: core/identity
+  when: not quadlet_checkpoint_stat.stat.exists
+
 - name: Ensure quadlet directory exists
   ansible.builtin.file:
     path: /etc/containers/systemd
@@ -10,10 +41,11 @@
   become: true
 - name: Create quadlet network configuration
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/deploy-network.network
+    dest: "/etc/containers/systemd/{{ quadlet_network_name }}.network"
     content: |
       [Network]
-      NetworkName=deploy-net
+      Label=org.deploy-system.uuid={{ object_uuid }}
+      NetworkName={{ quadlet_network_name }}
       Driver=bridge
       Subnet={{ quadlet_network_subnet | default('10.89.0.0/24') }}
       Gateway={{ quadlet_network_gateway | default('10.89.0.1') }}
@@ -51,3 +83,19 @@
 - name: Set containers quadlets completion flag
   ansible.builtin.set_fact:
     containers_quadlets_complete: true
+
+- name: Save Quadlet checkpoint
+  ansible.builtin.copy:
+    dest: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
+    content: |
+      {
+        "uuid": "{{ object_uuid }}",
+        "last_updated": "{{ ansible_date_time.iso8601 }}",
+        "role": "containers/quadlets",
+        "deployment_variables": {
+          "network_name": "{{ quadlet_network_name }}",
+          "subnet": "{{ quadlet_network_subnet | default('10.89.0.0/24') }}"
+        }
+      }
+    mode: '0600'
+  become: true

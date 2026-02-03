@@ -1,5 +1,6 @@
 ---
 # Defaults for containers/quadlets role
+quadlet_network_name: "deploy-net"
 quadlet_create_network: true
 quadlet_network_subnet: "10.89.0.0/24"
 quadlet_network_gateway: "10.89.0.1"

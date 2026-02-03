@@ -7,13 +7,17 @@
     state: started
   become: true
   ignore_errors: true
-- name: Set I/O scheduler for disks (Bare Metal vs Virtual)
+- name: Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)
   ansible.builtin.copy:
     content: |
-      # Set mq-deadline for non-rotational physical disks
-      ACTION=="add|change", KERNEL=="sd[a-z]*|nvme[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
-      # Set 'none' or 'mq-deadline' for virtual disks to delegate sorting to Hypervisor
+      # Physical Flash (SSD/NVMe/SD/eMMC/USB-Flash) - Low Latency
+      ACTION=="add|change", KERNEL=="sd[a-z]*|nvme[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+      
+      # Virtual Disks (VirtIO/Xen) - Delegate to Host
       ACTION=="add|change", KERNEL=="vd[a-z]*|xvd[a-z]*", ATTR{queue/scheduler}="none mq-deadline"
+      
+      # RAM Disks (zram/brd) - Zero Latency, No Scheduling
+      ACTION=="add|change", KERNEL=="ram[0-9]*|zram[0-9]*", ATTR{queue/scheduler}="none"
     dest: /etc/udev/rules.d/60-disk-scheduler.rules
     mode: '0644'
   become: true
@@ -73,8 +77,10 @@
   loop: "{{ storage_devices_norm | dict2items }}"
   when:
     - item.value.size_mb > 1000000 # > 1TB
-    # Support Physical (sd/nvme) and Virtual (vd/xvd) block devices
-    - item.key is match("sd[a-z]+|nvme[0-n]+n[0-9]+|vd[a-z]+|xvd[a-z]+")
+    # Support Physical (sd/nvme/mmc), Virtual (vd/xvd), and External (USB/SD)
+    - item.key is match("sd[a-z]+|nvme[0-n]+n[0-9]+|vd[a-z]+|xvd[a-z]+|mmcblk[0-9]+")
+    # Skip RAM disks (zram/ram) as they don't benefit from readahead
+    - not (item.key is match("zram[0-9]+|ram[0-9]+"))
     # Boundary Guard: Ensure readahead is at least 4k aligned (8 sectors)
     - item.value.phy_sec_bytes | int >= 4096 or item.value.phy_sec_bytes | int == 512
   become: true

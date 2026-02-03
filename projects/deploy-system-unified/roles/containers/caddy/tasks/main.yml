@@ -56,7 +56,7 @@
       Image=docker.io/library/caddy:latest
       ContainerName=caddy
       # Attach to the unified bridge network
-      Network=deploy-net.network
+      Network={{ caddy_network }}.network
       PublishPort=80:80
       PublishPort=443:443
       PublishPort=443:443/udp

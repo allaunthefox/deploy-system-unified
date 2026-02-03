@@ -45,8 +45,9 @@
       {% endif %}
 
       # BitTorrent Peer Ports (Must be Public/Ingress)
-      PublishPort={{ transmission_port_peer }}:51413
-      PublishPort={{ transmission_port_peer }}:51413/udp
+      # Apply port offset for multi-tenancy support
+      PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413
+      PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413/udp
       
       [Install]
       WantedBy=multi-user.target default.target
@@ -57,35 +58,36 @@
 
 - name: Deploy Media Caddy Configuration
   ansible.builtin.copy:
-    dest: /srv/containers/caddy/conf.d/media_stack.caddy
+    dest: "/srv/containers/caddy/conf.d/media_stack_{{ media_instance_name }}.caddy"
     content: |
       # Media Stack Reverse Proxy Configuration
+      # Instance: {{ media_instance_name }}
       # Assumes Caddy and Media Pod share the same network (deploy-net)
       # and can resolve container names.
       
       # Jellyfin
       jellyfin.{{ media_domain }} {
-        reverse_proxy jellyfin:8096
+        reverse_proxy jellyfin-{{ media_instance_name }}:8096
       }
 
       # Radarr
       radarr.{{ media_domain }} {
-        reverse_proxy radarr:7878
+        reverse_proxy radarr-{{ media_instance_name }}:7878
       }
 
       # Sonarr
       sonarr.{{ media_domain }} {
-        reverse_proxy sonarr:8989
+        reverse_proxy sonarr-{{ media_instance_name }}:8989
       }
 
       # Prowlarr
       prowlarr.{{ media_domain }} {
-        reverse_proxy prowlarr:9696
+        reverse_proxy prowlarr-{{ media_instance_name }}:9696
       }
 
       # Transmission
       transmission.{{ media_domain }} {
-        reverse_proxy transmission:9091
+        reverse_proxy transmission-{{ media_instance_name }}:9091
       }
     mode: '0644'
   become: true
@@ -94,17 +96,17 @@
 
 - name: Create Jellyfin Container Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/jellyfin.container
+    dest: "/etc/containers/systemd/jellyfin-{{ media_instance_name }}.container"
     content: |
       [Unit]
-      Description=Jellyfin Media Server
+      Description=Jellyfin Media Server ({{ media_instance_name }})
       After=network-online.target {{ media_pod_name }}.pod
       Requires={{ media_pod_name }}.pod
 
       [Container]
       Pod={{ media_pod_name }}.pod
       Image={{ jellyfin_image }}
-      ContainerName=jellyfin
+      ContainerName=jellyfin-{{ media_instance_name }}
       
       # Resource Limits
       MemoryMax={{ jellyfin_memory_max }}
@@ -129,17 +131,17 @@
 
 - name: Create Radarr Container Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/radarr.container
+    dest: "/etc/containers/systemd/radarr-{{ media_instance_name }}.container"
     content: |
       [Unit]
-      Description=Radarr Movie Manager
+      Description=Radarr Movie Manager ({{ media_instance_name }})
       After=network-online.target {{ media_pod_name }}.pod
       Requires={{ media_pod_name }}.pod
 
       [Container]
       Pod={{ media_pod_name }}.pod
       Image={{ radarr_image }}
-      ContainerName=radarr
+      ContainerName=radarr-{{ media_instance_name }}
       
       Volume={{ media_config_dir }}/radarr:/config:Z
       Volume={{ media_root_dir }}:/data:Z
@@ -160,17 +162,17 @@
 
 - name: Create Sonarr Container Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/sonarr.container
+    dest: "/etc/containers/systemd/sonarr-{{ media_instance_name }}.container"
     content: |
       [Unit]
-      Description=Sonarr TV Series Manager
+      Description=Sonarr TV Series Manager ({{ media_instance_name }})
       After=network-online.target {{ media_pod_name }}.pod
       Requires={{ media_pod_name }}.pod
 
       [Container]
       Pod={{ media_pod_name }}.pod
       Image={{ sonarr_image }}
-      ContainerName=sonarr
+      ContainerName=sonarr-{{ media_instance_name }}
       
       Volume={{ media_config_dir }}/sonarr:/config:Z
       Volume={{ media_root_dir }}:/data:Z
@@ -191,17 +193,17 @@
 
 - name: Create Prowlarr Container Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/prowlarr.container
+    dest: "/etc/containers/systemd/prowlarr-{{ media_instance_name }}.container"
     content: |
       [Unit]
-      Description=Prowlarr Indexer Manager
+      Description=Prowlarr Indexer Manager ({{ media_instance_name }})
       After=network-online.target {{ media_pod_name }}.pod
       Requires={{ media_pod_name }}.pod
 
       [Container]
       Pod={{ media_pod_name }}.pod
       Image={{ prowlarr_image }}
-      ContainerName=prowlarr
+      ContainerName=prowlarr-{{ media_instance_name }}
       
       Volume={{ media_config_dir }}/prowlarr:/config:Z
       
@@ -221,17 +223,17 @@
 
 - name: Create Transmission Container Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/transmission.container
+    dest: "/etc/containers/systemd/transmission-{{ media_instance_name }}.container"
     content: |
       [Unit]
-      Description=Transmission Download Client
+      Description=Transmission Download Client ({{ media_instance_name }})
       After=network-online.target {{ media_pod_name }}.pod
       Requires={{ media_pod_name }}.pod
 
       [Container]
       Pod={{ media_pod_name }}.pod
       Image={{ transmission_image }}
-      ContainerName=transmission
+      ContainerName=transmission-{{ media_instance_name }}
       
       Volume={{ media_config_dir }}/transmission:/config:Z
       Volume={{ media_root_dir }}/downloads:/downloads:Z

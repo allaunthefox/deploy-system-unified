@@ -59,9 +59,17 @@
       - 51413 # Transmission Peer
 
   roles:
+    # Container Runtime & Orchestration
+    - role: containers/runtime
+    - role: containers/quadlets
+      vars:
+        quadlet_network_name: "deploy-net"
+
+    # Gateway & Application Stack
     - role: containers/caddy
       vars:
         caddy_acme_email: "admin@my-media-server.com"
+        caddy_network: "deploy-net" # Caddy must join the same network
 
     - role: containers/media
       vars:
@@ -69,3 +77,4 @@
         media_root_dir: /srv/media
         media_gatekeeper_mode: true
         media_domain: "home.lab"  # Replace with actual domain
+        media_pod_network: "deploy-net" # Explicit matching required
