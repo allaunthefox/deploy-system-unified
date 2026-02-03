@@ -8,6 +8,7 @@ This role manages container runtimes and orchestration tools.
 *   **config**: General container configuration (registries, storage).
 *   **caddy**: Caddy web server setup (often used as a reverse proxy for containers).
 *   **memcached**: Distributed memory object caching system (Podman Quadlet).
+*   **media**: Media streaming stack (Jellyfin, *Arr, Transmission).
 *   **quadlets**: Systemd generator for Podman containers.
 *   **anubis**: Specific containerized service configuration.
 *   **lxc**: LXC (Linux Containers) setup and configuration.
