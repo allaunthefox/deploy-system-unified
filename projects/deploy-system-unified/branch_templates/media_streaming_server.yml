@@ -1,0 +1,66 @@
+---
+# Media Streaming Server - High Performance Media Configuration
+# Based on: Contabo Cloud VPS 30 SSD (8 vCPU, 24 GB RAM, 800 GB SSD)
+# Features: Full Media Stack (Jellyfin, *Arr), ZRAM/ZSwap Hybrid Tuning, Btrfs Optimization
+
+- name: Sync with Cloud Provider (Contabo)
+  hosts: all
+  become: true
+  roles:
+    - role: ops/cloud_init
+- ansible.builtin.import_playbook: base_hardened.yml
+
+- name: Deploy Media Streaming Workload
+  hosts: all
+  become: true
+  vars:
+    # VPS Provider Identification
+    vps_provider: "contabo"
+    sshd_allow_tcp_forwarding: true
+    access_sshd_port: 2222
+    
+    # Memory Tuning - Database Profile for SQLite (Jellyfin/Arr) Performance
+    memory_workload_profile: "database"
+    # Ensure ZRAM isn't choked by database profile's low swappiness (handled by auto-resolution, but explicit is good)
+    # The 'database' profile defaults swappiness to 10. Auto-resolution bumps it to 60 if NO disk swap. 
+    # This server DOES have disk swap (default Contabo images usually do or we don't know). 
+    # If no disk swap, the role handles it. If disk swap exists, 10 is perfect to prefer RAM.
+    
+    # VM Tuning for Media Buffers
+    vm_dirty_ratio: "10"
+    vm_dirty_background_ratio: "5"
+    vm_dirty_bytes: 4294967296          # 4GB Dirty Limit for massive file moves
+    vm_dirty_background_bytes: 1073741824 # 1GB Background starting point
+    
+    # Btrfs Subvolume Configuration
+    btrfs_subvolumes:
+      - { path: "/@", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@" }
+      - { path: "/@home", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@home" }
+      - { path: "/@var", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var" }
+      - { path: "/@srv", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@srv" }
+    
+    # Firewall Configuration
+    firewall_enabled: true
+    firewall_allowed_tcp_ports:
+      - 2222
+      - 80
+      - 443
+      - 8096  # Jellyfin
+      - 7878  # Radarr
+      - 8989  # Sonarr
+      - 9696  # Prowlarr
+      - 9091  # Transmission Web
+      - 51413 # Transmission Peer
+    firewall_allowed_udp_ports:
+      - 443
+      - 51413 # Transmission Peer
+      - 1900  # DLNA (Optional)
+      - 7359  # Jellyfin Discovery
+
+  roles:
+    # Base core/memory role is already enabled in base_hardened usually, but we ensure parameters here.
+    # We explicitly call the media role.
+    - role: containers/media
+      vars:
+        jellyfin_memory_max: 12G  # Give half of RAM to Jellyfin
+        media_root_dir: /srv/media
