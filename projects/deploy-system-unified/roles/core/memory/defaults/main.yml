@@ -1,0 +1,36 @@
+---
+# Defaults for core/memory
+
+# Optimization Strategy: 'auto', 'zram', 'zswap', 'none'
+# auto: 
+#   - Use zram if < 8GB RAM (Standard setup)
+#   - Use zswap if > 8GB RAM (Hybrid setup with physical swap)
+#   - Use zram if system has NO physical swap partition
+#   - Use zram if system uses Shared Video Memory (IGPU/APU) to minimize bus contention
+memory_compression_strategy: auto
+
+# Shared Video Memory Handling
+# If true, forces 'zram' strategy to favor latency over capacity.
+# auto: attempts to detect Integrated Graphics (Intel/AMD APU)
+memory_shared_vram: auto
+
+# ZRAM Configuration
+memory_zram_size_percent: 50
+memory_zram_algorithm: zstd
+memory_zram_priority: 100
+
+# ZSwap Configuration
+memory_zswap_compressor: zstd
+memory_zswap_zpool: zsmalloc
+memory_zswap_max_pool_percent: 20
+
+# Sysctl Tuning
+# Higher swappiness (60-100) is recommended for ZRAM/ZSwap to encourage
+# storing anonymous pages in the compressed cache rather than dropping file cache.
+memory_swappiness: 100
+memory_cache_pressure: 100
+
+
+# Swappiness Global Tuning
+memory_swappiness: 100 # High swappiness preferred for ZRAM/ZSwap
+memory_cache_pressure: 100
