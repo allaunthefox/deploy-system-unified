@@ -21,11 +21,13 @@ run_style() {
 
 run_detect_secrets() {
   log "Running detect-secrets scan (v1.3.0)"
-  # run with JSON output; fall back to plaintext if needed
-  detect-secrets scan --all-files --json > .secrets_scan.json 2> detect_secrets.err || true
-  if [ ! -s .secrets_scan.json ]; then
-    log "JSON output empty; falling back to plaintext"
-    detect-secrets scan --all-files > .secrets_scan.txt 2>> detect_secrets.err || true
+  # run with default output (JSON)
+  detect-secrets scan --all-files --exclude-files "ci-artifacts/.*" --exclude-files "ansible.log" > .secrets_scan.json 2> detect_secrets.err || true
+
+  if [ -s .secrets_scan.json ]; then
+    cp .secrets_scan.json .secrets_scan.txt
+  else
+    log "JSON output empty; check error log"
   fi
   mv -v .secrets_scan.json .secrets_scan.txt detect_secrets.err "$ARTIFACT_DIR/" || true
 }

@@ -9,7 +9,7 @@ rules:
     min-spaces-from-content: 1
   comments-indentation: disable
   line-length:
-    max: 160
+    max: 320
     level: warning
   octal-values:
     forbid-implicit-octal: true

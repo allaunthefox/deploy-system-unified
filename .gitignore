@@ -1,0 +1,6 @@
+Offline_Research/
+SystemBackups/
+*.tar.xz
+*.pyc
+__pycache__/
+secrets.generated.yml
