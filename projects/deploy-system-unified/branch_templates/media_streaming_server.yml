@@ -45,22 +45,25 @@
       - 2222
       - 80
       - 443
-      - 8096  # Jellyfin
-      - 7878  # Radarr
-      - 8989  # Sonarr
-      - 9696  # Prowlarr
-      - 9091  # Transmission Web
       - 51413 # Transmission Peer
+      # Internal ports (commented out as they are reverse-proxied)
+      # - 8096  # Jellyfin
+      # - 7878  # Radarr
+      # - 8989  # Sonarr
+      # - 9696  # Prowlarr
+      # - 9091  # Transmission Web
     firewall_allowed_udp_ports:
       - 443
       - 51413 # Transmission Peer
-      - 1900  # DLNA (Optional)
-      - 7359  # Jellyfin Discovery
 
   roles:
-    # Base core/memory role is already enabled in base_hardened usually, but we ensure parameters here.
-    # We explicitly call the media role.
+    - role: containers/caddy
+      vars:
+        caddy_acme_email: "admin@my-media-server.com"
+
     - role: containers/media
       vars:
-        jellyfin_memory_max: 12G  # Give half of RAM to Jellyfin
+        jellyfin_memory_max: 12G
         media_root_dir: /srv/media
+        media_gatekeeper_mode: true
+        media_domain: "home.lab"  # Replace with actual domain

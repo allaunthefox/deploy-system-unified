@@ -12,6 +12,7 @@
     - /srv/containers/caddy/config
     - /srv/containers/caddy/data
     - /srv/containers/caddy/logs
+    - /srv/containers/caddy/conf.d
   become: true
 - name: Create Caddyfile
   ansible.builtin.copy:
@@ -30,6 +31,10 @@
           format json
         }
       }
+      
+      # Import additional configurations
+      import /etc/caddy/conf.d/*.caddy
+
       # Default catch-all
       :80 {
         respond "Hello from Deploy-System-Unified" 200
@@ -57,6 +62,7 @@
       Volume=/srv/containers/caddy/data:/data:Z
       Volume=/srv/containers/caddy/config:/config:Z
       Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
+      Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro
       {% if quadlet_enable_gpu_support %}
       # GPU support configuration
       Capabilities={{ quadlet_gpu_capabilities | join(' ') }}

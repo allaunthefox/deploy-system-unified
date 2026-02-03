@@ -41,3 +41,11 @@ transmission_port_peer: 51413
 # If true, all containers share a pod (e.g., 'media-pod') for local communication
 media_pod_enable: true
 media_pod_name: media_pod
+
+# Reverse Proxy Configuration (Gatekeeper Mode)
+# If true:
+# 1. Binds service ports to 127.0.0.1 (Localhost only)
+# 2. Deploys Caddy configuration snippets for access
+# 3. Requires 'containers/caddy' role to be enabled
+media_gatekeeper_mode: false
+media_domain: "media.example.com"

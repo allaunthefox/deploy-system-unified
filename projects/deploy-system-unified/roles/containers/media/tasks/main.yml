@@ -27,11 +27,12 @@
     content: |
       [Pod]
       PodName={{ media_pod_name }}
-      PublishPort={{ jellyfin_port_http }}:8096
-      PublishPort={{ radarr_port }}:7878
-      PublishPort={{ sonarr_port }}:8989
-      PublishPort={{ prowlarr_port }}:9696
-      PublishPort={{ transmission_port_web }}:9091
+      PublishPort={{ '127.0.0.1:' if media_gatekeeper_mode else '' }}{{ jellyfin_port_http }}:8096
+      PublishPort={{ '127.0.0.1:' if media_gatekeeper_mode else '' }}{{ radarr_port }}:7878
+      PublishPort={{ '127.0.0.1:' if media_gatekeeper_mode else '' }}{{ sonarr_port }}:8989
+      PublishPort={{ '127.0.0.1:' if media_gatekeeper_mode else '' }}{{ prowlarr_port }}:9696
+      PublishPort={{ '127.0.0.1:' if media_gatekeeper_mode else '' }}{{ transmission_port_web }}:9091
+      # Peer port must remain public for BitTorrent to function
       PublishPort={{ transmission_port_peer }}:51413
       PublishPort={{ transmission_port_peer }}:51413/udp
       
@@ -40,6 +41,41 @@
     mode: '0644'
   become: true
   when: media_pod_enable
+  notify: reload systemd
+
+- name: Deploy Media Caddy Configuration
+  ansible.builtin.copy:
+    dest: /srv/containers/caddy/conf.d/media_stack.caddy
+    content: |
+      # Media Stack Reverse Proxy Configuration
+      
+      # Jellyfin
+      jellyfin.{{ media_domain }} {
+        reverse_proxy 127.0.0.1:{{ jellyfin_port_http }}
+      }
+
+      # Radarr
+      radarr.{{ media_domain }} {
+        reverse_proxy 127.0.0.1:{{ radarr_port }}
+      }
+
+      # Sonarr
+      sonarr.{{ media_domain }} {
+        reverse_proxy 127.0.0.1:{{ sonarr_port }}
+      }
+
+      # Prowlarr
+      prowlarr.{{ media_domain }} {
+        reverse_proxy 127.0.0.1:{{ prowlarr_port }}
+      }
+
+      # Transmission
+      transmission.{{ media_domain }} {
+        reverse_proxy 127.0.0.1:{{ transmission_port_web }}
+      }
+    mode: '0644'
+  become: true
+  when: media_gatekeeper_mode
   notify: reload systemd
 
 - name: Create Jellyfin Container Quadlet
