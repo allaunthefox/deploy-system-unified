@@ -1,0 +1,43 @@
+---
+# Defaults for containers/media
+
+media_stack_enable: true
+media_root_dir: /srv/media
+media_config_dir: /srv/containers/media_config
+
+# User/Group for media permissions (Podman rootless or mapped)
+# We typically run containers as root (Quadlet default) mapping to host users if needed.
+# For simplicity with Podman Quadlets, we'll keep internal container users mapped.
+media_puid: 1000
+media_pgid: 1000
+media_timezone: "UTC"
+
+# Jellyfin (Media Server)
+jellyfin_enable: true
+jellyfin_image: docker.io/jellyfin/jellyfin:latest
+jellyfin_port_http: 8096
+jellyfin_memory_max: 8G
+
+# Servarr Stack
+radarr_enable: true
+radarr_image: docker.io/linuxserver/radarr:latest
+radarr_port: 7878
+
+sonarr_enable: true
+sonarr_image: docker.io/linuxserver/sonarr:latest
+sonarr_port: 8989
+
+prowlarr_enable: true
+prowlarr_image: docker.io/linuxserver/prowlarr:latest
+prowlarr_port: 9696
+
+# Download Client (Transmission)
+transmission_enable: true
+transmission_image: docker.io/linuxserver/transmission:latest
+transmission_port_web: 9091
+transmission_port_peer: 51413
+
+# Networking
+# If true, all containers share a pod (e.g., 'media-pod') for local communication
+media_pod_enable: true
+media_pod_name: media_pod
