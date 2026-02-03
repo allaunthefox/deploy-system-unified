@@ -66,24 +66,24 @@ Support matrix for specific non-x86 boards targeted in the restructuring plan.
 
 When designing a node, consider the PCIe lane budget.
 
-*   **Consumer CPUs (Core/Ryzen)**: typically have ~20-24 lanes directly to CPU.
-    *   x16 for GPU
-    *   x4 for primary NVMe
-    *   (Rest via Chipset DMI - bottleneck)
-    *   *Risk*: Installing a second GPU often drops the primary to x8, or forces the second GPU through the chipset (high latency, bad for P2P).
+* **Consumer CPUs (Core/Ryzen)**: typically have ~20-24 lanes directly to CPU.
+    * x16 for GPU
+    * x4 for primary NVMe
+    * (Rest via Chipset DMI - bottleneck)
+    * *Risk*: Installing a second GPU often drops the primary to x8, or forces the second GPU through the chipset (high latency, bad for P2P).
 
-*   **HEDT/Server CPUs**: typically 64-128 lanes.
-    *   Allows multiple x16 GPUs at full speed.
-    *   Allows multiple NVMe drives directly attached to CPU.
-    *   *Benefit*: Essential for Multi-GPU training (LLMs) to ensure fast P2P interconnect.
+* **HEDT/Server CPUs**: typically 64-128 lanes.
+    * Allows multiple x16 GPUs at full speed.
+    * Allows multiple NVMe drives directly attached to CPU.
+    * *Benefit*: Essential for Multi-GPU training (LLMs) to ensure fast P2P interconnect.
 
 ## 6. Known Conflicts
 
-1.  **NVIDIA Consumer + Virtualization**:
-    *   Older drivers (pre-465) blocked passthrough (Error 43). Modern drivers allow it, but capabilities are artificially limited (no SR-IOV).
-2.  **Intel Arc + Legacy BIOS**:
-    *   Requires ReBAR for usable performance. Without it, performance drops by ~40%.
-3.  **AMD APU + dGPU**:
+1. **NVIDIA Consumer + Virtualization**:
+    * Older drivers (pre-465) blocked passthrough (Error 43). Modern drivers allow it, but capabilities are artificially limited (no SR-IOV).
+2. **Intel Arc + Legacy BIOS**:
+    * Requires ReBAR for usable performance. Without it, performance drops by ~40%.
+3. **AMD APU + dGPU**:
 
 ## 7. External GPU (eGPU) Interfaces
 
@@ -94,5 +94,5 @@ Deploy System Unified supports both Thunderbolt/USB4 and OCuLink standards for e
 | **Thunderbolt 3/4** | ~32 Gbps (Data) | PCIe x4 Gen3 over USB-C | Yes (Software managed by `bolt`) | Mobile workstations, temporary docking. |
 | **OCuLink (SFF-8611)** | ~64 Gbps (PCIe 4.0 x4) | Native PCIe | No (Requires Rescan/Reboot) | High-performance semi-permanent clusters. |
 
-*   **Thunderbolt**: Requires `bolt` daemon authorization (User Space).
-*   **OCuLink**: Requires generic PCIe Bus Rescan (Kernel Space). Use `gpu-rescan` utility provided by the role.
+* **Thunderbolt**: Requires `bolt` daemon authorization (User Space).
+* **OCuLink**: Requires generic PCIe Bus Rescan (Kernel Space). Use `gpu-rescan` utility provided by the role.

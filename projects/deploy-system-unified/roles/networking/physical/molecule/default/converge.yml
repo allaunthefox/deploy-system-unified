@@ -6,10 +6,9 @@
   tasks:
     - name: Update apt cache (Debian/Ubuntu)
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
       when: ansible_os_family == "Debian"
 
     - name: "Include networking/physical"
-      include_role:
+      ansible.builtin.include_role:
         name: "networking/physical"
-

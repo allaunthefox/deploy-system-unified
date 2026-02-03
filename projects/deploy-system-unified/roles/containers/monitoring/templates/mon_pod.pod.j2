@@ -1,0 +1,14 @@
+[Unit]
+Description=Monitoring Pod
+After=network-online.target
+
+[Pod]
+PodName={{ monitoring_pod_name }}
+Network=host
+# Publish ports to host
+
+PublishPort=9090:9090
+PublishPort=3000:3000
+
+[Install]
+WantedBy=multi-user.target

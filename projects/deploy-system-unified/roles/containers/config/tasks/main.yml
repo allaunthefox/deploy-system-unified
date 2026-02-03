@@ -54,3 +54,5 @@
 - name: Set containers config completion flag
   ansible.builtin.set_fact:
     containers_config_complete: true
+
+- ansible.builtin.include_tasks: secrets_setup.yml

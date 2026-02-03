@@ -33,4 +33,3 @@ system_standard_directories:
   - /etc/ansible
   - /usr/local/bin
   - /var/log/custom_ops
-

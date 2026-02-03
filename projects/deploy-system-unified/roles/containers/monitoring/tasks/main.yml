@@ -1,0 +1,64 @@
+---
+- name: Check Monitoring Enable
+  ansible.builtin.debug:
+    msg: "Monitoring Stack deployment start"
+  when: monitoring_enable | bool
+
+- name: Create Monitoring Network Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/monitoring_net.network
+    content: |
+      [Network]
+      NetworkName=monitoring_net
+      Driver=bridge
+    mode: '0644'
+  become: true
+  when: monitoring_enable | bool
+  notify: Reload systemd
+
+- name: Create Monitoring Directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000" # Approximate generic user, mostly for grafana
+    group: "1000"
+    mode: '0755'
+  loop:
+    - "{{ monitoring_root_dir }}"
+    - "{{ monitoring_root_dir }}/prometheus"
+    - "{{ monitoring_root_dir }}/grafana"
+    - "{{ monitoring_config_dir }}"
+    - "{{ monitoring_config_dir }}/prometheus"
+  when: monitoring_enable | bool
+
+- name: Deploy Prometheus Config
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ monitoring_config_dir }}/prometheus/prometheus.yml"
+    mode: '0644'
+  notify: Restart Monitoring Pod
+  when: monitoring_enable | bool
+
+- name: Deploy Monitoring Pod Quadlet
+  ansible.builtin.template:
+    src: mon_pod.pod.j2
+    dest: /etc/containers/systemd/mon_pod.pod
+    mode: '0644'
+  notify: Reload systemd
+  when: monitoring_enable | bool
+
+- name: Deploy Prometheus Container Quadlet
+  ansible.builtin.template:
+    src: prometheus.container.j2
+    dest: /etc/containers/systemd/prometheus.container
+    mode: '0644'
+  notify: Reload systemd
+  when: monitoring_enable | bool
+
+- name: Deploy Grafana Container Quadlet
+  ansible.builtin.template:
+    src: grafana.container.j2
+    dest: /etc/containers/systemd/grafana.container
+    mode: '0644'
+  notify: Reload systemd
+  when: monitoring_enable | bool

@@ -1,7 +1,9 @@
 # Ansible Variables
+
 Variables in Ansible allow you to abstract your playbooks and make them reusable. They can store values that can be used throughout your playbooks and roles.
 
 ## Variable Precedence
+
 Ansible has a specific order of precedence for variables. From highest to lowest:
 
 1. `command_line_values` (e.g. `-e` arguments to ansible-playbook)
@@ -22,17 +24,21 @@ Ansible has a specific order of precedence for variables. From highest to lowest
 16. `block_vars` (only for tasks in block)
 17. `task_vars` (only for the task)
 18. `extra_vars` (e.g. `-e` arguments to ansible-playbook) (highest priority)
+
 ## Variable Names
 
 Variable names should:
+
 - Contain letters, numbers, underscores, and hyphens
 - Start with a letter
 - Be lowercase when possible
 - Use underscores instead of camelCase
 - Be descriptive and meaningful
+
 ## Defining Variables
 
 ### In Playbook
+
 ```yaml
 - hosts: webservers
   vars:
@@ -44,7 +50,9 @@ Variable names should:
         name: apache2
         state: present
 ```
+
 ### In Variable Files
+
 ```yaml
 # vars.yml
 ---
@@ -63,7 +71,9 @@ max_clients: 200
         name: apache2
         state: present
 ```
+
 ### In Inventory
+
 ```ini
 # inventory
 [webservers]
@@ -72,19 +82,24 @@ web2.example.com http_port=80
 ```
 
 ### At Runtime
+
 ```bash
 ansible-playbook site.yml -e "http_port=8080"
 ```
+
 ## Variable Types
 
 ### Scalars
+
 ```yaml
 ---
 var_string: "hello world"
 var_number: 42
 var_boolean: true
 ```
+
 ### Lists
+
 ```yaml
 ---
 var_list:
@@ -95,7 +110,9 @@ var_list:
 # Or
 var_list: [item1, item2, item3]
 ```
+
 ### Dictionaries
+
 ```yaml
 ---
 var_dict:
@@ -106,9 +123,11 @@ var_dict:
 var_dict:
   key1: { subkey1: subvalue1, subkey2: subvalue2 }
 ```
+
 ## Jinja2 Templates
 
 Variables can be used in Jinja2 templates:
+
 ```yaml
 - name: Create configuration file
   template:
@@ -117,14 +136,17 @@ Variables can be used in Jinja2 templates:
 ```
 
 Template file (config.j2):
+
 ```
 # Configuration for {{ inventory_hostname }}
 port = {{ http_port }}
 max_connections = {{ max_clients }}
 ```
+
 ## Magic Variables
 
 Ansible provides several built-in variables:
+
 - `inventory_hostname`: The inventory name of the current host
 - `ansible_default_ipv4.address`: The default IPv4 address
 - `group_names`: List of groups the current host is in
@@ -135,6 +157,7 @@ Ansible provides several built-in variables:
 - `inventory_dir`: Directory of the inventory file
 
 ## Variable Registration
+
 Variables can be registered from task output:
 
 ```yaml
@@ -147,6 +170,7 @@ Variables can be registered from task output:
 ```
 
 ## Variable Validation
+
 Variables can be validated using the `assert` module:
 
 ```yaml
@@ -159,9 +183,11 @@ Variables can be validated using the `assert` module:
     fail_msg: "http_port must be a valid port number"
     success_msg: "http_port is valid"
 ```
+
 ## Variable Filters
 
 Jinja2 filters can be used to manipulate variables:
+
 ```yaml
 # Convert to uppercase
 {{ my_var | upper }}
@@ -178,6 +204,7 @@ Jinja2 filters can be used to manipulate variables:
 ```
 
 ## Secure Variables
+
 Sensitive data should be stored using Ansible Vault:
 
 ```yaml
@@ -187,6 +214,7 @@ database_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66386439653...
 ```
+
 ```yaml
 # In playbook
 - hosts: webservers
@@ -200,6 +228,7 @@ database_password: !vault |
 ```
 
 ## Conditional Variables
+
 Variables can be conditionally assigned:
 
 ```yaml

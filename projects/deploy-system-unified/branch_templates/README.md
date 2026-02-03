@@ -1,7 +1,9 @@
 # Branch Templates Directory
+
 This directory contains ready-to-use Ansible playbooks for different deployment scenarios. Each file represents a different use case and can be used as a template for creating profile branches. All templates build upon the base functionality provided in the main project.
 
 ## Available Templates
+
 1. **ephemeral_containers.yml** - For temporary, security-focused environments
    - Use case: CI/CD runners, security testing, temporary compute
    - Features: SSH port randomization, enhanced security logging, Podman/Quadlet container management, Caddy reverse proxy
@@ -20,6 +22,7 @@ This directory contains ready-to-use Ansible playbooks for different deployment 
    - Supported GPUs: NVIDIA (CUDA), AMD (ROCm), Intel (OpenCL)
 
 ## Usage
+
 To use any of these templates, copy the appropriate template to your own deployment directory (separate from this repository):
 
 1. Create your own deployment directory
@@ -28,6 +31,7 @@ To use any of these templates, copy the appropriate template to your own deploym
 4. Ensure you have access to the roles from the main repository (set ANSIBLE_ROLES_PATH or use --extra-vars)
 5. Test thoroughly before deploying to production
 Example:
+
 ```bash
 # Create your own deployment directory (separate from the main repo)
 mkdir my-production-deployment && cd my-production-deployment
@@ -41,6 +45,7 @@ ansible-playbook -i inventory/your-server.ini site.yml --extra-vars "ansible_rol
 ```
 
 Each template includes:
+
 - Core system setup
 - Security hardening appropriate for the use case
 - Container runtime setup (Podman)

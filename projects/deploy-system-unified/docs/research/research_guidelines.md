@@ -1,7 +1,9 @@
 # LLM Research Guidelines
+
 This directory contains documentation for Ansible and Molecule to enable LLMs to research these topics effectively.
 
 ## Ansible Documentation Structure
+
 - **Core Concepts**: Fundamental concepts like inventory, playbooks, roles, tasks
 - **Modules**: Documentation for Ansible modules
 - **Playbooks**: Best practices and patterns for playbooks
@@ -9,7 +11,9 @@ This directory contains documentation for Ansible and Molecule to enable LLMs to
 - **Vault**: Secrets management with Ansible Vault
 - **Best Practices**: Recommended approaches and patterns
 - **Troubleshooting**: Common issues and solutions
+
 ## Molecule Documentation Structure
+
 - **Getting Started**: Basic setup and usage
 - **Configuration**: Molecule configuration options
 - **Scenarios**: Different testing scenarios
@@ -18,6 +22,7 @@ This directory contains documentation for Ansible and Molecule to enable LLMs to
 - **Best Practices**: Recommended testing patterns
 
 ## Research Tips
+
 1. Always verify documentation against current versions
 2. Check for deprecated features
 3. Look for security best practices

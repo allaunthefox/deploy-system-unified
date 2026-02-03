@@ -1,0 +1,13 @@
+---
+# Core Hardware Support Role
+# Discovers CPU features (AVX, AES-NI) and hardware accelerators.
+
+enable_hardware_discovery: true
+require_avx: false
+require_aes_ni: false
+# Some VPN/Ingress nodes should strictly require crypto acceleration
+require_crypto_extensions: false
+
+# MongoDB 5.0+ requires AVX support.
+warn_on_missing_avx: true
+warn_on_missing_crypto: true

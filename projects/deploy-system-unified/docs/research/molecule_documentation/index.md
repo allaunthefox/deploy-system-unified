@@ -20,6 +20,7 @@ Molecule supports only the latest two major versions of Ansible (N/N-1).
 
 Once installed, the command line can be called using any of the methods
 below:
+
 ```bash
 molecule ...
 python3 -m molecule ...  # python module calling method
@@ -28,4 +29,3 @@ python3 -m molecule ...  # python module calling method
 Molecule projects also hosts the [community.molecule] collection, which
 contains some filters, plugins, roles and playbooks that can be used by
 molecule test writers to ease writing tests.
-

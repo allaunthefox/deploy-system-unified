@@ -1,15 +1,71 @@
 ---
 # Tasks for backup/restic - Deduplicated Encrypted Backups
-- name: Install restic
+
+- name: Fail if password is default
+  ansible.builtin.fail:
+    msg: "Restic password is set to default 'CHANGE_ME_IN_VAULT'. Please configure a secure password in your inventory secrets."
+  when: restic_password == "CHANGE_ME_IN_VAULT" and restic_enable | bool
+
+- name: Install Restic
   ansible.builtin.package:
     name: restic
     state: present
-  become: true
-- name: Create restic cache directory
+  when: restic_enable | bool
+
+- name: Create Restic configuration directories
   ansible.builtin.file:
-    path: /var/cache/restic
+    path: "{{ item }}"
     state: directory
+    owner: "{{ restic_user }}"
+    group: "{{ restic_group }}"
     mode: '0700'
+  loop:
+    - "{{ restic_config_dir }}"
+    - "{{ restic_log_dir }}"
+    - "/var/cache/restic"
+  when: restic_enable | bool
+
+- name: Deploy Restic password file
+  ansible.builtin.copy:
+    content: "{{ restic_password }}"
+    dest: "{{ restic_config_dir }}/password"
+    owner: "{{ restic_user }}"
+    group: "{{ restic_group }}"
+    mode: '0600'
+  when: restic_enable | bool
+
+- name: Deploy Restic wrapper script
+  ansible.builtin.template:
+    src: restic_wrapper.sh.j2
+    dest: "{{ restic_script_dir }}/restic_wrapper.sh"
+    owner: "{{ restic_user }}"
+    group: "{{ restic_group }}"
+    mode: '0750'
+  when: restic_enable | bool
+
+- name: Deploy Restic Systemd Service
+  ansible.builtin.template:
+    src: restic-backup.service.j2
+    dest: /etc/systemd/system/restic-backup.service
     owner: root
     group: root
-  become: true
+    mode: '0644'
+  notify: Reload systemd
+  when: restic_enable | bool
+
+- name: Deploy Restic Systemd Timer
+  ansible.builtin.template:
+    src: restic-backup.timer.j2
+    dest: /etc/systemd/system/restic-backup.timer
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
+  when: restic_enable | bool
+
+- name: Enable and Start Restic Timer
+  ansible.builtin.systemd:
+    name: restic-backup.timer
+    state: started
+    enabled: true
+  when: restic_enable | bool

@@ -2,7 +2,7 @@
 # Defaults for core/memory
 
 # Optimization Strategy: 'auto', 'zram', 'zswap', 'none'
-# auto: 
+# auto:
 #   - Use zram if < 8GB RAM (Standard setup)
 #   - Use zswap if > 8GB RAM (Hybrid setup with physical swap)
 #   - Use zram if system has NO physical swap partition

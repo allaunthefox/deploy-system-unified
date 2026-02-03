@@ -1,4 +1,5 @@
 ## Running Molecule processes in parallel mode
+
 !!! warning
 
     This functionality should be considered experimental. It is part of
@@ -29,4 +30,3 @@ Parallel](https://www.gnu.org/software/parallel/) or
 [Pytest](https://docs.pytest.org/en/latest/)). If you do so, make sure
 Molecule knows it is running in parallel mode by specifying the
 `--parallel` flag to your command(s) to avoid concurrency issues.
-

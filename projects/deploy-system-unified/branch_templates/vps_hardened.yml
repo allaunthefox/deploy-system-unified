@@ -35,4 +35,3 @@
       loop: "{{ vps_roles }}"
       loop_control:
         loop_var: role_item
-

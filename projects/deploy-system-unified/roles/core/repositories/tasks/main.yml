@@ -24,7 +24,7 @@
     regexp: '^(deb(?:-src)?\s+http://\S+\s+\w+)((\s+main)(?:\s+contrib)?(?:\s+non-free)?(?:\s+non-free-firmware)?)$'
     replace: '\1\2 contrib non-free non-free-firmware'
   become: true
-  when: 
+  when:
     - ansible_distribution == 'Debian'
     - legacy_sources_list.stat.exists
 

@@ -1,0 +1,6 @@
+---
+# Handlers for containers/ops
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+set -o pipefail
+
+# Restic Backup Wrapper Script
+# Managed by Ansible - Do not edit manually
+
+# Configuration
+export RESTIC_REPOSITORY="{{ restic_repo }}"
+export RESTIC_PASSWORD_FILE="{{ restic_config_dir }}/password"
+LOG_FILE="{{ restic_log_dir }}/backup.log"
+
+# Timestamps
+echo "Starting backup at $(date)" >> "$LOG_FILE"
+
+# 1. Initialize Repo (if needed)
+if ! restic snapshots > /dev/null 2>&1; then
+    echo "Initializing new repository at $RESTIC_REPOSITORY..." >> "$LOG_FILE"
+    restic init >> "$LOG_FILE" 2>&1
+fi
+
+# 2. Perform Backup
+echo "Backing up targets: {{ restic_backup_sources | join(' ') }}" >> "$LOG_FILE"
+restic backup \
+{% for source in restic_backup_sources %}
+  "{{ source }}" \
+{% endfor %}
+  --verbose \
+  >> "$LOG_FILE" 2>&1
+
+# 3. Prune (Apply Retention Policy)
+echo "Pruning old snapshots..." >> "$LOG_FILE"
+restic forget \
+  --keep-daily {{ restic_keep_daily }} \
+  --keep-weekly {{ restic_keep_weekly }} \
+  --keep-monthly {{ restic_keep_monthly }} \
+  --prune \
+  >> "$LOG_FILE" 2>&1
+
+# 4. Check Consistency (Optional, expensive on large repos)
+# echo "Checking repository integrity..." >> "$LOG_FILE"
+# restic check >> "$LOG_FILE" 2>&1
+
+echo "Backup finished at $(date)" >> "$LOG_FILE"
+echo "----------------------------------------------------------------" >> "$LOG_FILE"

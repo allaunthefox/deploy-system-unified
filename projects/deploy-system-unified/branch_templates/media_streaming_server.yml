@@ -10,6 +10,12 @@
     - role: ops/cloud_init
 - ansible.builtin.import_playbook: base_hardened.yml
 
+- name: System Hardware Validation
+  hosts: all
+  gather_facts: false
+  roles:
+    - role: core/hardware_support
+
 - name: Deploy Media Streaming Workload
   hosts: all
   become: true
@@ -18,27 +24,27 @@
     vps_provider: "contabo"
     sshd_allow_tcp_forwarding: true
     access_sshd_port: 2222
-    
+
     # Memory Tuning - Database Profile for SQLite (Jellyfin/Arr) Performance
     memory_workload_profile: "database"
     # Ensure ZRAM isn't choked by database profile's low swappiness (handled by auto-resolution, but explicit is good)
-    # The 'database' profile defaults swappiness to 10. Auto-resolution bumps it to 60 if NO disk swap. 
-    # This server DOES have disk swap (default Contabo images usually do or we don't know). 
+    # The 'database' profile defaults swappiness to 10. Auto-resolution bumps it to 60 if NO disk swap.
+    # This server DOES have disk swap (default Contabo images usually do or we don't know).
     # If no disk swap, the role handles it. If disk swap exists, 10 is perfect to prefer RAM.
-    
+
     # VM Tuning for Media Buffers
     vm_dirty_ratio: "10"
     vm_dirty_background_ratio: "5"
     vm_dirty_bytes: 4294967296          # 4GB Dirty Limit for massive file moves
     vm_dirty_background_bytes: 1073741824 # 1GB Background starting point
-    
+
     # Btrfs Subvolume Configuration
     btrfs_subvolumes:
       - { path: "/@", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@" }
       - { path: "/@home", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@home" }
       - { path: "/@var", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var" }
       - { path: "/@srv", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@srv" }
-    
+
     # Firewall Configuration
     # We use a strict ingress policy (deny by default) but MUST allow forwarding for containers.
     firewall_enabled: true
@@ -71,10 +77,28 @@
         caddy_acme_email: "admin@my-media-server.com"
         caddy_network: "deploy-net" # Caddy must join the same network
 
+    - role: containers/authentik
+      vars:
+        authentik_network_name: "deploy-net"
+        # SECURITY WARNING: These must be changed in production!
+        authentik_secret_key: "change_me_to_random_string"
+        authentik_pg_pass: "change_me_to_random_string"
+
     - role: containers/media
       vars:
         jellyfin_memory_max: 12G
         media_root_dir: /srv/media
         media_gatekeeper_mode: true
+        media_hw_accel: false # Set to true if GPU/iGPU is available (/dev/dri)
+        media_auth_provider: "authentik" # Enable Forward Auth
         media_domain: "home.lab"  # Replace with actual domain
         media_pod_network: "deploy-net" # Explicit matching required
+
+    - role: containers/ops
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "deploy-net"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true

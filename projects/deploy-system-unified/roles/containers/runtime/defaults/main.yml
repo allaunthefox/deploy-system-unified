@@ -2,6 +2,13 @@
 # Defaults for containers/runtime role
 containers_install_podman: true
 containers_enable_socket: true
+
+# Image Pull Safety / Rate Limit Avoidance
+# Docker Hub Anonymous Limit: 100 pulls / 6 hrs
+# Safe Retry Strategy to avoid Abuse Detection blocking:
+containers_pull_retries: 5
+containers_pull_delay: 30
+
 # Architecture override (explicit target architecture)
 containers_arch_override: ""
 # GPU support configuration

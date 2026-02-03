@@ -1,0 +1,43 @@
+---
+# Defaults for containers/ops
+
+ops_enable: true
+ops_pod_name: "ops_pod"
+ops_pod_network: "ops_net"
+ops_root_dir: "/srv/ops"
+ops_config_dir: "/srv/containers/ops_config"
+
+# Homarr (Dashboard)
+homarr_enable: true
+homarr_image: ghcr.io/ajnart/homarr:0.16.0
+homarr_port: 7575
+
+# Vaultwarden (Bitwarden compatible server)
+vaultwarden_enable: true
+vaultwarden_image: docker.io/vaultwarden/server:1.35.2
+vaultwarden_port: 8080 # Internal mapping
+# Vaultwarden specific security settings
+vaultwarden_signups_allowed: false
+# SECURITY: This should be an Argon2 hash, NOT plain text.
+# Run `argon2 <password> -e` to generate one.
+vaultwarden_admin_token: "CHANGE_ME_IN_VAULT_TO_HASH"
+
+# Wiki.js
+wiki_enable: false
+wiki_image: ghcr.io/requarks/wiki:2
+wiki_port: 3000
+wiki_db_secret: "wiki_pg_pass"
+
+# Wastebin
+wastebin_enable: false
+wastebin_image: docker.io/quxfoo/wastebin:3.4.0
+wastebin_port: 8088
+
+# Domain integration
+ops_domain: "owowatdis.lol"
+
+# Filebrowser (File Management)
+filebrowser_enable: true
+filebrowser_image: filebrowser/filebrowser:v2.57.0
+# Internal port within the Pod (must not conflict with others in ops_pod)
+filebrowser_port: 8082

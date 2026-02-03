@@ -31,5 +31,3 @@
       ansible.builtin.assert:
         that: rescan_script.stat.exists
         fail_msg: "OCuLink gpu-rescan script was not created."
-
-

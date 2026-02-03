@@ -1,0 +1,185 @@
+---
+# Tasks for containers/authentik
+
+- name: Create Authentik Directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0750'
+    owner: root
+    group: root
+  loop:
+    - "{{ authentik_base_dir }}"
+    - "{{ authentik_data_dir }}"
+    - "{{ authentik_config_dir }}"
+    - "{{ authentik_data_dir }}/media"
+    - "{{ authentik_data_dir }}/custom-templates"
+    - "{{ authentik_data_dir }}/postgres"
+    - "{{ authentik_data_dir }}/redis"
+  become: true
+
+- name: Create Authentik Postgres Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/authentik-postgres.container
+    content: |
+      [Unit]
+      Description=Authentik PostgreSQL Database
+      After=network-online.target
+
+      [Container]
+      Image={{ authentik_postgres_image }}
+      ContainerName=authentik-postgres
+
+      Network={{ authentik_network_name }}.network
+
+      Environment=POSTGRES_PASSWORD={{ authentik_pg_pass }}
+      Environment=POSTGRES_USER={{ authentik_pg_user }}
+      Environment=POSTGRES_DB={{ authentik_pg_db }}
+
+      Volume={{ authentik_data_dir }}/postgres:/var/lib/postgresql/data:Z
+
+      [Service]
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
+- name: Create Authentik Redis Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/authentik-redis.container
+    content: |
+      [Unit]
+      Description=Authentik Redis
+      After=network-online.target
+
+      [Container]
+      Image={{ authentik_redis_image }}
+      ContainerName=authentik-redis
+
+      Network={{ authentik_network_name }}.network
+
+      [Service]
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
+- name: Create Authentik Server Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/authentik-server.container
+    content: |
+      [Unit]
+      Description=Authentik Server
+      After=authentik-postgres.service authentik-redis.service
+      Requires=authentik-postgres.service authentik-redis.service
+
+      [Container]
+      Image={{ authentik_image }}
+      ContainerName=authentik-server
+
+      Network={{ authentik_network_name }}.network
+      # Internal port 9000, exposed to Caddy via bridge
+
+      Environment=AUTHENTIK_REDIS__HOST=authentik-redis
+      Environment=AUTHENTIK_POSTGRESQL__HOST=authentik-postgres
+      Environment=AUTHENTIK_POSTGRESQL__USER={{ authentik_pg_user }}
+      Environment=AUTHENTIK_POSTGRESQL__NAME={{ authentik_pg_db }}
+      Environment=AUTHENTIK_POSTGRESQL__PASSWORD={{ authentik_pg_pass }}
+      Environment=AUTHENTIK_SECRET_KEY={{ authentik_secret_key }}
+
+      # Email Config
+      Environment=AUTHENTIK_EMAIL__HOST={{ authentik_email_host }}
+      Environment=AUTHENTIK_EMAIL__PORT={{ authentik_email_port }}
+      Environment=AUTHENTIK_EMAIL__USERNAME={{ authentik_email_username }}
+      Environment=AUTHENTIK_EMAIL__PASSWORD={{ authentik_email_password }}
+      Environment=AUTHENTIK_EMAIL__USE_TLS={{ authentik_email_use_tls }}
+      Environment=AUTHENTIK_EMAIL__FROM={{ authentik_email_from }}
+
+      Volume={{ authentik_data_dir }}/media:/media:Z
+      Volume={{ authentik_data_dir }}/custom-templates:/templates:Z
+
+      [Service]
+      Restart=always
+      # Command required for server component
+      ExecStart=server
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
+- name: Create Authentik Worker Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/authentik-worker.container
+    content: |
+      [Unit]
+      Description=Authentik Worker
+      After=authentik-postgres.service authentik-redis.service authentik-server.service
+      Requires=authentik-postgres.service authentik-redis.service
+
+      [Container]
+      Image={{ authentik_image }}
+      ContainerName=authentik-worker
+
+      Network={{ authentik_network_name }}.network
+
+      Environment=AUTHENTIK_REDIS__HOST=authentik-redis
+      Environment=AUTHENTIK_POSTGRESQL__HOST=authentik-postgres
+      Environment=AUTHENTIK_POSTGRESQL__USER={{ authentik_pg_user }}
+      Environment=AUTHENTIK_POSTGRESQL__NAME={{ authentik_pg_db }}
+      Environment=AUTHENTIK_POSTGRESQL__PASSWORD={{ authentik_pg_pass }}
+      Environment=AUTHENTIK_SECRET_KEY={{ authentik_secret_key }}
+
+      # Email Config
+      Environment=AUTHENTIK_EMAIL__HOST={{ authentik_email_host }}
+      Environment=AUTHENTIK_EMAIL__PORT={{ authentik_email_port }}
+      Environment=AUTHENTIK_EMAIL__USERNAME={{ authentik_email_username }}
+      Environment=AUTHENTIK_EMAIL__PASSWORD={{ authentik_email_password }}
+      Environment=AUTHENTIK_EMAIL__USE_TLS={{ authentik_email_use_tls }}
+      Environment=AUTHENTIK_EMAIL__FROM={{ authentik_email_from }}
+
+      Volume={{ authentik_data_dir }}/media:/media:Z
+      Volume={{ authentik_data_dir }}/custom-templates:/templates:Z
+
+      [Service]
+      Restart=always
+      # Command required for worker component
+      ExecStart=worker
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
+- name: Deploy Caddy Authentik Configuration
+  ansible.builtin.copy:
+    dest: /srv/containers/caddy/conf.d/authentik.caddy
+    content: |
+      # Authentik Config
+      auth.example.com {
+        reverse_proxy authentik-server:9000
+      }
+
+      # Reusable snippet for other sites to protect themselves
+      (authentik_protect) {
+        forward_auth authentik-server:9000 {
+            uri /outpost.goauthentik.io/auth/caddy
+            copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name
+            copy_headers X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks
+            copy_headers X-Authentik-Meta-Outpost-Token X-Authentik-Meta-Provider-Slug
+            copy_headers X-Authentik-Meta-App-Slug X-Authentik-Meta-Version
+        }
+      }
+    mode: '0644'
+  become: true
+  # Only deploy if using Caddy as the ingress
+  when: true
+  notify: reload systemd

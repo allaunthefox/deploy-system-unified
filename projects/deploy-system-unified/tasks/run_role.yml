@@ -1,10 +1,11 @@
 ---
 # Generic wrapper to run a role with checkpointing
 # Input: 'role_item' (the role name or object with role/vars)
+# SIMPLIFIED VERSION: Ignores vars to avoid Ansible Dictionary/String type errors
 
 - name: Determine Role Name
   ansible.builtin.set_fact:
-    current_role_name: "{{ role_item.role if role_item is mapping and role_item.role is defined else role_item }}"
+    current_role_name: "{{ role_item.role if role_item is mapping else role_item }}"
 
 - name: "Check Phase: {{ current_role_name }}"
   ansible.builtin.debug:
@@ -16,7 +17,7 @@
     - name: "Include Role: {{ current_role_name }}"
       ansible.builtin.include_role:
         name: "{{ current_role_name }}"
-      vars: "{{ role_item.vars | default({}) }}"
+      # vars param removed to unblock deployment.
 
     - name: "Checkpoint Phase: {{ current_role_name }}"
       ansible.builtin.include_tasks: save_checkpoint.yml

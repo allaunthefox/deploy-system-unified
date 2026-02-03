@@ -6,21 +6,21 @@ This guide details the deployment of Intel's discrete GPUs (Battlemage, Alchemis
 
 ## Architecture Support
 
-*   **x86_64**: Primary support (Xeon, Core).
-*   **Aarch64**: Experimental PCIe support (Ampere Altra).
+* **x86_64**: Primary support (Xeon, Core).
+* **Aarch64**: Experimental PCIe support (Ampere Altra).
 
 ## Driver Stacks
 
 We support two distinct driver paths for Intel GPUs:
 
-1.  **In-Tree Kernel Driver (`i915` / `xe`)**
-    *   **Modern**: The new `xe` kernel driver is default for Battlemage and newer.
-    *   **Legacy**: `i915` handles older generations.
-    *   **Config**: Managed automatically by kernel version.
+1. **In-Tree Kernel Driver (`i915` / `xe`)**
+    * **Modern**: The new `xe` kernel driver is default for Battlemage and newer.
+    * **Legacy**: `i915` handles older generations.
+    * **Config**: Managed automatically by kernel version.
 
-2.  **Compute Stack (OneAPI / Level Zero)**
-    *   Required for AI/Compute workloads.
-    *   Installs user-space libraries: `intel-level-zero-gpu`, `intel-opencl-icd`.
+2. **Compute Stack (OneAPI / Level Zero)**
+    * Required for AI/Compute workloads.
+    * Installs user-space libraries: `intel-level-zero-gpu`, `intel-opencl-icd`.
 
 ## Configuration in deploy-system-unified
 

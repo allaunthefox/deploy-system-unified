@@ -1,5 +1,27 @@
 ---
 # Defaults for containers/caddy role
 caddy_generate_config: true
-caddy_acme_email: admin@example.com
-caddy_network: "deploy-net"
+caddy_acme_email: admin@owowatdis.lol
+
+# Porkbun DNS Credentials (required for DNS challenge)
+porkbun_api_key: "{{ vault_porkbun_api_key | default('') }}"
+porkbun_secret_api_key: "{{ vault_porkbun_secret_api_key | default('') }}"
+
+# Caddy acts as the ingress gateway and must have access to all app networks
+# OR, we run it on "proxy_net" and expose app ports there.
+# For simplicity with Quadlets, we can attach multiple networks to the Caddy Pod.
+caddy_network: "proxy_net"
+caddy_extra_networks:
+  - "media_net"
+  - "ops_net"
+  - "monitoring_net"
+
+# Crowdsec (Security Automation)
+crowdsec_enable: true
+crowdsec_image: docker.io/crowdsecurity/crowdsec:latest
+# crowdsec_firewall_bouncer_image: docker.io/crowdsec/crowdsec-firewall-bouncer-iptables:latest (Deprecated/Missing)
+crowdsec_secrets_dir: /srv/containers/secrets
+# Crowdsec reads logs from Caddy, so it maps that volume
+
+# GPU Support (Inherited logic from Quadlets)
+quadlet_enable_gpu_support: false

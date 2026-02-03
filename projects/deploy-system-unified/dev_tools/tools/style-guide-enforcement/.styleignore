@@ -53,3 +53,19 @@ branch_templates/k8s_gpu_worker.yml
 branch_templates/k8s_gpu_workload.yml
 branch_templates/llm_ml_gpu_workload.yml
 branch_templates/lxc_gpu_container.yml
+
+# Reason: Defaults files with placeholders (Security Warning False Positives)
+roles/storage/backup/restic/defaults/main.yml
+roles/containers/monitoring/defaults/main.yml
+roles/containers/authentik/defaults/main.yml
+roles/containers/ops/defaults/main.yml
+roles/storage/backup/rclone/defaults/main.yml
+roles/containers/media/defaults/main.yml
+
+# Reason: Molecule Config files (Not Playbooks)
+molecule/ephemeral_desktop/molecule.yml
+roles/networking/physical/molecule/default/molecule.yml
+roles/hardware/sas/molecule/default/molecule.yml
+roles/core/bootstrap/molecule/default/molecule.yml
+roles/ops/monitoring/molecule/default/molecule.yml
+roles/hardware/gpu/molecule/default/molecule.yml

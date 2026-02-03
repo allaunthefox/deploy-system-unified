@@ -1,4 +1,5 @@
 # Podman inside Docker
+
 Sometimes your CI system comes prepared to run with Docker but you want
 to test podman into it. This `prepare.yml` playbook would let podman run
 inside a privileged Docker host by adding some required settings:
@@ -45,6 +46,7 @@ inside a privileged Docker host by adding some required settings:
 
 Another option is to configure the same settings directly into the
 `molecule.yml` definition:
+
 ```yaml
 driver:
   name: podman
@@ -59,4 +61,3 @@ platforms:
 At the time of writing, [Gitlab CI shared runners run privileged Docker
 hosts](https://docs.gitlab.com/ee/user/gitlab_com/#shared-runners) and
 are suitable for these workarounds.
-

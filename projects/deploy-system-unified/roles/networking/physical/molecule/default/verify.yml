@@ -4,17 +4,17 @@
   gather_facts: false
   tasks:
     - name: Check if ethtool binary exists
-      stat:
+      ansible.builtin.stat:
         path: /sbin/ethtool
       register: ethtool_bin
       ignore_errors: true
 
     - name: Check /usr/sbin/ethtool if /sbin failed
-      stat:
+      ansible.builtin.stat:
         path: /usr/sbin/ethtool
       register: ethtool_bin_usr
       when: ethtool_bin.stat.exists == false
 
     - name: Assert ethtool installed
-      assert:
+      ansible.builtin.assert:
         that: ethtool_bin.stat.exists or ethtool_bin_usr.stat.exists

@@ -2,6 +2,7 @@ Security tooling and guidance
 This directory contains guidance and helper scripts related to detecting and handling secrets.
 
 Detect-secrets CI
+
 - We run `detect-secrets` in CI via `.github/workflows/detect-secrets.yml` to detect accidental commits of secrets.
 - To run locally:
 
@@ -10,6 +11,7 @@ Detect-secrets CI
 - If the scan finds results, review the listed files and remove/rotate secrets; prefer Ansible Vault or an external secret manager.
 
 Ansible Vault guidance
+
 - Never commit plaintext secrets to the repository.
 - Use `ansible-vault` to encrypt sensitive variables and reference them in roles.
 - Example workflow:

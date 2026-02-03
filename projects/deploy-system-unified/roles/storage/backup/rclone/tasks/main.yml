@@ -1,13 +1,29 @@
 ---
 # Tasks for backup/rclone - Cloud Sync
+
 - name: Install rclone
   ansible.builtin.package:
     name: rclone
     state: present
-  become: true
+  when: rclone_enable | bool
+
 - name: Create rclone configuration directory
   ansible.builtin.file:
-    path: /etc/rclone
+    path: "{{ rclone_config_dir }}"
     state: directory
-    mode: '0755'
-  become: true
+    mode: '0700'
+    owner: "{{ rclone_user }}"
+    group: "{{ rclone_group }}"
+  when: rclone_enable | bool
+
+- name: Deploy Rclone Configuration
+  ansible.builtin.copy:
+    content: "{{ rclone_config_content }}"
+    dest: "{{ rclone_conf_file }}"
+    mode: '0600'
+    owner: "{{ rclone_user }}"
+    group: "{{ rclone_group }}"
+  no_log: true
+  when:
+    - rclone_enable | bool
+    - rclone_config_content | length > 0

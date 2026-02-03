@@ -1,11 +1,14 @@
 # LLM & RAG Semantic Map
+
 **Project**: Deploy-System-Unified
 **Focus**: Infrastructure-as-Code (Ansible), Security Hardening, Ephemeral Workloads.
 
 ## 🧠 Architectural Constraints
+
 - **Anti-Comingling Rule**: No task should perform unrelated operations (e.g., firewalling and package installation must be separate).
 - **Explicit Base**: All workloads must import a standard base layer (`base_hardened.yml` or `base_ephemeral.yml`).
 - **Fail-Secure**: Firewall (default-deny) must be established before services are deployed.
+
 ## 🗺 Documentation Cross-Reference
 
 | Entity | Primary Documentation | RAG Context (LLM_RESEARCH) |
@@ -17,7 +20,9 @@
 | **Ephemeral** | `branch_templates/base_ephemeral.yml` | `research_guidelines.md` |
 | **Style** | `docs/development/STYLE_GUIDE.md` | `Style_Guide.md` |
 | **GPU Slicing** | `docs/gpu_slicing_setup.md` | `planning/GPU_Slicing_Planning_Document.md` |
+
 ## 🛠 Key Role Definitions
+
 - `core/repositories`: Trusted package source initialization.
 - `core/time`: Chrony-based NTP sync (Essential for forensic logging).
 - `networking/firewall`: L3/L4 Perimeter lockdown.
@@ -30,6 +35,7 @@
 - `orchestration/k8s_node`: Kubernetes node configuration with GPU device plugins.
 
 ## 📋 Operational Flags
+
 - `--low-risk-repair`: Non-destructive formatting fixes (Safe for automation).
 - `--fix`: Structural and architectural fixes (Requires review).
 - `ssh_randomize_port`: Sticky random port assignment logic.
@@ -37,4 +43,3 @@
 - `containers_enable_gpu_support`: Enable GPU acceleration for containers.
 - `containers_gpu_vendor`: Specify GPU vendor (nvidia, amd, intel).
 - `containers_gpu_slicing.strategy`: GPU slicing strategy (mig, sriov, time-slicing, passthrough).
-

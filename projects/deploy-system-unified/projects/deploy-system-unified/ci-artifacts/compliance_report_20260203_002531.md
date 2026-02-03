@@ -12,23 +12,29 @@
 ## Issues by Category
 
 ### YAML Formatting
+
 110 issues found
 
 ### Ansible Standards  
+
 3 issues found
 
 ### FQCN Compliance
+
 49 non-FQCN module calls found
 
 ### Shell Scripting
+
 4
 0 issues found in standalone scripts
 
 ### Naming Conventions
+
 0 files with spaces in names
 3 files with uppercase names in roles/
 
 ### Security Standards
+
 1 files with potential hardcoded secrets
 2 files with potentially unsafe permissions
 
@@ -47,4 +53,3 @@
 - ripgrep (rg) / grep: Pattern matching
 - fd / find: File discovery
 - awk/sed: Text processing
-

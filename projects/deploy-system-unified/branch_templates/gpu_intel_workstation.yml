@@ -7,11 +7,11 @@
   hosts: all
   become: true
   roles:
-  - role: core/bootstrap
-  - role: networking/desktop
-  - role: hardware/firmware
-  - role: hardware/gpu
-    vars:
-      gpu_stack_enable: true
+    - role: core/bootstrap
+    - role: networking/desktop
+    - role: hardware/firmware
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
       gpu_stack_vendor: intel
       gpu_stack_mode: desktop

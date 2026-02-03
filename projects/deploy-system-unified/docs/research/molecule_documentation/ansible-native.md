@@ -1,7 +1,9 @@
 # Ansible-Native Configuration
+
 This document provides technical reference for the ansible-native configuration approach. The ansible-native approach leverages standard Ansible inventory, collections, and playbooks for testing resource management.
 
 ## Configuration Structure
+
 Ansible-native molecule configurations use the following top-level sections:
 
 ```yaml
@@ -35,9 +37,11 @@ verifier:
 ```
 
 ## Ansible Configuration Section
+
 The `ansible` section contains all Ansible-specific configuration.
 
 ### Executor Configuration
+
 ```yaml
 ansible:
   executor:
@@ -53,6 +57,7 @@ ansible:
 
 - `backend`: Execution backend (ansible-playbook or ansible-navigator)
 - `args`: Command-line arguments passed to the executor
+
 ### Environment Variables
 
 ```yaml
@@ -64,9 +69,11 @@ ansible:
     ANSIBLE_HOST_KEY_CHECKING: false
     ANSIBLE_COLLECTIONS_PATH: collections/
 ```
+
 Environment variables are passed to all ansible executions. `ANSIBLE_INVENTORY` specifies the inventory source.
 
 ### Ansible Configuration
+
 ```yaml
 ansible:
   cfg:
@@ -82,6 +89,7 @@ ansible:
 ```
 
 Configuration options merged into ansible.cfg for the scenario. The `inventory` setting under defaults specifies the inventory source.
+
 ### Playbook Paths
 
 ```yaml
@@ -95,12 +103,15 @@ ansible:
     cleanup: cleanup.yml
     side_effect: side_effect.yml
 ```
+
 Playbook paths are relative to the scenario directory.
 
 ## Native Inventory Usage
+
 Ansible-native approach uses standard Ansible inventory sources.
 
 ### Static YAML Inventory
+
 #### Host-Based Testing
 
 ```yaml
@@ -130,6 +141,7 @@ all:
         postgresql_version: 13
         backup_enabled: false
 ```
+
 #### API Endpoint Testing
 
 ```yaml
@@ -155,6 +167,7 @@ all:
         verify_ssl: true
         testing_environment: integration
 ```
+
 #### Database Testing
 
 ```yaml
@@ -186,6 +199,7 @@ all:
         testing_mode: true
         max_connections: 10
 ```
+
 ### Dynamic Inventory Plugin
 
 ```yaml
@@ -199,6 +213,7 @@ keyed_groups:
   - key: tags.Name
     prefix: tag
 ```
+
 ### Constructed Inventory
 
 ```yaml
@@ -213,6 +228,7 @@ groups:
   database_servers: "'database' in component_type"
   testing: "environment == 'test'"
 ```
+
 ### Enterprise Inventory Integration
 
 ```yaml
@@ -254,23 +270,28 @@ all:
         environment: test
         backup_enabled: false
 ```
+
 ## Shared State Configuration
 
 Shared state enables scenarios to share ephemeral state and testing resources.
+
 ### Configuration
 
 ```yaml
 shared_state: true
 ```
+
 When enabled:
 
 - All scenarios share the same ephemeral state directory
 - Default scenario manages testing resource lifecycle
 - Component scenarios access shared resources
 - State persists between scenario executions
+
 ### Resource Lifecycle Management
 
 **Default scenario** (testing resource management):
+
 ```yaml
 scenario:
   test_sequence:
@@ -279,6 +300,7 @@ scenario:
 ```
 
 **Component scenarios** (testing only):
+
 ```yaml
 scenario:
   test_sequence:
@@ -289,14 +311,17 @@ scenario:
 ```
 
 ### Execution Flow
+
 With `shared_state: true`:
 
 1. Default scenario creates shared testing resources
 2. Component scenarios execute tests against shared resources
 3. Default scenario destroys shared testing resources
+
 ## Collection-Based Resource Management
 
 The ansible-native approach leverages ansible collections for testing resource management.
+
 ### Container Testing Resources
 
 ```yaml
@@ -328,6 +353,7 @@ The ansible-native approach leverages ansible collections for testing resource m
         delay: 5
       loop: "{% raw %}{{ groups['test_resources'] }}{% endraw %}"
 ```
+
 ### Cloud Testing Resources
 
 ```yaml
@@ -371,6 +397,7 @@ The ansible-native approach leverages ansible collections for testing resource m
         wait: true
       loop: "{% raw %}{{ groups['test_resources'] }}{% endraw %}"
 ```
+
 ### Collection Dependencies
 
 ```yaml
@@ -384,9 +411,11 @@ collections:
   - name: community.general
     version: ">=6.0.0"
 ```
+
 ## Scenario Types
 
 ### Collection Component Testing
+
 Test individual collection components (roles, modules, plugins):
 
 ```yaml
@@ -419,9 +448,11 @@ scenario:
       vars:
         role_config: test_value
 ```
+
 ### Playbook Testing
 
 Test complete playbooks:
+
 ```yaml
 # converge.yml
 ---
@@ -430,6 +461,7 @@ Test complete playbooks:
 ```
 
 ### Multi-Scenario Collection Testing
+
 ```yaml
 # Base config.yml
 ---
@@ -447,6 +479,7 @@ shared_state: true
 ```
 
 **Default scenario** manages testing resources:
+
 ```yaml
 # default/molecule.yml
 ---
@@ -457,9 +490,11 @@ scenario:
 ```
 
 **Component scenarios** inherit base configuration and test specific components.
+
 ### Integration Testing Patterns
 
 Multi-component testing with shared resources:
+
 ```yaml
 # verify.yml
 ---
@@ -492,9 +527,11 @@ Multi-component testing with shared resources:
           - api_response.json.status == "healthy"
           - api_response.json.version is defined
 ```
+
 ## Verifier Configuration
 
 The ansible verifier executes verification playbooks using the same inventory and configuration as other testing phases.
+
 ### Basic Configuration
 
 ```yaml
@@ -502,9 +539,11 @@ verifier:
   name: ansible
   enabled: true
 ```
+
 ### Environment Variables
 
 Environment variables for verification should be configured in the `ansible` section:
+
 ```yaml
 ansible:
   env:
@@ -514,6 +553,7 @@ ansible:
 ```
 
 Verification playbooks have access to all molecule environment variables and scenario configuration.
+
 ## Complete Example
 
 ```yaml
@@ -550,6 +590,7 @@ verifier:
 ```
 
 This configuration defines ansible-native testing with:
+
 - Native inventory sources in `inventory/` directory
 - Collection-based testing resource management in create/destroy playbooks
 - Shared state for multi-scenario testing
@@ -557,5 +598,5 @@ This configuration defines ansible-native testing with:
 - Custom environment variables and configuration options
 
 ## Supplemental Inventory Generation
-In the ansible-native approach, Molecule generates only a supplemental inventory file containing molecule-specific variables that are made available to playbooks. This includes environment variables like `MOLECULE_SCENARIO_DIRECTORY`, `MOLECULE_EPHEMERAL_DIRECTORY`, and scenario metadata. The primary inventory comes from the sources specified in `ansible.executor.args.ansible_playbook`, allowing full integration with existing inventory management systems while maintaining Molecule's testing capabilities.
 
+In the ansible-native approach, Molecule generates only a supplemental inventory file containing molecule-specific variables that are made available to playbooks. This includes environment variables like `MOLECULE_SCENARIO_DIRECTORY`, `MOLECULE_EPHEMERAL_DIRECTORY`, and scenario metadata. The primary inventory comes from the sources specified in `ansible.executor.args.ansible_playbook`, allowing full integration with existing inventory management systems while maintaining Molecule's testing capabilities.

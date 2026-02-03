@@ -11,6 +11,7 @@
       [Container]
       Image={{ anubis_image }}
       ContainerName={{ anubis_container_name }}
+      Network=host
       PublishPort={{ anubis_port }}:8080
       Environment=PORT=8080
       Environment=TARGET={{ anubis_target_url }}

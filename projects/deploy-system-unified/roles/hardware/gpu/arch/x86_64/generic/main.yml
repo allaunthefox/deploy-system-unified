@@ -118,6 +118,6 @@
 
 - name: Log Generic Setup
   ansible.builtin.debug:
-    msg: 
+    msg:
       - "Generic Software Rendering Stack Installed (LLVMpipe + SimpleDRM + ShadowFB)"
       - "Installed generic x86_64 graphics stack (Mesa/Vulkan). Acceleration depends on kernel hardware detection."

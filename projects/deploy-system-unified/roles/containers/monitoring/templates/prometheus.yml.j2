@@ -1,0 +1,15 @@
+# Prometheus Configuration
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node_exporter'
+    static_configs:
+      # Accessing the host IP from within the container network.
+      # Usually host.containers.internal or the gateway IP.
+      # For now, we assume the node_exporter binds to host interface.
+      - targets: ['{{ ansible_default_ipv4.address }}:9100']

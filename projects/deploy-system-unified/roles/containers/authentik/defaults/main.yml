@@ -1,0 +1,35 @@
+---
+# Defaults for containers/authentik
+
+authentik_enable: true
+authentik_image: ghcr.io/goauthentik/server:2024.2.1
+authentik_redis_image: docker.io/library/redis:alpine
+authentik_postgres_image: docker.io/library/postgres:16-alpine
+
+# Configuration Paths - Namespaced by instance for multi-tenancy support if needed
+authentik_base_dir: /srv/containers/authentik
+authentik_data_dir: "{{ authentik_base_dir }}/data"
+authentik_config_dir: "{{ authentik_base_dir }}/config"
+
+# Ports
+authentik_port_http: 9000
+authentik_port_https: 9443
+
+# Database Config
+authentik_pg_user: authentik
+authentik_pg_db: authentik
+authentik_pg_pass: "changeme_please_secure_me"
+
+# Secret Key (Must be generated)
+authentik_secret_key: "generate_me_with_openssl_rand_base64_60"
+
+# Email Configuration
+authentik_email_host: "smtp.example.com"
+authentik_email_port: 587
+authentik_email_username: "user"
+authentik_email_password: "password"
+authentik_email_from: "authentik@example.com"
+authentik_email_use_tls: true
+
+# Networking
+authentik_network_name: "deploy-net"

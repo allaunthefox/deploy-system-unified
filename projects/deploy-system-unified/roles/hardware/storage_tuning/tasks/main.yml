@@ -12,10 +12,10 @@
     content: |
       # Physical Flash (SSD/NVMe/SD/eMMC/USB-Flash) - Low Latency
       ACTION=="add|change", KERNEL=="sd[a-z]*|nvme[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
-      
+
       # Virtual Disks (VirtIO/Xen) - Delegate to Host
       ACTION=="add|change", KERNEL=="vd[a-z]*|xvd[a-z]*", ATTR{queue/scheduler}="none mq-deadline"
-      
+
       # RAM Disks (zram/brd) - Zero Latency, No Scheduling
       ACTION=="add|change", KERNEL=="ram[0-9]*|zram[0-9]*", ATTR{queue/scheduler}="none"
     dest: /etc/udev/rules.d/60-disk-scheduler.rules
@@ -66,13 +66,13 @@
     # Alignment fallback: Ensure multiple of Physical Sector
     default_ra_sectors: 4096
   ansible.builtin.command: >-
-    blockdev --setra 
-    {{ 
+    blockdev --setra
+    {{
        ((item.value.opt_io_bytes | int > 0) | ternary(
-          ((item.value.opt_io_bytes | int) / 512) | int, 
+          ((item.value.opt_io_bytes | int) / 512) | int,
           default_ra_sectors
-       )) | int 
-    }} 
+       )) | int
+    }}
     /dev/{{ item.key }}
   loop: "{{ storage_devices_norm | dict2items }}"
   when:

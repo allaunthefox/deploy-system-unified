@@ -81,7 +81,7 @@
     interface_capabilities: "{{ interface_capabilities | default({}) | combine({ item.item: {
       'port_type': (item.stdout | regex_search('Port: ([a-zA-Z]+)', '\\1') | first | default('Unknown') | trim),
       'link_detected': (item.stdout | regex_search('Link detected: ([a-zA-Z]+)', '\\1') | first | default('no') | trim),
-      'speed_mbps': ((item.stdout | regex_search('Speed: ([0-9]+)', '\\1') | first | default('0') | int) * (_speed_conversion_map.get((item.stdout | regex_search('Speed: [0-9]+\s*([a-zA-Z]+)/s', '\\1') | first | default('Mb')), 1.0))) | int
+      'speed_mbps': ((item.stdout | regex_search('Speed: ([0-9]+)', '\\1') | first | default('0') | int) * (_speed_conversion_map.get((item.stdout | regex_search('Speed: [0-9]+\\s*([a-zA-Z]+)/s', '\\1') | first | default('Mb')), 1.0))) | int
     }}) }}"
   loop: "{{ ethtool_output.results }}"
   when: item.rc == 0

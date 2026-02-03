@@ -1,8 +1,31 @@
 ---
 # Default (non-secret) placeholders for security/scanning role
-# These defaults should remain empty in the repository; override them using
-# an encrypted file (Ansible Vault) or external secret manager.
-ssh_private_key: ""
-# database_password should come from an encrypted vault file
-database_password: ""
-api_token: ""
+
+security_scanning_enable: true
+
+# Tool Configuration
+security_scanning_install_tools: true
+
+# Mapping of supported distributions to their security package names
+# Note: Tools like trivy/checkov/trufflehog usually require external repos or binary installs.
+# We include standard available tools here.
+security_package_mapping:
+  debian:
+    packages: ['auditd', 'clamav', 'rkhunter', 'lynis']
+  ubuntu:
+    packages: ['auditd', 'clamav', 'rkhunter', 'lynis']
+  archlinux:
+    packages: ['audit', 'clamav', 'rkhunter', 'lynis']
+  fedora:
+    packages: ['audit', 'clamav', 'rkhunter', 'lynis']
+  centos:
+    packages: ['audit', 'clamav', 'rkhunter', 'lynis']
+  rocky:
+    packages: ['audit', 'clamav', 'rkhunter', 'lynis']
+  almalinux:
+    packages: ['audit', 'clamav', 'rkhunter', 'lynis']
+
+security_scanning_extra_packages:
+  - "chrony"
+  - "curl"
+  - "jq"

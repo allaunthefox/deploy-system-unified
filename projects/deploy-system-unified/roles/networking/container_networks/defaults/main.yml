@@ -1,0 +1,33 @@
+---
+# Defaults for networking/container_networks
+
+container_networks_enable: true
+
+# Network Definitions
+# Each key represents a Quadlet .network file to manage
+# "deploy-net" is usually the shared default, but we are moving away from it for strict isolation.
+
+container_networks_list:
+  - name: "monitoring_net"
+    driver: "bridge"
+    label: "stack=monitoring"
+    dns_enabled: true
+    internal: true # Only exposed via Proxy, no direct exposure needed usually
+
+  - name: "media_net"
+    driver: "bridge"
+    label: "stack=media"
+    dns_enabled: true
+    internal: true
+
+  - name: "ops_net"
+    driver: "bridge"
+    label: "stack=ops"
+    dns_enabled: true
+    internal: false # Needs to reach some external services maybe?
+
+  - name: "proxy_net"
+    driver: "bridge"
+    label: "role=gateway"
+    dns_enabled: true
+    internal: false # Caddy runs here

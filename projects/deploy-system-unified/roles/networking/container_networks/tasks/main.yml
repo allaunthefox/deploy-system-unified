@@ -8,16 +8,21 @@
     mode: '0755'
   become: true
 
-- name: Create Frontend Network Segment (Proxy Layer)
-  ansible.builtin.copy:
-    dest: /etc/containers/systemd/frontend.network
-    content: |
-      [Network]
-      Label=tier=frontend
-      Internal=false
-      Options=isolate=1
+- name: Deploy Container Networks
+  ansible.builtin.template:
+    src: network.network.j2
+    dest: "/etc/containers/systemd/{{ item.name }}.network"
     mode: '0644'
-  become: true
+  loop: "{{ container_networks_list }}"
+  when: container_networks_enable | bool
+  notify: Reload systemd
+
+# Legacy cleanup (Optional - if we want to remove the old manual file)
+- name: Remove legacy frontend network definitions
+  ansible.builtin.file:
+    path: /etc/containers/systemd/frontend.network
+    state: absent
+
   notify: reload systemd
 - name: Create Backend Network Segment (Application Layer)
   ansible.builtin.copy:

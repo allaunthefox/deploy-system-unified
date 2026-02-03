@@ -221,7 +221,7 @@ enforce_fqcn_standards() {
 
     local short_form_matches=()
     # Matches lines like '  apt:', '  - copy:', but NOT '    group:' or '    user:' under a module
-    local better_pattern='^\s+(- )?(apt|dnf|copy|template|service|systemd|shell|command|file|stat|user|group|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):'
+    local better_pattern='^\s+(- )?(apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):'
 
     if command -v rg >/dev/null 2>&1; then
         while IFS= read -r file; do

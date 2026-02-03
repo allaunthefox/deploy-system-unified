@@ -7,23 +7,26 @@ This guide documents the changes made to the Deploy-System-Unified project to su
 ## Changes Made
 
 ### 1. Core/GPU Stack Role
+
 - **New Role**: `hardware/gpu` handles all driver, firmware, and compute stack installation.
 - **Architecture Aware**: Supports x86_64, aarch64, and riscv64 customization. See architecture guides:
-  - [x86_64 Setup](ARCH_GUIDE_X86.md)
-  - [ARM64 Setup](ARCH_GUIDE_ARM64.md)
-  - [RISC-V Setup](ARCH_GUIDE_RISCV64.md)
+    - [x86_64 Setup](ARCH_GUIDE_X86.md)
+    - [ARM64 Setup](ARCH_GUIDE_ARM64.md)
+    - [RISC-V Setup](ARCH_GUIDE_RISCV64.md)
 - **Boot Integration**: Manages initramfs updates and kernel parameters (e.g., `update-initramfs`, `dracut`).
 
 ### 2. Containers/Runtime Role
+
 - **Dependencies**: Now relies on `hardware/gpu` to provide drivers.
 - **Focus**: Handles Container Toolkit (CDI), Docker/Podman runtime hooks, and Slicing logic.
 - Updated to skip installing GPU drivers directly (delegated to stack role).
 
-
 ### 3. Containers/Quadlets Role
+
 - Updated to skip systemd-related tasks if systemd is not available
 
 ### 4. Molecule Test
+
 - Updated the converge.yml file to skip security roles (firewall, hardening, access)
 - Updated the verify.yml file to fix YAML parsing errors and variable access issues
 
@@ -32,28 +35,32 @@ This guide documents the changes made to the Deploy-System-Unified project to su
 The implementation supports the following GPU vendors and frameworks:
 
 ### NVIDIA
+
 - **CUDA**: NVIDIA's parallel computing platform and programming model
 - **MIG**: Multi-Instance GPU (for A100, A30, H100 GPUs)
 - **vGPU**: Virtual GPU (for Tesla, Quadro, RTX GPUs)
 - **Time-slicing**: Share a single GPU between multiple containers
 
 ### AMD
+
 - **ROCm**: Radeon Open Compute platform
 - **SR-IOV**: Single Root I/O Virtualization
 - **Passthrough**: Direct GPU access
 
 ### Intel
+
 - **Level Zero**: Intel's oneAPI Level Zero API
 - **OneAPI**: Intel's oneAPI toolkit
 - **Passthrough**: Direct GPU access
-  - Supported Intel families include Arc A-series (Alchemist, Battlemage), Arc Pro, Data Center GPU Flex/Max, and Xe iGPUs.
-  - See [Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE.md) for specific setup details.
+    - Supported Intel families include Arc A-series (Alchemist, Battlemage), Arc Pro, Data Center GPU Flex/Max, and Xe iGPUs.
+    - See [Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE.md) for specific setup details.
 
 ## Usage
 
 To use GPU slicing, you need to configure variables for both the **Driver Stack** and the **Container Runtime**.
 
 ### Driver Stack (`hardware/gpu`)
+
 Handles installing the kernel-level drivers and firmwares.
 
 ```yaml
@@ -64,6 +71,7 @@ gpu_stack_arch: "x86_64"    # Optional, auto-detected
 ```
 
 ### Container Runtime (`containers/runtime`)
+
 Handles hooking the GPUs into Docker/Podman/K8s.
 
 ```yaml

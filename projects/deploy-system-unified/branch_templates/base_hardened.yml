@@ -46,4 +46,3 @@
       loop: "{{ base_hardened_roles }}"
       loop_control:
         loop_var: role_item
-

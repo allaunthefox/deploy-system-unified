@@ -1,18 +1,27 @@
 ---
 # Enhanced security with required tools and proper validation for Deploy-System-Unified
-- name: Check if security tools are installed (idempotent)
-  ansible.builtin.command: "{{ item }} --version"
+
+- name: Check if security tools are installed
+  ansible.builtin.command: "command -v {{ item }}"
   register: security_framework_tool_check
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh", "chronyd", "checkov"]
   failed_when: false
   changed_when: false
-- name: Install missing security tools including enhanced tooling (idempotent)
+  ignore_errors: true
+
+- name: Install standard security packages (Distro-Specific)
   ansible.builtin.package:
-    name: "{{ preflight_distro_package_mapping[ansible_distribution | lower].security_packages + ['chrony'] }}"
+    name: "{{ security_package_mapping[ansible_distribution | lower].packages + security_scanning_extra_packages }}"
     state: present
   become: true
   when:
-    - ansible_distribution | lower in preflight_distro_package_mapping.keys()
+    - security_scanning_install_tools | bool
+    - ansible_distribution | lower in security_package_mapping.keys()
+
+# Note: Modern scanning tools (Trivy, TruffleHog) often require binary installation script.
+# We skip complex binary installation here to keep the role lightweight.
+# Users should ensure these tools are installed via core/bootstrap or manually if they want the full scan.
+
 - name: Verify security tools are functional (idempotent)
   ansible.builtin.shell: |
     if command -v {{ item }} >/dev/null 2>&1 || command -v {{ item }}-go >/dev/null 2>&1; then

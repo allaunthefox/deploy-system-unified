@@ -15,6 +15,9 @@
       - containers/config
       - containers/quadlets
       - containers/caddy
+      # Monitoring
+      - ops/monitoring          # Host Agent (Node Exporter)
+      - containers/monitoring   # Stack (Prometheus/Grafana)
       # Backup & Disaster Recovery
       - storage/backup/restic
       - storage/backup/rclone

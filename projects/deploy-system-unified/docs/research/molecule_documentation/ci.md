@@ -1,9 +1,11 @@
 # Continuous integration
+
 Molecule output will use `ANSI` colors if stdout is an interactive TTY
 and `TERM` value seems to support it. You can define `PY_COLORS=1` to
 force use of `ANSI` colors, which can be handy for some CI systems.
 
 ## GitHub Actions
+
 [GitHub Actions](https://github.com/features/actions) runs a CI
 pipeline, much like any others, that's built into GitHub.
 
@@ -48,6 +50,7 @@ your repository with a value looking like
 following step before "Test with molecule".
 
 {% raw %}
+
 ```yaml
 - name: Setup git credentials
   uses: fusion-engineering/setup-git-credentials@v2
@@ -56,6 +59,7 @@ following step before "Test with molecule".
 ```
 
 {% endraw %}
+
 ## Travis CI
 
 [Travis](https://travis-ci.com/) is a CI platform, which can be used to
@@ -74,6 +78,7 @@ install:
 script:
   - molecule test
 ```
+
 A `.travis.yml` using [Tox](https://tox.readthedocs.io/en/latest) as
 described below.
 
@@ -88,6 +93,7 @@ install:
 script:
   - tox
 ```
+
 ## Gitlab CI
 
 [Gitlab](https://gitlab.com) includes its own CI. Pipelines are usually
@@ -152,6 +158,7 @@ molecule:
   script:
     - molecule test
 ```
+
 ## Azure Pipelines
 
 [Azure
@@ -163,6 +170,7 @@ within Azure on self-hosted runners if you intend on using the
 Version
 Task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-python-version?view=azure-devops)
 documentation.
+
 ```yaml
 ---
 trigger:
@@ -203,6 +211,7 @@ The `export PATH` is required to ensure you can use the
 `molecule`/`ansible` shell scripts. Azure doesn't add these by default.
 
 ## Jenkins Pipeline
+
 [Jenkins](https://jenkins.io/doc/book/pipeline/jenkinsfile) projects can
 also be defined in a file, by default named `Jenkinsfile` in the top
 folder of a repository. Two syntax are available, Declarative and
@@ -264,6 +273,7 @@ pipeline {
 
 }
 ```
+
 The following Jenkinsfile uses the [Ansible Dev Tools](https://docs.ansible.com/projects/dev-tools/container/) image.
 
 ```groovy
@@ -295,6 +305,7 @@ pipeline {
   } // close stages
 }   // close pipeline
 ```
+
 !!! note
 
     For Jenkins to work properly using a Multibranch Pipeline
@@ -314,6 +325,7 @@ pipeline {
     This is the cleaner of the current choices. See
     [issue1567_comment](https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722)
     for additional detail.
+
 ## Tox
 
 [Tox](https://tox.wiki/en/latest/) is a generic virtualenv
@@ -368,6 +380,7 @@ setenv =
 You also must include the `TOX_ENVNAME` variable in name of each
 platform in `molecule.yml` configuration file. This way, their names
 won't create any conflict.
+
 ```yaml
 ---
 dependency:
@@ -386,4 +399,3 @@ provisioner:
 verifier:
   name: testinfra
 ```
-

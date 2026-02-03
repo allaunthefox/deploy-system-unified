@@ -72,7 +72,10 @@
           }],
         "transports": {
           "docker": {
-            "docker.io/library": [{
+            "docker.io": [{
+                "type": "insecureAcceptAnything"
+              }],
+            "lscr.io": [{
                 "type": "insecureAcceptAnything"
               }],
             "quay.io": [{
@@ -104,8 +107,8 @@
 - name: Enable SELinux for containers (RedHat/CentOS)
   ansible.posix.seboolean:
     name: "{{ item }}"
-    state: yes
-    persistent: yes
+    state: true
+    persistent: true
   loop:
     - container_use_cephfs
     - container_use_nfs

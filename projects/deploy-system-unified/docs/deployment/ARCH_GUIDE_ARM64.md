@@ -7,19 +7,25 @@ The `aarch64` architecture covers broadly different use cases ranging from Edge 
 ## Platform Profiles
 
 ### 1. NVIDIA Jetson (Edge AI)
+
 Embedded SoCs like Orin, Xavier.
+
 - **Boot**: L4T (Linux for Tegra). Custom kernel is mandatory.
 - **GPU**: Integrated iGPU, addressed via CUDA.
 - **Constraint**: Cannot use standard upstream kernel drivers. `hardware/gpu` role skips driver installation on Jetson to avoid breaking the BSP.
 
 ### 2. Server ARM (Cloud Native)
+
 Ampere Altra, AWS Graviton, NVIDIA Grace.
+
 - **Boot**: SBSA (Server Base System Architecture) / UEFI.
 - **GPU**: PCIe Discrete Cards (A100/H100/L40S) or NVLink (Grace Hopper).
 - **Driver**: Standard NVIDIA Data Center drivers (Open Kernel modules).
 
 ### 3. Generic ARM / SBC (Mali)
+
 Rockchip (RK3588), Amlogic, Allwinner.
+
 - **Driver**: Mesa (Panfrost/Panthor) for open source, or vendor blobs.
 - **Support**: `hardware/gpu` installs Mesa stack. `containers/runtime` maps `/dev/dri/renderD128`.
 

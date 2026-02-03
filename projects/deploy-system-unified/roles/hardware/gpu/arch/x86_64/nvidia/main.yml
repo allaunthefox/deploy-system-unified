@@ -96,5 +96,3 @@
     state: present
   become: true
   when: gpu_stack_enable_cuda | default(false) | bool
-
-

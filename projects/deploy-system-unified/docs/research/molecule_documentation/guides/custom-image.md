@@ -1,11 +1,12 @@
 ## Customizing the Docker Image Used by a Scenario/Platform
+
 The docker driver supports using pre-built images and `docker build`
 -ing local customizations for each scenario's platform. The Docker
 image used by a scenario is governed by the following configuration
 items:
 
-1.  `platforms[*].image`: Docker image name:tag to use as base image.
-2.  `platforms[*].pre_build_image`: Whether to customize base image or
+1. `platforms[*].image`: Docker image name:tag to use as base image.
+2. `platforms[*].pre_build_image`: Whether to customize base image or
     use as-is[^1].
 
     > - When `true`, use the specified `platform[].image` as-is.
@@ -25,4 +26,3 @@ scenario's generated `molecule.yml` file.
 [^1]:
     [Implementation in molecule docker
     driver](https://github.com/ansible-community/molecule-plugins/blob/main/src/molecule_plugins/docker/playbooks/create.yml)
-

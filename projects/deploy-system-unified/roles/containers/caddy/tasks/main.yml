@@ -1,5 +1,16 @@
 ---
 # Container Caddy role - Caddy reverse proxy configuration
+- name: Create Proxy Network Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/proxy_net.network
+    content: |
+      [Network]
+      NetworkName=proxy_net
+      Driver=bridge
+    mode: '0644'
+  become: true
+  notify: reload systemd
+
 - name: Create Caddy directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -21,6 +32,9 @@
       # Caddyfile - Managed by Deploy-System-Unified
       {
         admin off
+        servers :443 {
+            protocols h1 h2 h3
+        }
         email {{ caddy_acme_email | default('admin@example.com') }}
         log {
           output file /var/log/caddy/access.log {
@@ -31,7 +45,7 @@
           format json
         }
       }
-      
+
       # Import additional configurations
       import /etc/caddy/conf.d/*.caddy
 
@@ -53,13 +67,26 @@
       After=network-online.target
       Wants=network-online.target
       [Container]
-      Image=docker.io/library/caddy:latest
+      # Using serfriz/caddy-porkbun-dockerproxy:2.10.2 for Porkbun DNS support
+      Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2
+      # Override default command to ensure static Caddyfile usage
+      Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+
+      # Environment variables for Porkbun DNS
+      Environment=PORKBUN_API_KEY={{ porkbun_api_key }}
+      Environment=PORKBUN_SECRET_API_KEY={{ porkbun_secret_api_key }}
+
       ContainerName=caddy
-      # Attach to the unified bridge network
-      Network={{ caddy_network }}.network
-      PublishPort=80:80
-      PublishPort=443:443
-      PublishPort=443:443/udp
+      # Primary Gateway Network (Host Mode for VPS compatibility)
+      Network=host
+      # Networks disabled due to missing bridge support
+      # Network={{ caddy_network }}.network
+      # {% for net in caddy_extra_networks | default([]) %}
+      # Network={{ net }}.network
+      # {% endfor %}
+      # PublishPort=80:80
+      # PublishPort=443:443
+      # PublishPort=443:443/udp
       Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       Volume=/srv/containers/caddy/data:/data:Z
       Volume=/srv/containers/caddy/config:/config:Z
@@ -83,13 +110,142 @@
     mode: '0644'
   become: true
   notify: reload systemd
-- name: Enable HTTP/3 support in Caddyfile
-  ansible.builtin.lineinfile:
-    path: /srv/containers/caddy/Caddyfile
-    regexp: '^        admin off'
-    line: '        admin off\n        servers :443 {\n            protocols h1 h2 h3\n        }'
-  become: true
-  when: caddy_generate_config | default(true)
+
 - name: Set containers caddy completion flag
   ansible.builtin.set_fact:
     containers_caddy_complete: true
+
+- name: Create Crowdsec Directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - /srv/containers/caddy/crowdsec
+    - /srv/containers/caddy/crowdsec/config
+    - /srv/containers/caddy/crowdsec/data
+  become: true
+  when: crowdsec_enable | default(false)
+
+- name: Create Crowdsec Container Quadlet
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/crowdsec.container
+    content: |
+      [Unit]
+      Description=Crowdsec Security Engine
+      After=network-online.target caddy.service
+
+      [Container]
+      Image={{ crowdsec_image }}
+      ContainerName=crowdsec
+
+      # Networking
+      Network=host
+
+      # Environment
+      Environment=COLLECTIONS=crowdsecurity/caddy
+
+      # Volumes
+      # Read Caddy Logs
+      Volume=/srv/containers/caddy/logs:/var/log/caddy:ro,Z
+      # Persistent Data
+      Volume=/srv/containers/caddy/crowdsec/config:/etc/crowdsec:Z
+      Volume=/srv/containers/caddy/crowdsec/data:/var/lib/crowdsec/data:Z
+
+      [Service]
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: crowdsec_enable | default(false)
+  notify: reload systemd
+
+- name: Install Crowdsec Bouncer Dependencies
+  pacman:
+    name: ipset
+    state: present
+  become: true
+  when: crowdsec_enable | default(false)
+
+- name: Create Crowdsec Bouncer Directory (Host)
+  ansible.builtin.file:
+    path: /etc/crowdsec/bouncers
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+
+- name: Create Firewall Bouncer Config (Host)
+  ansible.builtin.template:
+    src: firewall-bouncer.yaml.j2
+    dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    mode: '0600'
+    owner: root
+    group: root
+    force: false # Do not overwrite if exists (key preservation)
+  become: true
+  when: crowdsec_enable | default(false)
+
+- name: Check if Bouncer is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/crowdsec-firewall-bouncer
+  register: bouncer_bin
+  become: true
+
+- name: Install Firewall Bouncer (Host)
+  block:
+    - name: Download Bouncer
+      ansible.builtin.get_url:
+        url: https://github.com/crowdsecurity/cs-firewall-bouncer/releases/download/v0.0.34/crowdsec-firewall-bouncer-linux-amd64.tgz
+        dest: /tmp/crowdsec-firewall-bouncer.tgz
+        mode: '0644'
+
+    - name: Extract Bouncer
+      ansible.builtin.unarchive:
+        src: /tmp/crowdsec-firewall-bouncer.tgz
+        dest: /tmp/
+        remote_src: true
+        include:
+          - "crowdsec-firewall-bouncer-v0.0.34/crowdsec-firewall-bouncer"
+        extra_opts: ["--strip-components=1"]
+
+    - name: Copy Binary
+      ansible.builtin.copy:
+        src: /tmp/crowdsec-firewall-bouncer
+        dest: /usr/local/bin/crowdsec-firewall-bouncer
+        mode: '0755'
+        remote_src: true
+
+    - name: Install Service File
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/crowdsec-firewall-bouncer.service
+        content: |
+          [Unit]
+          Description=The firewall bouncer for CrowdSec
+          After=syslog.target network.target remote-fs.target nss-lookup.target crowdsec.service
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/crowdsec-firewall-bouncer -c /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+          Restart=always
+          RestartSec=2
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+  become: true
+  when: (crowdsec_enable | default(false)) and (not bouncer_bin.stat.exists)
+
+- name: Enable and Start Firewall Bouncer
+  ansible.builtin.systemd:
+    name: crowdsec-firewall-bouncer
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: crowdsec_enable | default(false)
