@@ -86,9 +86,21 @@
     value: "{{ item.value }}"
     state: present
     reload: true
+    sysctl_file: /etc/sysctl.d/99-memory-tuning.conf
   loop:
     - { key: 'vm.swappiness', value: '{{ memory_swappiness }}' }
     - { key: 'vm.vfs_cache_pressure', value: '{{ memory_cache_pressure }}' }
     - { key: 'vm.page-cluster', value: '0' } # Essential for ZRAM/ZSwap effectiveness
-  when: active_memory_strategy != 'none'
+    - { key: 'vm.dirty_bytes', value: '{{ memory_dirty_bytes }}', condition: "{{ memory_dirty_bytes | int > 0 }}" }
+    - { key: 'vm.dirty_background_bytes', value: '{{ memory_dirty_background_bytes }}', condition: "{{ memory_dirty_background_bytes | int > 0 }}" }
+  when: active_memory_strategy != 'none' or memory_workload_profile == 'database'
   become: true
+
+- name: Configure Transparent Huge Pages (THP)
+  ansible.builtin.shell: |
+    echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
+    echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/defrag
+  changed_when: false
+  become: true
+  when: memory_workload_profile != 'standard'
+
