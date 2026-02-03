@@ -44,8 +44,10 @@ media_pod_name: media_pod
 
 # Reverse Proxy Configuration (Gatekeeper Mode)
 # If true:
-# 1. Binds service ports to 127.0.0.1 (Localhost only)
+# 1. Binds service ports to internal pod network (deploy-net) if possible or localhost
 # 2. Deploys Caddy configuration snippets for access
 # 3. Requires 'containers/caddy' role to be enabled
 media_gatekeeper_mode: false
 media_domain: "media.example.com"
+# Network to attach the pod to (must match Caddy's network if separate)
+media_pod_network: "deploy-net"
