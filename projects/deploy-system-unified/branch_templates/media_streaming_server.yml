@@ -40,7 +40,9 @@
       - { path: "/@srv", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@srv" }
     
     # Firewall Configuration
+    # We use a strict ingress policy (deny by default) but MUST allow forwarding for containers.
     firewall_enabled: true
+    firewall_forward_policy: "ACCEPT" # Required for Podman CNI/Bridge functionality
     firewall_allowed_tcp_ports:
       - 2222
       - 80

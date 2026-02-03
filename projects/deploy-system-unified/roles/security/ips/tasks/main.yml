@@ -20,6 +20,31 @@
     mode: '0644'
   become: true
   notify: restart fail2ban
+
+- name: Install Caddy Filter
+  ansible.builtin.copy:
+    src: filter_caddy.conf
+    dest: /etc/fail2ban/filter.d/caddy.conf
+    mode: '0644'
+  become: true
+  notify: restart fail2ban
+
+- name: Configure Fail2Ban for Caddy (Web Protection)
+  ansible.builtin.copy:
+    content: |
+      [caddy]
+      enabled = {{ ips_fail2ban_caddy_enabled | lower }}
+      port    = 80,443
+      filter  = caddy
+      logpath = /var/log/caddy/access.log
+      maxretry = {{ ips_fail2ban_caddy_maxretry }}
+      bantime  = {{ ips_fail2ban_caddy_bantime }}
+      findtime = 10m
+    dest: /etc/fail2ban/jail.d/99-caddy-hardened.local
+    mode: '0644'
+  become: true
+  notify: restart fail2ban
+
 - name: Enable and start Fail2Ban
   ansible.builtin.systemd:
     name: fail2ban
