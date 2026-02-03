@@ -11,6 +11,7 @@ system_base_packages:
     - vim
     - htop
     - net-tools
+    - pciutils
   Debian:
     - python3-apt
     - software-properties-common

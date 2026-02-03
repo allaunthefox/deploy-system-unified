@@ -8,6 +8,7 @@ This role imports tasks from the following sub-directories:
 
 *   **bootstrap**: Initial system bootstrapping.
 *   **identity**: User and group management.
+*   **memory**: Intelligent memory management (ZRAM/ZSwap strategies).
 *   **systemd**: Systemd service configuration.
 *   **time**: NTP and timezone configuration.
 *   **entropy**: Entropy generation services.
