@@ -1,0 +1,13 @@
+---
+# Handlers for containers/memcached
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: restart memcached
+  ansible.builtin.systemd:
+    name: memcached.service
+    state: restarted
+  become: true
