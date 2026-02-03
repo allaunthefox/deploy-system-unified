@@ -38,6 +38,30 @@
   ansible.builtin.debug:
     msg: "System Memory: {{ ansible_memtotal_mb }}MB. Strategy Selected: {{ active_memory_strategy | upper }}"
 
+- name: Resolve Configuration Conflicts (Intelligent Resolution)
+  ansible.builtin.set_fact:
+    # Danger: ZRAM requires high swappiness to actually compress. If using database profile (swappiness=10),
+    # ZRAM becomes useless unless we bump it up. However, if physical swap exists, 10 is fine.
+    # Resolution: If ZRAM is sole swap, FORCE moderate swappiness (60) even for databases to prevent OOM.
+    memory_swappiness: >-
+      {{
+        60 if (active_memory_strategy == 'zram' and physical_swap_count.stdout | int == 0 and memory_swappiness | int < 60)
+        else memory_swappiness
+      }}
+    # Danger: THP 'always' kills Redis latency.
+    memory_thp_state: >-
+      {{
+        'madvise' if (memory_workload_profile == 'database' and memory_thp_state == 'always')
+        else memory_thp_state
+      }}
+
+- name: Validate Final Configuration
+  ansible.builtin.debug:
+    msg: >-
+      Conflict Resolution Applied:
+      Swappiness set to {{ memory_swappiness }} (Reason: {{ 'ZRAM-OOM-Protection' if active_memory_strategy == 'zram' and physical_swap_count.stdout|int == 0 else 'Profile-Default' }}).
+      THP set to {{ memory_thp_state }} (Reason: {{ 'Database-Latency-Protection' if memory_workload_profile == 'database' else 'User-Configured' }}).
+
 - name: Configure ZRAM (zram-generator)
   when: active_memory_strategy == 'zram'
   block:
