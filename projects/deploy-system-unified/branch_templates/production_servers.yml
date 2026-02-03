@@ -2,21 +2,32 @@
 # Production Container Host - Secure Solution Stack
 # Solution: Base Hardened Infrastructure + Container Workload
 - ansible.builtin.import_playbook: base_hardened.yml
+
 - name: Deploy Production Container Workload
   hosts: all
   become: true
-  roles:
-    # Container Infrastructure Workload
-    - role: hardware/sas
-    - role: containers/runtime
-    - role: containers/config
-    - role: containers/quadlets
-    - role: containers/caddy
-    # Backup & Disaster Recovery
-    - role: storage/backup/restic
-    - role: storage/backup/rclone
-    # Final Solution Integrity Verification
-    - role: security/scanning
+  vars:
+    # Define roles sequence in vars
+    production_roles:
+      # Container Infrastructure Workload
+      - hardware/sas
+      - containers/runtime
+      - containers/config
+      - containers/quadlets
+      - containers/caddy
+      # Backup & Disaster Recovery
+      - storage/backup/restic
+      - storage/backup/rclone
+      # Final Solution Integrity Verification
+      - security/scanning
+
+  tasks:
+    - name: Execute Production Roles with Granular Checkpoints
+      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      loop: "{{ production_roles }}"
+      loop_control:
+        loop_var: role_item
+
   post_tasks:
     - name: Create production container directories
       ansible.builtin.file:

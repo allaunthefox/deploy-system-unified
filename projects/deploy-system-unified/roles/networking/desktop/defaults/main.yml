@@ -1,0 +1,12 @@
+---
+# Defaults for networking/desktop
+
+# Enable Wi-Fi Support
+networking_desktop_enable_wifi: true
+networking_desktop_wifi_backend: "wpa_supplicant" # or "iwd"
+
+# Network Manager Selection
+networking_desktop_manager: "NetworkManager"
+
+# Optional GUI components (applet)
+networking_desktop_install_gui_tools: true

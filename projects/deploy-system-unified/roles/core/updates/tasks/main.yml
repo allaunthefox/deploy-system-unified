@@ -7,6 +7,10 @@
         name: unattended-upgrades
         state: present
         update_cache: true
+      register: apt_uu_result
+      until: apt_uu_result is success
+      retries: 5
+      delay: 10
     - name: Ensure unattended-upgrades is enabled
       ansible.builtin.copy:
         content: |
@@ -22,6 +26,10 @@
       ansible.builtin.package:
         name: dnf-automatic
         state: present
+      register: dnf_auto_result
+      until: dnf_auto_result is success
+      retries: 5
+      delay: 10
     - name: Enable dnf-automatic timer
       ansible.builtin.systemd:
         name: dnf-automatic.timer

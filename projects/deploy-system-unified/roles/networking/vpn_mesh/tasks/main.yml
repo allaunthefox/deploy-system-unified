@@ -6,16 +6,21 @@
     _sec_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
 
 - name: Ensure Wireguard kernel module is available
-  ansible.builtin.shell: modprobe wireguard
+  community.general.modprobe:
+    name: wireguard
+    state: present
   become: true
-  changed_when: false
-  ignore_errors: true
+  ignore_errors: true # Kernel might correspond to non-modular build or container
   when: not _sec_is_container
 
 - name: Verify IPsec/ESP kernel modules for inter-node security
-  ansible.builtin.shell: modprobe af_key && modprobe xfrm_user
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - af_key
+    - xfrm_user
   become: true
-  changed_when: false
   ignore_errors: true
   when: not _sec_is_container
 

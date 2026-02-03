@@ -4,10 +4,22 @@
 - name: Define Intel driver packages (Debian/Ubuntu)
   ansible.builtin.set_fact:
     intel_driver_packages:
-      - intel-media-driver
+      - intel-media-va-driver-non-free  # Preferred for full codec support
       - libmfx1
       - intel-gpu-tools
-      - i965-va-driver
+      - i965-va-driver-shaders          # Legacy non-free shaders
+      - mesa-vulkan-drivers             # Vulkan support (Anvil)
+      - libgl1-mesa-dri                 # OpenGL DRI
+      - libglx-mesa0                    # GLX
+      - firmware-misc-nonfree           # Required for GuC/HuC firmware on modern chips
+
+    # Legacy (i8xx/Gen2-Gen4) and Server Graphics (Matrox/Aspeed)
+    intel_legacy_packages:
+      - xserver-xorg-video-intel        # Legacy DDX for Gen2-4
+      - xserver-xorg-video-vesa         # Universal fallback
+      - xserver-xorg-video-fbdev        # Framebuffer fallback
+      - xserver-xorg-video-mga          # Matrox G200 (Common servers)
+      - xserver-xorg-video-ast          # Aspeed AST (Common servers)
   when: ansible_os_family == 'Debian'
 
 - name: Define Intel driver packages (RedHat/Fedora)
@@ -17,6 +29,14 @@
       - libmfx
       - intel-gpu-tools
       - libva-intel-driver
+      - mesa-dri-drivers
+      - mesa-vulkan-drivers
+    intel_legacy_packages:
+      - xorg-x11-drv-intel
+      - xorg-x11-drv-vesa
+      - xorg-x11-drv-fbdev
+      - xorg-x11-drv-mga
+      - xorg-x11-drv-ast  # Typically provided by generic or specific pkg
   when: ansible_os_family == 'RedHat'
 
 - name: Define Intel driver packages (Alpine)
@@ -43,17 +63,38 @@
   become: true
   ignore_errors: true # Ignore if package name mismatch on unknown distros
 
-- name: Configure HuC/GuC firmware loading
+- name: Install Legacy and Minimal Video Providers (i8xx/Matrox/Aspeed)
+  ansible.builtin.package:
+    name: "{{ intel_legacy_packages | default([]) }}"
+    state: present
+  become: true
+  ignore_errors: true
+  when: ansible_os_family in ['Debian', 'RedHat']
+
+- name: Configure HuC/GuC firmware loading (i915)
   ansible.builtin.copy:
     content: "options i915 enable_guc=3"
     dest: /etc/modprobe.d/i915.conf
     mode: '0644'
   become: true
-  notify: Update initramfs (placeholder)
-  when: 
-    - ansible_os_family in ['Debian', 'RedHat'] # only where i915 is kernel standard
+  notify: update-initramfs
+  when:
+    - ansible_os_family in ['Debian', 'RedHat']
     - not _gpu_is_container | default(false)
     - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Configure Xe Driver Probe (Experimental/Battlemage)
+  ansible.builtin.copy:
+    # Force probe for newer devices if kernel is older (<6.8)
+    content: "options xe force_probe=*"
+    dest: /etc/modprobe.d/xe_probe.conf
+    mode: '0644'
+  become: true
+  when:
+    - ansible_kernel is version('6.8', '<')
+    - ansible_kernel is version('6.2', '>=')
+    - not _gpu_is_container | default(false)
+  notify: update-initramfs
 
 - name: Setup Intel OneAPI Repository (Debian/Ubuntu)
   block:
@@ -93,3 +134,12 @@
     state: present
   become: true
   when: gpu_stack_enable_oneapi | default(false) | bool
+
+- name: Install Intel Level Zero Support
+  ansible.builtin.package:
+    name:
+      - intel-level-zero-gpu
+      - level-zero-tests
+    state: present
+  become: true
+  when: gpu_stack_enable_level_zero | default(false) | bool

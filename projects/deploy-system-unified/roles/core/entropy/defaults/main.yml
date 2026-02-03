@@ -9,12 +9,12 @@ entropy_service_mapping:
   debian:
     entropy_service: haveged
     entropy_package: haveged
-    rng_service: rngd
+    rng_service: rng-tools
     rng_package: rng-tools
   ubuntu:
     entropy_service: haveged
     entropy_package: haveged
-    rng_service: rngd
+    rng_service: rng-tools
     rng_package: rng-tools
   fedora:
     entropy_service: haveged

@@ -1,0 +1,34 @@
+---
+- name: Normalize Architecture for Container Runtime
+  ansible.builtin.set_fact:
+    _runtime_norm_arch: >-
+      {{
+        'x86_64' if ansible_architecture in ['amd64', 'x86_64'] else
+        'aarch64' if ansible_architecture in ['arm64', 'aarch64', 'armv8b', 'armv8l'] else
+        'riscv64' if ansible_architecture in ['riscv64', 'risc64', 'riscv'] else
+        ansible_architecture
+      }}
+
+- name: Normalize Vendor
+  ansible.builtin.set_fact:
+    _runtime_norm_vendor: "{{ containers_gpu_vendor | lower }}"
+
+- name: Define architecture path for vendor runtime setup
+  ansible.builtin.set_fact:
+    _runtime_arch_path: "{{ role_path }}/arch/{{ _runtime_norm_arch }}/{{ _runtime_norm_vendor }}/main.yml"
+
+- name: Check for Architecture/Vendor specific runtime tasks
+  ansible.builtin.stat:
+    path: "{{ _runtime_arch_path }}"
+  register: runtime_arch_tasks
+  delegate_to: localhost
+
+- name: Include Architecture/Vendor specific runtime tasks
+  ansible.builtin.include_tasks:
+    file: "{{ _runtime_arch_path }}"
+  when: runtime_arch_tasks.stat.exists
+
+- name: Fail if no specialized support found
+  ansible.builtin.fail:
+    msg: "No Container Runtime GPU support found for Arch: {{ _runtime_norm_arch }} / Vendor: {{ _runtime_norm_vendor }}"
+  when: not runtime_arch_tasks.stat.exists

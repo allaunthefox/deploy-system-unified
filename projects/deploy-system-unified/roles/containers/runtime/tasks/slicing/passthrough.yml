@@ -1,0 +1,20 @@
+---
+- name: Set passthrough devices based on vendor
+  ansible.builtin.set_fact:
+    containers_gpu_passthrough_devices: >-
+      {% if containers_gpu_vendor_detected == "nvidia" %}
+        {{ containers_gpu_slicing.passthrough.devices | default(["/dev/nvidia0", "/dev/nvidiactl", "/dev/nvidia-uvm"]) }}
+      {% elif containers_gpu_vendor_detected == "amd" %}
+        {{ containers_gpu_slicing.passthrough.devices | default(["/dev/dri/card0", "/dev/dri/renderD128", "/dev/kfd"]) }}
+      {% elif containers_gpu_vendor_detected == "intel" %}
+        {{ containers_gpu_slicing.passthrough.devices | default(["/dev/dri/card0", "/dev/dri/renderD128"]) }}
+      {% else %}
+        []
+      {% endif %}
+
+- name: Grant container runtime access to GPU devices
+  ansible.builtin.lineinfile:
+    path: /etc/containers/containers.conf
+    regexp: "^#?device_cgroup_rules ="
+    line: 'device_cgroup_rules = [{{ containers_gpu_passthrough_devices | map("regex_replace", "^(.*)$", "\"c \\1 rwm\"") | join(", ") }}]'
+  become: true

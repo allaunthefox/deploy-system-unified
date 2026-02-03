@@ -18,6 +18,17 @@
   hosts: all
   become: true
   post_tasks:
+    - name: Configure ephemeral audit rules
+      ansible.builtin.lineinfile:
+        path: /etc/audit/rules.d/ephemeral.rules
+        line: "{{ item }}"
+        create: true
+        mode: '0600'
+      loop:
+        - "-w /etc/passwd -p wa -k etc_passwd_changes"
+        - "-w /etc/shadow -p wa -k etc_shadow_changes"
+        - "-w /etc/ssh/ -p wa -k ssh_config_changes"
+      become: true
     - name: Create persistent deployment heartbeat (Audit Trail)
       ansible.builtin.shell: |
         # Log the deployment event with a chrony-verified timestamp and global ID
@@ -25,6 +36,7 @@
           "EVENT:EPHEMERAL_DEPLOY_START | ID:{{ deployment_id }} | STATUS:TIME_SYNC_VERIFIED_BY_CHRONY | TARGET:{{ inventory_hostname }}"
       become: true
       tags: [audit, ephemeral]
+      changed_when: false
     - name: Securely shred temporary deployment artifacts (Ephemeral only)
       ansible.builtin.shell: |
         find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
@@ -32,3 +44,4 @@
       delegate_to: localhost
       run_once: true
       tags: [cleanup, ephemeral]
+      changed_when: false

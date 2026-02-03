@@ -19,6 +19,7 @@
     - not aide_db_stat.stat.exists
     - not ansible_check_mode
     - ansible_facts['os_family'] == 'Debian'
+    - not (is_virtualized | default(false))
   async: 600 # AIDE init can take a long time
   poll: 10
   tags: [security, file_integrity]
@@ -29,6 +30,7 @@
     - not aide_db_stat.stat.exists
     - not ansible_check_mode
     - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
+    - not (is_virtualized | default(false))
   async: 600 # AIDE init can take a long time
   poll: 10
   tags: [security, file_integrity]
@@ -43,6 +45,7 @@
     - not aide_db_stat.stat.exists
     - not ansible_check_mode
     - ansible_facts['os_family'] == 'Debian'
+    - not (is_virtualized | default(false))
   tags: [security, file_integrity]
 - name: Ensure AIDE database is in place (RedHat/Arch)
   ansible.builtin.copy:
@@ -55,6 +58,7 @@
     - not aide_db_stat.stat.exists
     - not ansible_check_mode
     - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
+    - not (is_virtualized | default(false))
   tags: [security, file_integrity]
 - name: Skip AIDE database initialization in check mode
   ansible.builtin.debug:

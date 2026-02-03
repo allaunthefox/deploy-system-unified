@@ -1,14 +1,43 @@
 ---
 # Tasks for core/repositories role
 
-- name: Enable Contrib and Non-Free repositories (Debian/Ubuntu)
+- name: Ensure repository management tools (Debian/Ubuntu)
+  ansible.builtin.package:
+    name: software-properties-common
+    state: present
+  become: true
+  when: ansible_os_family == 'Debian'
+  register: repo_tools_result
+  until: repo_tools_result is success
+  retries: 5
+  delay: 10
+
+- name: Check for legacy sources.list
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list
+  register: legacy_sources_list
+  when: ansible_os_family == 'Debian'
+
+- name: Enable Contrib and Non-Free repositories (Legacy Debian)
   ansible.builtin.replace:
     path: /etc/apt/sources.list
     regexp: '^(deb(?:-src)?\s+http://\S+\s+\w+)((\s+main)(?:\s+contrib)?(?:\s+non-free)?(?:\s+non-free-firmware)?)$'
     replace: '\1\2 contrib non-free non-free-firmware'
   become: true
-  when: ansible_os_family == 'Debian'
-  ignore_errors: true # Best effort, sources.list formats vary
+  when: 
+    - ansible_distribution == 'Debian'
+    - legacy_sources_list.stat.exists
+
+- name: Enable Ubuntu Universe/Multiverse
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+    state: present
+  loop:
+    - universe
+    - multiverse
+    - restricted
+  become: true
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Check if RPMFusion is installed (RedHat/Fedora)
   ansible.builtin.command: dnf repolist
@@ -22,12 +51,10 @@
       - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm
       - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
-    disable_gpg_check: true
   become: true
   when:
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
-  ignore_errors: true
 
 - name: Enable Community Repository (Alpine)
   ansible.builtin.replace:

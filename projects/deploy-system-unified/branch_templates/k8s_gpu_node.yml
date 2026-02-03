@@ -2,101 +2,73 @@
 # Kubernetes GPU Node Deployment Template
 # For Kubernetes nodes with GPU device plugin support (AI/ML, data processing)
 # Features: GPU driver installation, Kubernetes device plugin deployment, node labeling
+- ansible.builtin.import_playbook: ../main.yml
 
 - name: Deploy Kubernetes GPU Node
   hosts: all
   become: true
-  pre_tasks:
-    - name: Validate System Identity (FQDN Enforcement)
-      ansible.builtin.assert:
-        that:
-          - ansible_fqdn is defined
-          - ansible_fqdn != "localhost"
-          - ansible_fqdn != "localhost.localdomain"
-        fail_msg: "System must have a valid FQDN configured for secure deployment."
-    - name: Precreate essential directories (idempotent)
-      ansible.builtin.file:
-        path: "{{ item.path }}"
-        state: directory
-        mode: "{{ item.mode | default('0755') }}"
-        owner: "{{ item.owner | default('root') }}"
-        group: "{{ item.group | default('root') }}"
-      loop:
-        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
-        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
-        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
-      become: true
-      tags: [bootstrap, directories]
-    - name: Set directory precreation flag (idempotent)
-      ansible.builtin.set_fact:
-        directories_precreated: true
-    - name: Check if preflight validation already completed (idempotent)
-      ansible.builtin.stat:
-        path: /tmp/preflight_completed.flag
-      register: preflight_flag
-    - name: Include preflight checks if not already completed (idempotent)
-      ansible.builtin.import_role:
-        name: ops/preflight
-      when: not preflight_flag.stat.exists
-      tags: [preflight]
-    - name: Create preflight completion flag (idempotent)
-      ansible.builtin.file:
-        path: /tmp/preflight_completed.flag
-        state: touch
-        mode: '0644'
-      when: not preflight_flag.stat.exists
+  vars:
+    k8s_gpu_roles:
+      # Core system setup
+      - core/bootstrap
+      - core/identity
+      - networking/firewall
+      - security/hardening
+      - security/access
+      - ops/monitoring
+      - core/logging
 
-  roles:
-    # Core system setup
-    - core/bootstrap
-    - core/identity
-    - networking/firewall
-    - security/hardening
-    - security/access
-    - role: ops/monitoring
-    - core/logging
+      # Hardware Support
+      - hardware/firmware
+      - role: hardware/gpu
+        vars:
+          gpu_stack_enable: true
+          gpu_stack_vendor: "{{ containers_gpu_vendor | default('nvidia') }}"
+          gpu_stack_mode: server
 
-    # Kubernetes node setup
-    - role: orchestration/k8s_node
-      vars:
-        k8s_gpu_device_plugins_enabled: true
-        k8s_gpu_nvidia_device_plugin:
-          enabled: true
-          version: "v0.13.0"
-          image: "nvcr.io/nvidia/k8s-device-plugin:v0.13.0"
-        k8s_gpu_amd_device_plugin:
-          enabled: false
-          version: "v0.10.0"
-          image: "rocm/k8s-device-plugin:v0.10.0"
-        k8s_gpu_intel_device_plugin:
-          enabled: false
-          version: "v0.23.0"
-          image: "intel/intel-gpu-plugin:v0.23.0"
+      # Kubernetes node setup
+      - role: orchestration/k8s_node
+        vars:
+          k8s_gpu_device_plugins_enabled: true
+          k8s_gpu_nvidia_device_plugin:
+            enabled: true
+            version: "v0.13.0"
+            image: "nvcr.io/nvidia/k8s-device-plugin:v0.13.0"
+          k8s_gpu_amd_device_plugin:
+            enabled: false
+            version: "v0.10.0"
+            image: "rocm/k8s-device-plugin:v0.10.0"
+          k8s_gpu_intel_device_plugin:
+            enabled: false
+            version: "v0.23.0"
+            image: "intel/intel-gpu-plugin:v0.23.0"
 
-    # GPU-specific configuration
-    - role: containers/runtime
-      vars:
-        containers_enable_gpu_support: true
-        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
-        containers_gpu_count: 1
-        containers_gpu_slicing:
-          strategy: "auto"
-          auto_strategy:
-            bare_metal: "mig"
-            virtual_host: "sriov"
-            virtual_guest: "passthrough"
-          mig: { enabled: false, profiles: ["1g.5gb"] }
-          time_slicing: { enabled: false, max_instances: 4 }
-          sriov: { enabled: false, vf_count: 4 }
-          level_zero: { enabled: false, partitions: [] }
-          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
-          passthrough: { devices: [] }
+      # GPU-specific configuration
+      - role: containers/runtime
+        vars:
+          containers_enable_gpu_support: true
+          containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+          containers_gpu_count: 1
+          containers_gpu_slicing:
+            strategy: "auto"
+            auto_strategy:
+              bare_metal: "mig"
+              virtual_host: "sriov"
+              virtual_guest: "passthrough"
+            mig: { enabled: false, profiles: ["1g.5gb"] }
+            time_slicing: { enabled: false, max_instances: 4 }
+            sriov: { enabled: false, vf_count: 4 }
+            level_zero: { enabled: false, partitions: [] }
+            oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+            passthrough: { devices: [] }
+
+  tasks:
+    - name: Execute Kubernetes GPU Roles with Granular Checkpoints
+      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      loop: "{{ k8s_gpu_roles }}"
+      loop_control:
+        loop_var: role_item
+
 
   post_tasks:
     - name: Verify Kubernetes GPU device plugin status

@@ -86,6 +86,14 @@
           {% else %}
             {{ k8s_gpu_node_labels }}
           {% endif %}
+
+    - name: Check current node labels
+      ansible.builtin.command:
+        cmd: kubectl get node {{ ansible_facts['hostname'] }} --show-labels
+      register: current_labels
+      changed_when: false
+      failed_when: false
+
     - name: Apply GPU node labels
       ansible.builtin.command:
         cmd: kubectl label nodes {{ ansible_facts['hostname'] }} {{ item }} --overwrite
@@ -93,6 +101,9 @@
       changed_when: true
       failed_when: false
       loop: "{{ k8s_gpu_node_labels }}"
+      when:
+        - current_labels.rc == 0
+        - item not in current_labels.stdout
   when:
     - k8s_gpu_device_plugins_enabled
     - containers_gpu_vendor_detected in ["nvidia", "amd", "intel"]

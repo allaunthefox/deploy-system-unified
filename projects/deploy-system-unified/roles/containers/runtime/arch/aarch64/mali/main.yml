@@ -1,0 +1,41 @@
+---
+# Mali GPU Container Runtime Configuration
+# Supports Open Source (Panfrost/Panthor) and Proprietary (Bifrost/Valhall blobs) drivers
+
+- name: Determine Mali Device Path
+  ansible.builtin.stat:
+    path: /dev/mali0
+  register: mali_dev_blob
+
+- name: Determine DRI Render Path (Panfrost)
+  ansible.builtin.stat:
+    path: /dev/dri/renderD128
+  register: mali_dev_dri
+
+- name: Configure Container Runtime for Mali (Panfrost/DRI)
+  ansible.builtin.lineinfile:
+    path: /etc/containers/containers.conf
+    regexp: "^#?default_device_groups ="
+    # Add video/render groups to default to ensure access to /dev/dri
+    line: 'default_device_groups = ["video", "render"]'
+    insertafter: "\\[containers\\]"
+  when: mali_dev_dri.stat.exists
+  become: true
+  notify: restart podman
+
+- name: Configure Passthrough Devices for Mali
+  ansible.builtin.set_fact:
+    containers_gpu_device_list: >-
+      {{
+        ['/dev/mali0'] if mali_dev_blob.stat.exists else
+        ['/dev/dri/renderD128'] if mali_dev_dri.stat.exists else
+        []
+      }}
+
+- name: Warn if no Mali device found
+  ansible.builtin.debug:
+    msg: "Warning: no Mali GPU device found (/dev/mali0 or /dev/dri/renderD128). Container GPU acceleration may fail."
+  when: containers_gpu_device_list | length == 0
+
+# Mali doesn't usually use a sophisticated runtime hook like nvidia-ctk.
+# Instead, we rely on standard OCI device mapping managed by Podman/Docker.

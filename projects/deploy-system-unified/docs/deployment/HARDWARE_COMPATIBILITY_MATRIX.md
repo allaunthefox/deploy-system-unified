@@ -33,6 +33,7 @@ Hardware requirements for advanced GPU slicing and passthrough features defined 
 | **PCIe Passthrough** | **IOMMU (VT-d / AMD-Vi)** | Must be supported by CPU and Motherboard. Consumer boards often have poor IOMMU groups (grouping USB/SATA with GPU). |
 | **SR-IOV (GPU)** | **Server-Grade GPU** | AMD FirePro/Instinct, NVIDIA A100/H100, Intel Flex/Max. Consumer cards (GeForce/Radeon) **do not** support SR-IOV. |
 | **MIG (Multi-Instance GPU)** | **NVIDIA Ampere/Hopper (A100/A30/H100)** | Not available on A10/A40 or consumer cards. Requires disabling ECC on some models. |
+| **Time Slicing (Software)** | **All NVIDIA Pascal+** | **Supported on Consumer GPUs**. Uses container runtime to share GPU cycles. No memory isolation, but enables sharing 1 GPU across multiple containers. |
 | **GVT-g (Legacy)** | **Intel Broadwell to Comet Lake (Gen 5-9.5)** | **Deprecated**. Hardware mediation for older Intel iGPUs. Not supported on 11th Gen+ (Xe). |
 | **Bitfusion / vGPU** | **Licensed Data Center GPU** | Requires NVIDIA vGPU software licensing server. |
 

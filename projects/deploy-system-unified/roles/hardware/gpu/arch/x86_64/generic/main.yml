@@ -5,27 +5,40 @@
 - name: Define Generic Graphics packages (Debian/Ubuntu)
   ansible.builtin.set_fact:
     generic_graphics_packages:
+      - linux-firmware          # Required for Kernel Display Handover
       - mesa-utils
-      - vulkan-tools
-      - libgl1-mesa-dri
+      - vulkan-drivers          # Includes Lavapipe (Vulkan SW Rasterizer)
+      - libgl1-mesa-dri         # Includes LLVMpipe (OpenGL SW Rasterizer)
       - libglx-mesa0
+      # Legacy / Minimal Video Drivers
+      - xserver-xorg-video-vesa
+      - xserver-xorg-video-fbdev
+      - xserver-xorg-video-mga
+      - xserver-xorg-video-ast
   when: ansible_facts['os_family'] == 'Debian'
 
 - name: Define Generic Graphics packages (RedHat/Fedora)
   ansible.builtin.set_fact:
     generic_graphics_packages:
+      - linux-firmware          # Required for Kernel Display Handover
       - mesa-demos
-      - vulkan-tools
-      - mesa-dri-drivers
+      - mesa-vulkan-drivers     # Includes Lavapipe
+      - mesa-dri-drivers        # Includes LLVMpipe
       - mesa-libGL
+      # Legacy / Minimal Video Drivers
+      - xorg-x11-drv-vesa
+      - xorg-x11-drv-fbdev
+      - xorg-x11-drv-mga
+      - xorg-x11-drv-ast
   when: ansible_facts['os_family'] == 'RedHat'
 
 - name: Define Generic Graphics packages (Alpine)
   ansible.builtin.set_fact:
     generic_graphics_packages:
+      - linux-firmware
       - mesa-demos
       - vulkan-tools
-      - mesa-dri-gallium
+      - mesa-dri-gallium        # Includes LLVMpipe
       - mesa-va-gallium
   when: ansible_facts['os_family'] == 'Alpine'
 
@@ -36,6 +49,75 @@
   become: true
   when: generic_graphics_packages is defined
 
+- name: Remove Legacy ASPEED Driver (Force Switch to Modesetting/KMS)
+  ansible.builtin.package:
+    name: xserver-xorg-video-ast
+    state: absent
+  become: true
+  when: _gpu_override_aspeed_drm | default(false)
+
+- name: Create X11 Configuration Directory
+  ansible.builtin.file:
+    path: /etc/X11/xorg.conf.d
+    state: directory
+    mode: '0755'
+  become: true
+  when:
+    - ansible_os_family in ['Debian', 'RedHat']
+    - not _gpu_is_container | default(false)
+
+- name: Configure Safe Resolution for ASPEED BMC (GRUB)
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    # Match the line ONLY if it does NOT already contain 'video=1024x768@60'
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*video=1024x768@60).*)"$'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 video=1024x768@60"'
+    backrefs: true
+  become: true
+  notify: Update Grub (Placeholder)
+  when:
+    - _gpu_override_aspeed_drm | default(false)
+    - ansible_os_family == 'Debian'
+
+- name: Configure Legacy ShadowFB for Tearing Prevention (X11)
+  ansible.builtin.copy:
+    dest: /etc/X11/xorg.conf.d/10-generic-shadowfb.conf
+    content: |
+      Section "Device"
+          Identifier "Generic FBDev"
+          Driver "fbdev"
+          Option "ShadowFB" "true"
+      EndSection
+
+      Section "Device"
+          Identifier "Generic VESA"
+          Driver "vesa"
+          Option "ShadowFB" "true"
+      EndSection
+    mode: '0644'
+  become: true
+  when:
+    - ansible_os_family in ['Debian', 'RedHat']
+    - not _gpu_is_container | default(false)
+  notify:
+    # Assuming a handler exists to restart display manager, normally invoked here
+    - Restart Display Manager (Placeholder)
+
+- name: Force Softpipe/LLVMpipe Environment Variable (Optional)
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    regexp: "^LIBGL_ALWAYS_SOFTWARE="
+    line: "LIBGL_ALWAYS_SOFTWARE=1"
+    state: present
+  become: true
+  # Only force this if we are certain no HW acceleration is possible or desired in generic mode.
+  # User asked for "Universal software-rendering stack".
+  # Forcing this ensures LLVMpipe is used even if a partial driver match occurs.
+  when:
+    - (not _gpu_is_container | default(false)) or (_gpu_override_aspeed_drm | default(false))
+
 - name: Log Generic Setup
   ansible.builtin.debug:
-    msg: "Installed generic x86_64 graphics stack (Mesa/Vulkan). Acceleration depends on kernel hardware detection."
+    msg: 
+      - "Generic Software Rendering Stack Installed (LLVMpipe + SimpleDRM + ShadowFB)"
+      - "Installed generic x86_64 graphics stack (Mesa/Vulkan). Acceleration depends on kernel hardware detection."

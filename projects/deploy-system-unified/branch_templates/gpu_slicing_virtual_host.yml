@@ -62,6 +62,14 @@
     - role: ops/monitoring
     - core/logging
 
+    # Hardware Drivers (for SR-IOV)
+    - role: hardware/firmware
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ containers_gpu_vendor | default('amd') }}"
+        gpu_stack_mode: server
+
     # GPU-specific configuration with SR-IOV slicing
     - role: containers/runtime
       vars:

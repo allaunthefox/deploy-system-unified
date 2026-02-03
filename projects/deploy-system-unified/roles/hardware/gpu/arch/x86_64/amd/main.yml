@@ -59,22 +59,28 @@
     name: amdgpu
     state: present
   become: true
-  when: 
+  when:
     - not _gpu_is_container | default(false)
     - gpu_stack_reservation | default('host') != 'vfio'
 
-- name: Set AMDGPU power profiles (if supported)
-
-
-- name: Set AMDGPU power profiles (if supported)
-  ansible.builtin.shell:
-    cmd: "echo 'compute' > /sys/class/drm/card0/device/power_dpm_force_performance_level"
-  become: true
+- name: Check current AMDGPU power profile
+  ansible.builtin.slurp:
+    src: /sys/class/drm/card0/device/power_dpm_force_performance_level
+  register: amd_power_profile
   ignore_errors: true
+  failed_when: false
   when:
     - gpu_stack_mode == 'server'
     - not _gpu_is_container | default(false)
-    - ansible_virtualization_role != 'guest' # unlikely to work in VM without passthrough
+
+- name: Set AMDGPU power profiles (if supported and different)
+  ansible.builtin.shell:
+    cmd: "echo 'compute' > /sys/class/drm/card0/device/power_dpm_force_performance_level"
+  become: true
+  when:
+    - gpu_stack_mode == 'server'
+    - not _gpu_is_container | default(false)
+    - amd_power_profile['content'] | default('') | b64decode | trim != 'compute'
   ignore_errors: true
 
 - name: Setup AMD ROCm Repository (Debian/Ubuntu)

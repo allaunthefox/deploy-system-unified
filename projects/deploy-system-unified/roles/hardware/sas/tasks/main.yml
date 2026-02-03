@@ -49,28 +49,41 @@
         current=$(cat "$dev/device/queue_depth")
         # Only tune if device allows deeper queues (hardware limit check)
         max=$(cat "$dev/device/queue_depth_max" 2>/dev/null || echo 128)
-        
+
         target={{ hardware_sas_queue_depth }}
-        
+
         # Clamp target to hardware max
         if [ "$target" -gt "$max" ]; then
           target=$max
         fi
-        
+
         if [ "$current" -lt "$target" ]; then
           echo "$target" > "$dev/device/queue_depth"
+          echo "tuned $dev"
         fi
       fi
     done
-  changed_when: false
+  register: sas_queue_tuning
+  changed_when: "'tuned' in sas_queue_tuning.stdout"
   become: true
   when: hardware_sas_install_tools
 
-- name: Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)
-  ansible.builtin.command: "sdparm --set=WCE --save /dev/{{ item }}"
-  loop: "{{ sas_devices_output.stdout_lines | select('search', 'disk') | map('regex_replace', '^.*(/dev/sd[a-z]+).*$', '\\1') | list }}"
-  when: 
+- name: Check Write Caching (WCE) status on SAS SSDs
+  ansible.builtin.shell: "sdparm --get=WCE /dev/{{ item }} | grep -q 'WCE.*1'"
+  loop: "{{ sas_devices_output.stdout_lines | default([]) | select('search', 'disk') | map('regex_replace', '^.*(/dev/sd[a-z]+).*$', '\\1') | list }}"
+  register: sas_wce_check
+  changed_when: false
+  failed_when: false
+  become: true
+  when:
     - hardware_sas_install_tools
     - hardware_sas_enable_write_cache | default(false)
-  ignore_errors: true
+
+- name: Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)
+  ansible.builtin.command: "sdparm --set=WCE --save /dev/{{ item.item }}"
+  loop: "{{ sas_wce_check.results }}"
+  when:
+    - hardware_sas_install_tools
+    - hardware_sas_enable_write_cache | default(false)
+    - item.rc != 0 # rc != 0 meant grep failed to find WCE 1 (so it's 0 or off)
   become: true

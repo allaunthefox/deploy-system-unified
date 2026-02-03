@@ -1,3 +1,35 @@
 ---
 # Defaults for core/bootstrap role
 core_install_base_packages: true
+
+system_base_packages:
+  common:
+    - curl
+    - wget
+    - git
+    - sudo
+    - vim
+    - htop
+    - net-tools
+  Debian:
+    - python3-apt
+    - software-properties-common
+    - build-essential
+    - gnupg2
+  RedHat:
+    - python3-dnf
+    - epel-release
+    - tar
+  Archlinux:
+    - base-devel
+    - python
+  Alpine:
+    - python3
+    - shadow
+    - bash
+
+system_standard_directories:
+  - /etc/ansible
+  - /usr/local/bin
+  - /var/log/custom_ops
+

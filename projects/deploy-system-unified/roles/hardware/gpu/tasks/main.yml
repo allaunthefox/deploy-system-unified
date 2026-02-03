@@ -38,11 +38,19 @@
     _gpu_is_vm: "{{ (ansible_facts['virtualization_role'] | default('unknown') == 'guest') and (ansible_facts['virtualization_type'] | default('unknown') not in ['docker', 'podman', 'container', 'lxc']) }}"
 
 - name: Validate Global Config
-
   ansible.builtin.assert:
     that:
       - gpu_stack_mode in ['server', 'desktop', 'hybrid']
     fail_msg: "Invalid GPU mode: {{ gpu_stack_mode }}"
+
+- name: Auto-Detect Video Hardware (If Vendor is Auto/Generic)
+  ansible.builtin.include_tasks: detect_video.yml
+  when: gpu_stack_vendor in ['auto', 'generic']
+  ignore_errors: true
+
+- name: Normalize Vendor List (Re-eval after detection)
+  ansible.builtin.set_fact:
+    _gpu_vendor_list: "{{ [gpu_stack_vendor] if gpu_stack_vendor is string else gpu_stack_vendor }}"
 
 - name: Iterate over defined vendors
   ansible.builtin.include_tasks: vendor_setup.yml
@@ -53,6 +61,10 @@
 - name: Optional - Configure Hybrid Graphics (Prime/Optimus)
   ansible.builtin.include_tasks: features/hybrid_setup.yml
   when: gpu_stack_mode in ['hybrid', 'desktop'] and _gpu_vendor_list | length > 1
+
+- name: Optional - Configure Desktop Environment Features
+  ansible.builtin.include_tasks: features/desktop_setup.yml
+  when: gpu_stack_mode in ['desktop', 'hybrid']
 
 - name: Optional - Configure eGPU Support
   ansible.builtin.include_tasks: features/egpu.yml

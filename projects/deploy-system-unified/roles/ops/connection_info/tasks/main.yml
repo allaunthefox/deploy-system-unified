@@ -22,6 +22,7 @@
   delegate_to: localhost
   run_once: true
   no_log: true
+  changed_when: false
 - name: Set secure permissions on temporary file (idempotent)
   ansible.builtin.file:
     path: "{{ connection_info_temp_file.path }}"
@@ -49,66 +50,22 @@
   changed_when: false
   no_log: true
   run_once: true
-- name: Encrypt SSH connection info with SOPS (idempotent)
-  ansible.builtin.shell: |
-    encrypted_file="{{ connection_info_temp_file.path }}.sops.yml"
-    sops -e "{{ connection_info_temp_file.path }}" > "$encrypted_file"
-  register: sops_encryption
-  changed_when: false
-  failed_when: sops_encryption.rc != 0
-  delegate_to: localhost
-  when:
-    - encryption_method == 'sops'
-    - connection_info_temp_file is defined
-  no_log: true
-  run_once: true
-- name: Verify SOPS encryption succeeded and set path (idempotent)
-  ansible.builtin.stat:
-    path: "{{ connection_info_temp_file.path }}.sops.yml"
-  register: sops_encrypted_stat
-  delegate_to: localhost
-  changed_when: false
+
+- name: Handle SOPS Encryption
+  ansible.builtin.include_tasks: encryption/sops.yml
   when: encryption_method == 'sops'
-  run_once: true
-- name: Set encrypted SSH info path for sops (idempotent)
-  ansible.builtin.set_fact:
-    encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}.sops.yml"
-  when:
-    - encryption_method == 'sops'
-    - sops_encrypted_stat is defined
-    - sops_encrypted_stat.stat.exists
-  delegate_to: localhost
-  run_once: true
-- name: Encrypt SSH connection info with Ansible Vault (idempotent)
-  ansible.builtin.shell: |
-    encrypted_file="{{ connection_info_temp_file.path }}.vault.yml"
-    ansible-vault encrypt "{{ connection_info_temp_file.path }}" --output="$encrypted_file"
-  register: vault_encryption
-  changed_when: false
-  failed_when: vault_encryption.rc != 0
-  delegate_to: localhost
-  when:
-    - encryption_method == 'vault'
-    - connection_info_temp_file is defined
-  no_log: true
-  run_once: true
-- name: Verify Vault encryption succeeded and set path (idempotent)
-  ansible.builtin.stat:
-    path: "{{ connection_info_temp_file.path }}.vault.yml"
-  register: vault_encrypted_stat
-  delegate_to: localhost
-  changed_when: false
+
+- name: Handle Ansible Vault Encryption
+  ansible.builtin.include_tasks: encryption/vault.yml
   when: encryption_method == 'vault'
-  run_once: true
-- name: Set encrypted SSH info path for vault (idempotent)
+
+- name: Set path for plaintext SSH info (insecure/dev only)
   ansible.builtin.set_fact:
-    encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}.vault.yml"
-  when:
-    - encryption_method == 'vault'
-    - vault_encrypted_stat is defined
-    - vault_encrypted_stat.stat.exists
+    encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}"
+  when: encryption_method == 'plain'
   delegate_to: localhost
   run_once: true
+
 - name: Verify encryption succeeded (idempotent)
   ansible.builtin.assert:
     that:
@@ -122,6 +79,7 @@
     state: absent
   delegate_to: localhost
   run_once: true
+  changed_when: false
 - name: Rsync encrypted SSH connection info to specified destination (idempotent)
   ansible.posix.synchronize:
     src: "{{ encrypted_ssh_info_path }}"

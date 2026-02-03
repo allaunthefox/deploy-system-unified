@@ -1,5 +1,13 @@
 ---
 # Tasks for networking/container_networks - Container Isolation
+
+- name: Ensure /etc/containers/systemd exists
+  ansible.builtin.file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: '0755'
+  become: true
+
 - name: Create Frontend Network Segment (Proxy Layer)
   ansible.builtin.copy:
     dest: /etc/containers/systemd/frontend.network

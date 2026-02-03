@@ -36,7 +36,9 @@
     enabled: true
     state: started
   become: true
-  when: ansible_facts['service_mgr'] == 'systemd'
+  when:
+    - ansible_facts['service_mgr'] == 'systemd'
+    - not (is_virtualized | default(false))
 
 - name: Harden file system permissions
   block:
@@ -65,8 +67,9 @@
 - name: Harden user accounts
   block:
     - name: Lock system accounts that should not login
-      ansible.builtin.command:
-        cmd: usermod -L {{ item }}
+      ansible.builtin.user:
+        name: "{{ item }}"
+        password_lock: true
       loop:
         - bin
         - daemon
@@ -77,43 +80,26 @@
         - halt
         - mail
       become: true
-      register: lock_result
-      changed_when: lock_result.rc == 0
-      failed_when: false
-    - name: Set minimum password age to 7 days
+    - name: Set password aging limits
       ansible.builtin.lineinfile:
         path: /etc/login.defs
-        regexp: '^PASS_MIN_DAYS'
-        line: 'PASS_MIN_DAYS   7'
+        regexp: '^{{ item.regex }}'
+        line: '{{ item.line }}'
       become: true
-    - name: Set maximum password age to 90 days
-      ansible.builtin.lineinfile:
-        path: /etc/login.defs
-        regexp: '^PASS_MAX_DAYS'
-        line: 'PASS_MAX_DAYS   90'
-      become: true
-    - name: Set password warning period to 14 days
-      ansible.builtin.lineinfile:
-        path: /etc/login.defs
-        regexp: '^PASS_WARN_AGE'
-        line: 'PASS_WARN_AGE   14'
-      become: true
-- name: Harden PAM configuration
-  block:
-    - name: Configure PAM to use strong password policies
-      ansible.builtin.lineinfile:
-        path: /etc/pam.d/common-password
-        regexp: '^password.*pam_unix.so'
-        line: 'password        [success=1 default=ignore]      pam_unix.so obscure sha512 rounds=65536'
-      when: ansible_facts['os_family'] == 'Debian'
-      become: true
-    - name: Enable PAM tmpdir module
-      ansible.builtin.lineinfile:
-        path: /etc/pam.d/common-session
-        regexp: '^session.*pam_tmpdir.so'
-        line: 'session optional        pam_tmpdir.so'
-      when: ansible_facts['os_family'] == 'Debian'
-      become: true
+      loop:
+        - { regex: 'PASS_MIN_DAYS', line: 'PASS_MIN_DAYS   7' }
+        - { regex: 'PASS_MAX_DAYS', line: 'PASS_MAX_DAYS   90' }
+        - { regex: 'PASS_WARN_AGE', line: 'PASS_WARN_AGE   14' }
+- name: Harden PAM configuration (Debian)
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { path: '/etc/pam.d/common-password', regexp: '^password.*pam_unix.so', line: 'password        [success=1 default=ignore]      pam_unix.so obscure sha512 rounds=65536' }
+    - { path: '/etc/pam.d/common-session', regexp: '^session.*pam_tmpdir.so', line: 'session optional        pam_tmpdir.so' }
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
 - name: Set security hardening completion flag
   ansible.builtin.set_fact:
     security_hardening_complete: true

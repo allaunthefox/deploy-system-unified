@@ -1,0 +1,25 @@
+---
+# Generic wrapper to run a role with checkpointing
+# Input: 'role_item' (the role name or object with role/vars)
+
+- name: Determine Role Name
+  ansible.builtin.set_fact:
+    current_role_name: "{{ role_item.role if role_item is mapping and role_item.role is defined else role_item }}"
+
+- name: "Check Phase: {{ current_role_name }}"
+  ansible.builtin.debug:
+    msg: "Phase {{ current_role_name }} already completed. Skipping."
+  when: current_role_name in completed_phases | default([])
+
+- name: "Execute Phase: {{ current_role_name }}"
+  block:
+    - name: "Include Role: {{ current_role_name }}"
+      ansible.builtin.include_role:
+        name: "{{ current_role_name }}"
+      vars: "{{ role_item.vars | default({}) }}"
+
+    - name: "Checkpoint Phase: {{ current_role_name }}"
+      ansible.builtin.include_tasks: save_checkpoint.yml
+      vars:
+        additional_phases: ["{{ current_role_name }}"]
+  when: current_role_name not in completed_phases | default([])

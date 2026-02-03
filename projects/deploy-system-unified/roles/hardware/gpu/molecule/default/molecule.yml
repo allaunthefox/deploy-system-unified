@@ -19,7 +19,7 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      deprecation_warnings: False
+      deprecation_warnings: false
   env:
     # Point to the 'roles' directory of the project so 'hardware/gpu' can be resolved
     ANSIBLE_ROLES_PATH: ../../../../

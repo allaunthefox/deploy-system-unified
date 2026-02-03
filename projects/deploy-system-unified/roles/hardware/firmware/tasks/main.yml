@@ -57,7 +57,7 @@
     state: present
   become: true
   ignore_errors: true # Some distros bundle microcode differently
-  when: 
+  when:
     - ansible_architecture == 'x86_64'
     - not _hw_is_container
 

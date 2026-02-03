@@ -52,6 +52,9 @@
     - core/bootstrap
     - core/identity
     - core/logging
+    - role: ops/monitoring
+      vars:
+        monitoring_enable_smartmon: false
 
     # GPU-specific configuration with slicing
     - role: containers/runtime

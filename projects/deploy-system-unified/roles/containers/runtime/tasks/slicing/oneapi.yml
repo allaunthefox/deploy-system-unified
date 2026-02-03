@@ -1,0 +1,19 @@
+---
+- name: Install Intel OneAPI toolkit
+  ansible.builtin.command:
+    cmd: "bash -c 'curl -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | apt-key add - && echo \"deb https://apt.repos.intel.com/oneapi all main\" > /etc/apt/sources.list.d/oneAPI.list && apt-get update && apt-get install -y intel-oneapi-{{ containers_gpu_slicing.oneapi.toolkit }}'"
+  register: intel_oneapi_install
+  changed_when: true
+  failed_when: false
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Set Intel OneAPI environment variables
+  ansible.builtin.lineinfile:
+    path: /etc/profile.d/intel-oneapi.sh
+    line: "{{ item }}"
+    create: true
+    mode: '0755'
+  loop:
+    - 'source /opt/intel/oneapi/setvars.sh'
+  become: true

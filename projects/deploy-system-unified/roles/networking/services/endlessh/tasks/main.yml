@@ -53,12 +53,16 @@
     state: present
   become: true
   ignore_errors: true
+  when: not (is_virtualized | default(false))
 - name: Ensure Endlessh systemd override directory exists
   ansible.builtin.file:
     path: /etc/systemd/system/endlessh.service.d
     state: directory
     mode: '0755'
+    owner: root
+    group: root
   become: true
+  changed_when: false
 - name: Configure Endlessh to run on port {{ endlessh_port }} (systemd override)
   ansible.builtin.copy:
     content: |

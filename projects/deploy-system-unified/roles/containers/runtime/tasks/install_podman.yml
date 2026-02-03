@@ -1,0 +1,152 @@
+---
+# Install Podman and Core Runtime Dependencies
+
+- name: Install Podman on Debian/Ubuntu
+  ansible.builtin.apt:
+    name:
+      - podman
+      - slirp4netns
+      - fuse-overlayfs
+      - apparmor-utils
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Install Podman on RedHat/CentOS
+  ansible.builtin.dnf:
+    name:
+      - podman
+      - slirp4netns
+      - fuse-overlayfs
+      - selinux-policy-targeted
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+  become: true
+
+- name: Install Podman on Arch
+  community.general.pacman:
+    name:
+      - podman
+      - slirp4netns
+      - fuse-overlayfs
+    state: present
+  when: ansible_facts['distribution'] | lower == 'archlinux'
+  become: true
+
+- name: Enable IPv4 forwarding for container networking
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_file: /etc/sysctl.d/90-podman.conf
+    state: present
+    reload: true
+  become: true
+
+- name: Configure container security settings
+  ansible.builtin.copy:
+    dest: /etc/containers/containers.conf
+    content: |
+      [containers]
+      log_driver = "journald"
+      log_size_max = 10485760
+      pids_limit = 2048
+      userns = "auto"
+      signature_policy = "/etc/containers/policy.json"
+      default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE", "gpu"]
+      [network]
+      network_backend = "netavark"
+      [engine]
+      runtime = "crun"
+      cgroup_manager = "systemd"
+      events_logger = "journald"
+    mode: '0644'
+  become: true
+
+- name: Configure container signature policy
+  ansible.builtin.copy:
+    dest: /etc/containers/policy.json
+    content: |
+      {
+        "default": [{
+            "type": "reject"
+          }],
+        "transports": {
+          "docker": {
+            "docker.io/library": [{
+                "type": "insecureAcceptAnything"
+              }],
+            "quay.io": [{
+                "type": "insecureAcceptAnything"
+              }],
+            "ghcr.io": [{
+                "type": "insecureAcceptAnything"
+              }]
+          },
+          "docker-daemon": {
+            "": [{
+                "type": "insecureAcceptAnything"
+              }]
+          }
+        }
+      }
+    mode: '0644'
+  become: true
+
+- name: Enable AppArmor for containers (Debian/Ubuntu)
+  ansible.builtin.command:
+    cmd: aa-enforce /etc/apparmor.d/containers/*
+  register: apparmor_result
+  changed_when: false
+  failed_when: false
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Enable SELinux for containers (RedHat/CentOS)
+  ansible.posix.seboolean:
+    name: "{{ item }}"
+    state: yes
+    persistent: yes
+  loop:
+    - container_use_cephfs
+    - container_use_nfs
+  become: true
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Create podman configuration directory
+  ansible.builtin.file:
+    path: /etc/containers
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Configure container registries
+  ansible.builtin.copy:
+    dest: /etc/containers/registries.conf
+    content: |
+      # Container registries configuration
+      unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io"]
+      [[registry]]
+      prefix = "docker.io"
+      location = "docker.io"
+      [[registry.mirror]]
+      location = "mirror.gcr.io"
+    mode: '0644'
+  become: true
+
+- name: Check if systemd user instance is active
+  ansible.builtin.command: systemctl --user is-system-running
+  register: systemd_user_check
+  failed_when: false
+  changed_when: false
+  become: false
+
+- name: Enable podman socket for rootless containers
+  ansible.builtin.systemd:
+    name: podman.socket
+    enabled: true
+    state: started
+    scope: user
+  become: false
+  when:
+    - systemd_user_check.rc == 0
+    - ansible_service_mgr == 'systemd'

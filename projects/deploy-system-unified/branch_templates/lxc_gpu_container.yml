@@ -91,6 +91,13 @@
           cpu: "4"
           gpu: "1"
 
+    # GPU Driver Stack (Must run before runtime configuration)
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: nvidia
+        gpu_stack_mode: server
+
     # GPU-specific configuration
     - role: containers/runtime
       vars:

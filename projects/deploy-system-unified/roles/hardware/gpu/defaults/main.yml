@@ -19,7 +19,7 @@ gpu_stack_reservation: host
 # Can be overridden: x86_64, aarch64, riscv64
 # Note: Should map to folders in arch/ directory. Logic in tasks/main.yml normalizes
 # common variations (e.g. amd64 -> x86_64, arm64 -> aarch64).
-gpu_stack_arch: "{{ ansible_architecture }}"
+gpu_stack_arch: "{{ ansible_facts['architecture'] }}"
 
 # Advanced Features (Integration flags)
 gpu_stack_enable_egpu: false         # Enable support for External GPUs (Thunderbolt/USB4/OCuLink)
@@ -31,6 +31,15 @@ gpu_stack_enable_dp_alt_mode: false  # Enable DisplayPort Alt Mode handling
 gpu_stack_enable_oneapi: false       # Enable Intel OneAPI Base Toolkit (or runtime)
 gpu_stack_enable_cuda: false         # Enable NVIDIA CUDA Toolkit (compiler/dev tools)
 gpu_stack_enable_rocm: false         # Enable AMD ROCm SDK
+
+
+# Desktop/Workstation Specific Configuration
+# These settings apply when gpu_stack_mode is 'desktop' or 'hybrid'
+gpu_desktop_enable_audio: true            # Enable GPU Audio (HDMI/DP) - Ensures drivers are loaded
+gpu_desktop_power_profile: "balanced"     # Options: performance, balanced, power-saver
+gpu_desktop_enable_wayland_support: true  # Enable DRM KMS for Wayland (essential for GNOME/KDE)
+gpu_desktop_enable_x11_support: true      # Ensure X11 drivers/utilities are present
+gpu_desktop_grant_user_access: true       # Grant 'video'/'render' group access to standard users
 
 
 # Variable Namespacing:

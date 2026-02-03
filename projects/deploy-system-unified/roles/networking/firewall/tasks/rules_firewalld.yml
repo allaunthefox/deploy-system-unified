@@ -14,7 +14,7 @@
     permanent: true
     target: DROP
   become: true
-  
+
 - name: Allow Configured TCP Ports (Firewalld)
   ansible.posix.firewalld:
     port: "{{ item }}/tcp"

@@ -10,13 +10,13 @@
         egpu_packages:
           - bolt
           - thunderbolt-tools
-      when: ansible_os_family == 'Debian'
+      when: ansible_facts['os_family'] == 'Debian'
 
     - name: Define Thunderbolt packages (RedHat/Fedora)
       ansible.builtin.set_fact:
         egpu_packages:
           - bolt
-      when: ansible_os_family == 'RedHat'
+      when: ansible_facts['os_family'] == 'RedHat'
 
     - name: Define Thunderbolt packages (Alpine)
       ansible.builtin.set_fact:

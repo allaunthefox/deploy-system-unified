@@ -38,11 +38,18 @@
     name: "{{ nvidia_driver_packages }}"
     state: present
   become: true
-  ignore_errors: true
   notify:
     - Update initramfs (placeholder)
-  when: 
+  when:
     - nvidia_driver_packages is defined
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Check for NVIDIA Persistence Daemon Service
+  ansible.builtin.stat:
+    path: /usr/lib/systemd/system/nvidia-persistenced.service
+  register: nvidia_persistenced_service_check
+  when:
     - not _gpu_is_container | default(false)
     - gpu_stack_reservation | default('host') != 'vfio'
 
@@ -52,10 +59,10 @@
     enabled: true
     state: started
   become: true
-  ignore_errors: true # Service name might vary or not be available immediately
-  when: 
+  when:
     - not _gpu_is_container | default(false)
     - gpu_stack_reservation | default('host') != 'vfio'
+    - nvidia_persistenced_service_check.stat.exists
 
 - name: Configure NVIDIA kernel parameters (ensure proprietary modules load)
   ansible.builtin.copy:
@@ -65,7 +72,7 @@
     dest: /etc/modprobe.d/nvidia-options.conf
     mode: '0644'
   become: true
-  when: 
+  when:
     - not _gpu_is_container | default(false)
     - gpu_stack_reservation | default('host') != 'vfio'
 

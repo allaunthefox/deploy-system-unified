@@ -4,15 +4,20 @@ time_service_mapping:
   archlinux:
     service: chronyd
     package: chrony
+    conf_dir: "/etc"
   debian:
     service: chrony
     package: chrony
+    conf_dir: "/etc/chrony"
   ubuntu:
     service: chrony
     package: chrony
+    conf_dir: "/etc/chrony"
   fedora:
     service: chronyd
     package: chrony
+    conf_dir: "/etc"
   alpine:
     service: chronyd
     package: chrony
+    conf_dir: "/etc/chrony"

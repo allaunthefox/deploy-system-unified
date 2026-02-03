@@ -8,7 +8,10 @@ This guide documents the changes made to the Deploy-System-Unified project to su
 
 ### 1. Core/GPU Stack Role
 - **New Role**: `hardware/gpu` handles all driver, firmware, and compute stack installation.
-- **Architecture Aware**: Supports x86_64, aarch64, and riscv64 customization.
+- **Architecture Aware**: Supports x86_64, aarch64, and riscv64 customization. See architecture guides:
+  - [x86_64 Setup](ARCH_GUIDE_X86.md)
+  - [ARM64 Setup](ARCH_GUIDE_ARM64.md)
+  - [RISC-V Setup](ARCH_GUIDE_RISCV64.md)
 - **Boot Integration**: Manages initramfs updates and kernel parameters (e.g., `update-initramfs`, `dracut`).
 
 ### 2. Containers/Runtime Role
@@ -43,7 +46,8 @@ The implementation supports the following GPU vendors and frameworks:
 - **Level Zero**: Intel's oneAPI Level Zero API
 - **OneAPI**: Intel's oneAPI toolkit
 - **Passthrough**: Direct GPU access
-  - Supported Intel families include Arc A-series, Arc Pro, Data Center GPU Flex/Max, and Xe iGPUs. See ../roles/containers/runtime/vars/intel_gpu_models.yml for the canonical list.
+  - Supported Intel families include Arc A-series (Alchemist, Battlemage), Arc Pro, Data Center GPU Flex/Max, and Xe iGPUs.
+  - See [Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE.md) for specific setup details.
 
 ## Usage
 

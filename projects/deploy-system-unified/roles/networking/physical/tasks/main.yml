@@ -3,14 +3,24 @@
 
 - name: Install networking tools
   ansible.builtin.package:
-    name: "{{ item }}"
+    name:
+      - ethtool
+      - lshw
+      - irqbalance # Essential for multi-queue NICs (Bare Metal), skipped for VMs
     state: present
-  loop:
-    - ethtool
-    - lshw
-    - irqbalance # Essential for multi-queue/high-speed NICs
   when: networking_physical_install_tools
   become: true
+
+- name: Disable IRQBalance in Virtualized Environments
+  ansible.builtin.systemd:
+    name: irqbalance
+    state: stopped
+    enabled: false
+  when:
+    - is_virtualized
+    - networking_physical_install_tools
+  become: true
+  ignore_errors: true
 
 - name: Detect physical interfaces
   ansible.builtin.set_fact:
@@ -35,11 +45,43 @@
   become: true
 
 - name: Parse Interface Types and Capabilities
+  vars:
+    # Standardize all speeds to Megabits per second (Mbps)
+    # Supports SI (decimal) and IEC (binary) prefixes, as well as Byte-based units
+    # Scales from Nibble (insane) to Exabit (future-proof)
+    _speed_conversion_map:
+      'b': 0.000001     # Bits
+      'B': 0.000008     # Bytes (x8)
+      'nb': 0.000004    # Nibbles (x4) - The "Insane Admin" Special
+      'Kb': 0.001       # Kilobits
+      'KB': 0.008       # Kilobytes (x8)
+      'Kib': 0.001024   # Kibibits
+      'KiB': 0.008192   # Kibibytes
+      'Mb': 1.0         # Megabits (Base)
+      'MB': 8.0         # Megabytes (x8)
+      'Mib': 1.048576   # Mebibits
+      'MiB': 8.388608   # Mebibytes
+      'Gb': 1000.0      # Gigabits
+      'GB': 8000.0      # Gigabytes (x8)
+      'Gib': 1073.742   # Gibibits
+      'GiB': 8589.935   # Gibibytes
+      'Tb': 1000000.0   # Terabits
+      'TB': 8000000.0   # Terabytes (x8)
+      'Tib': 1099511.6  # Tebibits
+      'TiB': 8796093.0  # Tebibytes
+      'Pb': 1000000000.0      # Petabits
+      'PB': 8000000000.0      # Petabytes (x8)
+      'Pib': 1125899906.84    # Pebibits
+      'PiB': 9007199254.74    # Pebibytes
+      'Eb': 1000000000000.0   # Exabits
+      'EB': 8000000000000.0   # Exabytes (x8)
+      'Eib': 1152921504606.85 # Exbibits
+      'EiB': 9223372036854.78 # Exbibytes
   ansible.builtin.set_fact:
     interface_capabilities: "{{ interface_capabilities | default({}) | combine({ item.item: {
-      'port_type': (item.stdout | regex_search('Port: ([a-zA-Z ]+)', '\\1') | first | default('Unknown') | trim),
+      'port_type': (item.stdout | regex_search('Port: ([a-zA-Z]+)', '\\1') | first | default('Unknown') | trim),
       'link_detected': (item.stdout | regex_search('Link detected: ([a-zA-Z]+)', '\\1') | first | default('no') | trim),
-      'speed': (item.stdout | regex_search('Speed: ([0-9]+)Mb/s', '\\1') | first | default('0') | int)
+      'speed_mbps': ((item.stdout | regex_search('Speed: ([0-9]+)', '\\1') | first | default('0') | int) * (_speed_conversion_map.get((item.stdout | regex_search('Speed: [0-9]+\s*([a-zA-Z]+)/s', '\\1') | first | default('Mb')), 1.0))) | int
     }}) }}"
   loop: "{{ ethtool_output.results }}"
   when: item.rc == 0
@@ -53,7 +95,7 @@
 
 - name: Determine Max Interface Speed
   ansible.builtin.set_fact:
-    max_interface_speed: "{{ interface_capabilities.values() | map(attribute='speed') | map('int') | max | default(1000) }}"
+    max_interface_speed: "{{ interface_capabilities.values() | map(attribute='speed_mbps') | map('int') | max | default(1000) }}"
 
 - name: Select Performance Profile
   ansible.builtin.set_fact:
@@ -81,7 +123,7 @@
 - name: Apply Jumbo Frames to High Speed/Fiber Interfaces
   ansible.builtin.command: "ip link set dev {{ item.key }} mtu {{ networking_physical_jumbo_mtu }}"
   loop: "{{ interface_capabilities | dict2items }}"
-  when: 
+  when:
     - networking_physical_manage_mtu
     - networking_physical_jumbo_frames_enabled
     - item.value.link_detected == 'yes'
@@ -91,20 +133,22 @@
 
 - name: Tune Ring Buffers (Adaptive per Interface Speed)
   ansible.builtin.command: >-
-    ethtool -G {{ item.key }} 
-    rx {{ (networking_physical_profiles[item.value.speed|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_rx }} 
-    tx {{ (networking_physical_profiles[item.value.speed|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_tx }}
+    ethtool -G {{ item.key }}
+    rx {{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_rx }}
+    tx {{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_tx }}
   loop: "{{ interface_capabilities | dict2items }}"
   when:
     - networking_physical_ring_tuning_enabled
     - item.value.link_detected == 'yes'
+    # Skip Ring Tuning on Virtual Interfaces (VirtIO/VmxNet3 often has fixed rings)
+    - not is_virtualized
   become: true
   ignore_errors: true # Hardware might not support specific ring sizes
 
 - name: Apply Offload Settings (TSO/GSO)
   ansible.builtin.command: >
-    ethtool -K {{ item.key }} 
-    tso {{ 'on' if networking_physical_enable_tso else 'off' }} 
+    ethtool -K {{ item.key }}
+    tso {{ 'on' if networking_physical_enable_tso else 'off' }}
     gso {{ 'on' if networking_physical_enable_gso else 'off' }}
   loop: "{{ interface_capabilities | dict2items }}"
   when:

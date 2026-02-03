@@ -20,7 +20,7 @@
 
     - name: Assert node_exporter installed
       assert:
-        that: 
+        that:
           - node_exporter_bin_debian.stat.exists or node_exporter_bin_local.stat.exists or node_exporter_bin_rhel.stat.exists
 
     - name: Check node_exporter service status (Debian/Ubuntu)

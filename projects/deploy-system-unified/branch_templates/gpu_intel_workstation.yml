@@ -8,6 +8,7 @@
   become: true
   roles:
   - role: core/bootstrap
+  - role: networking/desktop
   - role: hardware/firmware
   - role: hardware/gpu
     vars:

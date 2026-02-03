@@ -58,16 +58,30 @@
     - core/identity
     - core/logging
     - role: ops/monitoring
-    - role: networking/physical
+
+    # Networking Stack (Desktop/Workstation)
+    - role: networking/desktop # Installs NetworkManager + Wi-Fi Support
+    - role: networking/physical # Optimizes NICs (requires NM for some notifications)
     - networking/firewall
     - security/hardening
     - security/access
+
+    # Hardware Drivers & Firmware (Explicitly required before Container Runtime)
+    - role: hardware/firmware
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ containers_gpu_vendor | default('nvidia') }}"
+        gpu_stack_mode: desktop # Enable Desktop/Workstation optimizations (Wayland, Audio, Input)
+        # eGPU Support (Optional)
+        # gpu_stack_enable_egpu: true
+        # gpu_stack_egpu_interface: 'thunderbolt' # or 'oculink'
 
     # GPU-specific configuration
     - role: containers/runtime
       vars:
         containers_enable_gpu_support: true
-        containers_arch_override: "x86_64"  # Set explicitly per target (x86_64, arm64, riscv64)
+        containers_arch_override: "{{ ansible_facts['architecture'] }}"  # Auto-detect architecture
         containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed (Intel model list: roles/containers/runtime/vars/intel_gpu_models.yml)
         containers_gpu_count: 1
         containers_gpu_slicing:

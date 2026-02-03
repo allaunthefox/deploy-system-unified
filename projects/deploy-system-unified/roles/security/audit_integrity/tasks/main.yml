@@ -11,7 +11,9 @@
     journalctl --setup-keys --force | grep "verification key" | awk '{print $NF}'
   register: fss_verification_key_output
   become: true
-  when: not journal_fss_stat.stat.exists
+  when:
+    - not journal_fss_stat.stat.exists
+    - ansible_virtualization_type not in ['docker', 'podman', 'container']
   notify: restart journald
   no_log: true
 - name: Create secure temporary file for FSS key capture

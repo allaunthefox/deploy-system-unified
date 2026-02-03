@@ -1,0 +1,52 @@
+---
+# GPU Slicing Virtual Guest Deployment Template (aarch64)
+# For ARM KVM Guests with GPU Passthrough
+# Use Case: Virtualized desktop/compute nodes on ARM servers
+
+- name: Deploy GPU Slicing (Virtual Guest - ARM64)
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Validate Architecture
+      ansible.builtin.assert:
+        that:
+          - ansible_architecture == "aarch64"
+        fail_msg: "System must be aarch64 architecture."
+
+    - name: Precreate essential directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - { path: "/var/lib/deploy-system" }
+        - { path: "/tmp/deploy-system" }
+
+    - name: Include preflight checks
+      ansible.builtin.import_role:
+        name: ops/preflight
+
+  roles:
+    - core/bootstrap
+    - core/identity
+    - core/logging
+
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "nvidia" # Likely host-passed device
+        containers_gpu_slicing:
+          strategy: "passthrough"
+          passthrough: { devices: [] }
+
+    - role: containers/quadlets
+      vars:
+        quadlet_enable_gpu_support: true
+        quadlet_gpu_vendor: "nvidia"
+        quadlet_gpu_capabilities: ["gpu", "compute"]
+
+  post_tasks:
+    - name: Verify GPU Configuration
+      ansible.builtin.debug:
+        msg: "ARM64 Virtual Guest Deployment Complete. Mode: Passthrough."

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Deploy-System-Unified Style Guide Enforcement Tool
 # Comprehensive script to enforce project coding standards
@@ -276,7 +276,22 @@ enforce_shell_standards() {
 
     # 1. Audit standalone .sh files
     for file in "${shell_files[@]}"; do
-        if ! shellcheck "$file"; then
+        # Check specific architectural compatibility (#!/usr/bin/env bash)
+        if head -n 1 "$file" | grep -q "^#!/bin/bash$"; then
+            warning "Compatibility Issue: $file uses '#!/bin/bash'. Recommend '#!/usr/bin/env bash' for cross-platform support."
+            TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+            
+            if [ "$AUTO_FIX" = true ] || [ "$LOW_RISK_REPAIR" = true ]; then
+                 log "Fixing shebang in $file..."
+                 sed -i 's|^#!/bin/bash$|#!/usr/bin/env bash|' "$file"
+                 FIXED_ISSUES=$((FIXED_ISSUES + 1))
+            fi
+        fi
+
+        # Run ShellCheck with architectural awareness checks
+        # SC2039: In POSIX sh, something is undefined. (Ignored as we assume bash-compatible env)
+        # SC3000-SC3999: Checks specific to shells (we want these)
+        if ! shellcheck -x -e SC2039 "$file"; then
             warning "shellcheck found issues in standalone script: $file"
             TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
         fi

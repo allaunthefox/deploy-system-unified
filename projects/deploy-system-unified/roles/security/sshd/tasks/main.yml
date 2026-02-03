@@ -40,6 +40,11 @@
     cmd: ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
     creates: /etc/ssh/ssh_host_ed25519_key
   become: true
+- name: Generate strong RSA host key if missing
+  ansible.builtin.command:
+    cmd: ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
+    creates: /etc/ssh/ssh_host_rsa_key
+  become: true
 - name: Set correct permissions on SSH host keys
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -52,7 +57,6 @@
     - { path: '/etc/ssh/ssh_host_rsa_key', mode: '0600' }
     - { path: '/etc/ssh/ssh_host_rsa_key.pub', mode: '0644' }
   become: true
-  failed_when: false
 - name: Comment out unmanaged SSH authentication settings
   ansible.builtin.replace:
     path: /etc/ssh/sshd_config

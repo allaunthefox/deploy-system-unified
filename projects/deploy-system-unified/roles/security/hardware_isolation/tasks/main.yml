@@ -8,6 +8,7 @@
     backrefs: true
   register: iommu_grub
   become: true
+  when: not (is_virtualized | default(false))
   notify: update grub
 - name: Blacklist dangerous DMA-capable modules
   ansible.builtin.copy:
@@ -17,3 +18,4 @@
     dest: /etc/modprobe.d/99-dma-isolation.conf
     mode: '0644'
   become: true
+  when: not (is_virtualized | default(false))

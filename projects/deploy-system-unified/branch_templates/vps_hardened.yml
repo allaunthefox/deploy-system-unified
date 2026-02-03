@@ -1,20 +1,38 @@
 ---
 # VPS Hardened - Cloud Infrastructure Solution Stack
 # Solution: Cloud Provider Sync + Base Hardened Infrastructure + VPS Optimization
+- ansible.builtin.import_playbook: ../main.yml
+
 - name: Sync with Cloud Provider
   hosts: all
   become: true
-  roles:
-    - role: ops/cloud_init
+  vars:
+    cloud_sync_roles:
+      - ops/cloud_init
+  tasks:
+    - name: Execute Cloud Sync Roles
+      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      loop: "{{ cloud_sync_roles }}"
+      loop_control:
+        loop_var: role_item
+
 - ansible.builtin.import_playbook: base_hardened.yml
+
 - name: Deploy VPS Workload
   hosts: all
   become: true
   vars:
     # Allow TCP forwarding for VPS environments (required for Contabo)
     sshd_allow_tcp_forwarding: true
-  roles:
-    # VPS Specialized Roles
-    - role: hardware/virtual_guest
-    # Final Solution Integrity Verification
-    - role: security/scanning
+    vps_roles:
+      # VPS Specialized Roles
+      - hardware/virtual_guest
+      # Final Solution Integrity Verification
+      - security/scanning
+  tasks:
+    - name: Execute VPS Roles
+      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      loop: "{{ vps_roles }}"
+      loop_control:
+        loop_var: role_item
+

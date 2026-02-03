@@ -28,6 +28,6 @@
     state: present
   become: true
   ignore_errors: true
-  when: 
+  when:
     - typec_sysfs.stat.exists
     - not _gpu_is_container | default(false)

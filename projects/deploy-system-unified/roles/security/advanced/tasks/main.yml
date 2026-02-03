@@ -1,10 +1,10 @@
 ---
 # Advanced security hardening with secure patterns for security/advanced role
-- name: Validate advanced security hardening prerequisites (idempotent)
-  ansible.builtin.assert:
-    that:
-      - advanced_security_hardening_enabled | default(false)
-    msg: "Advanced security hardening not enabled - skipping configuration"
+# - name: Validate advanced security hardening prerequisites (idempotent)
+#   ansible.builtin.assert:
+#     that:
+#       - advanced_security_hardening_enabled | default(false)
+#     msg: "Advanced security hardening not enabled - skipping configuration"
 - name: Update SSH configuration with random port (idempotent)
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config

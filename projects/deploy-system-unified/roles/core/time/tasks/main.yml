@@ -9,7 +9,7 @@
 - name: Configure secure time synchronization (idempotent)
   ansible.builtin.template:
     src: chrony.conf.j2
-    dest: "/etc/{{ time_service_mapping[ansible_distribution | lower].service }}/chrony.conf"
+    dest: "{{ time_service_mapping[ansible_distribution | lower].conf_dir }}/chrony.conf"
     mode: '0644'
     owner: root
     group: root
@@ -19,13 +19,12 @@
     - ansible_distribution | lower in time_service_mapping.keys()
     - virt_type != "container" # Containers typically share host clock
 - name: Enable and start time synchronization service (idempotent)
-  ansible.builtin.systemd:
+  ansible.builtin.service:
     name: "{{ time_service_mapping[ansible_distribution | lower].service }}"
     enabled: true
     state: started
   become: true
   when:
-    - ansible_service_mgr == 'systemd'
     - ansible_distribution | lower in time_service_mapping.keys()
     - virt_type != "container"
 - name: Verify time synchronization is working (idempotent)

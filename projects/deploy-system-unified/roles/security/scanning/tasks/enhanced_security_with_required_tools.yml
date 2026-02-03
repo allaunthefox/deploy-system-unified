@@ -24,6 +24,13 @@
   loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh"]
   changed_when: false
   failed_when: false
+
+- name: Enforce security tool presence (idempotent)
+  ansible.builtin.fail:
+    msg: "Critical Security Tool Missing: {{ item.item }}"
+  when: "'MISSING:' in item.stdout"
+  loop: "{{ security_framework_tool_verification.results }}"
+
 - name: Run comprehensive security scan with proper validation (idempotent)
   ansible.builtin.shell: |
     set -o pipefail

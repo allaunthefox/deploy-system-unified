@@ -1,5 +1,19 @@
 ---
 # Security access role - SSH and user access configuration
+
+- name: Ensure OpenSSH Server is installed
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+  become: true
+
+- name: Ensure SSH privilege separation directory exists
+  ansible.builtin.file:
+    path: /run/sshd
+    state: directory
+    mode: '0755'
+  become: true
+
 - name: Configure SSH daemon
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config

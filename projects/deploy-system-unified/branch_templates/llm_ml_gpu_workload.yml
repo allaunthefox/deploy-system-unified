@@ -86,6 +86,14 @@
     #                     operator: "Gt"
     #                     values: ["0"]
 
+    # Hardware Drivers
+    - role: hardware/firmware
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ containers_gpu_vendor | default('nvidia') }}"
+        gpu_stack_enable_rdma: true # Critical for LLM training (NCCL)
+
     # GPU-specific configuration optimized for LLM/ML
     - role: containers/runtime
       vars:
