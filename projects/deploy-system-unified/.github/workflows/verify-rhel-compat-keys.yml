@@ -1,4 +1,6 @@
 name: Verify RHEL-Compatible (AlmaLinux) GPG Keys
+# Trigger: run_id=20260204T081737Z
+
 # Manual trigger note:
 # Run this workflow from Actions → "Verify RHEL-Compatible (AlmaLinux) GPG Keys" → Run workflow.
 # Use for ad-hoc verification of NVIDIA & AMD ROCm GPG key checksum/fingerprint checks (AlmaLinux 9).
