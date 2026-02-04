@@ -32,6 +32,25 @@ gpu_stack_enable_oneapi: false       # Enable Intel OneAPI Base Toolkit (or runt
 gpu_stack_enable_cuda: false         # Enable NVIDIA CUDA Toolkit (compiler/dev tools)
 gpu_stack_enable_rocm: false         # Enable AMD ROCm SDK
 
+# Supply-chain hardening (optional key verification)
+intel_oneapi_gpg_key_url: "https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB"
+intel_oneapi_gpg_keyring_path: "/usr/share/keyrings/oneapi-archive-keyring.gpg"
+intel_oneapi_repo: "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main"
+intel_oneapi_gpg_fingerprint: "BF4385F91CA5FC005AB39E1C1A8497B11911E097"
+intel_oneapi_gpg_fingerprint_verify: false
+
+amd_rocm_gpg_key_url: "https://repo.radeon.com/rocm/rocm.gpg.key"
+amd_rocm_gpg_keyring_path: "/etc/apt/keyrings/rocm.gpg"
+amd_rocm_gpg_key_sha256: ""
+amd_rocm_gpg_fingerprint: ""
+amd_rocm_gpg_key_verify: false
+
+# NVIDIA CUDA repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+nvidia_gpg_key_url: "https://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version }}/x86_64/D42D0685.pub"
+nvidia_gpg_key_sha256: ""
+nvidia_gpg_fingerprint: ""
+nvidia_gpg_key_verify: false
+
 
 # Desktop/Workstation Specific Configuration
 # These settings apply when gpu_stack_mode is 'desktop' or 'hybrid'

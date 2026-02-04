@@ -9,13 +9,13 @@
     - /var/lib/deploy-system/checkpoints
     - /var/lib/deploy-system/backups
     - /var/lib/deploy-system/logs
-    - /etc/landlock
-    - /etc/bubblewrap
     - /etc/firejail
-    - /etc/chrony
-    - /etc/trivy
-    - /etc/trufflehog
-    - /etc/checkov
+    # - /etc/landlock # Kernel feature, no config dir
+    # - /etc/bubblewrap # Utils, no config dir
+    # - /etc/chrony # Arch uses /etc/chrony.conf
+    # - /etc/trivy
+    # - /etc/trufflehog
+    # - /etc/checkov
     - /srv/containers
     - /srv/containers/config
     - /srv/containers/data
@@ -25,5 +25,5 @@
     that:
       - item.stat.exists
       - item.stat.isdir
-    fail_msg: "Directory {{ item.path }} does not exist or is not a directory"
+    fail_msg: "Directory {{ item.item }} does not exist or is not a directory"
   loop: "{{ dir_check.results }}"

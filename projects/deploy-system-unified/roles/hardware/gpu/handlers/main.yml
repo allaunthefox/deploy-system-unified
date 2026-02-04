@@ -49,14 +49,14 @@
   ansible.builtin.shell: |
     if command -v update-grub >/dev/null 2>&1; then
       update-grub
-    elif [-f /boot/grub2/grub.cfg]; then
+    elif [ -f /boot/grub2/grub.cfg ]; then
       grub2-mkconfig -o /boot/grub2/grub.cfg
     fi
   become: true
   when: not _gpu_is_container | default(false)
 
 - name: reload_udev
-  ansible.builtin.command: udevadm control --reload-rules && udevadm trigger
+  ansible.builtin.shell: udevadm control --reload-rules && udevadm trigger
   become: true
   when: not _gpu_is_container | default(false)
 

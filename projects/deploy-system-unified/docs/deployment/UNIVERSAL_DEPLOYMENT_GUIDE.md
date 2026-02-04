@@ -64,6 +64,49 @@ ansible-playbook my_deployment.yml --syntax-check
 ansible-playbook -i inventory/hosts my_deployment.yml
 ```
 
+## 5. Transfer & Least-Privilege Defaults
+
+This project enforces **explicit allow** and **least‑privilege** defaults for transfer protocols.
+
+**Default behavior**:
+- **SSH transfer**: OpenSSH + `piped` transfer (no SFTP/SCP dependency).
+- **NFS**: Disabled unless explicitly enabled in a profile.
+- **Rsync**: SSH-based only, and **disabled unless explicitly enabled** in a profile.
+
+Reference: `docs/deployment/SSH_TRANSFER_PROFILE.md`
+
+### Example Profile Configuration (Explicit Allow)
+
+```yaml
+# Enable NFS explicitly (example)
+storage_nfs_enable: true
+storage_nfs_allow_broad_exports: false
+storage_nfs_exports:
+  - path: /srv/media/default
+    clients:
+      - "10.0.0.0/24(rw,sync,no_subtree_check)"
+storage_nfs_mounts:
+  - src: "10.0.0.10:/srv/media/default"
+    path: /mnt/media
+    opts: "rw,noatime"
+
+# Enable SSH-based rsync explicitly (example)
+ops_rsync_enable: true
+ops_rsync_allowlist:
+  - src: /srv/containers
+    dest: "backup@10.0.0.20:/backups/containers"
+    ssh_key: "/home/prod/.ssh/backup_key"
+```
+
+### Ephemeral Profiles (Extra Guard)
+
+For `deployment_profile: "ephemeral"`, you must explicitly opt in:
+
+```yaml
+storage_nfs_ephemeral_allow: true
+ops_rsync_ephemeral_allow: true
+```
+
 **Expected Outcome**:
 
 - System is hardened (SSH ports changed, Firewall active).
@@ -71,7 +114,7 @@ ansible-playbook -i inventory/hosts my_deployment.yml
 - Podman Quadlets are generated in `/etc/containers/systemd/`.
 - Systemd services are active.
 
-## 5. Post-Deployment: The "Hybrid Security" Hook
+## 6. Post-Deployment: The "Hybrid Security" Hook
 
 **Critical Step**: The CrowdSec "Hybrid" architecture (Container Agent + Host Binary Bouncer) requires a one-time cryptographic handshake that cannot be fully automated inside the playbook due to circular dependencies between the API readiness and the Host Service.
 
@@ -106,7 +149,7 @@ sudo podman exec crowdsec cscli bouncers list
 # Should show "firewall-bouncer-host" with Status: valid
 ```
 
-## 6. Verification Checklist
+## 7. Verification Checklist
 
 To confirm the replication was successful, verify these core subsystems:
 
@@ -136,7 +179,7 @@ Navigate to `https://jellyfin.<your_domain>` and ensure the setup wizard appears
 
 ---
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 - **"Unable to find ipset"**: Run `pacman -S ipset` (Fixed in v2.1 roles, but check legacy deploys).
 - **"Lines parsed: 0"**: Verify `acquis.yaml` in `/srv/containers/caddy/crowdsec/config/` has `type: caddy` label.

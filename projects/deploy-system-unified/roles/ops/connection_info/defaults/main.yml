@@ -2,5 +2,8 @@
 # Defaults for ops/connection_info role
 encryption_method: "plain" # sops or vault (Default changed to plain for dev/test without keys)
 ssh_rsync_destination: ""
+ops_rsync_enable: false
+ops_rsync_allowlist: []
+ops_rsync_ephemeral_allow: false
 ssh_randomize_port: false
 access_sshd_port: 22

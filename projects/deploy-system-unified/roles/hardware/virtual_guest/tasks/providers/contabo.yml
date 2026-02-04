@@ -16,7 +16,7 @@
   ansible.builtin.shell: |
     # Detect the primary interface and set MTU to 1450 to avoid tunnel fragmentation
     PRIMARY_IF=$(ip route | grep default | awk '{print $5}' | head -n 1)
-    if [-n "$PRIMARY_IF"]; then
+    if [ -n "$PRIMARY_IF" ]; then
       ip link set dev "$PRIMARY_IF" mtu 1450
     fi
   become: true

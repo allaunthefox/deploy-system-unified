@@ -3,11 +3,32 @@
 
 container_networks_enable: true
 
+# Rootless Podman Support (shared defaults)
+podman_rootless_enabled: false
+podman_rootless_user: "{{ ansible_user | default('prod') }}"
+podman_rootless_user_home: "/home/{{ podman_rootless_user }}"
+
+containers_systemd_dir: >-
+  {{ podman_rootless_enabled | bool
+     | ternary(podman_rootless_user_home ~ '/.config/containers/systemd',
+               '/etc/containers/systemd') }}
+containers_systemd_scope: "{{ podman_rootless_enabled | bool | ternary('user', 'system') }}"
+containers_systemd_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_env: {}
+
 # Network Definitions
 # Each key represents a Quadlet .network file to manage
-# "deploy-net" is usually the shared default, but we are moving away from it for strict isolation.
 
 container_networks_list:
+  - name: "deploy-net"
+    driver: "bridge"
+    subnet: "10.89.0.0/24"
+    gateway: "10.89.0.1"
+    label: "purpose=deployment_bridge"
+    dns_enabled: true
+    internal: false
+
   - name: "monitoring_net"
     driver: "bridge"
     label: "stack=monitoring"

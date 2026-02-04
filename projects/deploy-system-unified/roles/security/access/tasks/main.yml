@@ -3,7 +3,7 @@
 
 - name: Ensure OpenSSH Server is installed
   ansible.builtin.package:
-    name: openssh-server
+    name: "{{ 'openssh' if ansible_os_family == 'Archlinux' else 'openssh-server' }}"
     state: present
   become: true
 

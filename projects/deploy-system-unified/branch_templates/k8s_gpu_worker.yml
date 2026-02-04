@@ -115,7 +115,7 @@
       become: false
 
     - name: Verify GPU resources in Kubernetes
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: kubectl describe node {{ ansible_facts['hostname'] }} | grep -A 10 "Capacity"
       register: node_capacity
       changed_when: false

@@ -3,6 +3,8 @@
 # Force Contabo provider detection for Proxmox/KVM instances
 # This is necessary because ansible_system_vendor returns "QEMU" rather than "Contabo"
 vps_provider: "contabo"
+# Deployment profile for VPS targets (least-privilege posture)
+deployment_profile: "vps"
 # Enable TCP forwarding for Contabo VPS environments
 # Required for VPNs, tunnels, and network operations
 sshd_allow_tcp_forwarding: true

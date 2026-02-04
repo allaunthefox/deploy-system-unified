@@ -4,8 +4,9 @@
 - name: Check for existing custom SSH port on target (idempotent)
   ansible.builtin.shell: |
     # Find the configured port and ensure it is not the default 22
-    CURRENT_PORT=$(grep "^Port " /etc/ssh/sshd_config | awk '{print $2}' | head -n 1)
-    if ["$CURRENT_PORT" != "22"] && [-n "$CURRENT_PORT"]; then
+    # Use sshd -T to respect included configs and overrides
+    CURRENT_PORT=$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')
+    if [ "$CURRENT_PORT" != "22" ] && [ -n "$CURRENT_PORT" ]; then
       echo "$CURRENT_PORT"
     else
       echo ""

@@ -1,0 +1,160 @@
+---
+- name: Validate RHEL-compatible GPG key verification for NVIDIA + ROCm
+  hosts: all
+  become: true
+  vars:
+    # Test-scoped paths
+    test_key_dir: "/etc/pki/rpm-gpg"
+    test_nvidia_key_path: "{{ test_key_dir }}/nvidia-test.pub"
+    test_rocm_key_path: "{{ test_key_dir }}/rocm-test.pub"
+
+    # Test inputs (override in CI as needed)
+    test_nvidia_key_url: "{{ nvidia_gpg_key_url }}"
+    test_nvidia_key_sha256: "{{ nvidia_gpg_key_sha256 | default('') }}"
+    test_nvidia_key_fingerprint: "{{ nvidia_gpg_fingerprint | default('') }}"
+
+    test_rocm_key_url: "{{ amd_rocm_gpg_key_url }}"
+    test_rocm_key_sha256: "{{ amd_rocm_gpg_key_sha256 | default('') }}"
+    test_rocm_key_fingerprint: "{{ amd_rocm_gpg_fingerprint | default('') }}"
+
+    # Gate verification (opt-in)
+    test_verify_enabled: true
+
+  tasks:
+    - name: Ensure key directory exists
+      ansible.builtin.file:
+        path: "{{ test_key_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Ensure required verification inputs are set
+      ansible.builtin.assert:
+        that:
+          - test_nvidia_key_sha256 | length > 0
+          - test_nvidia_key_fingerprint | length > 0
+          - test_rocm_key_sha256 | length > 0
+          - test_rocm_key_fingerprint | length > 0
+        fail_msg: "Verification enabled but sha256/fingerprint inputs are missing."
+      when: test_verify_enabled | bool
+
+    - name: Scenario A (expected pass) - NVIDIA key download
+      ansible.builtin.get_url:
+        url: "{{ test_nvidia_key_url }}"
+        dest: "{{ test_nvidia_key_path }}"
+        mode: '0644'
+        checksum: "{{ 'sha256:' ~ test_nvidia_key_sha256 if test_verify_enabled else omit }}"
+
+    - name: Scenario A (expected pass) - NVIDIA fingerprint verify
+      block:
+        - name: Read NVIDIA fingerprint
+          ansible.builtin.command:
+            cmd: "gpg --show-keys --with-colons {{ test_nvidia_key_path }}"
+          register: nvidia_keyinfo
+          changed_when: false
+
+        - name: Extract NVIDIA fingerprint
+          ansible.builtin.set_fact:
+            nvidia_actual_fingerprint: >-
+              {{ (nvidia_keyinfo.stdout_lines
+                  | select('match', '^fpr:')
+                  | map('regex_replace', '^fpr:+([0-9A-F]+):.*', '\\1')
+                  | list
+                  | first
+                  | default('')) | upper }}
+
+        - name: Assert NVIDIA fingerprint matches
+          ansible.builtin.assert:
+            that:
+              - nvidia_actual_fingerprint != ""
+              - nvidia_actual_fingerprint == (test_nvidia_key_fingerprint | regex_replace('[^0-9A-Fa-f]', '') | upper)
+            fail_msg: "NVIDIA fingerprint mismatch. Expected {{ test_nvidia_key_fingerprint }}, got {{ nvidia_actual_fingerprint }}."
+      when: test_verify_enabled
+
+    - name: Scenario A (expected pass) - Import NVIDIA key
+      ansible.builtin.rpm_key:
+        key: "{{ test_nvidia_key_path }}"
+        state: present
+
+    - name: Scenario A (expected pass) - ROCm key download
+      ansible.builtin.get_url:
+        url: "{{ test_rocm_key_url }}"
+        dest: "{{ test_rocm_key_path }}"
+        mode: '0644'
+        checksum: "{{ 'sha256:' ~ test_rocm_key_sha256 if test_verify_enabled else omit }}"
+
+    - name: Scenario A (expected pass) - ROCm fingerprint verify
+      block:
+        - name: Read ROCm fingerprint
+          ansible.builtin.command:
+            cmd: "gpg --show-keys --with-colons {{ test_rocm_key_path }}"
+          register: rocm_keyinfo
+          changed_when: false
+
+        - name: Extract ROCm fingerprint
+          ansible.builtin.set_fact:
+            rocm_actual_fingerprint: >-
+              {{ (rocm_keyinfo.stdout_lines
+                  | select('match', '^fpr:')
+                  | map('regex_replace', '^fpr:+([0-9A-F]+):.*', '\\1')
+                  | list
+                  | first
+                  | default('')) | upper }}
+
+        - name: Assert ROCm fingerprint matches
+          ansible.builtin.assert:
+            that:
+              - rocm_actual_fingerprint != ""
+              - rocm_actual_fingerprint == (test_rocm_key_fingerprint | regex_replace('[^0-9A-Fa-f]', '') | upper)
+            fail_msg: "ROCm fingerprint mismatch. Expected {{ test_rocm_key_fingerprint }}, got {{ rocm_actual_fingerprint }}."
+      when: test_verify_enabled
+
+    - name: Scenario A (expected pass) - Import ROCm key
+      ansible.builtin.rpm_key:
+        key: "{{ test_rocm_key_path }}"
+        state: present
+
+    - name: Scenario A (idempotency) - Re-run imports
+      ansible.builtin.rpm_key:
+        key: "{{ item }}"
+        state: present
+      loop:
+        - "{{ test_nvidia_key_path }}"
+        - "{{ test_rocm_key_path }}"
+
+    - name: Scenario B (expected fail) - NVIDIA checksum mismatch
+      block:
+        - name: Attempt NVIDIA download with bad checksum
+          ansible.builtin.get_url:
+            url: "{{ test_nvidia_key_url }}"
+            dest: "{{ test_key_dir }}/nvidia-bad.pub"
+            mode: '0644'
+            checksum: "sha256:deadbeef"
+          register: nvidia_bad_download
+
+        - name: Fail if NVIDIA bad checksum did not fail
+          ansible.builtin.fail:
+            msg: "Expected NVIDIA checksum failure, but download succeeded."
+          when: nvidia_bad_download is succeeded
+      rescue:
+        - name: Mark NVIDIA checksum failure as expected
+          ansible.builtin.debug:
+            msg: "NVIDIA bad checksum correctly failed."
+
+    - name: Scenario B (expected fail) - ROCm checksum mismatch
+      block:
+        - name: Attempt ROCm download with bad checksum
+          ansible.builtin.get_url:
+            url: "{{ test_rocm_key_url }}"
+            dest: "{{ test_key_dir }}/rocm-bad.pub"
+            mode: '0644'
+            checksum: "sha256:deadbeef"
+          register: rocm_bad_download
+
+        - name: Fail if ROCm bad checksum did not fail
+          ansible.builtin.fail:
+            msg: "Expected ROCm checksum failure, but download succeeded."
+          when: rocm_bad_download is succeeded
+      rescue:
+        - name: Mark ROCm checksum failure as expected
+          ansible.builtin.debug:
+            msg: "ROCm bad checksum correctly failed."

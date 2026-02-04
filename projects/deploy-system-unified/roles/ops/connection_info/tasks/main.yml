@@ -23,14 +23,15 @@
   run_once: true
   no_log: true
   changed_when: false
+  when: not ansible_check_mode
 - name: Set secure permissions on temporary file (idempotent)
   ansible.builtin.file:
     path: "{{ connection_info_temp_file.path }}"
     mode: '0600'
-    owner: root
-    group: root
   delegate_to: localhost
-  when: connection_info_temp_file.path is defined
+  when:
+    - connection_info_temp_file.path is defined
+    - not ansible_check_mode
   run_once: true
 - name: Copy SSH connection info to secure temp file (idempotent)
   ansible.builtin.copy:
@@ -50,19 +51,26 @@
   changed_when: false
   no_log: true
   run_once: true
+  when: not ansible_check_mode
 
 - name: Handle SOPS Encryption
   ansible.builtin.include_tasks: encryption/sops.yml
-  when: encryption_method == 'sops'
+  when:
+    - encryption_method == 'sops'
+    - not ansible_check_mode
 
 - name: Handle Ansible Vault Encryption
   ansible.builtin.include_tasks: encryption/vault.yml
-  when: encryption_method == 'vault'
+  when:
+    - encryption_method == 'vault'
+    - not ansible_check_mode
 
 - name: Set path for plaintext SSH info (insecure/dev only)
   ansible.builtin.set_fact:
     encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}"
-  when: encryption_method == 'plain'
+  when:
+    - encryption_method == 'plain'
+    - not ansible_check_mode
   delegate_to: localhost
   run_once: true
 
@@ -73,6 +81,7 @@
       - encrypted_ssh_info_path | length > 0
     msg: "Encryption of temporary SSH info failed - deployment halted"
   run_once: true
+  when: not ansible_check_mode
 - name: Clean up plaintext temporary SSH file (idempotent)
   ansible.builtin.file:
     path: "{{ connection_info_temp_file.path }}"
@@ -80,6 +89,7 @@
   delegate_to: localhost
   run_once: true
   changed_when: false
+  when: not ansible_check_mode
 - name: Rsync encrypted SSH connection info to specified destination (idempotent)
   ansible.posix.synchronize:
     src: "{{ encrypted_ssh_info_path }}"
@@ -87,7 +97,10 @@
     mode: pull
   when:
     - ssh_rsync_destination != ""
+    - ops_rsync_enable | default(false) | bool
+    - ssh_rsync_destination in (ops_rsync_allowlist | default([]) | map(attribute='dest') | list)
     - encrypted_ssh_info_path is defined
     - encrypted_ssh_info_path | length > 0
+    - not ansible_check_mode
   run_once: true
   delegate_to: localhost

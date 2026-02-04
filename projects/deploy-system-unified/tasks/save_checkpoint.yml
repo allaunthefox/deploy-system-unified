@@ -33,3 +33,4 @@
     dest: /var/lib/deploy-system/checkpoints/session.json
     mode: '0600'
   become: true
+  changed_when: false

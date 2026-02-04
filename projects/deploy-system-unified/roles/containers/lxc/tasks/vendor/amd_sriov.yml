@@ -5,7 +5,7 @@
       ansible.builtin.set_fact:
         lxc_gpu_sriov_devices: []
     - name: Discover AMD SR-IOV devices
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(AMD|ATI)" | grep -E "(Virtual|SR-IOV)"
       register: amd_sriov_devices
       changed_when: false

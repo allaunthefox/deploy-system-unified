@@ -25,6 +25,13 @@
     sshd_allow_tcp_forwarding: true
     access_sshd_port: 2222
 
+    # Rootless Podman (Bridge Networking Model)
+    podman_rootless_enabled: true
+    podman_rootless_user: "{{ system_admin_user | default('admin') }}"
+    podman_rootless_user_home: "/home/{{ system_admin_user | default('admin') }}"
+    podman_rootless_allow_privileged_ports: true
+    podman_rootless_privileged_port_start: 80
+
     # Memory Tuning - Database Profile for SQLite (Jellyfin/Arr) Performance
     memory_workload_profile: "database"
     # Ensure ZRAM isn't choked by database profile's low swappiness (handled by auto-resolution, but explicit is good)

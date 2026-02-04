@@ -17,21 +17,21 @@
 - name: Detect GPU vendor and capabilities
   block:
     - name: Check for NVIDIA GPUs
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(NVIDIA|3D Controller)"
       register: nvidia_gpu_info
       changed_when: false
       failed_when: false
       become: false
     - name: Check for AMD GPUs
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(AMD|ATI)"
       register: amd_gpu_info
       changed_when: false
       failed_when: false
       become: false
     - name: Check for Intel GPUs
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(Intel|VGA compatible controller)"
       register: intel_gpu_info
       changed_when: false
@@ -62,7 +62,7 @@
         containers_gpu_nvidia_model: "{{ nvidia_gpu_model.stdout_lines }}"
       when: containers_gpu_vendor_detected == "nvidia" and nvidia_gpu_model.stdout | length > 0
     - name: Detect NVIDIA MIG support
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: nvidia-smi -q | grep -E "(Multi-Instance GPU|Disabled|MIG)"
       register: nvidia_mig_support
       changed_when: false
@@ -74,7 +74,7 @@
         containers_gpu_nvidia_mig_supported: "{{ 'Multi-Instance GPU' in nvidia_mig_support.stdout }}"
       when: containers_gpu_vendor_detected == "nvidia" and nvidia_mig_support.stdout | length > 0
     - name: Detect AMD GPU model
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn -s $(lspci -nn | grep -E "(AMD|ATI)" | head -1 | cut -d' ' -f1) | cut -d':' -f3
       register: amd_gpu_model
       changed_when: false
@@ -86,7 +86,7 @@
         containers_gpu_amd_model: "{{ amd_gpu_model.stdout.strip() }}"
       when: containers_gpu_vendor_detected == "amd" and amd_gpu_model.stdout | length > 0
     - name: Detect Intel GPU model
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn -s $(lspci -nn | grep -E "(Intel)" | head -1 | cut -d' ' -f1) | cut -d':' -f3
       register: intel_gpu_model
       changed_when: false

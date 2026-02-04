@@ -107,8 +107,9 @@
   when:
     - k8s_gpu_device_plugins_enabled
     - containers_gpu_vendor_detected in ["nvidia", "amd", "intel"]
+
 - name: Verify GPU resources available in Kubernetes
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: kubectl describe node {{ ansible_facts['hostname'] }} | grep -A 10 "Capacity"
   register: node_capacity
   changed_when: false

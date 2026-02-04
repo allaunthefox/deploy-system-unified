@@ -45,6 +45,12 @@ lxc_gpu_resource_limits:
   memory: "8Gi"
   cpu: "4"
   gpu: "1"
+# Intel OneAPI repository (supply-chain hardening)
+intel_oneapi_gpg_key_url: "https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB"
+intel_oneapi_gpg_keyring_path: "/usr/share/keyrings/oneapi-archive-keyring.gpg"
+intel_oneapi_repo: "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main"
+intel_oneapi_gpg_fingerprint: "BF4385F91CA5FC005AB39E1C1A8497B11911E097"
+intel_oneapi_gpg_fingerprint_verify: false
 # LXC container network settings
 lxc_gpu_network:
   type: "veth"

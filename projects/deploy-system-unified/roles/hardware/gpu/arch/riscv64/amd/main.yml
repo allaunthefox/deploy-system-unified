@@ -14,7 +14,7 @@
   become: true
   when: ansible_os_family == 'Debian'
 
-- name: Install AMD firmware and drivers (RHEL/Fedora)
+- name: Install AMD firmware and drivers (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
   ansible.builtin.package:
     name:
       - amd-gpu-firmware

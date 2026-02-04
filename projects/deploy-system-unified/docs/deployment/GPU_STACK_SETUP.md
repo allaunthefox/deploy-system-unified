@@ -45,6 +45,43 @@ gpu_stack_enable_rocm: true    # AMD ROCm SDK
 gpu_stack_enable_oneapi: true  # Intel OneAPI Base Toolkit
 ```
 
+### RHEL-Compatible (AlmaLinux/Rocky/CentOS Stream) GPG Key Verification (Optional)
+
+For hardened environments, you can enable repository key verification for NVIDIA CUDA and AMD ROCm on RHEL-compatible distributions (AlmaLinux/Rocky/CentOS Stream). Verification is **opt-in** to avoid breaking when vendors rotate keys.
+
+```yaml
+# NVIDIA (RHEL-compatible)
+nvidia_gpg_key_verify: true
+nvidia_gpg_key_sha256: "<sha256-of-nvidia-pubkey>"
+nvidia_gpg_fingerprint: "<fingerprint>"
+
+# AMD ROCm (RHEL-compatible)
+amd_rocm_gpg_key_verify: true
+amd_rocm_gpg_key_sha256: "<sha256-of-rocm-pubkey>"
+amd_rocm_gpg_fingerprint: "<fingerprint>"
+```
+
+If verification is enabled and the checksum or fingerprint does not match, the play will fail with a clear error. Update these values whenever a vendor rotates keys.
+
+### CI Test: RHEL-Compatible GPG Key Verification (AlmaLinux)
+
+A small CI-style test playbook validates NVIDIA + ROCm key verification logic in both success and failure scenarios.
+
+```bash
+ansible-playbook -i tests/inventory/ci_rhel_compat.ini tests/validate_rhel_compat_gpg_keys.yml \
+  -e test_verify_enabled=true \
+  -e test_nvidia_key_url="https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub" \
+  -e test_nvidia_key_sha256="<sha256>" \
+  -e test_nvidia_key_fingerprint="<fingerprint>" \
+  -e test_rocm_key_url="https://repo.radeon.com/rocm/rocm.gpg.key" \
+  -e test_rocm_key_sha256="<sha256>" \
+  -e test_rocm_key_fingerprint="<fingerprint>"
+```
+
+The playbook also runs an expected-failure path with intentionally invalid checksums.
+
+You can run this workflow manually from GitHub Actions: Actions → "Verify RHEL-Compatible (AlmaLinux) GPG Keys" → Run workflow.
+
 ### Advanced Features
 
 ```yaml

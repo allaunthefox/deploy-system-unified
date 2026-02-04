@@ -57,7 +57,7 @@ if ! command -v tmux &> /dev/null; then
     echo "This script requires tmux to provide session persistence."
     echo "Please install it using your system's package manager:"
     echo "  - Debian/Ubuntu: sudo apt install tmux"
-    echo "  - RHEL/Fedora:   sudo dnf install tmux"
+    echo "  - RHEL-compatible (AlmaLinux/Rocky/CentOS Stream):   sudo dnf install tmux"
     echo "  - Arch Linux:    sudo pacman -S tmux"
     echo "  - Alpine:        sudo apk add tmux"
     echo "  - macOS:         brew install tmux"

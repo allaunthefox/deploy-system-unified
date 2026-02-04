@@ -1,6 +1,10 @@
 ---
 # Tasks for containers/runtime role
 
+- name: Apply rootless Podman prerequisites
+  ansible.builtin.include_tasks: rootless_prerequisites.yml
+  when: podman_rootless_enabled | bool
+
 - name: Install Podman and Core Dependencies
   ansible.builtin.include_tasks: install_podman.yml
 

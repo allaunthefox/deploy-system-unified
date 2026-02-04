@@ -1,0 +1,23 @@
+---
+# Shared defaults for rootless Podman support across container roles
+podman_rootless_enabled: true
+podman_rootless_user: "{{ system_admin_user | default('admin') }}"
+podman_rootless_user_home: "/home/{{ podman_rootless_user }}"
+podman_rootless_network_mode: "slirp4netns"
+podman_rootless_allow_privileged_ports: false
+podman_rootless_privileged_port_start: 1024
+
+containers_systemd_dir: >-
+  {{ podman_rootless_enabled | bool
+     | ternary(podman_rootless_user_home ~ '/.config/containers/systemd',
+               '/etc/containers/systemd') }}
+containers_systemd_scope: "{{ podman_rootless_enabled | bool | ternary('user', 'system') }}"
+containers_systemd_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_secrets_dir: >-
+  {{ podman_rootless_enabled | bool
+     | ternary(podman_rootless_user_home ~ '/.config/containers/secrets',
+               '/etc/containers/secrets') }}
+containers_secrets_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_secrets_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_env: {}

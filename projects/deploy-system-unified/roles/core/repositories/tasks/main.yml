@@ -78,7 +78,9 @@
 - name: Update package cache (Arch)
   community.general.pacman:
     update_cache: true
-  when: ansible_distribution | lower == 'archlinux'
+  when:
+    - ansible_distribution | lower == 'archlinux'
+    - not ansible_check_mode
   become: true
 - name: Update package cache (Alpine)
   community.general.apk:

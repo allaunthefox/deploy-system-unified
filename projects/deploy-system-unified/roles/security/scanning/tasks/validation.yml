@@ -20,14 +20,12 @@
   loop:
     - /var/lib/deploy-system/checkpoints
     - /var/lib/deploy-system/backups
-    - /etc/trivy
-    - /etc/checkov
 - name: Validate all required directories exist (idempotent)
   ansible.builtin.assert:
     that:
       - item.stat.exists
       - item.stat.isdir
-    fail_msg: "Required directory {{ item.path }} does not exist"
+    fail_msg: "Required directory {{ item.item }} does not exist"
   loop: "{{ final_dir_check.results }}"
 - name: Set final security compliance flag (idempotent)
   ansible.builtin.set_fact:

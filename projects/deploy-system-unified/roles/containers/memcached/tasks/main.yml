@@ -6,15 +6,15 @@
     path: "{{ item }}"
     state: directory
     mode: '0755'
-    owner: root
-    group: root
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   loop:
     - /srv/containers/memcached
   become: true
 
 - name: Create Memcached Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/memcached.container
+    dest: "{{ containers_systemd_dir }}/memcached.container"
     content: |
       [Unit]
       Description=Memcached Distributed Memory Object Caching System
@@ -42,5 +42,7 @@
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   notify: reload systemd

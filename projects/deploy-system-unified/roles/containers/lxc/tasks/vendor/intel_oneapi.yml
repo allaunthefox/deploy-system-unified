@@ -1,13 +1,60 @@
 ---
 - name: Configure LXC container for Intel OneAPI
   block:
-    - name: Install Intel OneAPI toolkit
-      ansible.builtin.command:
-        cmd: "bash -c 'curl -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | apt-key add - && echo \"deb https://apt.repos.intel.com/oneapi all main\" > /etc/apt/sources.list.d/oneAPI.list && apt-get update && apt-get install -y intel-oneapi-{{ lxc_gpu_slicing.oneapi.toolkit }}'"
-      register: intel_oneapi_install
-      changed_when: true
-      failed_when: false
-      become: true
+    - name: Install Intel OneAPI toolkit (Debian/Ubuntu)
+      block:
+        - name: Download Intel OneAPI GPG key
+          ansible.builtin.get_url:
+            url: "{{ intel_oneapi_gpg_key_url }}"
+            dest: "{{ intel_oneapi_gpg_keyring_path }}"
+            mode: '0644'
+          become: true
+
+        - name: Ensure Intel OneAPI fingerprint is configured when verification is enabled
+          ansible.builtin.assert:
+            that:
+              - intel_oneapi_gpg_fingerprint | length > 0
+            fail_msg: "intel_oneapi_gpg_fingerprint must be set when intel_oneapi_gpg_fingerprint_verify=true."
+          when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
+
+        - name: Read Intel OneAPI GPG fingerprint
+          ansible.builtin.command:
+            cmd: "gpg --show-keys --with-colons {{ intel_oneapi_gpg_keyring_path }}"
+          register: intel_oneapi_keyinfo
+          changed_when: false
+          when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
+
+        - name: Extract Intel OneAPI GPG fingerprint
+          ansible.builtin.set_fact:
+            intel_oneapi_actual_fingerprint: >-
+              {{ (intel_oneapi_keyinfo.stdout_lines
+                  | select('match', '^fpr:')
+                  | map('regex_replace', '^fpr:+([0-9A-F]+):.*', '\\1')
+                  | list
+                  | first
+                  | default('')) | upper }}
+          when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
+
+        - name: Verify Intel OneAPI GPG fingerprint
+          ansible.builtin.assert:
+            that:
+              - intel_oneapi_actual_fingerprint != ""
+              - intel_oneapi_actual_fingerprint == (intel_oneapi_gpg_fingerprint | regex_replace('[^0-9A-Fa-f]', '') | upper)
+            fail_msg: "Intel OneAPI GPG fingerprint mismatch. Expected {{ intel_oneapi_gpg_fingerprint }}, got {{ intel_oneapi_actual_fingerprint }}."
+          when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
+
+        - name: Add Intel OneAPI repository
+          ansible.builtin.apt_repository:
+            repo: "{{ intel_oneapi_repo }}"
+            filename: oneapi
+          become: true
+
+        - name: Install Intel OneAPI toolkit package
+          ansible.builtin.apt:
+            name: "intel-oneapi-{{ lxc_gpu_slicing.oneapi.toolkit }}"
+            state: present
+            update_cache: true
+          become: true
       when: ansible_facts['os_family'] == 'Debian'
     - name: Set Intel OneAPI environment variables
       ansible.builtin.lineinfile:

@@ -33,9 +33,22 @@
   changed_when: false
   become: true
   ignore_errors: true
+  check_mode: false
+  retries: 5
+  delay: 5
+  until: time_sync_status.rc == 0
+
 - name: Validate time synchronization quality (idempotent)
   ansible.builtin.assert:
     that:
-      - "'System time' in time_sync_status.stdout"
-    fail_msg: "Time synchronization not properly configured - checkpoint functionality may be unreliable"
+      - time_sync_status.rc == 0
+      - >-
+        ('System time' in time_sync_status.stdout) or
+        ('Reference ID' in time_sync_status.stdout) or
+        ('Leap status' in time_sync_status.stdout)
+    fail_msg: >-
+      Time synchronization not properly configured - checkpoint functionality may be unreliable.
+      chronyc tracking output:
+      {{ time_sync_status.stdout | default('NO OUTPUT') }}
+      {{ time_sync_status.stderr | default('NO ERROR OUTPUT') }}
   when: not time_sync_status.failed

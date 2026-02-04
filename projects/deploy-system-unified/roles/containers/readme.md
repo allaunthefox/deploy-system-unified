@@ -4,7 +4,7 @@ This role manages container runtimes and orchestration tools.
 
 ## Sub-Components
 
-* **[runtime](runtime/README.md)**: Installs and configures Podman/Docker runtimes. **(New: Includes Rate-Limit Protections)**
+* **[runtime](runtime/readme.md)**: Installs and configures Podman/Docker runtimes. **(New: Includes Rate-Limit Protections)**
 * **config**: General container configuration (registries, storage).
 * **monitoring**: Prometheus & Grafana stack (Quadlets).
 * **caddy**: Caddy web server setup (often used as a reverse proxy for containers).

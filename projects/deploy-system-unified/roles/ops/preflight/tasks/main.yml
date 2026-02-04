@@ -31,7 +31,7 @@
     success_msg: "Memory check passed: {{ ansible_memtotal_mb }}MB available"
   when: preflight_check_memory | default(false)
 - name: Check for required binaries
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: "command -v {{ item }}"
   loop: "{{ preflight_required_binaries | default([]) }}"
   register: preflight_binary_check
@@ -91,3 +91,122 @@
     preflight_distribution: "{{ ansible_facts['distribution'] }}"
     preflight_os_family: "{{ ansible_facts['os_family'] }}"
     preflight_pkg_mgr: "{{ ansible_facts['pkg_mgr'] }}"
+
+- name: Define default secret guards
+  ansible.builtin.set_fact:
+    preflight_secret_guards:
+      - name: "crowdsec_firewall_bouncer_key"
+        value: "{{ vault_crowdsec_firewall_bouncer_key | default('CHANGE_ME') }}"
+        bad_values: ["CHANGE_ME", ""]
+      - name: "vaultwarden_admin_token"
+        value: "{{ vaultwarden_admin_token | default('CHANGE_ME_IN_VAULT_TO_HASH') }}"
+        bad_values: ["CHANGE_ME_IN_VAULT_TO_HASH", ""]
+      - name: "monitoring_grafana_admin_password"
+        value: "{{ monitoring_grafana_admin_password | default('CHANGE_ME_IN_VAULT') }}"
+        bad_values: ["CHANGE_ME_IN_VAULT", ""]
+      - name: "restic_password"
+        value: "{{ restic_password | default('CHANGE_ME_IN_VAULT') }}"
+        bad_values: ["CHANGE_ME_IN_VAULT", ""]
+
+- name: Define deployment profile for transfer policy
+  ansible.builtin.set_fact:
+    preflight_deployment_profile: "{{ deployment_profile | default('hardened') }}"
+    preflight_profile_strict: ["ephemeral", "hardened", "production", "vps", "backup"]
+    preflight_profile_lenient: ["workstation", "dev"]
+
+- name: Validate deployment profile is supported
+  ansible.builtin.assert:
+    that:
+      - preflight_deployment_profile in (preflight_profile_strict + preflight_profile_lenient)
+    fail_msg: >-
+      Unsupported deployment_profile: {{ preflight_deployment_profile }}.
+      Valid: {{ (preflight_profile_strict + preflight_profile_lenient) | join(', ') }}
+
+- name: Enforce NFS explicit-allow policy (least privilege)
+  ansible.builtin.assert:
+    that:
+      - storage_nfs_exports | default([]) | length > 0
+      - storage_nfs_mounts | default([]) | length > 0
+    fail_msg: >-
+      NFS is enabled but exports/mounts are not explicitly defined.
+      Define storage_nfs_exports and storage_nfs_mounts in the profile.
+  when: storage_nfs_enable | default(false) | bool
+
+- name: Enforce NFS export scope (no broad exports by default)
+  ansible.builtin.assert:
+    that:
+      - storage_nfs_allow_broad_exports | default(false) | bool or
+        (item is not match(".*(\\b0\\.0\\.0\\.0/0\\b|\\b::/0\\b|\\*).*"))
+    fail_msg: >-
+      Broad NFS export detected: {{ item }}.
+      Set storage_nfs_allow_broad_exports=true to override explicitly.
+  loop: "{{ storage_nfs_exports | default([]) | map(attribute='clients') | list | flatten }}"
+  when: storage_nfs_enable | default(false) | bool
+
+- name: Enforce NFS ephemeral opt-in (strict profiles)
+  ansible.builtin.assert:
+    that:
+      - storage_nfs_ephemeral_allow | default(false) | bool
+    fail_msg: >-
+      NFS is enabled on an ephemeral profile without explicit opt-in.
+      Set storage_nfs_ephemeral_allow=true to proceed.
+  when:
+    - storage_nfs_enable | default(false) | bool
+    - preflight_deployment_profile == "ephemeral"
+
+- name: Enforce rsync explicit-allow policy (least privilege)
+  ansible.builtin.assert:
+    that:
+      - ops_rsync_enable | default(false) | bool
+      - ops_rsync_allowlist | default([]) | length > 0
+      - ssh_rsync_destination | default('') == '' or
+        (ssh_rsync_destination in (ops_rsync_allowlist | map(attribute='dest') | list))
+    fail_msg: >-
+      Rsync is requested but not explicitly allowed or destination is not in allowlist.
+      Set ops_rsync_enable=true and define ops_rsync_allowlist with allowed dest entries.
+  when:
+    - (ssh_rsync_destination | default('')) != "" or (ops_rsync_enable | default(false) | bool)
+
+- name: Enforce rsync ephemeral opt-in (strict profiles)
+  ansible.builtin.assert:
+    that:
+      - ops_rsync_ephemeral_allow | default(false) | bool
+    fail_msg: >-
+      Rsync is enabled on an ephemeral profile without explicit opt-in.
+      Set ops_rsync_ephemeral_allow=true to proceed.
+  when:
+    - (ssh_rsync_destination | default('')) != "" or (ops_rsync_enable | default(false) | bool)
+    - preflight_deployment_profile == "ephemeral"
+
+- name: Validate required secrets are not default placeholders
+  ansible.builtin.assert:
+    that:
+      - item.value not in item.bad_values
+    fail_msg: "Default or empty secret detected: {{ item.name }}. Set this in encrypted inventory."
+  loop: "{{ preflight_secret_guards }}"
+  when: not preflight_allow_default_secrets | default(false) | bool
+
+- name: Scan inventory for placeholder test_key usage (controller)
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/inventory"
+    patterns:
+      - "*.yml"
+      - "*.yaml"
+      - "*.ini"
+    contains: "test_key"
+  register: preflight_test_key_find
+  changed_when: false
+  delegate_to: localhost
+  run_once: true
+  when: not preflight_allow_test_key | default(false) | bool
+
+- name: Fail if placeholder test_key is present in inventory
+  ansible.builtin.assert:
+    that:
+      - (preflight_test_key_find.matched | default(0)) == 0
+    fail_msg: >-
+      Placeholder 'test_key' found in inventory variables. Replace the example
+      key before deployment or set preflight_allow_test_key=true to override.
+  delegate_to: localhost
+  run_once: true
+  when: not preflight_allow_test_key | default(false) | bool

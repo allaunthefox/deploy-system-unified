@@ -2,6 +2,8 @@
 
 Welcome to the documentation for **Deploy-System-Unified**, a modular, security-first infrastructure deployment system built on Ansible.
 
+![Verify RHEL-compatible GPG keys](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/verify-rhel-compat-keys.yml/badge.svg)
+
 ## 📖 Philosophical Foundation
 
 This project is built on a core architectural principle:
@@ -26,6 +28,8 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Development Tooling](./development/TOOLING.md)**: Explaining switches (`--low-risk-repair`) and enforcement.
 * **[Style Guide](./development/STYLE_GUIDE.md)**: Standards for YAML, Shell, and Ansible.
 * **Testing**: Using Molecule for multi-platform idempotency verification.
+* **CI**: Verify RHEL-compatible GPG keys (AlmaLinux) using `verify-rhel-compat-keys.yml`.
+* **Verify RHEL-compatible GPG keys (AlmaLinux)**: CI test that validates NVIDIA & AMD ROCm repo GPG key checksum/fingerprint verification (workflow: `verify-rhel-compat-keys.yml`). Note: This workflow is manually runnable from the GitHub Actions UI (Actions → Verify RHEL-Compatible (AlmaLinux) GPG Keys → Run workflow).
 * **Enforcement**: How `enforce_style_guide.sh` keeps the codebase clean.
 
 ### [3. Deployment](./deployment/EXAMPLES.md)
@@ -39,6 +43,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[GPU Stack Setup](./deployment/GPU_STACK_SETUP.md)**: Detailed guide for installing unified GPU drivers and compute stacks.
 * **[Universal Deployment Guide](./deployment/UNIVERSAL_DEPLOYMENT_GUIDE.md)**: Master SOP for replicable system deployment.
 * **[Contabo Media Profile](./deployment/CONTABO_MEDIA_PROFILE.md)**: Specifications for the VPS 30 SSD Media Stack.
+* **[SSH Transfer Profile](./deployment/SSH_TRANSFER_PROFILE.md)**: Standard SSH transfer method and fallbacks.
 * **[Hybrid Security Setup](./deployment/SECURITY_CROWDSEC_HYBRID.md)**: Implementation details for the Container+Host CrowdSec architecture.
 * **[Deployment Status](./deployment/DEPLOYMENT_STATUS.md)**: Current system readiness and implementation status.
 * **[Architecture Migration](./deployment/ARCHITECTURE_MIGRATION_GUIDE.md)**: Guide for upgrading to the multi-arch standard.

@@ -5,7 +5,7 @@
   ansible.builtin.shell: |
     # Find primary interface and set safe MTU for cloud tunneling
     PRIMARY_IF=$(ip route | grep default | awk '{print $5}' | head -n 1)
-    if [-n "$PRIMARY_IF"]; then
+    if [ -n "$PRIMARY_IF" ]; then
       ip link set dev "$PRIMARY_IF" mtu 1450
     fi
   become: true

@@ -35,6 +35,48 @@ The system uses **Btrfs** subvolumes for efficient storage management.
     - `/srv/media/default/downloads`
 - **Config Root**: `/srv/containers/media_config/default/` (Persistent app data)
 
+### Security Defaults (Least Privilege)
+
+This profile follows the project’s **explicit allow** posture:
+
+- **SSH transfer**: OpenSSH + `piped` transfer (no SFTP/SCP dependency).
+- **NFS**: Disabled unless explicitly enabled in a profile.
+- **Rsync**: SSH-based only, and disabled unless explicitly enabled.
+
+Reference: `docs/deployment/SSH_TRANSFER_PROFILE.md`
+
+#### Example Overrides (Explicit Allow)
+
+```yaml
+# Enable NFS explicitly (example)
+storage_nfs_enable: true
+storage_nfs_allow_broad_exports: false
+storage_nfs_exports:
+  - path: /srv/media/default
+    clients:
+      - "10.0.0.0/24(rw,sync,no_subtree_check)"
+storage_nfs_mounts:
+  - src: "10.0.0.10:/srv/media/default"
+    path: /mnt/media
+    opts: "rw,noatime"
+
+# Enable SSH-based rsync explicitly (example)
+ops_rsync_enable: true
+ops_rsync_allowlist:
+  - src: /srv/containers
+    dest: "backup@10.0.0.20:/backups/containers"
+    ssh_key: "/home/prod/.ssh/backup_key"
+```
+
+#### Ephemeral Profiles (Extra Guard)
+
+For `deployment_profile: "ephemeral"`, you must explicitly opt in:
+
+```yaml
+storage_nfs_ephemeral_allow: true
+ops_rsync_ephemeral_allow: true
+```
+
 ## 3. Service Inventory
 
 The following services are **Enabled** in this profile:

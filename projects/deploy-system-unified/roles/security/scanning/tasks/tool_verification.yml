@@ -3,7 +3,7 @@
 - name: Verify security tools are installed (idempotent)
   ansible.builtin.command: "{{ item }} --version"
   register: tool_verification
-  loop: ["trivy", "trufflehog", "bubblewrap", "firejail", "endlessh", "chronyd", "checkov"]
+  loop: "{{ security_scanning_optional_tools + security_scanning_critical_tools + ['endlessh'] }}"
   changed_when: false
   failed_when: false
 - name: Report missing security tools (idempotent)
@@ -17,4 +17,4 @@
       - item.rc == 0
     fail_msg: "Critical security tool {{ item.item }} not available - deployment halted"
   loop: "{{ tool_verification.results }}"
-  when: item.item in ['chronyd', 'bubblewrap', 'firejail']  # Critical tools
+  when: item.item in security_scanning_critical_tools

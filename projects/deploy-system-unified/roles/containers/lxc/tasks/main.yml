@@ -30,13 +30,26 @@
       become: true
 
     - name: Apply GPU configuration to existing LXC containers
-      ansible.builtin.command:
-        cmd: lxc config set {{ item }} {{ lxc_gpu_passthrough_devices | default([]) | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join('; ') }}
+      ansible.builtin.shell: |
+        EXISTING_CONFIG=$(lxc config show {{ item }} 2>/dev/null || true)
+        DESIRED_DEVICES="{{ lxc_gpu_passthrough_devices | default([]) | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join(\"\n\") }}"
+        
+        # Check if config is already present to avoid idempotent restarts
+        if echo "$EXISTING_CONFIG" | grep -q "lxc.cgroup2.devices.allow"; then
+            echo "Config present"
+            exit 0
+        fi
+        
+        # Apply config if missing
+        CMD_ARGS="{{ lxc_gpu_passthrough_devices | default([]) | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join('; ') }}"
+        lxc config set {{ item }} $CMD_ARGS
       register: lxc_gpu_config_result
-      changed_when: true
+      changed_when: "lxc_gpu_config_result.rc == 0 and 'Config present' not in lxc_gpu_config_result.stdout"
       failed_when: false
       loop: "{{ lxc_container_gpu_config.keys() | list }}"
       when: lxc_container_gpu_config | length > 0
+      args:
+        executable: /bin/bash
 
     - name: Restart LXC containers to apply GPU configuration
       ansible.builtin.command:

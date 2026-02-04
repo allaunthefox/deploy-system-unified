@@ -28,29 +28,24 @@
       mountopt = "nodev,metacopy=on"
     mode: '0644'
   become: true
-- name: Configure container networking
-  ansible.builtin.copy:
-    dest: /etc/containers/containers.conf
-    content: |
-      [containers]
-      log_driver = "journald"
-      log_size_max = 10485760
-      pids_limit = 2048
-      [network]
-      network_backend = "netavark"
-      [engine]
-      runtime = "crun"
-      cgroup_manager = "systemd"
-      events_logger = "journald"
-    mode: '0644'
-  become: true
+- name: Check container lingering status
+  ansible.builtin.command:
+    cmd: "loginctl show-user {{ item }} -p Linger"
+  loop: "{{ container_linger_users | default([]) }}"
+  register: linger_status
+  changed_when: false
+  failed_when: false
+
 - name: Enable container lingering for service users
   ansible.builtin.command:
-    cmd: "loginctl enable-linger {{ item }}"
-  loop: "{{ container_linger_users | default([]) }}"
-  changed_when: true
+    cmd: "loginctl enable-linger {{ item.item }}"
+  loop: "{{ linger_status.results }}"
+  when:
+    - container_linger_users is defined and container_linger_users | length > 0
+    - item.rc == 0
+    - "'Linger=no' in item.stdout"
   become: true
-  when: container_linger_users is defined and container_linger_users | length > 0
+  changed_when: true
 - name: Set containers config completion flag
   ansible.builtin.set_fact:
     containers_config_complete: true

@@ -116,7 +116,7 @@
 
   post_tasks:
     - name: Verify SR-IOV configuration
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(AMD|ATI|NVIDIA|Intel)" | grep -E "(Virtual|SR-IOV)"
       register: sriov_config
       changed_when: false

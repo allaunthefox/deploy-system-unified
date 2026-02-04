@@ -1,21 +1,44 @@
 ---
 # Tasks for containers/anubis - Web AI Firewall
+- name: Create Anubis Network Quadlet
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/anubis_net.network"
+    content: |
+      [Network]
+      NetworkName=anubis_net
+      Driver=bridge
+      Subnet=10.89.50.0/24
+      Gateway=10.89.50.1
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  notify: reload systemd
+
 - name: Create Anubis container quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/anubis.container
+    dest: "{{ containers_systemd_dir }}/anubis.container"
     content: |
       [Unit]
       Description=Anubis Web AI Firewall
       After=network-online.target
       Wants=network-online.target
+
       [Container]
       Image={{ anubis_image }}
       ContainerName={{ anubis_container_name }}
+      {% if podman_rootless_enabled | bool %}
+      Network=anubis_net.network
+      PublishPort=31338:31338
+      {% else %}
       Network=host
-      PublishPort={{ anubis_port }}:8080
-      Environment=PORT=8080
+      {% endif %}
+      Exec=-bind :31338
+      Environment=PORT=31338
       Environment=TARGET={{ anubis_target_url }}
       Environment=DIFFICULTY={{ anubis_difficulty }}
+      # Thoth/GeoIP warnings are non-fatal; Host networking required due to Netlink/VPS limits
+      Environment=VALIDATORS=user-agent,proof-of-work
       {% if quadlet_enable_gpu_support %}
       # GPU support configuration
       Capabilities={{ quadlet_gpu_capabilities | join(' ') }}
@@ -32,6 +55,8 @@
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   notify:
     - reload systemd
@@ -42,6 +67,9 @@
     name: anubis
     enabled: true
     state: started
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
   become: true
+  become_user: "{{ containers_systemd_owner }}"
   when: anubis_enabled | bool and ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
   failed_when: false  # Ignore failures if systemd isn't available

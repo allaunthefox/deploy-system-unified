@@ -21,7 +21,7 @@ restic_script_dir: "/usr/local/bin"
 # Backup Sources
 # List of directories to back up
 restic_backup_sources:
-  - "/etc/containers/secrets"
+  - "{{ containers_secrets_dir | default('/etc/containers/secrets') }}"
   - "/srv/containers"
   - "/srv/ops"
   # - "/srv/media" # Warning: Large! Consider excluding or using a separate repo.

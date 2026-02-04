@@ -1,18 +1,22 @@
 ---
 # Tasks for security/audit_integrity role - Cryptographic Log Immutability
 - name: Check if journal FSS keys are already initialized
-  ansible.builtin.stat:
-    path: /var/log/journal/fss.pub
+  ansible.builtin.find:
+    paths: /var/log/journal
+    patterns: fss.pub
+    file_type: file
   register: journal_fss_stat
   become: true
 - name: Initialize Forward Secure Sealing (FSS) keys
   ansible.builtin.shell: |
     set -o pipefail
-    journalctl --setup-keys --force | grep "verification key" | awk '{print $NF}'
+    journalctl --setup-keys --force 2>&1 | grep -E "[0-9a-f]{6}-[0-9a-f]{6}" | tail -n 1
+  args:
+    executable: /bin/bash
   register: fss_verification_key_output
   become: true
   when:
-    - not journal_fss_stat.stat.exists
+    - (journal_fss_stat.matched | default(0) | int) == 0
     - ansible_virtualization_type not in ['docker', 'podman', 'container']
   notify: restart journald
   no_log: true
@@ -23,6 +27,7 @@
     suffix: ".txt"
   register: fss_temp_file
   delegate_to: localhost
+  become: false
   run_once: true
   when: fss_verification_key_output.changed
   no_log: true
@@ -35,14 +40,16 @@
     dest: "{{ fss_temp_file.path }}"
     mode: '0600'
   delegate_to: localhost
+  become: false
   when:
     - fss_verification_key_output.changed
     - fss_temp_file.path is defined
   no_log: true
 - name: Encrypt FSS key with Ansible Vault
   ansible.builtin.shell: |
-    ansible-vault encrypt "{{ fss_temp_file.path }}"
+    ansible-vault encrypt --vault-password-file "{{ playbook_dir }}/../.vault_pass" "{{ fss_temp_file.path }}"
   delegate_to: localhost
+  become: false
   when:
     - fss_verification_key_output.changed
     - fss_temp_file.path is defined
@@ -53,6 +60,7 @@
     dest: "/tmp/fss_v_{{ inventory_hostname }}_{{ deployment_id }}.vault"
     mode: '0600'
   delegate_to: localhost
+  become: false
   when:
     - fss_verification_key_output.changed
     - fss_temp_file.path is defined

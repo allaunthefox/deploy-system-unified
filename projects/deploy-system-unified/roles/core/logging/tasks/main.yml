@@ -2,7 +2,7 @@
 # Tasks for core/logging role - Mandatory Forensic Readiness
 - name: Install systemd-journal-remote for log aggregation readiness
   ansible.builtin.package:
-    name: systemd-journal-remote
+    name: "{{ logging_journal_remote_packages[ansible_facts['distribution'] | lower] | default('systemd-journal-remote') }}"
     state: present
   become: true
   ignore_errors: true # Some minimal distros might not have this package

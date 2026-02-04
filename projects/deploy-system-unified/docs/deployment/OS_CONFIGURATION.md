@@ -57,4 +57,46 @@ system_base_packages:
 
 * **`roles/core/bootstrap`**: Consumes `system_base_packages` to install software.
 * **`roles/security/sshd`**: Consumes `system_ssh_port` (via variable inheritance).
+
+## Transfer Defaults (Least Privilege)
+
+This project defaults to **explicit allow** for transfer protocols:
+
+- **SSH transfer**: OpenSSH + `piped` transfer (no SFTP/SCP dependency).
+- **NFS**: Disabled unless explicitly enabled in a profile.
+- **Rsync**: SSH-based only, and disabled unless explicitly enabled.
+
+Reference: `docs/deployment/SSH_TRANSFER_PROFILE.md`
+
+### Example Profile Configuration (Explicit Allow)
+
+```yaml
+# Enable NFS explicitly (example)
+storage_nfs_enable: true
+storage_nfs_allow_broad_exports: false
+storage_nfs_exports:
+  - path: /srv/media/default
+    clients:
+      - "10.0.0.0/24(rw,sync,no_subtree_check)"
+storage_nfs_mounts:
+  - src: "10.0.0.10:/srv/media/default"
+    path: /mnt/media
+    opts: "rw,noatime"
+
+# Enable SSH-based rsync explicitly (example)
+ops_rsync_enable: true
+ops_rsync_allowlist:
+  - src: /srv/containers
+    dest: "backup@10.0.0.20:/backups/containers"
+    ssh_key: "/home/prod/.ssh/backup_key"
+```
+
+### Ephemeral Profiles (Extra Guard)
+
+For `deployment_profile: "ephemeral"`, you must explicitly opt in:
+
+```yaml
+storage_nfs_ephemeral_allow: true
+ops_rsync_ephemeral_allow: true
+```
 * **`roles/security/kernel`**: Consumes `kernel_profile` to decide whether to apply Sysctl hardening.

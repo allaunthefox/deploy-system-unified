@@ -1,13 +1,20 @@
 ---
 # Tasks for containers/authentik
 
+- name: Validate Authentik Secrets (Red Team Hardening)
+  ansible.builtin.assert:
+    that:
+      - authentik_secret_key != "generate_me_with_openssl_rand_base64_60"
+      - authentik_pg_pass != "changeme_please_secure_me"
+    fail_msg: "Default weak secrets detected for Authentik. Please update 'authentik_secret_key' and 'authentik_pg_pass' in your variables."
+
 - name: Create Authentik Directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: '0750'
-    owner: root
-    group: root
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   loop:
     - "{{ authentik_base_dir }}"
     - "{{ authentik_data_dir }}"
@@ -18,9 +25,18 @@
     - "{{ authentik_data_dir }}/redis"
   become: true
 
+- name: Create Authentik secrets file
+  ansible.builtin.template:
+    src: authentik.env.j2
+    dest: "{{ containers_secrets_dir }}/authentik.env"
+    mode: '0600'
+    owner: "{{ containers_secrets_owner }}"
+    group: "{{ containers_secrets_group }}"
+  become: true
+
 - name: Create Authentik Postgres Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/authentik-postgres.container
+    dest: "{{ containers_systemd_dir }}/authentik-postgres.container"
     content: |
       [Unit]
       Description=Authentik PostgreSQL Database
@@ -32,9 +48,7 @@
 
       Network={{ authentik_network_name }}.network
 
-      Environment=POSTGRES_PASSWORD={{ authentik_pg_pass }}
-      Environment=POSTGRES_USER={{ authentik_pg_user }}
-      Environment=POSTGRES_DB={{ authentik_pg_db }}
+      EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
       Volume={{ authentik_data_dir }}/postgres:/var/lib/postgresql/data:Z
 
@@ -43,13 +57,15 @@
 
       [Install]
       WantedBy=multi-user.target default.target
-    mode: '0644'
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   notify: reload systemd
 
 - name: Create Authentik Redis Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/authentik-redis.container
+    dest: "{{ containers_systemd_dir }}/authentik-redis.container"
     content: |
       [Unit]
       Description=Authentik Redis
@@ -66,13 +82,15 @@
 
       [Install]
       WantedBy=multi-user.target default.target
-    mode: '0644'
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   notify: reload systemd
 
 - name: Create Authentik Server Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/authentik-server.container
+    dest: "{{ containers_systemd_dir }}/authentik-server.container"
     content: |
       [Unit]
       Description=Authentik Server
@@ -86,20 +104,7 @@
       Network={{ authentik_network_name }}.network
       # Internal port 9000, exposed to Caddy via bridge
 
-      Environment=AUTHENTIK_REDIS__HOST=authentik-redis
-      Environment=AUTHENTIK_POSTGRESQL__HOST=authentik-postgres
-      Environment=AUTHENTIK_POSTGRESQL__USER={{ authentik_pg_user }}
-      Environment=AUTHENTIK_POSTGRESQL__NAME={{ authentik_pg_db }}
-      Environment=AUTHENTIK_POSTGRESQL__PASSWORD={{ authentik_pg_pass }}
-      Environment=AUTHENTIK_SECRET_KEY={{ authentik_secret_key }}
-
-      # Email Config
-      Environment=AUTHENTIK_EMAIL__HOST={{ authentik_email_host }}
-      Environment=AUTHENTIK_EMAIL__PORT={{ authentik_email_port }}
-      Environment=AUTHENTIK_EMAIL__USERNAME={{ authentik_email_username }}
-      Environment=AUTHENTIK_EMAIL__PASSWORD={{ authentik_email_password }}
-      Environment=AUTHENTIK_EMAIL__USE_TLS={{ authentik_email_use_tls }}
-      Environment=AUTHENTIK_EMAIL__FROM={{ authentik_email_from }}
+      EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
       Volume={{ authentik_data_dir }}/media:/media:Z
       Volume={{ authentik_data_dir }}/custom-templates:/templates:Z
@@ -111,13 +116,15 @@
 
       [Install]
       WantedBy=multi-user.target default.target
-    mode: '0644'
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   notify: reload systemd
 
 - name: Create Authentik Worker Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/authentik-worker.container
+    dest: "{{ containers_systemd_dir }}/authentik-worker.container"
     content: |
       [Unit]
       Description=Authentik Worker
@@ -130,20 +137,7 @@
 
       Network={{ authentik_network_name }}.network
 
-      Environment=AUTHENTIK_REDIS__HOST=authentik-redis
-      Environment=AUTHENTIK_POSTGRESQL__HOST=authentik-postgres
-      Environment=AUTHENTIK_POSTGRESQL__USER={{ authentik_pg_user }}
-      Environment=AUTHENTIK_POSTGRESQL__NAME={{ authentik_pg_db }}
-      Environment=AUTHENTIK_POSTGRESQL__PASSWORD={{ authentik_pg_pass }}
-      Environment=AUTHENTIK_SECRET_KEY={{ authentik_secret_key }}
-
-      # Email Config
-      Environment=AUTHENTIK_EMAIL__HOST={{ authentik_email_host }}
-      Environment=AUTHENTIK_EMAIL__PORT={{ authentik_email_port }}
-      Environment=AUTHENTIK_EMAIL__USERNAME={{ authentik_email_username }}
-      Environment=AUTHENTIK_EMAIL__PASSWORD={{ authentik_email_password }}
-      Environment=AUTHENTIK_EMAIL__USE_TLS={{ authentik_email_use_tls }}
-      Environment=AUTHENTIK_EMAIL__FROM={{ authentik_email_from }}
+      EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
       Volume={{ authentik_data_dir }}/media:/media:Z
       Volume={{ authentik_data_dir }}/custom-templates:/templates:Z
@@ -155,7 +149,9 @@
 
       [Install]
       WantedBy=multi-user.target default.target
-    mode: '0644'
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   notify: reload systemd
 
@@ -182,4 +178,4 @@
   become: true
   # Only deploy if using Caddy as the ingress
   when: true
-  notify: reload systemd
+  notify: restart caddy

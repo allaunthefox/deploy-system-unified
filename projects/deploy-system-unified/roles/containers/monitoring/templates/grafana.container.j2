@@ -5,8 +5,7 @@ After=network-online.target
 [Container]
 Image={{ monitoring_grafana_image }}
 Pod={{ monitoring_pod_name }}
-Environment=GF_SECURITY_ADMIN_USER={{ monitoring_grafana_admin_user }}
-Environment=GF_SECURITY_ADMIN_PASSWORD={{ monitoring_grafana_admin_password }}
+EnvironmentFile={{ containers_secrets_dir }}/grafana.env
 Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:Z
 
 [Install]

@@ -3,6 +3,36 @@
 containers_install_podman: true
 containers_enable_socket: true
 
+# Rootless Podman Support (shared defaults)
+podman_rootless_enabled: false
+podman_rootless_user: "{{ ansible_user | default('prod') }}"
+podman_rootless_user_home: "/home/{{ podman_rootless_user }}"
+podman_rootless_network_mode: "slirp4netns"
+podman_rootless_allow_privileged_ports: false
+podman_rootless_privileged_port_start: 1024
+
+containers_systemd_dir: >-
+  {{ podman_rootless_enabled | bool
+     | ternary(podman_rootless_user_home ~ '/.config/containers/systemd',
+               '/etc/containers/systemd') }}
+containers_systemd_scope: "{{ podman_rootless_enabled | bool | ternary('user', 'system') }}"
+containers_systemd_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_secrets_dir: >-
+  {{ podman_rootless_enabled | bool
+     | ternary(podman_rootless_user_home ~ '/.config/containers/secrets',
+               '/etc/containers/secrets') }}
+containers_secrets_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_secrets_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_env: {}
+
+# Intel OneAPI repository (supply-chain hardening)
+intel_oneapi_gpg_key_url: "https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB"
+intel_oneapi_gpg_keyring_path: "/usr/share/keyrings/oneapi-archive-keyring.gpg"
+intel_oneapi_repo: "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main"
+intel_oneapi_gpg_fingerprint: "BF4385F91CA5FC005AB39E1C1A8497B11911E097"
+intel_oneapi_gpg_fingerprint_verify: false
+
 # Image Pull Safety / Rate Limit Avoidance
 # Docker Hub Anonymous Limit: 100 pulls / 6 hrs
 # Safe Retry Strategy to avoid Abuse Detection blocking:

@@ -33,15 +33,15 @@
 
 - name: Ensure quadlet directory exists
   ansible.builtin.file:
-    path: /etc/containers/systemd
+    path: "{{ containers_systemd_dir }}"
     state: directory
     mode: '0755'
-    owner: root
-    group: root
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
 - name: Create quadlet network configuration
   ansible.builtin.copy:
-    dest: "/etc/containers/systemd/{{ quadlet_network_name }}.network"
+    dest: "{{ containers_systemd_dir }}/{{ quadlet_network_name }}.network"
     content: |
       [Network]
       Label=org.deploy-system.uuid={{ object_uuid }}
@@ -51,13 +51,17 @@
       Gateway={{ quadlet_network_gateway | default('10.89.0.1') }}
       IPRange={{ quadlet_network_iprange | default('10.89.0.0/24') }}
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   when: quadlet_create_network | default(true)
 - name: Deploy custom quadlet files
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/etc/containers/systemd/{{ item | basename }}"
+    dest: "{{ containers_systemd_dir }}/{{ item | basename }}"
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   loop: "{{ quadlet_custom_files | default([]) }}"
   become: true
   when: quadlet_custom_files is defined and quadlet_custom_files | length > 0
@@ -65,16 +69,24 @@
 - name: Reload systemd to pick up quadlets
   ansible.builtin.systemd:
     daemon_reload: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
   become: true
+  become_user: "{{ containers_systemd_owner }}"
   when: ansible_facts['service_mgr'] == 'systemd'
   failed_when: false
 - name: List generated quadlet services
-  ansible.builtin.command:
-    cmd: systemctl list-unit-files --type=service | grep -E '\.container|\.pod'
+  ansible.builtin.shell:
+    cmd: >-
+      {{ (podman_rootless_enabled | bool)
+         | ternary('systemctl --user list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"',
+                   'systemctl list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"') }}
   register: quadlet_services
   changed_when: false
   failed_when: false
+  environment: "{{ containers_systemd_env }}"
   become: true
+  become_user: "{{ containers_systemd_owner }}"
   when: ansible_facts['service_mgr'] == 'systemd'
 - name: Display available quadlet services
   ansible.builtin.debug:
@@ -98,4 +110,5 @@
         }
       }
     mode: '0600'
+  changed_when: false
   become: true

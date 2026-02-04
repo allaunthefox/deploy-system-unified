@@ -14,6 +14,8 @@
   ansible.builtin.shell: |
     set -o pipefail
     chronyc tracking | grep -q "System time.*slow\|System time.*fast\|Reference ID"
+  args:
+    executable: /bin/bash
   register: chrony_sync_check
   changed_when: false
   become: true
@@ -29,8 +31,8 @@
   ansible.builtin.set_fact:
     security_scanning_configured: true
     enhanced_security_scanning_complete: true
-- name: Validate final security state (idempotent)
-  ansible.builtin.import_tasks: validation.yml
 - name: Set security framework applied flag
   ansible.builtin.set_fact:
     security_framework_applied: true
+- name: Validate final security state (idempotent)
+  ansible.builtin.import_tasks: validation.yml

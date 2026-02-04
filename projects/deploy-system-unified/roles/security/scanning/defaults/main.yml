@@ -29,3 +29,19 @@ security_scanning_extra_packages:
   - "chrony"
   - "curl"
   - "jq"
+
+# Enforced tooling lists (idempotent + reproducible)
+security_scanning_optional_tools:
+  - "trivy"
+  - "trufflehog"
+  - "checkov"
+security_scanning_critical_tools:
+  - "chronyd"
+  - "bubblewrap"
+  - "firejail"
+
+# Thresholds (tunable per environment)
+security_scanning_rkhunter_warning_threshold: 5
+security_scanning_aide_change_threshold: 10
+security_scanning_lynis_issue_threshold: 10
+security_scanning_checkov_issue_threshold: 0

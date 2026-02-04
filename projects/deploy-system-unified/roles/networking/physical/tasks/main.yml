@@ -96,6 +96,7 @@
 - name: Determine Max Interface Speed
   ansible.builtin.set_fact:
     max_interface_speed: "{{ interface_capabilities.values() | map(attribute='speed_mbps') | map('int') | max | default(1000) }}"
+    jumbo_frames_eligible: "{{ interface_capabilities.values() | selectattr('speed_mbps', 'defined') | selectattr('speed_mbps', 'ge', 1000) | list | length > 0 }}"
 
 - name: Select Performance Profile
   ansible.builtin.set_fact:

@@ -115,7 +115,7 @@
 
   post_tasks:
     - name: Verify GPU passthrough configuration
-      ansible.builtin.command:
+      ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(VGA|3D|NVIDIA|AMD|Intel)"
       register: gpu_passthrough
       changed_when: false

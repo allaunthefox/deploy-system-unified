@@ -1,18 +1,25 @@
 ---
 # Tasks for networking/container_networks - Container Isolation
 
-- name: Ensure /etc/containers/systemd exists
+- name: Apply Kernel Networking Prerequisites
+  ansible.builtin.include_tasks: kernel_prerequisites.yml
+
+- name: Ensure {{ containers_systemd_dir }} exists
   ansible.builtin.file:
-    path: /etc/containers/systemd
+    path: "{{ containers_systemd_dir }}"
     state: directory
     mode: '0755'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
 
 - name: Deploy Container Networks
   ansible.builtin.template:
     src: network.network.j2
-    dest: "/etc/containers/systemd/{{ item.name }}.network"
+    dest: "{{ containers_systemd_dir }}/{{ item.name }}.network"
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   loop: "{{ container_networks_list }}"
   when: container_networks_enable | bool
   notify: Reload systemd
@@ -20,28 +27,36 @@
 # Legacy cleanup (Optional - if we want to remove the old manual file)
 - name: Remove legacy frontend network definitions
   ansible.builtin.file:
-    path: /etc/containers/systemd/frontend.network
+    path: "{{ containers_systemd_dir }}/frontend.network"
     state: absent
+  become: true
+  notify: Reload systemd
 
-  notify: reload systemd
 - name: Create Backend Network Segment (Application Layer)
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/backend.network
+    dest: "{{ containers_systemd_dir }}/backend.network"
     content: |
       [Network]
       Label=tier=backend
       Internal=true # No direct internet access for backend
       Options=isolate=1
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  when: container_networks_enable | bool
+  notify: Reload systemd
+
 - name: Create Management Network Segment (Logging/Forensics)
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/management.network
+    dest: "{{ containers_systemd_dir }}/management.network"
     content: |
       [Network]
       Label=tier=management
       Internal=true
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  when: container_networks_enable | bool
+  notify: Reload systemd

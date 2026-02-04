@@ -44,6 +44,7 @@
         name: archlinux-keyring
         state: latest
         update_cache: true
+      when: not ansible_check_mode
     - name: Warn about automatic updates on Rolling Release
       ansible.builtin.debug:
         msg: "Skipping automatic system updates on Arch Linux. Rolling releases require manual intervention (pacman -Syu)."

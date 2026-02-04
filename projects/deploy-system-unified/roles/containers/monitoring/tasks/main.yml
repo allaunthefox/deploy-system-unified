@@ -4,14 +4,24 @@
     msg: "Monitoring Stack deployment start"
   when: monitoring_enable | bool
 
+- name: Validate Grafana admin password is set
+  ansible.builtin.assert:
+    that:
+      - monitoring_grafana_admin_password is defined
+      - monitoring_grafana_admin_password != "CHANGE_ME_IN_VAULT"
+    fail_msg: "Grafana admin password is not set. Define 'monitoring_grafana_admin_password' in encrypted inventory."
+  when: monitoring_enable | bool
+
 - name: Create Monitoring Network Quadlet
   ansible.builtin.copy:
-    dest: /etc/containers/systemd/monitoring_net.network
+    dest: "{{ containers_systemd_dir }}/monitoring_net.network"
     content: |
       [Network]
       NetworkName=monitoring_net
       Driver=bridge
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
   become: true
   when: monitoring_enable | bool
   notify: Reload systemd
@@ -29,6 +39,17 @@
     - "{{ monitoring_root_dir }}/grafana"
     - "{{ monitoring_config_dir }}"
     - "{{ monitoring_config_dir }}/prometheus"
+  become: true
+  when: monitoring_enable | bool
+
+- name: Create Grafana secrets file
+  ansible.builtin.template:
+    src: grafana.env.j2
+    dest: "{{ containers_secrets_dir }}/grafana.env"
+    mode: '0600'
+    owner: "{{ containers_secrets_owner }}"
+    group: "{{ containers_secrets_group }}"
+  become: true
   when: monitoring_enable | bool
 
 - name: Deploy Prometheus Config
@@ -36,29 +57,39 @@
     src: prometheus.yml.j2
     dest: "{{ monitoring_config_dir }}/prometheus/prometheus.yml"
     mode: '0644'
+  become: true
   notify: Restart Monitoring Pod
   when: monitoring_enable | bool
 
 - name: Deploy Monitoring Pod Quadlet
   ansible.builtin.template:
     src: mon_pod.pod.j2
-    dest: /etc/containers/systemd/mon_pod.pod
+    dest: "{{ containers_systemd_dir }}/mon_pod.pod"
     mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
   notify: Reload systemd
   when: monitoring_enable | bool
 
 - name: Deploy Prometheus Container Quadlet
   ansible.builtin.template:
     src: prometheus.container.j2
-    dest: /etc/containers/systemd/prometheus.container
-    mode: '0644'
+    dest: "{{ containers_systemd_dir }}/prometheus.container"
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
   notify: Reload systemd
   when: monitoring_enable | bool
 
 - name: Deploy Grafana Container Quadlet
   ansible.builtin.template:
     src: grafana.container.j2
-    dest: /etc/containers/systemd/grafana.container
-    mode: '0644'
+    dest: "{{ containers_systemd_dir }}/grafana.container"
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
   notify: Reload systemd
   when: monitoring_enable | bool

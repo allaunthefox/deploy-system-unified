@@ -91,7 +91,7 @@ When changing GPU roles, validatation must cover these permutations:
 
 2. **OS Family Check**:
     * Debian/Ubuntu (`apt`, `update-initramfs`)
-    * RHEL/Fedora (`dnf`, `dracut`)
+    * RHEL-compatible (AlmaLinux/Rocky/CentOS Stream) (`dnf`, `dracut`)
     * Alpine (`apk`, `mkinitfs`)
 
 3. **Virtualization Check**:

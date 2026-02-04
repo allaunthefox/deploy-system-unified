@@ -32,7 +32,7 @@
   when: ansible_os_family == 'Alpine'
 
 - name: Check if Panfrost module is loaded (Kernel 5.2+)
-  ansible.builtin.command: lsmod | grep panfrost
+  ansible.builtin.shell: lsmod | grep panfrost
   register: panfrost_check
   ignore_errors: true
   changed_when: false

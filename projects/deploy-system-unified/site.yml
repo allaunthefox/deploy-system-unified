@@ -50,9 +50,17 @@
     - name: Force systemd reload to pick up new Quadlets
       ansible.builtin.systemd:
         daemon_reload: true
+        scope: "{{ (podman_rootless_enabled | default(false) | bool) | ternary('user', 'system') }}"
+      environment: "{{ containers_systemd_env | default({}) }}"
+      become: true
+      become_user: "{{ (podman_rootless_enabled | default(false) | bool) | ternary(podman_rootless_user, 'root') }}"
 
-    - name: Ensure Caddy is restarted to pick up new configs
+    - name: Ensure Caddy is running
       ansible.builtin.systemd:
         name: caddy
-        state: restarted
+        state: started
         enabled: true
+        scope: "{{ (podman_rootless_enabled | default(false) | bool) | ternary('user', 'system') }}"
+      environment: "{{ containers_systemd_env | default({}) }}"
+      become: true
+      become_user: "{{ (podman_rootless_enabled | default(false) | bool) | ternary(podman_rootless_user, 'root') }}"

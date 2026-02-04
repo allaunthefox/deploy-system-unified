@@ -8,7 +8,9 @@
 - name: Verify Landlock support in Kernel
   ansible.builtin.shell: |
     set -o pipefail
-    dmesg | grep -i landlock || [-c /dev/landlock]
+    dmesg | grep -i landlock || [ -c /dev/landlock ]
+  args:
+    executable: /bin/bash
   register: landlock_check
   failed_when: false
   changed_when: false

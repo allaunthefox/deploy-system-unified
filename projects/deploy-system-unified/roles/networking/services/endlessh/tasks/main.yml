@@ -14,17 +14,18 @@
           - git
           - gcc
           - make
-          - libc-dev
+          - "{{ 'glibc' if ansible_os_family == 'Archlinux' else 'libc-dev' }}"
         state: present
     - name: Clone Endlessh repository
       ansible.builtin.git:
         repo: 'https://github.com/skeeto/endlessh.git'
         dest: /usr/local/src/endlessh
-        version: master
+        version: "{{ endlessh_version }}"
     - name: Build Endlessh
       ansible.builtin.command:
         cmd: make
         chdir: /usr/local/src/endlessh
+        creates: /usr/local/src/endlessh/endlessh
       changed_when: true
     - name: Install Endlessh binary
       ansible.builtin.copy:
@@ -33,6 +34,7 @@
         mode: '0755'
         remote_src: true
   become: true
+  when: not ansible_check_mode
 - name: Create Endlessh configuration directory
   ansible.builtin.file:
     path: /etc/endlessh
