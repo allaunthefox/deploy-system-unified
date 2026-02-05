@@ -1,5 +1,7 @@
+---
 name: Manual Dispatch Test
 
+# yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
 

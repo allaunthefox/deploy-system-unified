@@ -92,4 +92,3 @@ jobs:
             echo "Style enforcement detected issues; failing job with code $(cat .enforce_status)"
             exit $(cat .enforce_status)
           fi
-
