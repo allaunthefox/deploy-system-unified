@@ -97,3 +97,5 @@ pip-wheel-metadata/
 **/ssh_keys/
 *.ppk
 # End SSH key ignores
+migration_assets/
+secrets.generated.yml

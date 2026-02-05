@@ -1,0 +1,4 @@
+Offline_Research/
+projects/SystemBackups/
+**/*.pyc
+**/__pycache__/

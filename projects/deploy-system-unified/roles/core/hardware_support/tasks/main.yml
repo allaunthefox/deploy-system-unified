@@ -31,15 +31,21 @@
   ansible.builtin.debug:
     msg: "Hardware TPM detected: {{ has_hardware_tpm }}"
 
+- name: Get timedatectl status
+  ansible.builtin.command: timedatectl show
+  register: timedatectl_show
+  changed_when: false
+  check_mode: false
+
 - name: Configure Hardware Clock (RTC) to UTC
   ansible.builtin.command: timedatectl set-local-rtc 0
   become: true
-  changed_when: false
+  when: "'LocalRTC=no' not in timedatectl_show.stdout_lines"
 
 - name: Enable NTP-based RTC synchronization
   ansible.builtin.command: timedatectl set-ntp true
   become: true
-  changed_when: false
+  when: "'NTP=yes' not in timedatectl_show.stdout_lines"
 
 - name: Report Hardware Clock status
   ansible.builtin.command: timedatectl status

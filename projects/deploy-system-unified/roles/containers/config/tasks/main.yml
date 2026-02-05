@@ -54,8 +54,8 @@
 - name: Enable container lingering for service users
   ansible.builtin.command:
     cmd: "loginctl enable-linger {{ item }}"
+    creates: "/var/lib/systemd/linger/{{ item }}"
   loop: "{{ container_linger_users | default([]) }}"
-  changed_when: true
   become: true
   when: container_linger_users is defined and container_linger_users | length > 0
 

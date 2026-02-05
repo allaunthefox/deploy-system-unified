@@ -3,7 +3,7 @@
 - name: Disable SWAP (Mandatory for K8s)
   ansible.builtin.command: swapoff -a
   become: true
-  changed_when: false
+  when: ansible_swaptotal_mb > 0
 
 - name: Remove SWAP from fstab
   ansible.builtin.replace:

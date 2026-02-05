@@ -1,16 +1,19 @@
 ---
 # Tasks for security/inter_pod_encryption - Kernel Readiness for Encrypted Traffic
 - name: Ensure Wireguard kernel module is available
-  ansible.builtin.shell: modprobe wireguard
+  community.general.modprobe:
+    name: wireguard
+    state: present
   become: true
-  changed_when: false
-  ignore_errors: true
 
 - name: Verify IPsec/ESP kernel modules for inter-node security
-  ansible.builtin.shell: modprobe af_key && modprobe xfrm_user
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - af_key
+    - xfrm_user
   become: true
-  changed_when: false
-  ignore_errors: true
 
 - name: Report encryption readiness
   ansible.builtin.debug:
