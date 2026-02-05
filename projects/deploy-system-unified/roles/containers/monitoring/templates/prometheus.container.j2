@@ -6,6 +6,10 @@ After=network-online.target
 ContainerName=prometheus-{{ monitoring_instance }}
 Image={{ monitoring_prometheus_image }}
 Pod={{ monitoring_pod_name }}
+# If running rootless, map the full subuid range so UIDs like 65534 (nobody) and image UIDs are valid
+{% if podman_rootless_enabled | bool %}
+UserNS=auto
+{% endif %}
 Volume={{ monitoring_config_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
 Volume={{ monitoring_root_dir }}/prometheus:/prometheus:Z
 Exec=/bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles

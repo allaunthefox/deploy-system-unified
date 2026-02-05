@@ -6,6 +6,10 @@ After=network-online.target
 ContainerName=grafana-{{ monitoring_instance }}
 Image={{ monitoring_grafana_image }}
 Pod={{ monitoring_pod_name }}
+# If running rootless, map the full subuid range so UIDs like 65534 (nobody) and image UIDs are valid
+{% if podman_rootless_enabled | bool %}
+UserNS=auto
+{% endif %}
 EnvironmentFile={{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env
 Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:Z
 
