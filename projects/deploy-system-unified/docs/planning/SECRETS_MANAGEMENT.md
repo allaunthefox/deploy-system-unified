@@ -97,4 +97,5 @@ Simply reference the variable as normal.
 * [ ] Create `.sops.yaml`.
 * [ ] Enable `community.sops.sops` in `ansible.cfg`.
 * [ ] Migrate `authentik_secret_key`, `postgres_password`, `transmission_pass`, `vaultwarden_admin_token` to `group_vars/all/secrets.sops.yml`.
+* [ ] Add `access_admin_password_hash` to `group_vars/all/secrets.sops.yml` (hashed password for admin user).
 * [ ] Remove hardcoded secrets from `defaults/main.yml` files.

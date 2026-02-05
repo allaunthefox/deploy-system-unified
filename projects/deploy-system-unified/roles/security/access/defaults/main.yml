@@ -9,3 +9,13 @@ access_sshd_port: 22
 #   options:
 #     - "PasswordAuthentication yes"
 ssh_match_rules: []
+
+# Admin account password management (use SOPS/Vault to store the hash)
+access_admin_user: "admin"
+# Store a hashed password (e.g., $6$... or $y$...) in encrypted secrets.
+access_admin_password_hash: ""
+access_admin_password_enforce: false
+access_admin_password_placeholders:
+  - "admin_password_change_me"
+  - "CHANGE_ME_IN_SOPS"
+  - "CHANGE_ME_IN_VAULT"

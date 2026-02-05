@@ -157,6 +157,8 @@ default_capabilities = [
 **Important**: `gpu` is **not** a Linux capability and must **not** appear in `default_capabilities` or `Capabilities=` lists. GPU access should be granted via device nodes and mounts (e.g., `/dev/nvidia*` or `/dev/dri/*`) and optional vendor-specific environment variables (e.g., `NVIDIA_DRIVER_CAPABILITIES`).
 See the GPU Enablement Recipe in `docs/deployment/CONTAINER_RUNTIME.md` for safe defaults and examples.
 
+**Admin Password (Encrypted)**: Store `access_admin_password_hash` in an encrypted secrets file (SOPS/Vault). The `security/access` role will apply it idempotently when `access_admin_password_enforce: true`.
+
 ## 6. Post-Deployment: The "Hybrid Security" Hook
 
 **Critical Step**: The CrowdSec "Hybrid" architecture (Container Agent + Host Binary Bouncer) requires a one-time cryptographic handshake that cannot be fully automated inside the playbook due to circular dependencies between the API readiness and the Host Service.

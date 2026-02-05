@@ -49,6 +49,28 @@
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
   become: true
+
+- name: Validate admin password hash (if enforcement enabled)
+  ansible.builtin.assert:
+    that:
+      - access_admin_password_hash | default('') | length > 0
+      - access_admin_password_hash not in access_admin_password_placeholders
+      - access_admin_password_hash is match('^\\$')
+    fail_msg: >-
+      Admin password hash is missing, placeholder, or not hashed. Store a valid
+      hash in encrypted secrets (SOPS/Vault) and set access_admin_password_enforce: true.
+  when: access_admin_password_enforce | bool
+
+- name: Set admin account password hash (idempotent)
+  ansible.builtin.user:
+    name: "{{ access_admin_user }}"
+    password: "{{ access_admin_password_hash }}"
+    update_password: always
+  become: true
+  when:
+    - access_admin_password_hash | default('') | length > 0
+    - access_admin_password_hash not in access_admin_password_placeholders
+    - access_admin_password_hash is match('^\\$')
 - name: Configure SSH Match blocks (User-level IP restrictions)
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
