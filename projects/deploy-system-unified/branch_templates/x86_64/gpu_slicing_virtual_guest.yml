@@ -3,6 +3,7 @@
 # For virtual machines with GPU passthrough or vGPU capabilities
 # Features: GPU passthrough configuration, guest OS GPU driver installation
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy GPU Slicing (Virtual Guest)
   hosts: all
   become: true

@@ -3,6 +3,7 @@
 # Optimized for Large Language Model and Machine Learning workloads
 # Features: GPU resource allocation, high-performance settings, AI/ML frameworks support
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy LLM/ML GPU Workload
   hosts: all
   become: true

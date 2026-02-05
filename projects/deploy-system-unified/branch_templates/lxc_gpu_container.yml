@@ -3,6 +3,7 @@
 # For LXC containers with GPU passthrough or slicing support (AI/ML, data processing)
 # Features: GPU device passthrough, resource limits, container configuration
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy LXC GPU Container
   hosts: all
   become: true

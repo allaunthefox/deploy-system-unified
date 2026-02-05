@@ -1,10 +1,9 @@
 ---
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
-- import_playbook: main.yml
+
 
 - ansible.builtin.import_playbook: main.yml
-
 - name: Apply Secure Infrastructure Base
   hosts: all
   become: true

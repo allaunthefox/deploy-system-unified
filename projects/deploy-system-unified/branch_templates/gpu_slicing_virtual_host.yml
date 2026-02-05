@@ -3,6 +3,7 @@
 # For virtualization hosts with GPU sharing capabilities (SR-IOV, vGPU)
 # Features: SR-IOV virtual function creation, GPU sharing among VMs, hardware isolation
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy GPU Slicing (Virtual Host)
   hosts: all
   become: true

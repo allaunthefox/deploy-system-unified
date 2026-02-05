@@ -1,7 +1,6 @@
 ---
 # VPS Hardened - Cloud Infrastructure Solution Stack
 # Solution: Cloud Provider Sync + Base Hardened Infrastructure + VPS Optimization
-- ansible.builtin.import_playbook: main.yml
 
 - name: Sync with Cloud Provider
   hosts: all

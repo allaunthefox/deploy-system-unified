@@ -3,6 +3,7 @@
 # For Kubernetes workloads with GPU resource requests and limits (AI/ML, data processing)
 # Features: GPU resource allocation, workload scheduling, affinity rules
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy Kubernetes GPU Workload
   hosts: all
   become: true

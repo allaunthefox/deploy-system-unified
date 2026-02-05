@@ -3,6 +3,7 @@
 # For GPU-accelerated environments (AI/ML, data processing, visualization)
 # Features: GPU driver installation, container GPU support, CUDA toolkit, optimized system settings
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy GPU Workstation
   hosts: all
   become: true
