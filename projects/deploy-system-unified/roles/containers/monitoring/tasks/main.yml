@@ -95,3 +95,38 @@
   become: true
   notify: Reload systemd
   when: monitoring_enable | bool
+
+- name: Remove legacy generated systemd units (rootless)
+  ansible.builtin.file:
+    path: "{{ podman_rootless_user_home }}/.config/systemd/user/{{ item }}"
+    state: absent
+  loop:
+    - "container-prometheus-{{ monitoring_instance }}.service"
+    - "container-grafana-{{ monitoring_instance }}.service"
+  become: true
+  when:
+    - monitoring_enable | bool
+    - podman_rootless_enabled | bool
+
+- name: Reload rootless systemd to pick up quadlets
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  when: monitoring_enable | bool
+
+- name: Start monitoring pod and services (quadlet units)
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    scope: "{{ containers_systemd_scope }}"
+  loop:
+    - "{{ monitoring_pod_name }}-pod"
+    - "prometheus-{{ monitoring_instance }}"
+    - "grafana-{{ monitoring_instance }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  when: monitoring_enable | bool
