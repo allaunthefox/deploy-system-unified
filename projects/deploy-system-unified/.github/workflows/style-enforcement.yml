@@ -46,9 +46,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [-f .enforce_status]; then
+          if [ -f .enforce_status ]; then
             report_file=$(ls -t dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
-            if [-z "$report_file"]; then
+            if [ -z "$report_file" ]; then
               echo "No report found to post"
               exit 0
             fi
@@ -79,7 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [! -f .enforce_status]; then
+          if [ ! -f .enforce_status ]; then
             body='{"body":"✅ Style enforcement passed. No issues detected. Good job!"}'
             curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
               --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
@@ -88,7 +88,7 @@ jobs:
           fi
       - name: Fail if enforcement found issues
         run: |
-          if [-f .enforce_status]; then
+          if [ -f .enforce_status ]; then
             echo "Style enforcement detected issues; failing job with code $(cat .enforce_status)"
             exit $(cat .enforce_status)
           fi
