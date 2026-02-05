@@ -1,0 +1,13 @@
+- hosts: localhost
+  connection: local
+  become: true
+  vars:
+    # Need to define variables expected by the role if not defaults
+    anubis_image: "ghcr.io/techarohq/anubis:v1.24.0"
+    anubis_container_name: "anubis-gatekeeper"
+    anubis_target_url: "http://app:80"
+    anubis_difficulty: 5
+    anubis_enabled: true
+    quadlet_gpu_support: false
+  roles:
+    - containers/anubis

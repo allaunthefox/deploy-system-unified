@@ -1,0 +1,101 @@
+---
+# Intel GPU model profiles for GPU slicing
+# SR-IOV-capable GPUs
+intel_sriov_capable_gpus:
+  - "Intel Data Center GPU Max 1100"
+  - "Intel Data Center GPU Max 1550"
+  - "Intel Data Center GPU Max 1500"
+  - "Intel Data Center GPU Max series"
+  - "Intel Data Center GPU Flex 140"
+  - "Intel Data Center GPU Flex 170"
+  - "Intel Data Center GPU Flex series"
+  - "Intel Iris Xe Max"
+  - "Intel Arc A-series"
+# Level Zero API supported GPUs
+intel_level_zero_supported_gpus:
+  - "Intel Data Center GPU Max series"
+  - "Intel Data Center GPU Flex series"
+  - "Intel Iris Xe Max"
+  - "Intel Arc A-series"
+  - "Intel Arc Pro A-series"
+  - "Intel UHD Graphics 770"
+  - "Intel Iris Xe Graphics"
+  - "Intel Xe Graphics"
+# OneAPI supported GPUs
+intel_oneapi_supported_gpus:
+  - "Intel Data Center GPU Max series"
+  - "Intel Data Center GPU Flex series"
+  - "Intel Iris Xe Max"
+  - "Intel Arc A-series"
+  - "Intel Arc Pro A-series"
+  - "Intel UHD Graphics"
+  - "Intel Iris Graphics"
+  - "Intel Iris Xe Graphics"
+  - "Intel Xe Graphics"
+# Default SR-IOV virtual function count per GPU model
+intel_default_sriov_vf_count:
+  "Intel Data Center GPU Max 1100": 4
+  "Intel Data Center GPU Max 1550": 8
+  "Intel Data Center GPU Max 1500": 4
+  "Intel Data Center GPU Flex 140": 4
+  "Intel Data Center GPU Flex 170": 4
+  "Intel Iris Xe Max": 2
+  "Intel Arc A770": 4
+# Default Level Zero partitions per GPU model
+intel_default_level_zero_partitions:
+  "Intel Data Center GPU Max 1100":
+    - { name: "partition0", memory: "25%", compute_units: 16 }
+    - { name: "partition1", memory: "25%", compute_units: 16 }
+    - { name: "partition2", memory: "25%", compute_units: 16 }
+    - { name: "partition3", memory: "25%", compute_units: 16 }
+  "Intel Data Center GPU Max 1550":
+    - { name: "partition0", memory: "12.5%", compute_units: 8 }
+    - { name: "partition1", memory: "12.5%", compute_units: 8 }
+    - { name: "partition2", memory: "12.5%", compute_units: 8 }
+    - { name: "partition3", memory: "12.5%", compute_units: 8 }
+    - { name: "partition4", memory: "12.5%", compute_units: 8 }
+    - { name: "partition5", memory: "12.5%", compute_units: 8 }
+    - { name: "partition6", memory: "12.5%", compute_units: 8 }
+    - { name: "partition7", memory: "12.5%", compute_units: 8 }
+# GPU architecture generation per model
+intel_gpu_architectures:
+  "Intel Data Center GPU Max series": "Xe HPC"
+  "Intel Data Center GPU Flex series": "Xe HPG"
+  "Intel Iris Xe Max": "Xe LP"
+  "Intel Arc A-series": "Xe HPG"
+  "Intel Arc Pro A-series": "Xe HPG"
+  "Intel UHD Graphics 770": "Xe LP"
+  "Intel Iris Xe Graphics": "Xe LP"
+  "Intel Xe Graphics": "Xe LP"
+# Supported OneAPI toolkits per GPU architecture
+intel_oneapi_toolkits:
+  "Xe HPC": ["base", "hpc", "ai"]
+  "Xe HPG": ["base", "rendering", "ai"]
+  "Xe LP": ["base", "ai"]
+# Default OneAPI toolkit per GPU architecture
+intel_default_oneapi_toolkit:
+  "Xe HPC": "hpc"
+  "Xe HPG": "rendering"
+  "Xe LP": "base"
+# Default OneAPI components per toolkit
+intel_default_oneapi_components:
+  "base": ["compiler", "mpi", "tbb"]
+  "hpc": ["compiler", "mpi", "tbb", "mkl"]
+  "ai": ["compiler", "mpi", "tbb", "mkl", "dnnl"]
+  "rendering": ["compiler", "mpi", "tbb", "mkl", "vpl"]
+# Intel GPU memory sizes per model
+intel_gpu_memory_sizes:
+  "Intel Data Center GPU Max 1100": "16GB"
+  "Intel Data Center GPU Max 1550": "32GB"
+  "Intel Data Center GPU Max 1500": "16GB"
+  "Intel Data Center GPU Flex 140": "12GB"
+  "Intel Data Center GPU Flex 170": "16GB"
+  "Intel Iris Xe Max": "4GB"
+  "Intel Arc A310": "4GB"
+  "Intel Arc A350": "4GB"
+  "Intel Arc A770": "16GB"
+  "Intel Arc A750": "8GB"
+  "Intel Arc A580": "8GB"
+  "Intel Arc A380": "6GB"
+  "Intel Arc Pro A50": "6GB"
+  "Intel Arc Pro A60": "12GB"

@@ -1,0 +1,41 @@
+---
+# Generic GPU Setup for riscv64
+# Falls back to standard Mesa / Vulkan (useful for VM guests or development boards)
+
+- name: Define Generic Graphics packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    generic_graphics_packages:
+      - mesa-utils
+      - vulkan-tools
+      - libgl1-mesa-dri
+  when: ansible_os_family == 'Debian'
+
+- name: Define Generic Graphics packages (RedHat/Fedora)
+  ansible.builtin.set_fact:
+    generic_graphics_packages:
+      - mesa-demos
+      - vulkan-tools
+      - mesa-dri-drivers
+  when: ansible_os_family == 'RedHat'
+
+- name: Define Generic Graphics packages (Alpine)
+  ansible.builtin.set_fact:
+    generic_graphics_packages:
+      - mesa-demos
+      - vulkan-tools
+      - mesa-dri-gallium
+      - mesa-glapi
+  when: ansible_os_family == 'Alpine'
+
+- name: Install Generic Graphics Stack (RISC-V)
+  ansible.builtin.package:
+    name: "{{ generic_graphics_packages }}"
+    state: present
+  become: true
+  when: generic_graphics_packages is defined
+
+- name: Log Generic Setup
+  ansible.builtin.debug:
+    msg: >-
+      Installed generic riscv64 graphics stack.
+      This provides software rendering (llvmpipe) or basic framebuffer support.

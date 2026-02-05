@@ -1,0 +1,41 @@
+---
+- name: Test SSH forwarding configuration
+  hosts: localhost
+  become: true
+  gather_facts: true
+  vars:
+    sshd_allow_tcp_forwarding: true
+    sshd_allow_agent_forwarding: false
+    sshd_allow_x11_forwarding: false
+  roles:
+    - role: security/sshd
+  tasks:
+    - name: Verify TCP forwarding is enabled
+      ansible.builtin.command:
+        cmd: grep -E "AllowTcpForwarding.*yes" /etc/ssh/sshd_config
+      register: tcp_forwarding_check
+      changed_when: false
+      failed_when: tcp_forwarding_check.rc != 0
+      notify: restart sshd
+    - name: Verify agent forwarding is disabled
+      ansible.builtin.command:
+        cmd: grep -E "AllowAgentForwarding.*no" /etc/ssh/sshd_config
+      register: agent_forwarding_check
+      changed_when: false
+      failed_when: agent_forwarding_check.rc != 0
+    - name: Verify X11 forwarding is disabled
+      ansible.builtin.command:
+        cmd: grep -E "X11Forwarding.*no" /etc/ssh/sshd_config
+      register: x11_forwarding_check
+      changed_when: false
+      failed_when: x11_forwarding_check.rc != 0
+    - name: Test sshd configuration validity
+      ansible.builtin.command:
+        cmd: sshd -t
+      register: sshd_test
+      changed_when: false
+      failed_when: sshd_test.rc != 0
+    - name: Verify sshd is running
+      ansible.builtin.systemd:
+        name: sshd
+        state: started

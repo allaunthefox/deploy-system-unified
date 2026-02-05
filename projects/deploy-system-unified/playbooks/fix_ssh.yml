@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  become: true
+  vars:
+    sshd_permit_root_login: "prohibit-password"
+    sshd_password_authentication: "no"
+    sshd_allow_x11_forwarding: false
+    sshd_allow_tcp_forwarding: true
+    sshd_allow_agent_forwarding: false
+  tasks:
+    - name: Import sshd tasks
+      ansible.builtin.import_tasks: roles/security/sshd/tasks/main.yml

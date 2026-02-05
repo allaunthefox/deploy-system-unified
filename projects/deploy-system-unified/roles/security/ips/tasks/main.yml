@@ -5,19 +5,42 @@
     name: fail2ban
     state: present
   become: true
-
 - name: Configure Fail2Ban for SSH protection
   ansible.builtin.copy:
     content: |
       [sshd]
       enabled = {{ ips_fail2ban_sshd_enabled | lower }}
-      port    = {{ advanced_security_hardening_random_ssh_port | default(access_sshd_port) | default(22) }}
+      port    = {{ system_ssh_port | default(access_sshd_port) | default(22) }}
       logpath = %(sshd_log)s
       backend = %(sshd_backend)s
       maxretry = {{ ips_fail2ban_sshd_maxretry }}
       bantime  = {{ ips_fail2ban_sshd_bantime }}
       findtime = {{ ips_fail2ban_sshd_findtime }}
     dest: /etc/fail2ban/jail.d/99-sshd-hardened.local
+    mode: '0644'
+  become: true
+  notify: restart fail2ban
+
+- name: Install Caddy Filter
+  ansible.builtin.copy:
+    src: filter_caddy.conf
+    dest: /etc/fail2ban/filter.d/caddy.conf
+    mode: '0644'
+  become: true
+  notify: restart fail2ban
+
+- name: Configure Fail2Ban for Caddy (Web Protection)
+  ansible.builtin.copy:
+    content: |
+      [caddy]
+      enabled = {{ ips_fail2ban_caddy_enabled | lower }}
+      port    = 80,443
+      filter  = caddy
+      logpath = /var/log/caddy/access.log
+      maxretry = {{ ips_fail2ban_caddy_maxretry }}
+      bantime  = {{ ips_fail2ban_caddy_bantime }}
+      findtime = 10m
+    dest: /etc/fail2ban/jail.d/99-caddy-hardened.local
     mode: '0644'
   become: true
   notify: restart fail2ban

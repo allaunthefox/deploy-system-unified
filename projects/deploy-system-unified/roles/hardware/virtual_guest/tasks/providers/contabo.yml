@@ -1,0 +1,23 @@
+---
+# Tasks for Contabo-specific VPS optimization
+# Based on research: Prevents packet loss in virtualized bridge environments
+- name: Configure Contabo Reverse Path Filtering
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: '1'
+    state: present
+    sysctl_file: /etc/sysctl.d/99-contabo-networking.conf
+    reload: true
+  loop:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.conf.default.rp_filter
+  become: true
+- name: Force MTU for Contabo Virtual Bridge stability
+  ansible.builtin.shell: |
+    # Detect the primary interface and set MTU to 1450 to avoid tunnel fragmentation
+    PRIMARY_IF=$(ip route | grep default | awk '{print $5}' | head -n 1)
+    if [ -n "$PRIMARY_IF" ]; then
+      ip link set dev "$PRIMARY_IF" mtu 1450
+    fi
+  become: true
+  changed_when: false

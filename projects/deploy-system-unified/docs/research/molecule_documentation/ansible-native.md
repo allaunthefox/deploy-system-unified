@@ -24,7 +24,6 @@ ansible:
     destroy: destroy.yml
     converge: converge.yml
     verify: verify.yml
-
 scenario:
   test_sequence:
     - create
@@ -33,7 +32,6 @@ scenario:
     - destroy
 
 shared_state: true
-
 verifier:
   name: ansible
 ```
@@ -337,7 +335,6 @@ The ansible-native approach leverages ansible collections for testing resource m
       containers.podman.podman_network:
         name: molecule-test
         state: present
-
     - name: Create test containers
       containers.podman.podman_container:
         name: "{% raw %}{{ item }}{% endraw %}"
@@ -373,7 +370,6 @@ The ansible-native approach leverages ansible collections for testing resource m
         region: "{% raw %}{{ aws_region }}{% endraw %}"
         state: present
       register: vpc
-
     - name: Create security group
       amazon.aws.ec2_security_group:
         name: molecule-test-sg
@@ -433,7 +429,6 @@ ansible:
   playbooks:
     converge: converge.yml
     verify: verify.yml
-
 scenario:
   test_sequence:
     - converge
@@ -480,7 +475,6 @@ scenario:
   test_sequence:
     - converge
     - verify
-
 shared_state: true
 ```
 
@@ -518,7 +512,6 @@ Multi-component testing with shared resources:
         host: "{% raw %}{{ hostvars[groups['database_servers'][0]].ansible_host }}{% endraw %}"
         port: 5432
         timeout: 10
-
 - name: Cross-component tests
   hosts: test_resources
   tasks:
@@ -584,7 +577,6 @@ ansible:
     destroy: destroy.yml
     converge: converge.yml
     verify: verify.yml
-
 scenario:
   test_sequence:
     - create
@@ -593,7 +585,6 @@ scenario:
     - destroy
 
 shared_state: true
-
 verifier:
   name: ansible
 ```

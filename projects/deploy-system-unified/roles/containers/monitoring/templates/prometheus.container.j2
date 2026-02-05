@@ -1,0 +1,13 @@
+[Unit]
+Description=Prometheus Container
+After=network-online.target
+
+[Container]
+Image={{ monitoring_prometheus_image }}
+Pod={{ monitoring_pod_name }}
+Volume={{ monitoring_config_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+Volume={{ monitoring_root_dir }}/prometheus:/prometheus:Z
+Exec=/bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
+
+[Install]
+WantedBy=multi-user.target

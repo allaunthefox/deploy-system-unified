@@ -18,9 +18,10 @@ This workspace holds multiple active projects, research, and tooling used across
 
 - `projects/` — Project folders
   - `projects/deploy-system-unified/` — Deploy-System-Unified project (Ansible playbooks, roles, templates)
-- `LLM_RESEARCH/` — Style guides, research notes, and documentation for LLM-driven docs and processes
-- `ansiblelint/` — Custom Ansible Lint rules and tests
-- `dev_tools/` — Shared helper scripts, enforcement tools, and utilities used across projects
+- `Offline_Research/` — Offline research and documentation
+  - `Offline_Research/LLM_RESEARCH/` — Style guides, research notes, and documentation for LLM-driven docs and processes
+- `ansiblelint/` — Custom Ansible Lint rules and tests (now inside deploy-system-unified)
+- `dev_tools/` — Shared helper scripts, enforcement tools, and utilities used across projects (now inside deploy-system-unified)
 
 ---
 

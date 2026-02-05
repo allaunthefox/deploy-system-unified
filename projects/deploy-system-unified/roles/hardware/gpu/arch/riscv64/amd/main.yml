@@ -1,0 +1,40 @@
+---
+# AMD GPU Setup for riscv64 (PCIe cards on HiFive/Pioneer boards)
+
+- name: Install AMD firmware and drivers (Debian/Ubuntu)
+  ansible.builtin.package:
+    name:
+      - firmware-amd-graphics
+      - libgl1-mesa-dri
+      - libglx-mesa0
+      - mesa-vulkan-drivers
+      - mesa-va-drivers
+      - mesa-vdpau-drivers
+    state: present
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install AMD firmware and drivers (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+  ansible.builtin.package:
+    name:
+      - amd-gpu-firmware
+      - mesa-dri-drivers
+      - mesa-vulkan-drivers
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat'
+
+- name: Install AMD firmware and drivers (Alpine)
+  ansible.builtin.package:
+    name:
+      - linux-firmware-amdgpu
+      - mesa-dri-gallium
+      - mesa-va-gallium
+      - mesa-vulkan-ati
+    state: present
+  become: true
+  when: ansible_os_family == 'Alpine'
+
+- name: Log AMD Setup
+  ansible.builtin.debug:
+    msg: "Installed userspace AMD drivers for RISC-V. Kernel support must be compiled in."

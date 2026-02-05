@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Ansible Playbook (Site)",
+      "type": "python",
+      "request": "launch",
+      "program": "/usr/bin/ansible-playbook",
+      "args": [
+        "-i",
+        "inventory/validation.ini",
+        "site.yml"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Lint Project",
+      "type": "python",
+      "request": "launch",
+      "program": "/usr/bin/ansible-lint",
+      "args": [
+        "."
+      ],
+      "console": "integratedTerminal"
+    }
+  ]
+}

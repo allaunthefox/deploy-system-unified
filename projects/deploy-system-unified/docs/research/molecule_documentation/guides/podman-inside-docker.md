@@ -12,7 +12,6 @@ inside a privileged Docker host by adding some required settings:
       package:
         name:
           - fuse-overlayfs
-
     - name: create containers config dir
       file:
         group: root
@@ -34,7 +33,6 @@ inside a privileged Docker host by adding some required settings:
         group: root
         mode: a=r,u+w
         owner: root
-
     - name: make podman use cgroupfs cgroup manager
       copy:
         content: |

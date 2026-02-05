@@ -1,0 +1,56 @@
+---
+# RDMA (Remote Direct Memory Access) Support
+# Installs core userspace verbs and diagnostic tools
+
+- name: Define RDMA packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    rdma_packages:
+      - rdma-core
+      - ibverbs-providers
+      - infiniband-diags
+      - rdmacm-utils
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Define RDMA packages (RedHat/Fedora)
+  ansible.builtin.set_fact:
+    rdma_packages:
+      - rdma-core
+      - libibverbs
+      - infiniband-diags
+      - libibverbs-utils
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Define RDMA packages (Alpine)
+  ansible.builtin.set_fact:
+    rdma_packages:
+      - rdma-core
+      - libibverbs
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Install RDMA Core Stack
+  ansible.builtin.package:
+    name: "{{ rdma_packages }}"
+    state: present
+  become: true
+  when: rdma_packages is defined
+
+- name: Load essential RDMA kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ib_core
+    - ib_uverbs
+    - rdma_cm
+  become: true
+  when: not _gpu_is_container | default(false)
+  ignore_errors: true # Kernel might not support RDMA modules
+
+- name: Enable RDMA service (RedHat/Debian)
+  ansible.builtin.systemd:
+    name: rdma
+    enabled: true
+    state: started
+  become: true
+  when: ansible_facts['os_family'] == 'RedHat'
+  ignore_errors: true

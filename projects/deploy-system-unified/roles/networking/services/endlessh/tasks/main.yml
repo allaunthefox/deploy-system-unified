@@ -1,0 +1,88 @@
+---
+# Tasks for networking/services/endlessh - SSH Tarpit
+
+- name: Install Endlessh
+  block:
+    - name: Try installing Endlessh from package manager
+      ansible.builtin.package:
+        name: endlessh
+        state: present
+  rescue:
+    - name: Install build dependencies for Endlessh fallback
+      ansible.builtin.package:
+        name:
+          - git
+          - gcc
+          - make
+          - "{{ 'glibc' if ansible_os_family == 'Archlinux' else 'libc-dev' }}"
+        state: present
+    - name: Clone Endlessh repository
+      ansible.builtin.git:
+        repo: 'https://github.com/skeeto/endlessh.git'
+        dest: /usr/local/src/endlessh
+        version: "{{ endlessh_version }}"
+    - name: Build Endlessh
+      ansible.builtin.command:
+        cmd: make
+        chdir: /usr/local/src/endlessh
+        creates: /usr/local/src/endlessh/endlessh
+      changed_when: true
+    - name: Install Endlessh binary
+      ansible.builtin.copy:
+        src: /usr/local/src/endlessh/endlessh
+        dest: /usr/bin/endlessh
+        mode: '0755'
+        remote_src: true
+  become: true
+  when: not ansible_check_mode
+- name: Create Endlessh configuration directory
+  ansible.builtin.file:
+    path: /etc/endlessh
+    state: directory
+    mode: '0755'
+  become: true
+- name: Configure Endlessh
+  ansible.builtin.template:
+    src: config.j2
+    dest: /etc/endlessh/config
+    mode: '0644'
+  become: true
+  notify: restart endlessh
+- name: Allow Endlessh to bind to privileged ports
+  community.general.capabilities:
+    path: /usr/bin/endlessh
+    capability: cap_net_bind_service+ep
+    state: present
+  become: true
+  ignore_errors: true
+  when: not (is_virtualized | default(false))
+- name: Ensure Endlessh systemd override directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/endlessh.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  changed_when: false
+- name: Configure Endlessh to run on port {{ endlessh_port }} (systemd override)
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      AmbientCapabilities=CAP_NET_BIND_SERVICE
+      ExecStart=
+      ExecStart=/usr/bin/endlessh -p {{ endlessh_port }}
+    dest: /etc/systemd/system/endlessh.service.d/override.conf
+    mode: '0644'
+  become: true
+  notify:
+    - reload systemd
+    - restart endlessh
+  when: system_enable_endlessh | default(false)
+
+- name: Manage Endlessh service state
+  ansible.builtin.systemd:
+    name: endlessh
+    enabled: "{{ system_enable_endlessh | default(false) }}"
+    state: "{{ 'started' if system_enable_endlessh | default(false) else 'stopped' }}"
+  become: true

@@ -1,0 +1,19 @@
+{
+  "default": true,
+  "line-length": false,
+  "first-line-heading": false,
+  "ul-indent": {
+    "indent": 4
+  },
+  "no-multiple-blanks": {
+      "maximum": 2
+  },
+  "table-column-style": false,
+  "no-duplicate-heading": {
+      "siblings_only": true
+  },
+  "code-block-style": {
+      "style": "fenced"
+  },
+  "fenced-code-language": false
+}

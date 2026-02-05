@@ -1,0 +1,44 @@
+---
+# Tasks for networking/vpn_mesh - Kernel Readiness for Encrypted Traffic
+
+- name: Detect Virtualization Environment (Internal)
+  ansible.builtin.set_fact:
+    _sec_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+
+- name: Read kernel module lockdown state
+  ansible.builtin.command:
+    cmd: cat /proc/sys/kernel/modules_disabled
+  register: _vpn_kernel_modules_disabled
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  become: true
+
+- name: Ensure Wireguard kernel module is available
+  community.general.modprobe:
+    name: wireguard
+    state: present
+  become: true
+  failed_when: false # Kernel might correspond to non-modular build or container
+  when:
+    - not _sec_is_container
+    - not ansible_check_mode
+    - _vpn_kernel_modules_disabled.stdout | default('0') | trim != '1'
+
+- name: Verify IPsec/ESP kernel modules for inter-node security
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - af_key
+    - xfrm_user
+  become: true
+  failed_when: false
+  when:
+    - not _sec_is_container
+    - not ansible_check_mode
+    - _vpn_kernel_modules_disabled.stdout | default('0') | trim != '1'
+
+- name: Report encryption readiness
+  ansible.builtin.debug:
+    msg: "System is ready for Wireguard/IPSec based inter-pod encryption"

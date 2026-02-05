@@ -1,0 +1,6 @@
+---
+# Defaults for security/firejail
+
+# Enable GPU access for sandboxed applications (required for hardware acceleration)
+# If true, adds 'noblacklist /dev/dri' to global Firejail configuration.
+firejail_enable_gpu: false

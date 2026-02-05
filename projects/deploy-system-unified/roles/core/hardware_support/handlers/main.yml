@@ -1,8 +1,2 @@
 ---
-# Handlers for core/hardware_support
-- name: restart watchdog
-  ansible.builtin.systemd:
-    name: watchdog
-    state: restarted
-  become: true
-  listen: "restart watchdog"
+# handlers file for core/hardware_support

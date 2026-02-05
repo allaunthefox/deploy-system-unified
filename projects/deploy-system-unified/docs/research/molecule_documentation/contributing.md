@@ -38,7 +38,6 @@ community.
 
 To get release announcements and important changes from the community, see the
 [Bullhorn newsletter](https://docs.ansible.com/projects/ansible/devel/community/communication.html#the-bullhorn).
-
 You can find more information in the
 [Ansible communication guide](https://docs.ansible.com/projects/ansible/devel/community/communication.html).
 
@@ -72,11 +71,10 @@ required as of this time.
 ### Dependencies
 
 Tests will be skipped when the driver's binary is not present.
-
 Install the test framework [Tox](https://tox.wiki/en/latest/).
 
 ```bash
-$ python3 -m pip install tox
+python3 -m pip install tox
 ```
 
 ### Running the test suite
@@ -85,7 +83,7 @@ Run all tests, including linting and coverage reports. This should be
 run prior to merging or submitting a pull request.
 
 ```bash
-$ tox
+tox
 ```
 
 ### List available scenarios
@@ -94,7 +92,7 @@ List all available scenarios. This is useful to target specific Python
 and Ansible version for the functional and unit tests.
 
 ```bash
-$ tox -av
+tox -av
 ```
 
 ### Unit
@@ -102,13 +100,13 @@ $ tox -av
 Run all unit tests with coverage.
 
 ```bash
-$ tox -e py
+tox -e py
 ```
 
 Run all unit tests for a specific version of Python.
 
 ```bash
-$ tox -e py311
+tox -e py311
 ```
 
 ### Linting
@@ -119,7 +117,7 @@ Run all the linters (some perform changes to conform the code to the
 style rules).
 
 ```bash
-$ tox -e lint
+tox -e lint
 ```
 
 ### Documentation
@@ -127,7 +125,7 @@ $ tox -e lint
 Generate the documentation, using [mkdocs](https://www.mkdocs.org/).
 
 ```bash
-$ tox -e docs
+tox -e docs
 ```
 
 ### Updating Dependencies

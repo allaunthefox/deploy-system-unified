@@ -1,0 +1,15 @@
+
+# Bazarr (Subtitle Management)
+bazarr_enable: true
+bazarr_image: lscr.io/linuxserver/bazarr:1.5.5
+bazarr_port: 6767
+
+# Kavita (Manga/Comics Server)
+kavita_enable: true
+kavita_image: jvmilazz0/kavita:0.8.9.1
+kavita_port: 5000
+
+# Audiobookshelf (Audiobook Server)
+audiobookshelf_enable: true
+audiobookshelf_image: ghcr.io/advplyr/audiobookshelf:2.32.1
+audiobookshelf_port: 13378

@@ -1,0 +1,28 @@
+---
+- name: Configure LXC container for AMD SR-IOV
+  block:
+    - name: Set SR-IOV devices
+      ansible.builtin.set_fact:
+        lxc_gpu_sriov_devices: []
+    - name: Discover AMD SR-IOV devices
+      ansible.builtin.shell:
+        cmd: lspci -nn | grep -E "(AMD|ATI)" | grep -E "(Virtual|SR-IOV)"
+      register: amd_sriov_devices
+      changed_when: false
+      failed_when: false
+      become: true
+    - name: Parse AMD SR-IOV devices
+      ansible.builtin.set_fact:
+        lxc_gpu_sriov_devices: "{{ amd_sriov_devices.stdout_lines | map('split', ' ') | map('first') | list }}"
+      when: amd_sriov_devices.stdout | length > 0
+    - name: Create LXC SR-IOV configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/sriov.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "sriov"
+    - lxc_gpu_vendor == "amd"
+    - ansible_virtualization_role in ["host", ""]

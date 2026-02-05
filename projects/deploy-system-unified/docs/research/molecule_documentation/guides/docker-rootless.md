@@ -8,7 +8,6 @@ follows.
 Note: The `Dockerfile` templating and image building processes are only
 done for scenarios with `pre_build_image = False`, which is not the
 default setting in generated `molecule.yml` files.
-
 To modify the Docker image to support running as a normal user:
 
 Append the following code block to the end of `Dockerfile.j2`. It

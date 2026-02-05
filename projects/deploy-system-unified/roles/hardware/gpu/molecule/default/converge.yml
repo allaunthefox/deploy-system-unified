@@ -1,0 +1,29 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  # Mock systemd for testing service modules in Docker
+  pre_tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Mock /usr/bin/systemctl prevents failures in docker
+
+      ansible.builtin.file:
+        path: /usr/bin/systemctl
+        state: touch
+        mode: '0755'
+      changed_when: false
+
+  roles:
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: generic
+        gpu_stack_arch: x86_64
+        # Test eGPU OCuLink path
+        gpu_stack_enable_egpu: true
+        gpu_stack_egpu_interface: oculink

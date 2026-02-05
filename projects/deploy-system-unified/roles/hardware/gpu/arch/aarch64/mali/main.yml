@@ -1,0 +1,41 @@
+---
+# Mali GPU Setup for aarch64 (ARM64)
+# Target: Panfrost/Panthor (Mesa) for Rockchip, Amlogic, etc.
+
+- name: Install Mesa drivers for Mali (Panfrost)
+  ansible.builtin.package:
+    name:
+      - mesa-vulkan-drivers
+      - mesa-va-drivers
+      - libgl1-mesa-dri
+      - libgl1-mesa-glx
+    state: present
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install Mesa drivers for Mali (RedHat)
+  ansible.builtin.package:
+    name:
+      - mesa-dri-drivers
+      - mesa-vulkan-drivers
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat'
+
+- name: Install Mesa drivers for Mali (Alpine)
+  ansible.builtin.package:
+    name:
+      - mesa-dri-gallium
+      - mesa-va-gallium
+      - mesa-vulkan-swrast # often fallback or panfrost if packaged
+  become: true
+  when: ansible_os_family == 'Alpine'
+
+- name: Check if Panfrost module is loaded (Kernel 5.2+)
+  ansible.builtin.shell: lsmod | grep panfrost
+  register: panfrost_check
+  ignore_errors: true
+  changed_when: false
+- name: Report Panfrost status
+  ansible.builtin.debug:
+    msg: "Panfrost driver is {{ 'active' if panfrost_check.rc == 0 else 'not loaded (check kernel support)' }}"

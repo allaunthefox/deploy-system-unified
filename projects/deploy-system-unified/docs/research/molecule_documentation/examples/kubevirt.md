@@ -5,7 +5,6 @@
     This example demonstrates the use of a pre-ansible-native configuration.
     For ansible-native examples see the [Using podman containers](podman.md)
     or [Ansible native inventory](ansible_native_inventory.md) examples.
-
 Below you can see a scenario that is using [Kubevirt VMs](https://kubevirt.io/user-guide/) as test hosts. For Ansible to connect with the SSH in the KubeVirt VMs, it will be made accessible through the Service NodePort.
 When you run `molecule test --scenario-name kubevirt` the `create`, `converge` and
 `destroy` steps will be run one after another.
@@ -21,7 +20,6 @@ The `create.yml` and `destroy.yml` Ansible playbooks require the Ansible collect
 - `K8S_AUTH_API_KEY`: This is the token from the service account used to authenticate with the Kubernetes cluster.
 
 - `K8S_AUTH_HOST`: This points to the URL of the Kubernetes cluster's API.
-
 - `K8S_AUTH_VERIFY_SSL`: If set to `false`, this disables the verification of SSL/TLS certificates, which might pose a security risk. It's mainly used for testing environments, particularly when dealing with self-signed certificates.
 
 Additionally, for the playbooks to work, the Kubernetes service account needs specific roles and role bindings to operate in a particular namespace. This ensures the playbook has sufficient privileges to execute commands on the Kubernetes resources. These roles include getting, listing, watching, creating, deleting, and editing virtual machines and services.

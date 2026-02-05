@@ -1,0 +1,11 @@
+---
+# Tasks for VXLAN management (L3 Overlay)
+- name: Ensure VXLAN VTEP interface is defined
+  ansible.builtin.debug:
+    msg: "VXLAN (VNI {{ item.vni | default('10') }}) is being established on port 4789."
+  loop: "{{ virt_net_vxlan_interfaces | default([]) }}"
+- name: Configure VXLAN kernel readiness
+  community.general.modprobe:
+    name: vxlan
+    state: present
+  become: true

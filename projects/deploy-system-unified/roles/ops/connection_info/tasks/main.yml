@@ -1,13 +1,9 @@
 ---
 # Tasks for ops/connection_info role
-
 - name: Determine SSH port for connection info
   ansible.builtin.set_fact:
     connection_info_port: >-
-      {{ advanced_security_hardening_random_ssh_port
-         if (ssh_randomize_port | default(false) | bool and advanced_security_hardening_random_ssh_port is defined)
-         else access_sshd_port | default(22) }}
-
+      {{ system_ssh_port | default(22) }}
 - name: Create SSH connection info (idempotent)
   ansible.builtin.set_fact:
     ssh_connection_info:
@@ -17,7 +13,6 @@
       username: "{{ ansible_user | default(ansible_ssh_user) | default(lookup('env', 'USER')) }}"
       timestamp: "{{ ansible_date_time.iso8601 }}"
   run_once: true
-
 - name: Create secure temporary file on controller for SSH connection info (idempotent)
   ansible.builtin.tempfile:
     state: file
@@ -27,17 +22,17 @@
   delegate_to: localhost
   run_once: true
   no_log: true
-
+  changed_when: false
+  when: not ansible_check_mode
 - name: Set secure permissions on temporary file (idempotent)
   ansible.builtin.file:
     path: "{{ connection_info_temp_file.path }}"
     mode: '0600'
-    owner: root
-    group: root
   delegate_to: localhost
-  when: connection_info_temp_file.path is defined
+  when:
+    - connection_info_temp_file.path is defined
+    - not ansible_check_mode
   run_once: true
-
 - name: Copy SSH connection info to secure temp file (idempotent)
   ansible.builtin.copy:
     dest: "{{ connection_info_temp_file.path }}"
@@ -56,70 +51,26 @@
   changed_when: false
   no_log: true
   run_once: true
+  when: not ansible_check_mode
 
-- name: Encrypt SSH connection info with SOPS (idempotent)
-  ansible.builtin.shell: |
-    encrypted_file="{{ connection_info_temp_file.path }}.sops.yml"
-    sops -e "{{ connection_info_temp_file.path }}" > "$encrypted_file"
-  register: sops_encryption
-  changed_when: false
-  failed_when: sops_encryption.rc != 0
-  delegate_to: localhost
+- name: Handle SOPS Encryption
+  ansible.builtin.include_tasks: encryption/sops.yml
   when:
     - encryption_method == 'sops'
-    - connection_info_temp_file is defined
-  no_log: true
-  run_once: true
+    - not ansible_check_mode
 
-- name: Verify SOPS encryption succeeded and set path (idempotent)
-  ansible.builtin.stat:
-    path: "{{ connection_info_temp_file.path }}.sops.yml"
-  register: sops_encrypted_stat
-  delegate_to: localhost
-  changed_when: false
-  when: encryption_method == 'sops'
-  run_once: true
-
-- name: Set encrypted SSH info path for sops (idempotent)
-  ansible.builtin.set_fact:
-    encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}.sops.yml"
-  when:
-    - encryption_method == 'sops'
-    - sops_encrypted_stat is defined
-    - sops_encrypted_stat.stat.exists
-  delegate_to: localhost
-  run_once: true
-
-- name: Encrypt SSH connection info with Ansible Vault (idempotent)
-  ansible.builtin.shell: |
-    encrypted_file="{{ connection_info_temp_file.path }}.vault.yml"
-    ansible-vault encrypt "{{ connection_info_temp_file.path }}" --output="$encrypted_file"
-  register: vault_encryption
-  changed_when: false
-  failed_when: vault_encryption.rc != 0
-  delegate_to: localhost
+- name: Handle Ansible Vault Encryption
+  ansible.builtin.include_tasks: encryption/vault.yml
   when:
     - encryption_method == 'vault'
-    - connection_info_temp_file is defined
-  no_log: true
-  run_once: true
+    - not ansible_check_mode
 
-- name: Verify Vault encryption succeeded and set path (idempotent)
-  ansible.builtin.stat:
-    path: "{{ connection_info_temp_file.path }}.vault.yml"
-  register: vault_encrypted_stat
-  delegate_to: localhost
-  changed_when: false
-  when: encryption_method == 'vault'
-  run_once: true
-
-- name: Set encrypted SSH info path for vault (idempotent)
+- name: Set path for plaintext SSH info (insecure/dev only)
   ansible.builtin.set_fact:
-    encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}.vault.yml"
+    encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}"
   when:
-    - encryption_method == 'vault'
-    - vault_encrypted_stat is defined
-    - vault_encrypted_stat.stat.exists
+    - encryption_method == 'plain'
+    - not ansible_check_mode
   delegate_to: localhost
   run_once: true
 
@@ -130,14 +81,15 @@
       - encrypted_ssh_info_path | length > 0
     msg: "Encryption of temporary SSH info failed - deployment halted"
   run_once: true
-
+  when: not ansible_check_mode
 - name: Clean up plaintext temporary SSH file (idempotent)
   ansible.builtin.file:
     path: "{{ connection_info_temp_file.path }}"
     state: absent
   delegate_to: localhost
   run_once: true
-
+  changed_when: false
+  when: not ansible_check_mode
 - name: Rsync encrypted SSH connection info to specified destination (idempotent)
   ansible.posix.synchronize:
     src: "{{ encrypted_ssh_info_path }}"
@@ -145,7 +97,10 @@
     mode: pull
   when:
     - ssh_rsync_destination != ""
+    - ops_rsync_enable | default(false) | bool
+    - ssh_rsync_destination in (ops_rsync_allowlist | default([]) | map(attribute='dest') | list)
     - encrypted_ssh_info_path is defined
     - encrypted_ssh_info_path | length > 0
+    - not ansible_check_mode
   run_once: true
   delegate_to: localhost

@@ -1,0 +1,149 @@
+---
+# LXC GPU Container Deployment Template
+# For LXC containers with GPU passthrough or slicing support (AI/ML, data processing)
+# Features: GPU device passthrough, resource limits, container configuration
+
+- name: Deploy LXC GPU Container
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Validate System Identity (FQDN Enforcement)
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn is defined
+          - ansible_fqdn != "localhost"
+          - ansible_fqdn != "localhost.localdomain"
+        fail_msg: "System must have a valid FQDN configured for secure deployment."
+    - name: Precreate essential directories (idempotent)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
+      become: true
+      tags: [bootstrap, directories]
+    - name: Set directory precreation flag (idempotent)
+      ansible.builtin.set_fact:
+        directories_precreated: true
+    - name: Check if preflight validation already completed (idempotent)
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Include preflight checks if not already completed (idempotent)
+      ansible.builtin.import_role:
+        name: ops/preflight
+      when: not preflight_flag.stat.exists
+      tags: [preflight]
+    - name: Create preflight completion flag (idempotent)
+      ansible.builtin.file:
+        path: /tmp/preflight_completed.flag
+        state: touch
+        mode: '0644'
+      when: not preflight_flag.stat.exists
+
+  roles:
+    # Core system setup
+    - core/bootstrap
+    - core/identity
+    - networking/firewall
+    - security/hardening
+    - security/access
+    - role: ops/monitoring
+    - core/logging
+
+    # LXC container setup with GPU support
+    - role: containers/lxc
+      vars:
+        lxc_enable_gpu_support: true
+        lxc_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        lxc_gpu_slicing:
+          strategy: "passthrough"  # Use passthrough for LXC containers
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          passthrough: { devices: [] }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          time_slicing: { enabled: false, max_instances: 4 }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+        lxc_container_gpu_config:
+          ai_workload:
+            capabilities: ["gpu", "compute"]
+            devices: ["/dev/nvidia0"]
+          visualization:
+            capabilities: ["gpu", "video"]
+            devices: ["/dev/nvidia0"]
+        lxc_gpu_resource_limits:
+          memory: "8Gi"
+          cpu: "4"
+          gpu: "1"
+
+    # GPU Driver Stack (Must run before runtime configuration)
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: nvidia
+        gpu_stack_mode: server
+
+    # GPU-specific configuration
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        containers_gpu_count: 1
+        containers_gpu_slicing:
+          strategy: "auto"
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          passthrough: { devices: [] }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          time_slicing: { enabled: false, max_instances: 4 }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+
+  post_tasks:
+    - name: Verify LXC container status
+      ansible.builtin.command:
+        cmd: lxc list
+      register: lxc_container_list
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Verify GPU functionality in LXC container
+      ansible.builtin.command:
+        cmd: lxc exec ai_workload -- nvidia-smi
+      register: lxc_nvidia_smi
+      changed_when: false
+      failed_when: false
+      become: false
+      when: lxc_gpu_vendor == "nvidia"
+
+    - name: Display GPU container information
+      ansible.builtin.debug:
+        msg: |
+          LXC GPU Container Deployment Complete
+          Vendor: {{ lxc_gpu_vendor | upper }}
+          Slicing Strategy: {{ lxc_gpu_slicing.strategy }}
+          Containers: {{ lxc_container_gpu_config.keys() | list }}
+          Container List: {{ lxc_container_list.stdout | default('No containers running') }}
+          GPU Functionality: {{ lxc_nvidia_smi.stdout | default('GPU not accessible') }}
+          Resource Limits: {{ lxc_gpu_resource_limits }}
+          Container Runtime: LXC with GPU support enabled
+          LXC GPU Support: {{ lxc_enable_gpu_support }}

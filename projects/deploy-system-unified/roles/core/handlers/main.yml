@@ -5,7 +5,6 @@
     name: systemd-journald
     state: restarted
   become: true
-
 - name: restart resolved
   ansible.builtin.systemd:
     name: systemd-resolved

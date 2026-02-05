@@ -1,0 +1,15 @@
+---
+# Defaults for containers/memcached
+
+memcached_enable: true
+memcached_image: docker.io/library/memcached:alpine
+memcached_port: 11211
+
+# Internal Memory Limit (The -m flag passed to memcached)
+# This is the max memory memcached will use for object storage.
+# It should be fit within the physical RAM available.
+memcached_memory_mb: 64
+
+# Container Resource Limits (Systemd/Cgroup limits)
+# Set slightly higher than internal limit to account for overhead.
+memcached_status_check: true

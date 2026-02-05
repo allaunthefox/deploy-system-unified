@@ -1,0 +1,106 @@
+---
+# Kernel Enablement for Container Networking
+# Implements: Kernel Modules + Sysctls per user requirement
+
+- name: Read kernel module lockdown state
+  ansible.builtin.command:
+    cmd: cat /proc/sys/kernel/modules_disabled
+  register: _kernel_modules_disabled
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  become: true
+
+- name: Detect bridge sysctl availability
+  ansible.builtin.stat:
+    path: /proc/sys/net/bridge/bridge-nf-call-iptables
+  register: _bridge_sysctl_stat
+  changed_when: false
+  check_mode: false
+  become: true
+
+- name: Load required kernel modules (runtime)
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - bridge
+    - br_netfilter
+    - veth
+  become: true
+  failed_when: false
+  when:
+    - not ansible_check_mode
+    - _kernel_modules_disabled.stdout | default('0') | trim != '1'
+
+- name: Load optional kernel modules (runtime)
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - macvlan
+    - ipvlan
+  become: true
+  failed_when: false
+  when:
+    - not ansible_check_mode
+    - _kernel_modules_disabled.stdout | default('0') | trim != '1'
+
+- name: Persist kernel modules (boot)
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/containers-networking.conf
+    content: |
+      bridge
+      br_netfilter
+      veth
+      macvlan
+      ipvlan
+    mode: '0644'
+  become: true
+
+- name: Configure ip_forward sysctl (runtime & boot)
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
+    state: present
+    reload: true
+  become: true
+  failed_when: false
+  when:
+    - ansible_virtualization_type | default('host') not in ['docker', 'podman', 'container']
+    - not ansible_check_mode
+
+- name: Configure bridge sysctls (runtime & boot)
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: '1'
+    sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
+    state: present
+    reload: true
+  loop:
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+  become: true
+  failed_when: false
+  when:
+    - ansible_virtualization_type | default('host') not in ['docker', 'podman', 'container']
+    - not ansible_check_mode
+    - _bridge_sysctl_stat.stat.exists | default(false)
+
+- name: Verify Podman network backend
+  ansible.builtin.command:
+    cmd: podman info --format '{{ "{{" }}.Host.NetworkBackend{{ "}}" }}'
+  register: podman_backend
+  changed_when: false
+  check_mode: false
+  become: "{{ podman_rootless_enabled | bool }}"
+  become_user: "{{ podman_rootless_user }}"
+  environment: "{{ podman_rootless_enabled | bool | ternary(containers_systemd_env, {}) }}"
+
+- name: Assert Netavark backend
+  ansible.builtin.assert:
+    that:
+      - "'netavark' in podman_backend.stdout"
+    fail_msg: "Podman network backend is not netavark: {{ podman_backend.stdout }}"
+    success_msg: "Podman network backend is netavark."

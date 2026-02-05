@@ -36,7 +36,6 @@ rm -rf roles/run
 
 # Clear out default molecule setup
 rm -rf extensions/molecule/*
-
 # Create our custom structure
 mkdir -p extensions/molecule/default/
 ```
@@ -66,13 +65,11 @@ The inventory defines the test targets and their configuration. Molecule leverag
 - Mix of static and dynamic sources
 
 The inventory should include all the details needed to initialize, instantiate, prepare, and access a testing resource.
-
 Inventory can be specified through multiple methods:
 
 - **Ansible executor arguments** (shown in config.yml examples)
 - **ansible.cfg configuration** (`inventory = path/to/inventory`)
 - **Environment variables** (`ANSIBLE_INVENTORY=path/to/inventory`)
-
 Create `extensions/molecule/inventory.yml`:
 
 ```yaml
@@ -144,7 +141,6 @@ scenario:
     - idempotence
     - verify
     - cleanup
-
 shared_state: true
 ```
 
@@ -211,7 +207,6 @@ ansible:
     args:
       ansible_playbook:
         - {% raw %}--inventory=${MOLECULE_SCENARIO_DIRECTORY}/../inventory/{% endraw %}
-
 scenario:
   test_sequence:
     - prepare
@@ -257,7 +252,6 @@ touch extensions/molecule/role1/molecule.yml
 
 mkdir -p extensions/molecule/role2/
 touch extensions/molecule/role2/molecule.yml
-
 mkdir -p extensions/molecule/role3/
 touch extensions/molecule/role3/molecule.yml
 ```
@@ -271,7 +265,6 @@ Each scenario requires specific playbooks based on its test sequence. Each type 
 ### Testing Resource Management Playbooks (Default Scenario)
 
 The default scenario manages shared testing resources that component scenarios will use. These resources can be infrastructure (VMs, containers), applications (databases, web services), API endpoints, or any other testing dependencies.
-
 **create.yml** - Testing resource initialization:
 
 ```yaml
@@ -286,7 +279,6 @@ The default scenario manages shared testing resources that component scenarios w
         content: |
           {% raw %}{{ hostvars[item].attributes }}{% endraw %}
       loop: "{% raw %}{{ groups['test_resources'] }}{% endraw %}"
-
 - name: Ensure resource creation
   hosts: test_resources
   gather_facts: false
@@ -361,7 +353,6 @@ Each scenario gets the same set of playbooks, each is a unique test.
           - my_variable == inventory_hostname | reverse
         fail_msg: "my_variable is not set"
         success_msg: "my_variable is set"
-
     - name: Verify the functionality of a collection plugin
       ansible.builtin.set_fact:
         output: "{% raw %}{{ inventory_hostname | test_namespace.test_collection.sample_filter }}{% endraw %}"
@@ -427,7 +418,6 @@ ansible:
     args:
       ansible_playbook:
         - --inventory=${MOLECULE_SCENARIO_DIRECTORY}/../inventory.yml
-
 scenario:
   test_sequence:
     - prepare
@@ -449,19 +439,16 @@ molecule test --all --shared-state
 ```
 
 **How shared state works:**
-
 With `shared_state` enabled, the **default scenario becomes the lifecycle manager** for all scenarios:
 
 - **Default scenario handles create/destroy**: The default scenario's `create` and `destroy` actions manage the infrastructure lifecycle for ALL scenarios
 - **Component scenarios skip create/destroy**: Individual scenarios (role1, role2, role3) only run their test sequence (prepare, converge, verify, etc.) - they do not create or destroy their own resources
 - **Shared ephemeral state**: All scenarios share the same state directory, allowing them to access resources created by the default scenario
-
 **Why this approach is required for this configuration:**
 
 - The default scenario creates testing resources that component scenarios depend on
 - Component scenarios cannot access resources created by other scenarios without shared state
 - Without shared state, each scenario would attempt to create/destroy its own isolated resources
-
 **Benefits:**
 
 - **Single infrastructure lifecycle**: Resources created once by default scenario, used by all component scenarios
@@ -469,7 +456,6 @@ With `shared_state` enabled, the **default scenario becomes the lifecycle manage
 - **Realistic testing environment**: Collection components often share infrastructure in production
 - **Efficient resource utilization**: No duplicate resource creation
 - **No need to remember command-line flags** when configured in files
-
 **Execution flow:**
 
 1. **default ➜ create**: Initialize shared infrastructure for ALL scenarios _(runs first)_
@@ -489,7 +475,6 @@ molecule test --all
 - **Each scenario manages its own lifecycle**: Every scenario (including default, role1, role2, role3) runs its full test sequence including create/destroy
 - **Complete isolation**: Each scenario creates and destroys its own independent resources
 - **No shared infrastructure**: Scenarios cannot access resources created by other scenarios
-
 **Characteristics:**
 
 - Each scenario creates and destroys its own testing resources
@@ -508,7 +493,6 @@ Start with individual scenario testing during development:
 # Test a specific component
 molecule converge -s role1
 molecule verify -s role1
-
 # Full component test
 molecule test -s role1
 ```
@@ -527,7 +511,6 @@ molecule test --all --command-borders --report
 - `--all`: Run all scenarios found in extensions/molecule/
 - `--command-borders`: Visual separation of ansible-playbook executions
 - `--report`: Summary report at the end
-
 **Note:** Since `shared_state: true` is configured in the base `config.yml`, the `--shared-state` command-line flag is not required. However, it can still be used to override the configuration if needed.
 
 ### Understanding the Output
@@ -544,14 +527,12 @@ The execution flow with `--all` when shared state is enabled is:
 8. **role2 ➜ [same sequence]**: Full role2 testing (no create/destroy)
 9. **role3 ➜ [same sequence]**: Full role3 testing (no create/destroy)
 10. **default ➜ destroy**: Clean up shared infrastructure for ALL scenarios _(runs last)_
-
 **Important**: Notice that:
 
 - The default scenario's `create` action runs **first** and handles infrastructure creation for ALL scenarios
 - Component scenarios (role1, role2, role3) **do not run create/destroy actions** - they only execute their test sequence using the shared infrastructure
 - The default scenario's `destroy` action runs **last** and handles infrastructure cleanup for ALL scenarios
 - This ensures that shared infrastructure is available throughout the entire test execution without duplication
-
 Each step shows detailed ansible-playbook output with command borders, making it easy to identify which scenario and action is executing.
 
 At the end of execution, Molecule provides a comprehensive summary:
@@ -566,7 +547,6 @@ role1 ➜ verify: Executed: Successful
 role1 ➜ idempotence: Executed: Successful
 role1 ➜ verify: Executed: Successful
 role1 ➜ cleanup: Executed: Successful
-
 role2 ➜ prepare: Executed: Successful
 role2 ➜ converge: Executed: Successful
 role2 ➜ verify: Executed: Successful
@@ -580,7 +560,6 @@ role3 ➜ verify: Executed: Successful
 role3 ➜ idempotence: Executed: Successful
 role3 ➜ verify: Executed: Successful
 role3 ➜ cleanup: Executed: Successful
-
 default ➜ destroy: Executed: Successful
 
 SCENARIO RECAP

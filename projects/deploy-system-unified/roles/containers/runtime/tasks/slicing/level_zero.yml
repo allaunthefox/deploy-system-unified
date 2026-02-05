@@ -1,0 +1,7 @@
+---
+- name: Create Intel Level Zero configuration file
+  ansible.builtin.template:
+    src: level_zero_config.j2
+    dest: /etc/level-zero/level-zero.conf
+    mode: '0644'
+  become: true

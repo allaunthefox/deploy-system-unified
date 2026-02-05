@@ -9,7 +9,11 @@ repos:
     hooks:
       - id: ansible-lint
         args: ['-v']
-
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.45
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
   - repo: local
     hooks:
       - id: style-guide-enforcement
@@ -18,3 +22,4 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+

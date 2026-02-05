@@ -28,6 +28,7 @@ Ansible has a specific order of precedence for variables. From highest to lowest
 ## Variable Names
 
 Variable names should:
+
 - Contain letters, numbers, underscores, and hyphens
 - Start with a letter
 - Be lowercase when possible
@@ -37,6 +38,7 @@ Variable names should:
 ## Defining Variables
 
 ### In Playbook
+
 ```yaml
 - hosts: webservers
   vars:
@@ -50,6 +52,7 @@ Variable names should:
 ```
 
 ### In Variable Files
+
 ```yaml
 # vars.yml
 ---
@@ -70,6 +73,7 @@ max_clients: 200
 ```
 
 ### In Inventory
+
 ```ini
 # inventory
 [webservers]
@@ -78,6 +82,7 @@ web2.example.com http_port=80
 ```
 
 ### At Runtime
+
 ```bash
 ansible-playbook site.yml -e "http_port=8080"
 ```
@@ -85,6 +90,7 @@ ansible-playbook site.yml -e "http_port=8080"
 ## Variable Types
 
 ### Scalars
+
 ```yaml
 ---
 var_string: "hello world"
@@ -93,6 +99,7 @@ var_boolean: true
 ```
 
 ### Lists
+
 ```yaml
 ---
 var_list:
@@ -105,6 +112,7 @@ var_list: [item1, item2, item3]
 ```
 
 ### Dictionaries
+
 ```yaml
 ---
 var_dict:
@@ -128,6 +136,7 @@ Variables can be used in Jinja2 templates:
 ```
 
 Template file (config.j2):
+
 ```
 # Configuration for {{ inventory_hostname }}
 port = {{ http_port }}
@@ -155,7 +164,6 @@ Variables can be registered from task output:
 - name: Get file contents
   command: cat /etc/version
   register: version_output
-
 - name: Display version
   debug:
     var: version_output.stdout
@@ -186,13 +194,11 @@ Jinja2 filters can be used to manipulate variables:
 
 # Default value if undefined
 {{ my_var | default('default_value') }}
-
 # Convert to integer
 {{ my_var | int }}
 
 # Join list items
 {{ my_list | join(',') }}
-
 # Select attribute from list of dictionaries
 {{ users | selectattr('active', 'equalto', true) | list }}
 ```

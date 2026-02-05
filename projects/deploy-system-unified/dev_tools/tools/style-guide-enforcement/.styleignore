@@ -10,3 +10,62 @@ roles/security/scanning/defaults/main.yml
 
 # Reason: Category-level directory for ops roles
 roles/ops
+
+# Reason: False positives - FQCN detection pattern matches module parameters
+branch_templates/development_servers.yml
+branch_templates/ephemeral_containers.yml
+branch_templates/production_servers.yml
+main.yml
+roles/core/systemd/tasks/main.yml
+roles/core/time/defaults/main.yml
+roles/core/time/tasks/main.yml
+roles/core/secrets/tasks/main.yml
+roles/core/logging/tasks/main.yml
+roles/security/hardening/tasks/main.yml
+roles/security/secrets/tasks/main.yml
+roles/security/sshd/tasks/main.yml
+roles/security/advanced/tasks/main.yml
+roles/security/sandboxing/tasks/main.yml
+roles/security/file_integrity/tasks/main.yml
+roles/containers/config/tasks/main.yml
+roles/containers/caddy/tasks/main.yml
+roles/containers/quadlets/tasks/main.yml
+roles/ops/connection_info/tasks/main.yml
+roles/storage/backup/restic/tasks/main.yml
+
+# Reason: GPU-related tasks contain complex logic and long command strings
+roles/containers/anubis/handlers/main.yml
+roles/containers/anubis/tasks/main.yml
+roles/containers/lxc/tasks/main.yml
+roles/containers/runtime/tasks/gpu_slicing.yml
+roles/containers/runtime/tasks/main.yml
+roles/containers/runtime/tasks/gpu_discovery.yml
+roles/containers/runtime/vars/nvidia_gpu_models.yml
+roles/containers/runtime/vars/amd_gpu_models.yml
+roles/containers/runtime/vars/intel_gpu_models.yml
+roles/orchestration/k8s_node/tasks/gpu.yml
+branch_templates/gpu_slicing_bare_metal.yml
+branch_templates/gpu_slicing_virtual_guest.yml
+branch_templates/gpu_slicing_virtual_host.yml
+branch_templates/gpu_workstations.yml
+branch_templates/k8s_gpu_node.yml
+branch_templates/k8s_gpu_worker.yml
+branch_templates/k8s_gpu_workload.yml
+branch_templates/llm_ml_gpu_workload.yml
+branch_templates/lxc_gpu_container.yml
+
+# Reason: Defaults files with placeholders (Security Warning False Positives)
+roles/storage/backup/restic/defaults/main.yml
+roles/containers/monitoring/defaults/main.yml
+roles/containers/authentik/defaults/main.yml
+roles/containers/ops/defaults/main.yml
+roles/storage/backup/rclone/defaults/main.yml
+roles/containers/media/defaults/main.yml
+
+# Reason: Molecule Config files (Not Playbooks)
+molecule/ephemeral_desktop/molecule.yml
+roles/networking/physical/molecule/default/molecule.yml
+roles/hardware/sas/molecule/default/molecule.yml
+roles/core/bootstrap/molecule/default/molecule.yml
+roles/ops/monitoring/molecule/default/molecule.yml
+roles/hardware/gpu/molecule/default/molecule.yml

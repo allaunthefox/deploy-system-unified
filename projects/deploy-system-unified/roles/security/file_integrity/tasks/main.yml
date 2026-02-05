@@ -1,29 +1,110 @@
 ---
-# Tasks for security/file_integrity role - AIDE Initialization
+# Tasks for security/file_integrity role - AIDE Initialization and Monitoring
 - name: Install AIDE
   ansible.builtin.package:
     name: aide
     state: present
   become: true
-
+  tags: [security, file_integrity]
 - name: Check if AIDE database already exists
   ansible.builtin.stat:
     path: /var/lib/aide/aide.db.gz
   register: aide_db_stat
   become: true
-
-- name: Initialize AIDE database (Baseline)
+  tags: [security, file_integrity]
+- name: Initialize AIDE database (Baseline - Debian/Ubuntu)
   ansible.builtin.command: aideinit
   become: true
-  when: not aide_db_stat.stat.exists
+  when:
+    - not aide_db_stat.stat.exists
+    - not ansible_check_mode
+    - ansible_facts['os_family'] == 'Debian'
+    - not (is_virtualized | default(false))
   async: 600 # AIDE init can take a long time
   poll: 10
-
-- name: Ensure AIDE database is in place
+  tags: [security, file_integrity]
+- name: Initialize AIDE database (Baseline - RedHat/Arch)
+  ansible.builtin.command: aide --init
+  become: true
+  when:
+    - not aide_db_stat.stat.exists
+    - not ansible_check_mode
+    - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
+    - not (is_virtualized | default(false))
+  async: 600 # AIDE init can take a long time
+  poll: 10
+  tags: [security, file_integrity]
+- name: Ensure AIDE database is in place (Debian/Ubuntu)
   ansible.builtin.copy:
     src: /var/lib/aide/aide.db.new.gz
     dest: /var/lib/aide/aide.db.gz
     remote_src: true
     mode: '0600'
   become: true
-  when: not aide_db_stat.stat.exists
+  when:
+    - not aide_db_stat.stat.exists
+    - not ansible_check_mode
+    - ansible_facts['os_family'] == 'Debian'
+    - not (is_virtualized | default(false))
+  tags: [security, file_integrity]
+- name: Ensure AIDE database is in place (RedHat/Arch)
+  ansible.builtin.copy:
+    src: /var/lib/aide/aide.db.new.gz
+    dest: /var/lib/aide/aide.db.gz
+    remote_src: true
+    mode: '0600'
+  become: true
+  when:
+    - not aide_db_stat.stat.exists
+    - not ansible_check_mode
+    - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
+    - not (is_virtualized | default(false))
+  tags: [security, file_integrity]
+- name: Skip AIDE database initialization in check mode
+  ansible.builtin.debug:
+    msg: "Skipping AIDE database initialization in check mode"
+  when: ansible_check_mode and not aide_db_stat.stat.exists
+  tags: [security, file_integrity]
+- name: Configure AIDE cron job for daily checks
+  ansible.builtin.cron:
+    name: "Daily AIDE integrity check"
+    minute: "0"
+    hour: "2"
+    job: "aide --check | tee -a /var/log/aide/check_$(date +\\%Y\\%m\\%d).log"
+    user: root
+  become: true
+  tags: [security, file_integrity]
+- name: Create AIDE log directory
+  ansible.builtin.file:
+    path: /var/log/aide
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  tags: [security, file_integrity]
+- name: Configure AIDE to check for changes on boot
+  ansible.builtin.template:
+    src: "aide-boot-check.service.j2"
+    dest: /etc/systemd/system/aide-boot-check.service
+    mode: '0644'
+  become: true
+  when: ansible_facts['service_mgr'] == 'systemd'
+  tags: [security, file_integrity]
+- name: Enable AIDE boot check service
+  ansible.builtin.systemd:
+    name: aide-boot-check.service
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: ansible_facts['service_mgr'] == 'systemd' and not ansible_check_mode
+  tags: [security, file_integrity]
+- name: Skip AIDE boot check service enablement in check mode
+  ansible.builtin.debug:
+    msg: "Skipping AIDE boot check service enablement in check mode"
+  when: ansible_check_mode and ansible_facts['service_mgr'] == 'systemd'
+  tags: [security, file_integrity]
+- name: Set file integrity monitoring completion flag
+  ansible.builtin.set_fact:
+    security_file_integrity_complete: true
+  tags: [security, file_integrity]

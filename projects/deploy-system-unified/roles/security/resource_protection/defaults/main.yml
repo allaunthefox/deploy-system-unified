@@ -6,7 +6,6 @@ resource_min_ram_mb:
   kvm: 512
   container: 256
   default: 512
-
 # Sane global limits for systemd services
 resource_default_tasks_max: 4096
 resource_default_memory_max: "80%" # Prevent a single leak from killing the host

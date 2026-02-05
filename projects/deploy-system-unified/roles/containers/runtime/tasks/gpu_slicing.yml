@@ -1,0 +1,91 @@
+---
+# GPU slicing configuration
+
+- name: Detect Container Environment (Internal)
+  ansible.builtin.set_fact:
+    _con_is_container: "{{ (ansible_facts['virtualization_type'] | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_facts['is_chroot'] | default(false)) }}"
+
+- name: Determine GPU slicing strategy based on virtualization type (auto strategy)
+  ansible.builtin.set_fact:
+    containers_gpu_slicing_strategy: >-
+      {% if containers_gpu_slicing.strategy == "auto" %}
+        {% if not is_virtualized %}
+          {{ containers_gpu_slicing.auto_strategy.bare_metal }}
+        {% elif ansible_facts['virtualization_role'] == "host" %}
+          {{ containers_gpu_slicing.auto_strategy.virtual_host }}
+        {% else %}
+          {{ containers_gpu_slicing.auto_strategy.virtual_guest }}
+        {% endif %}
+      {% else %}
+        {{ containers_gpu_slicing.strategy }}
+      {% endif %}
+  when: containers_enable_gpu_support
+
+- name: Configure NVIDIA MIG (bare metal only)
+  ansible.builtin.include_tasks: slicing/mig.yml
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "mig"
+    - containers_gpu_vendor_detected == "nvidia"
+    - not is_virtualized
+
+- name: Configure NVIDIA time-slicing
+  ansible.builtin.include_tasks: slicing/time_slicing.yml
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "time-slicing"
+    - containers_gpu_vendor_detected == "nvidia"
+    - not _con_is_container
+
+- name: Configure AMD SR-IOV (bare metal and host)
+  ansible.builtin.include_tasks: slicing/sriov.yml
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "sriov"
+    - containers_gpu_vendor_detected == "amd"
+    - ansible_facts['virtualization_role'] in ["host", ""]
+
+- name: Configure Intel Level Zero slicing (bare metal)
+  ansible.builtin.include_tasks: slicing/level_zero.yml
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "level-zero"
+    - containers_gpu_vendor_detected == "intel"
+    - not is_virtualized
+
+- name: Configure Intel OneAPI support
+  ansible.builtin.include_tasks: slicing/oneapi.yml
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "oneapi"
+    - containers_gpu_vendor_detected == "intel"
+
+- name: Configure GPU passthrough
+  ansible.builtin.include_tasks: slicing/passthrough.yml
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing_strategy == "passthrough"
+
+- name: Debug GPU slicing configuration
+  ansible.builtin.debug:
+    msg: |
+      GPU Slicing Configuration:
+        Strategy: {{ containers_gpu_slicing_strategy }}
+        Vendor: {{ containers_gpu_vendor_detected | upper }}
+        Virtualization Type: {{ ansible_facts['virtualization_type'] | default('None') }}
+        Virtualization Role: {{ ansible_facts['virtualization_role'] | default('None') }}
+        {% if containers_gpu_slicing_strategy == "mig" %}
+        MIG Profiles: {{ containers_gpu_slicing.mig.profiles | default(['1g.5gb']) }}
+        {% elif containers_gpu_slicing_strategy == "time-slicing" %}
+        Time-Slicing Instances: {{ containers_gpu_slicing.time_slicing.max_instances | default('Default') }}
+        {% elif containers_gpu_slicing_strategy == "sriov" %}
+        SR-IOV VF Count: {{ containers_gpu_slicing.sriov.vf_count | default('0') }}
+        {% elif containers_gpu_slicing_strategy == "level-zero" %}
+        Level Zero Partitions: {{ containers_gpu_slicing.level_zero.partitions | default([]) }}
+        {% elif containers_gpu_slicing_strategy == "oneapi" %}
+        OneAPI Toolkit: {{ containers_gpu_slicing.oneapi.toolkit | default('') }}
+        OneAPI Components: {{ containers_gpu_slicing.oneapi.components | default([]) }}
+        {% elif containers_gpu_slicing_strategy == "passthrough" %}
+        Passthrough Devices: {{ containers_gpu_passthrough_devices | default([]) }}
+        {% endif %}
+  when: containers_enable_gpu_support

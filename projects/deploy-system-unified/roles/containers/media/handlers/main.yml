@@ -1,0 +1,20 @@
+---
+# Handlers for containers/media
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+
+- name: restart media stack
+  ansible.builtin.systemd:
+    name: "{{ media_pod_name }}-pod"
+    state: restarted
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  when: media_pod_enable

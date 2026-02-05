@@ -1,0 +1,148 @@
+---
+# Kubernetes GPU Workload Deployment Template
+# For Kubernetes workloads with GPU resource requests and limits (AI/ML, data processing)
+# Features: GPU resource allocation, workload scheduling, affinity rules
+
+- name: Deploy Kubernetes GPU Workload
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Validate System Identity (FQDN Enforcement)
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn is defined
+          - ansible_fqdn != "localhost"
+          - ansible_fqdn != "localhost.localdomain"
+        fail_msg: "System must have a valid FQDN configured for secure deployment."
+    - name: Precreate essential directories (idempotent)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
+      become: true
+      tags: [bootstrap, directories]
+    - name: Set directory precreation flag (idempotent)
+      ansible.builtin.set_fact:
+        directories_precreated: true
+    - name: Check if preflight validation already completed (idempotent)
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Include preflight checks if not already completed (idempotent)
+      ansible.builtin.import_role:
+        name: ops/preflight
+      when: not preflight_flag.stat.exists
+      tags: [preflight]
+    - name: Create preflight completion flag (idempotent)
+      ansible.builtin.file:
+        path: /tmp/preflight_completed.flag
+        state: touch
+        mode: '0644'
+      when: not preflight_flag.stat.exists
+
+  roles:
+    # Core system setup
+    - core/bootstrap
+    - core/identity
+    - networking/firewall
+    - security/hardening
+    - security/access
+    - role: ops/monitoring
+    - core/logging
+
+    # Kubernetes node setup
+    - role: orchestration/k8s_node
+      vars:
+        k8s_gpu_device_plugins_enabled: true
+        k8s_gpu_nvidia_device_plugin:
+          enabled: true
+          version: "v0.13.0"
+          image: "nvcr.io/nvidia/k8s-device-plugin:v0.13.0"
+        k8s_gpu_amd_device_plugin:
+          enabled: false
+          version: "v0.10.0"
+          image: "rocm/k8s-device-plugin:v0.10.0"
+        k8s_gpu_intel_device_plugin:
+          enabled: false
+          version: "v0.23.0"
+          image: "intel/intel-gpu-plugin:v0.23.0"
+        k8s_gpu_workload_scheduling:
+          enabled: true
+          scheduler_name: "gpu-scheduler"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: "nvidia.com/gpu.count"
+                        operator: "Gt"
+                        values: ["0"]
+
+    # GPU Driver Stack (Must run before runtime configuration)
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: nvidia
+        gpu_stack_mode: server
+
+    # GPU-specific configuration with workload support
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        containers_gpu_count: 1
+        containers_gpu_slicing:
+          strategy: "time-slicing"  # Use time-slicing for workload isolation
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          time_slicing: { enabled: true, max_instances: 4 }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+          passthrough: { devices: [] }
+
+  post_tasks:
+    - name: Verify Kubernetes GPU device plugin status
+      ansible.builtin.command:
+        cmd: kubectl get daemonsets -n kube-system
+      register: kube_device_plugins
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Verify GPU resources in Kubernetes
+      ansible.builtin.shell:
+        cmd: kubectl describe node {{ ansible_facts['hostname'] }} | grep -A 10 "Capacity"
+      register: node_capacity
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Display GPU workload information
+      ansible.builtin.debug:
+        msg: |
+          Kubernetes GPU Workload Deployment Complete
+          Vendor: {{ containers_gpu_vendor | upper }}
+          Slicing Strategy: {{ containers_gpu_slicing.strategy }}
+          Time Slicing Instances: {{ containers_gpu_slicing.time_slicing.max_instances }}
+          Device Plugins: {{ kube_device_plugins.stdout | default('No device plugins found') }}
+          GPU Resources: {{ node_capacity.stdout | default('No GPU resources detected') }}
+          Workload Scheduling: {{ k8s_gpu_workload_scheduling.enabled }}
+          Scheduler Name: {{ k8s_gpu_workload_scheduling.scheduler_name }}
+          Container Runtime: Podman with GPU support enabled
+          Kubernetes GPU Support: {{ k8s_gpu_device_plugins_enabled }}

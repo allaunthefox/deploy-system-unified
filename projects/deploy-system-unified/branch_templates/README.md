@@ -16,6 +16,11 @@ This directory contains ready-to-use Ansible playbooks for different deployment 
    - Use case: Developer workstations, testing, staging
    - Features: Basic security with convenience prioritized, Podman/Quadlet container management, Caddy reverse proxy
 
+4. **gpu_workstations.yml** - For GPU-accelerated environments
+   - Use case: AI/ML, data processing, visualization, GPU computing
+   - Features: GPU driver installation, container GPU support, CUDA toolkit, optimized system settings, NVIDIA/AMD/Intel GPU profiles
+   - Supported GPUs: NVIDIA (CUDA), AMD (ROCm), Intel (OpenCL)
+
 ## Usage
 
 To use any of these templates, copy the appropriate template to your own deployment directory (separate from this repository):
@@ -25,15 +30,14 @@ To use any of these templates, copy the appropriate template to your own deploym
 3. Customize the variables as needed for your specific requirements
 4. Ensure you have access to the roles from the main repository (set ANSIBLE_ROLES_PATH or use --extra-vars)
 5. Test thoroughly before deploying to production
-
 Example:
+
 ```bash
 # Create your own deployment directory (separate from the main repo)
 mkdir my-production-deployment && cd my-production-deployment
 
 # Copy the template to your deployment directory
 cp /path/to/deploy-system-unified/branch_templates/production_servers.yml site.yml
-
 # Customize site.yml for your specific needs
 
 # Run the deployment with access to the roles from the main repository
@@ -41,6 +45,7 @@ ansible-playbook -i inventory/your-server.ini site.yml --extra-vars "ansible_rol
 ```
 
 Each template includes:
+
 - Core system setup
 - Security hardening appropriate for the use case
 - Container runtime setup (Podman)

@@ -5,15 +5,16 @@
     scan_results=""
     # Run Trivy vulnerability scan
     if command -v trivy >/dev/null 2>&1; then
-      trivy_results=$(trivy filesystem / --security-checks vuln,config,secret --format json 2>/dev/null || echo '{"Results": []}')
-      # Enhanced scanning with required tools and portable service management
-      # Enhanced scanning with required tools and portable service management
+      # Scan only relevant system and container directories to save time and reduce noise
+      trivy_results=$(trivy filesystem /srv /etc/containers --security-checks vuln,config,secret --format json 2>/dev/null || echo '{"Results": []}')
+      trivy_critical=$(echo "$trivy_results" | jq -r '.Results[] | select(.Severity == "CRITICAL")' | wc -l)
+      scan_results="$scan_results TRIVY_CRITICAL:$trivy_critical"
     else
       scan_results="$scan_results TRIVY_CRITICAL:0"
     fi
     # Run Checkov infrastructure scan
     if command -v checkov >/dev/null 2>&1; then
-      checkov_results=$(checkov --directory /etc --compact --output json 2>/dev/null || echo '{"results": {"failed_checks": []}}')
+      checkov_results=$(checkov --directory /etc/containers --compact --output json 2>/dev/null || echo '{"results": {"failed_checks": []}}')
       checkov_critical=$(echo "$checkov_results" | jq -r '.results.failed_checks[] | select(.severity=="HIGH" or .severity=="CRITICAL")' | wc -l)
       scan_results="$scan_results CHECKOV_CRITICAL:$checkov_critical"
     else

@@ -3,15 +3,18 @@
 - name: Import security access tasks
   ansible.builtin.import_tasks: access/tasks/main.yml
   tags: [security, access]
-
 - name: Import security hardening tasks
   ansible.builtin.import_tasks: hardening/tasks/main.yml
   tags: [security, hardening]
-
 - name: Import security sshd tasks
   ansible.builtin.import_tasks: sshd/tasks/main.yml
   tags: [security, sshd]
-
 - name: Import security secrets tasks
   ansible.builtin.import_tasks: secrets/tasks/main.yml
   tags: [security, secrets]
+- name: Import security file integrity tasks
+  ansible.builtin.import_tasks: file_integrity/tasks/main.yml
+  tags: [security, file_integrity]
+- name: Import security kernel tasks
+  ansible.builtin.import_tasks: kernel/tasks/main.yml
+  tags: [security, kernel]

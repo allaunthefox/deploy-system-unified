@@ -1,0 +1,21 @@
+---
+- name: Install GPU drivers and container toolkit (Intel/x86_64)
+  ansible.builtin.package:
+    name: "{{ containers_gpu_profiles['intel']['driver_packages'][ansible_facts['os_family'] | lower] }}"
+    state: present
+  failed_when: false
+
+- name: Configure container runtime for GPU support (Intel)
+  ansible.builtin.lineinfile:
+    path: /etc/containers/containers.conf
+    regexp: "^#?default_capabilities ="
+    line: 'default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE", "gpu"]'
+
+- name: Ensure Intel Compute and Display devices are accessible
+  ansible.builtin.lineinfile:
+    path: /etc/containers/containers.conf
+    regexp: "^#?default_device_groups ="
+    # Add video/render groups for /dev/dri/card* (Display) and /dev/dri/renderD* (Compute)
+    line: 'default_device_groups = ["video", "render"]'
+    insertafter: "\\[containers\\]"
+  notify: restart podman

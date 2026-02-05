@@ -1,5 +1,4 @@
 Security tooling and guidance
-
 This directory contains guidance and helper scripts related to detecting and handling secrets.
 
 Detect-secrets CI
@@ -9,7 +8,6 @@ Detect-secrets CI
 
   python -m pip install detect-secrets
   detect-secrets scan --all-files --json > .secrets_scan.json
-
 - If the scan finds results, review the listed files and remove/rotate secrets; prefer Ansible Vault or an external secret manager.
 
 Ansible Vault guidance

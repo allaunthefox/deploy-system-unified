@@ -1,0 +1,97 @@
+---
+# Global OS Configuration Settings
+# Centralized control for System Defaults, Packages, and Network policies.
+
+# -----------------------------------------------------------------------------
+# System Identity & Localization
+# -----------------------------------------------------------------------------
+system_timezone: "UTC"
+system_locale: "en_US.UTF-8"
+system_keyboard_layout: "us"
+
+# -----------------------------------------------------------------------------
+# Administrative Access (SSH & Users)
+# -----------------------------------------------------------------------------
+# These settings cascade to roles/security/sshd and roles/core/identity
+system_admin_user: "admin"
+system_admin_shell: "/bin/bash"
+
+# SSH Port Logic:
+# If Endlessh (SSH Tarpit) is enabled, it takes precedence on port 22.
+# The real SSHD service moves to 2222 automatically.
+# Otherwise, SSHD runs on port 22 (or whatever is defined).
+system_enable_endlessh: false
+system_ssh_port: "{{ 2222 if system_enable_endlessh | default(false) else 22 }}"
+
+system_ssh_permit_root_login: false   # Global override for security
+
+# -----------------------------------------------------------------------------
+# Networking
+# -----------------------------------------------------------------------------
+system_enable_ipv6: false
+system_dns_servers:
+  - "1.1.1.1"
+  - "8.8.8.8"
+
+# -----------------------------------------------------------------------------
+# Package Management (Bootstrap)
+# -----------------------------------------------------------------------------
+# There packages are installed on ALL systems during the bootstrap phase.
+system_base_packages:
+  common:
+    - sudo
+    - curl
+    - wget
+    - ca-certificates
+  # Distro-specific additions (merged with common)
+  Debian:
+    - gnupg
+    - apt-transport-https
+    - software-properties-common
+  RedHat:
+    - gnupg2
+    # epel-release is typically needed but let's keep it minimal for bootstrap
+  Archlinux:
+    - gnupg
+  Alpine:
+    - gnupg
+
+# -----------------------------------------------------------------------------
+# Directory Structure
+# -----------------------------------------------------------------------------
+system_standard_directories:
+  - /usr/local/bin
+  - /usr/local/sbin
+  - /opt
+
+# -----------------------------------------------------------------------------
+# Hardware & Kernel Profile (overrides roles/security/kernel)
+# -----------------------------------------------------------------------------
+# kernel_profile: "generic"    # 'generic' (VM/Container friendly) or 'bare_metal'
+# kernel_enable_iommu: true    # Enable IOMMU/VT-d
+# kernel_restrict_dma: true    # Enable DMA protection
+
+# -----------------------------------------------------------------------------
+# Deployment Profile (Least-Privilege Defaults)
+# -----------------------------------------------------------------------------
+# Profiles: ephemeral | workstation | dev | vps | hardened | production | backup
+# Use the most restrictive valid profile for the target.
+deployment_profile: "hardened"
+
+# -----------------------------------------------------------------------------
+# Transfer Protocol Defaults (Explicit Allow)
+# -----------------------------------------------------------------------------
+# NFS: disabled unless explicitly enabled AND allowlist defined
+storage_nfs_enable: false
+storage_nfs_exports: []
+storage_nfs_mounts: []
+# Extra guard: ephemeral profiles must explicitly opt in
+storage_nfs_ephemeral_allow: false
+# Extra guard: broad exports must be explicitly allowed
+storage_nfs_allow_broad_exports: false
+
+# Rsync over SSH: disabled unless explicitly enabled AND allowlist defined
+ops_rsync_enable: false
+ops_rsync_allowlist: []
+# Extra guard: ephemeral profiles must explicitly opt in
+ops_rsync_ephemeral_allow: false

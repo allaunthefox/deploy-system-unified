@@ -7,7 +7,6 @@
         path: /var/lib/apt/lists
       register: apt_lists
       when: ansible_os_family == 'Debian'
-
     - name: Assert apt lists exist
       ansible.builtin.assert:
         that:

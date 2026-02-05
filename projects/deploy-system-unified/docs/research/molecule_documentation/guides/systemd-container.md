@@ -41,7 +41,6 @@ by either giving it `SYS_ADMIN` capabilities or running it in
 `privileged` mode.
 
 !!! warning
-
     Use caution when using `privileged` mode or `SYS_ADMIN` capabilities as
     it grants the container elevated access to the underlying system.
 

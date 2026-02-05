@@ -1,0 +1,120 @@
+---
+# GPU validation and health checks
+- name: Validate GPU hardware support
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_vendor_detected in ["nvidia", "amd", "intel"]
+      - containers_gpu_slicing.strategy in ["auto", "mig", "vgpu", "time-slicing", "sriov", "level-zero", "oneapi", "passthrough"]
+    fail_msg: "GPU hardware or strategy not supported"
+  when: containers_enable_gpu_support
+- name: Validate NVIDIA vGPU license (virtual guest)
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_slicing.vgpu.license_server | length > 0
+    fail_msg: "NVIDIA vGPU requires license server configuration"
+  when:
+    - containers_enable_gpu_support
+    - is_virtualized
+    - containers_gpu_vendor_detected == "nvidia"
+    - containers_gpu_slicing.strategy == "vgpu"
+- name: Validate SR-IOV support (bare metal)
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_slicing.sriov.pf_device | default("") | length > 0
+    fail_msg: "SR-IOV requires physical device configuration"
+  when:
+    - containers_enable_gpu_support
+    - not is_virtualized
+    - containers_gpu_slicing.strategy == "sriov"
+- name: Validate Intel OneAPI support
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_vendor_detected == "intel"
+    fail_msg: "Intel OneAPI requires an Intel GPU"
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing.strategy == "oneapi"
+- name: Validate NVIDIA MIG support
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_vendor_detected == "nvidia"
+      - containers_gpu_nvidia_mig_supported is defined and containers_gpu_nvidia_mig_supported
+    fail_msg: "NVIDIA MIG requires MIG-capable GPU"
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing.strategy == "mig"
+- name: Check NVIDIA device plugin status (Kubernetes)
+  ansible.builtin.command:
+    cmd: kubectl get daemonsets -n kube-system nvidia-device-plugin-daemonset
+  register: nvidia_plugin_status
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing.kubernetes is defined
+    - containers_gpu_slicing.kubernetes.enabled
+    - containers_gpu_vendor_detected == "nvidia"
+- name: Verify GPU devices in container (Podman)
+  ansible.builtin.command:
+    cmd: podman run --rm --device=/dev/nvidia0 --device=/dev/nvidiactl --device=/dev/nvidia-uvm nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+  register: nvidia_smi_output
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing.podman is defined
+    - containers_gpu_slicing.podman.enabled
+    - containers_gpu_vendor_detected == "nvidia"
+- name: Verify Intel OneAPI installation
+  ansible.builtin.command:
+    cmd: podman run --rm --device=/dev/dri --device=/dev/kfd intel/oneapi-runtime:latest oneapi_version
+  register: oneapi_version_output
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing.podman is defined
+    - containers_gpu_slicing.podman.enabled
+    - containers_gpu_vendor_detected == "intel"
+    - containers_gpu_slicing.strategy == "oneapi"
+- name: Check GPU health with nvidia-smi
+  ansible.builtin.command:
+    cmd: nvidia-smi -q -d HEALTH
+  register: nvidia_health_check
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_vendor_detected == "nvidia"
+- name: Check AMD GPU health
+  ansible.builtin.command:
+    cmd: rocminfo
+  register: amd_health_check
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_vendor_detected == "amd"
+- name: Check Intel GPU health
+  ansible.builtin.command:
+    cmd: intel_gpu_top -J -s 1
+  register: intel_health_check
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_vendor_detected == "intel"
+- name: Report GPU health status
+  ansible.builtin.debug:
+    msg: |
+      GPU Health Check Results:
+        {% if containers_gpu_vendor_detected == "nvidia" %}
+        NVIDIA GPU Health: {{ nvidia_health_check.stdout | default('Unknown') }}
+        {% elif containers_gpu_vendor_detected == "amd" %}
+        AMD GPU Health: {{ amd_health_check.stdout | default('Unknown') }}
+        {% elif containers_gpu_vendor_detected == "intel" %}
+        Intel GPU Health: {{ intel_health_check.stdout | default('Unknown') }}
+        {% else %}
+        No GPU health check performed
+        {% endif %}
+  when: containers_enable_gpu_support

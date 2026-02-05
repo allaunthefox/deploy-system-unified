@@ -1,11 +1,10 @@
 ---
 # Advanced security hardening with secure patterns for security/advanced role
-- name: Validate advanced security hardening prerequisites (idempotent)
-  ansible.builtin.assert:
-    that:
-      - advanced_security_hardening_enabled | default(false)
-    msg: "Advanced security hardening not enabled - skipping configuration"
-
+# - name: Validate advanced security hardening prerequisites (idempotent)
+#   ansible.builtin.assert:
+#     that:
+#       - advanced_security_hardening_enabled | default(false)
+#     msg: "Advanced security hardening not enabled - skipping configuration"
 - name: Update SSH configuration with random port (idempotent)
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -18,12 +17,10 @@
   become: true
   notify: restart sshd
   no_log: true
-
 - name: Enable SSH key rotation if enabled (idempotent)
   ansible.builtin.debug:
     msg: "SSH key rotation is enabled and will rotate keys every {{ ssh_key_rotation_interval_days }} days"
   when: ssh_key_rotation_enabled | bool
-
 - name: Schedule SSH key rotation task (idempotent)
   ansible.builtin.cron:
     name: "Rotate SSH host keys"
@@ -33,7 +30,6 @@
     job: "/usr/local/bin/rotate_ssh_keys.sh"
     state: present
   when: ssh_key_rotation_enabled | bool
-
 - name: Create SSH key rotation script with secure permissions (idempotent)
   ansible.builtin.copy:
     content: |

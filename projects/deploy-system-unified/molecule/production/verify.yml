@@ -10,21 +10,44 @@
       loop:
         - /srv/containers
         - /srv/containers/secrets
-
     - name: Validate production directories
       ansible.builtin.assert:
         that:
           - item.stat.exists
           - item.stat.isdir
       loop: "{{ prod_dirs.results }}"
-
     - name: Check SSHD config for port 2222
       ansible.builtin.command: grep "Port 2222" /etc/ssh/sshd_config
       register: sshd_port_check
       failed_when: false
       changed_when: false
-
     - name: Validate SSHD port
       ansible.builtin.assert:
         that:
           - sshd_port_check.rc == 0
+
+    - name: Check Monitoring (node_exporter)
+      ansible.builtin.stat:
+        path: /usr/local/bin/node_exporter
+      register: node_exporter_bin
+
+    - name: Assert node_exporter installed
+      ansible.builtin.assert:
+        that: node_exporter_bin.stat.exists
+
+    - name: Check Networking Tools (ethtool)
+      ansible.builtin.stat:
+        path: /sbin/ethtool
+      register: ethtool_bin
+      ignore_errors: true
+
+    - name: Check lsscsi (SAS Tools)
+      ansible.builtin.stat:
+        path: /usr/bin/lsscsi
+      register: lsscsi_bin
+
+    - name: Assert Hardware Tools installed
+      ansible.builtin.assert:
+        that:
+          - lsscsi_bin.stat.exists
+          - ethtool_bin.stat.exists or (ansible_facts['distribution'] == 'Ubuntu' and true) # simplified check

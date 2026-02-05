@@ -3,11 +3,12 @@
 - name: Import core bootstrap tasks
   ansible.builtin.import_tasks: bootstrap/tasks/main.yml
   tags: [core, bootstrap]
-
 - name: Import core identity tasks
   ansible.builtin.import_tasks: identity/tasks/main.yml
   tags: [core, identity]
-
+- name: Import core memory tasks
+  ansible.builtin.import_tasks: memory/tasks/main.yml
+  tags: [core, memory]
 - name: Import core systemd tasks
   ansible.builtin.import_tasks: systemd/tasks/main.yml
   tags: [core, systemd]

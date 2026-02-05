@@ -10,13 +10,11 @@ A recent version of `ansible-core` that is still under support.
 
 Depending on the driver chosen, you may need to install additional OS
 packages.
-
 === "CentOS"
 
     ``` bash
     $ sudo dnf install -y gcc python3-pip python3-devel openssl-devel python3-libselinux
     ```
-
 === "Ubuntu"
 
     ``` bash
@@ -27,11 +25,10 @@ packages.
 ## Pip
 
 [pip] is the only supported installation method.
-
 {{ install_from_adt("molecule") }}
 
 ```bash
-$ python3 -m pip install molecule ansible-core
+python3 -m pip install molecule ansible-core
 ```
 
 Keep in mind that on selinux supporting systems, if you install into a
@@ -40,7 +37,6 @@ selinux is not enabled or is configured to be permissive.
 
 It is your responsibility to ensure that soft dependencies of Ansible
 are available on your controller or host machines.
-
 !!! warning
 
     It is highly recommended that you install molecule in a [virtual
@@ -51,7 +47,7 @@ are available on your controller or host machines.
     with the following:
 
 ```bash
-$ python3 -m pip install --upgrade --user setuptools
+python3 -m pip install --upgrade --user setuptools
 ```
 
 ### Requirements
@@ -64,14 +60,14 @@ Python packages. See the driver's documentation in that case.
 Install Molecule:
 
 ```bash
-$ python3 -m pip install --user molecule
+python3 -m pip install --user molecule
 ```
 
 Molecule does not include ansible-lint (nor does the lint extra), but is
 easily installed separately:
 
 ```bash
-$ python3 -m pip install --user molecule ansible-lint
+python3 -m pip install --user molecule ansible-lint
 ```
 
 Molecule uses the \"delegated\" driver by default. Other drivers can be
@@ -81,7 +77,7 @@ package. If you would like to use podman as the molecule driver, the
 installation command would look like this:
 
 ```bash
-$ python3 -m pip install --user "molecule-plugins[podman]"
+python3 -m pip install --user "molecule-plugins[podman]"
 ```
 
 !!! warning
@@ -90,7 +86,6 @@ $ python3 -m pip install --user "molecule-plugins[podman]"
     previously installed drivers like for instance `molecule-podman` or
     `molecule-vagrant` since those are now available in the `molecule-plugins`
     package.
-
 Installing molecule package also installed its main script `molecule`,
 usually in `PATH`. Users should know that molecule can also be called as
 a python module, using `python3 -m molecule ...`. This alternative method
@@ -105,7 +100,6 @@ has some benefits:
 
 `Molecule` is built into a [container image for Ansible Development Tools
 (ADT)](https://docs.ansible.com/projects/dev-tools/container/)
-
 Any questions or bugs related to the use of Molecule from within a container
 should be addressed by the ADT project.
 
@@ -123,21 +117,17 @@ easier to refer to.
 ### Requirements
 
 === "CentOS"
-
     ``` bash
     $ sudo dnf install -y libffi-devel git
     ```
 
 === "Ubuntu"
-
     ``` bash
     $ sudo apt install -y libffi-dev git
     ```
 
 ```bash title="Install"
-$ python3 -m pip install -U git+https://github.com/ansible-community/molecule
+python3 -m pip install -U git+https://github.com/ansible-community/molecule
 ```
 
 [pip]: https://pip.pypa.io/en/stable/installation/
-[virtual environment]: https://virtualenv.pypa.io/en/latest/user_guide.html
-[setuptools]: https://setuptools.pypa.io/en/latest/

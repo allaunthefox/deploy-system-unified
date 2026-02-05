@@ -1,0 +1,20 @@
+---
+# Pull Ops Stack Images
+# Retry logic implemented to handle transient network issues and avoid aggressive polling
+# Safe Level: 5 retries with 30s delay prevents triggering abuse detection while handling blips.
+
+- name: Pull Ops Images (Safe Retry)
+  containers.podman.podman_image:
+    name: "{{ item.image }}"
+    state: present
+  register: pull_result
+  until: pull_result is success
+  retries: "{{ containers_pull_retries | default(5) }}"
+  delay: "{{ containers_pull_delay | default(30) }}"
+  loop:
+    - { image: "{{ homarr_image }}", enable: "{{ homarr_enable }}" }
+    - { image: "{{ vaultwarden_image }}", enable: "{{ vaultwarden_enable }}" }
+    - { image: "{{ wiki_image }}", enable: "{{ wiki_enable }}" }
+    - { image: "{{ wastebin_image }}", enable: "{{ wastebin_enable }}" }
+  when: item.enable | bool
+  tags: [pull_images]

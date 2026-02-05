@@ -1,0 +1,13 @@
+[Network]
+NetworkName={{ item.name }}
+Driver={{ item.driver | default('bridge') }}
+{% if item.subnet is defined %}
+Subnet={{ item.subnet }}
+{% endif %}
+{% if item.gateway is defined %}
+Gateway={{ item.gateway }}
+{% endif %}
+IPv6=true
+Label={{ item.label | default('managed_by=ansible') }}
+DNS={{ item.dns_enabled | default(true) | bool | lower }}
+Internal={{ item.internal | default(false) | bool | lower }}

@@ -1,0 +1,14 @@
+---
+- name: Create NVIDIA time-slicing configuration file
+  ansible.builtin.template:
+    src: time_slicing_config.j2
+    dest: /etc/nvidia-container-runtime/config.toml
+    mode: '0644'
+  become: true
+
+- name: Restart containerd service (if running)
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+  become: true
+  failed_when: false

@@ -3,7 +3,6 @@
 !!! note
 
     This example demonstrates the use of an ansible-native configuration.
-
 This example demonstrates testing with Podman containers using standard Ansible inventory and playbooks for complete control over the testing environment.
 
 ## Overview
@@ -13,7 +12,6 @@ This scenario uses:
 - **Inventory management**: Standard Ansible inventory files for container definitions
 - **Container lifecycle**: Managed through Ansible playbooks with full customization
 - **Flexible configuration**: Container settings defined in inventory for easy modification
-
 When you run `molecule test --scenario-name podman`, Molecule executes the complete test sequence including create, converge, verify, cleanup, and destroy steps using your custom playbooks.
 
 ## Configuration
@@ -104,5 +102,4 @@ Container definitions are managed through standard Ansible inventory:
 - **Maintainable**: Clear separation of concerns between configuration and automation
 - **Flexible**: Easy to extend with additional container settings, networking, or testing logic
 - **Robust**: Intelligent error handling and conditional execution for reliable testing
-
 This approach provides the foundation for more complex testing scenarios while maintaining simplicity and demonstrating modern ansible-native practices with comprehensive lifecycle management.

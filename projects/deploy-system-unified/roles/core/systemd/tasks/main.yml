@@ -5,7 +5,6 @@
     that:
       - ansible_service_mgr == 'systemd'
     msg: "This role requires systemd as the service manager"
-
 - name: Configure systemd journald
   ansible.builtin.lineinfile:
     path: /etc/systemd/journald.conf
@@ -18,7 +17,6 @@
     - { regexp: '^#?SystemMaxFileSize=', line: 'SystemMaxFileSize=50M' }
   become: true
   notify: restart journald
-
 - name: Configure systemd resolved if available
   ansible.builtin.lineinfile:
     path: /etc/systemd/resolved.conf
@@ -32,7 +30,6 @@
   become: true
   failed_when: false
   notify: restart resolved
-
 - name: Enable persistent journal storage
   ansible.builtin.file:
     path: /var/log/journal
@@ -41,12 +38,10 @@
     owner: root
     group: systemd-journal
   become: true
-
 - name: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
-
 - name: Set core systemd completion flag
   ansible.builtin.set_fact:
     core_systemd_complete: true

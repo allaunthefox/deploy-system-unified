@@ -164,7 +164,6 @@ See the [molecule-plugins](https://github.com/ansible-community/molecule-plugins
 ### Why Drivers Exist
 
 Drivers were created to abstract infrastructure provisioning across different platforms (Docker, Podman, AWS EC2, Azure, etc.) without requiring engineers to write custom create/destroy playbooks for each environment. Each driver encapsulates the platform-specific logic for instance lifecycle management, connection details, and inventory generation. This allowed Molecule to support multiple testing environments through a consistent interface, where engineers could switch between local containers and cloud instances by simply changing the driver name in their configuration.
-
 The combination of ansible-native inventories and content within ansible collections now displaces the need for drivers. Collections provide standardized modules and plugins for infrastructure management, while native inventory systems handle connection details and host organization. This allows engineers to write standard Ansible playbooks using collection modules (like `containers.podman.podman_container` or `amazon.aws.ec2_instance`) instead of relying on driver-specific abstractions.
 
 ## Provisioner
@@ -269,7 +268,6 @@ provisioner:
 ```
 
 **Note:** In the ansible-native approach, several provisioner keys (`ansible_args`, `config_options`, `env`, `playbooks`) have been migrated to the `ansible` root section.
-
 **Ansible-native approach:** Provisioner configuration moves to the `ansible` root section with `executor.args`, `env`, and `cfg` subsections. Playbook paths and inventory configuration are handled through standard Ansible mechanisms.
 
 ## Verifier
@@ -347,7 +345,6 @@ all:
 ### Host Variables
 
 Platform-specific variables and driver connection details are automatically added to the generated inventory.
-
 **Ansible-native approach:** Generated inventory is replaced by native Ansible inventory files, plugins, and directories managed directly through Ansible's inventory system.
 
 ## Complete Example
@@ -372,7 +369,6 @@ platforms:
       - database_servers
     environment:
       POSTGRES_PASSWORD: test
-
 provisioner:
   name: ansible
   config_options:
@@ -390,7 +386,6 @@ provisioner:
 
 verifier:
   name: ansible
-
 scenario:
   test_sequence:
     - create

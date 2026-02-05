@@ -1,0 +1,169 @@
+---
+# NVIDIA GPU Setup for x86_64
+
+- name: Determine NVIDIA driver package name (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - nvidia-driver
+      - nvidia-smi
+      - nvidia-cuda-toolkit
+  when: ansible_os_family == 'Debian'
+
+- name: Determine NVIDIA driver package name (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - akmod-nvidia
+      - xorg-x11-drv-nvidia-cuda
+  when: ansible_os_family == 'RedHat'
+
+- name: Determine NVIDIA driver package name (Alpine)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - nvidia-driver
+      - nvidia-cuda
+      - nvidia-container-toolkit
+  when: ansible_os_family == 'Alpine'
+
+- name: Determine NVIDIA driver package name (Arch Linux)
+  ansible.builtin.set_fact:
+    nvidia_driver_packages:
+      - nvidia
+      - nvidia-utils
+      - nvidia-settings
+      - cuda
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install NVIDIA drivers
+  ansible.builtin.package:
+    name: "{{ nvidia_driver_packages }}"
+    state: present
+  become: true
+  notify:
+    - Update initramfs (placeholder)
+  when:
+    - nvidia_driver_packages is defined
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Check for NVIDIA Persistence Daemon Service
+  ansible.builtin.stat:
+    path: /usr/lib/systemd/system/nvidia-persistenced.service
+  register: nvidia_persistenced_service_check
+  when:
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Enable NVIDIA Persistence Daemon
+  ansible.builtin.systemd:
+    name: nvidia-persistenced
+    enabled: true
+    state: started
+  become: true
+  when:
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+    - nvidia_persistenced_service_check.stat.exists
+
+- name: Configure NVIDIA kernel parameters (ensure proprietary modules load)
+  ansible.builtin.copy:
+    content: |
+      options nvidia NVreg_PreserveVideoMemoryAllocations=1
+      options nvidia NVreg_TemporaryFilePath=/var/tmp
+    dest: /etc/modprobe.d/nvidia-options.conf
+    mode: '0644'
+  become: true
+  when:
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+
+- name: Setup NVIDIA CUDA Repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+  block:
+    - name: Download NVIDIA GPG key (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.get_url:
+        url: "{{ nvidia_gpg_key_url }}"
+        dest: /etc/pki/rpm-gpg/nvidia.pub
+        mode: '0644'
+        checksum: "{{ 'sha256:' ~ nvidia_gpg_key_sha256 if (nvidia_gpg_key_verify | default(false)) else omit }}"
+      become: true
+
+    - name: Ensure NVIDIA GPG key checksum is configured when verification is enabled
+      ansible.builtin.assert:
+        that:
+          - nvidia_gpg_key_sha256 | length > 0
+        fail_msg: "nvidia_gpg_key_sha256 must be set when nvidia_gpg_key_verify=true."
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Read NVIDIA GPG key checksum (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.stat:
+        path: /etc/pki/rpm-gpg/nvidia.pub
+        checksum_algorithm: sha256
+      register: nvidia_key_stat
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Verify NVIDIA GPG key checksum (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.assert:
+        that:
+          - nvidia_key_stat.stat.checksum == (nvidia_gpg_key_sha256 | lower)
+        fail_msg: "NVIDIA GPG key checksum mismatch. Expected {{ nvidia_gpg_key_sha256 }}, got {{ nvidia_key_stat.stat.checksum }}."
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Ensure NVIDIA GPG fingerprint is configured when verification is enabled
+      ansible.builtin.assert:
+        that:
+          - nvidia_gpg_fingerprint | length > 0
+        fail_msg: "nvidia_gpg_fingerprint must be set when nvidia_gpg_key_verify=true."
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Read NVIDIA GPG fingerprint (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.command:
+        cmd: "gpg --show-keys --with-colons /etc/pki/rpm-gpg/nvidia.pub"
+      register: nvidia_keyinfo
+      changed_when: false
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Extract NVIDIA GPG fingerprint (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.set_fact:
+        nvidia_actual_fingerprint: >-
+          {{ (nvidia_keyinfo.stdout_lines
+              | select('match', '^fpr:')
+              | map('regex_replace', '^fpr:+([0-9A-F]+):.*', '\\1')
+              | list
+              | first
+              | default('')) | upper }}
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Verify NVIDIA GPG fingerprint (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.assert:
+        that:
+          - nvidia_actual_fingerprint != ""
+          - nvidia_actual_fingerprint == (nvidia_gpg_fingerprint | regex_replace('[^0-9A-Fa-f]', '') | upper)
+        fail_msg: "NVIDIA GPG fingerprint mismatch. Expected {{ nvidia_gpg_fingerprint }}, got {{ nvidia_actual_fingerprint }}."
+      when: nvidia_gpg_key_verify | default(false) | bool
+
+    - name: Import NVIDIA GPG key (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.rpm_key:
+        key: /etc/pki/rpm-gpg/nvidia.pub
+        state: present
+      become: true
+
+    - name: Add NVIDIA CUDA repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.yum_repository:
+        name: cuda-rhel{{ ansible_distribution_major_version }}
+        description: NVIDIA CUDA Repository
+        baseurl: https://developer.download.nvidia.com/compute/cuda/repos/rhel{{ ansible_distribution_major_version }}/x86_64/
+        gpgcheck: true
+        repo_gpgcheck: true
+        gpgkey: file:///etc/pki/rpm-gpg/nvidia.pub
+        enabled: true
+      become: true
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu_stack_enable_cuda | default(false) | bool
+
+- name: Install NVIDIA CUDA Toolkit
+  ansible.builtin.package:
+    name: "{{ 'nvidia-cuda-toolkit' if ansible_os_family == 'Debian' else 'cuda-toolkit' }}"
+    state: present
+  become: true
+  when: gpu_stack_enable_cuda | default(false) | bool

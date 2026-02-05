@@ -1,5 +1,10 @@
 ---
 # Tasks for security/kernel role - Mandatory Sysctl Hardening
+
+- name: Detect Virtualization Environment (Internal)
+  ansible.builtin.set_fact:
+    _sec_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+
 - name: Apply kernel hardening parameters
   ansible.posix.sysctl:
     name: "{{ item.name }}"
@@ -28,25 +33,45 @@
     - { name: 'kernel.panic_on_oops', value: '1' }
     - { name: 'vm.swappiness', value: '1' } # Minimize swapping of sensitive memory to disk
   become: true
-
+  when: not _sec_is_container
+  tags: [security, kernel]
 - name: Configure Kernel to zero memory on free (GRUB)
   ansible.builtin.lineinfile:
     path: /etc/default/grub
-    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=".*)init_on_free=1 page_poison=1 slab_nomerge(.*")$'
-    line: '\1init_on_free=1 page_poison=1 slab_nomerge\2'
+    # Regex negative lookahead: Only match if 'init_on_free' is NOT present
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*init_on_free=1).*)"$'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 init_on_free=1 page_poison=1 slab_nomerge"'
     backrefs: true
   become: true
+  when: not _sec_is_container
   notify: update grub
+  tags: [security, kernel]
 
 - name: Apply Bare Metal OS-Layer Hardening
   block:
-    - name: Enable IOMMU for PCIe Isolation (Intel/AMD)
+    - name: Check CPU Vendor for IOMMU
+      ansible.builtin.command: grep -q 'GenuineIntel' /proc/cpuinfo
+      register: cpu_is_intel
+      failed_when: false
+      changed_when: false
+
+    - name: Enable IOMMU (Intel)
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=".*)(intel_iommu=on|amd_iommu=on) iommu=pt(.*")$'
-        line: '\1intel_iommu=on iommu=pt\2'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*intel_iommu=on).*)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 intel_iommu=on iommu=pt"'
         backrefs: true
       notify: update grub
+      when: cpu_is_intel.rc == 0
+
+    - name: Enable IOMMU (AMD)
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*amd_iommu=on).*)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 amd_iommu=on iommu=pt"'
+        backrefs: true
+      notify: update grub
+      when: cpu_is_intel.rc != 0
 
     - name: Blacklist dangerous DMA-capable modules (Hardware Isolation)
       ansible.builtin.copy:
@@ -57,3 +82,4 @@
         mode: '0644'
   when: kernel_profile == "bare_metal"
   become: true
+  tags: [security, kernel]

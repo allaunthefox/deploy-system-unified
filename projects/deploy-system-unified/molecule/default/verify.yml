@@ -14,7 +14,6 @@
         - /var/lib/deploy-system/logs
         - /tmp/deploy-system
         - /etc/security
-
     - name: Validate directory existence
       ansible.builtin.assert:
         that:
@@ -22,12 +21,10 @@
           - item.stat.isdir
         fail_msg: "Directory {{ item.item }} should exist"
       loop: "{{ dir_stats.results }}"
-
     - name: Verify preflight flag exists
       ansible.builtin.stat:
         path: /tmp/preflight_completed.flag
       register: preflight_flag
-
     - name: Validate preflight flag
       ansible.builtin.assert:
         that:

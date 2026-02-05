@@ -1,0 +1,82 @@
+---
+# NVIDIA GPU model profiles for GPU slicing
+# MIG-capable GPUs (A100, A30, H100)
+nvidia_mig_capable_gpus:
+  - "NVIDIA A100"
+  - "NVIDIA A30"
+  - "NVIDIA H100"
+  - "NVIDIA H100 NVL"
+  - "NVIDIA H100 80GB"
+# vGPU-capable GPUs (Tesla, Quadro, RTX)
+nvidia_vgpu_capable_gpus:
+  - "NVIDIA Tesla T4"
+  - "NVIDIA Tesla P40"
+  - "NVIDIA Tesla P4"
+  - "NVIDIA Quadro RTX 6000"
+  - "NVIDIA Quadro RTX 8000"
+  - "NVIDIA RTX 8000"
+# Time-slicing supported GPUs (all CUDA-capable GPUs)
+nvidia_time_slicing_gpus:
+  - "NVIDIA GeForce"
+  - "NVIDIA Titan"
+  - "NVIDIA Tesla"
+  - "NVIDIA Quadro"
+  - "NVIDIA RTX"
+# MIG profiles per GPU model
+nvidia_mig_profiles:
+  "NVIDIA A100":
+    - "1g.5gb"
+    - "2g.10gb"
+    - "3g.20gb"
+    - "4g.20gb"
+    - "7g.40gb"
+    - "10g.40gb"
+  "NVIDIA A30":
+    - "1g.6gb"
+    - "2g.12gb"
+    - "4g.24gb"
+    - "8g.48gb"
+  "NVIDIA H100":
+    - "1g.10gb"
+    - "2g.20gb"
+    - "3g.40gb"
+    - "4g.40gb"
+    - "7g.80gb"
+    - "10g.80gb"
+# Default MIG profile for each GPU model
+nvidia_default_mig_profile:
+  "NVIDIA A100": "1g.5gb"
+  "NVIDIA A30": "1g.6gb"
+  "NVIDIA H100": "1g.10gb"
+# vGPU profiles per GPU model
+nvidia_vgpu_profiles:
+  "NVIDIA Tesla T4":
+    - "grid_t4-1q"
+    - "grid_t4-2q"
+    - "grid_t4-4q"
+    - "grid_t4-8q"
+  "NVIDIA Tesla P40":
+    - "grid_p40-1q"
+    - "grid_p40-2q"
+    - "grid_p40-4q"
+    - "grid_p40-8q"
+  "NVIDIA Tesla P4":
+    - "grid_p4-1q"
+    - "grid_p4-2q"
+    - "grid_p4-4q"
+    - "grid_p4-8q"
+  "NVIDIA Quadro RTX 6000":
+    - "quadro_rtx_6000-1q"
+    - "quadro_rtx_6000-2q"
+    - "quadro_rtx_6000-4q"
+  "NVIDIA Quadro RTX 8000":
+    - "quadro_rtx_8000-1q"
+    - "quadro_rtx_8000-2q"
+    - "quadro_rtx_8000-4q"
+# Default vGPU profile for each GPU model
+nvidia_default_vgpu_profile:
+  "NVIDIA Tesla T4": "grid_t4-1q"
+  "NVIDIA Tesla P40": "grid_p40-1q"
+  "NVIDIA Tesla P4": "grid_p4-1q"
+  "NVIDIA Quadro RTX 6000": "quadro_rtx_6000-1q"
+  "NVIDIA Quadro RTX 8000": "quadro_rtx_8000-1q"

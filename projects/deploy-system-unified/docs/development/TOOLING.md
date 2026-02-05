@@ -17,15 +17,19 @@ This script is the primary gatekeeper for the project's standards. It utilizes *
 | `-q`, `--quiet` | **Quiet Mode** | N/A | Suppresses all output except for critical errors. |
 
 ### Advanced Audits
+
 - **Recursive Role Audit**: Unlike standard linters, this tool recursively searches for nested roles (e.g., `roles/core/time`) and enforces a full directory structure (`vars/`, `handlers/`, etc.).
 - **Embedded Shell Audit**: Uses **Shellcheck** to lint code inside `ansible.builtin.shell` blocks, preventing logic errors in embedded scripts.
 - **Security Audit**: Uses targeted regex to find world-writable modes (`777`, `666`) and hardcoded secret patterns.
 
 ## 🧪 Molecule
+
 Scenario-based testing for idempotency and multi-platform support.
+
 - Use `molecule test` to run the full sequence (Destroy -> Create -> Converge -> **Idempotence** -> Verify).
 
 ## 🔍 Manual Syntax Checks
+
 To verify the playbooks and role paths without standard inventory warnings, use the validation inventory:
 
 ```bash

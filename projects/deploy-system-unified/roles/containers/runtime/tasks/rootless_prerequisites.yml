@@ -1,0 +1,108 @@
+---
+# Rootless Podman prerequisites
+
+- name: Lookup rootless user UID
+  ansible.builtin.command:
+    cmd: "id -u {{ podman_rootless_user }}"
+  register: podman_rootless_uid_cmd
+  changed_when: false
+  become: true
+
+- name: Check newuidmap/newgidmap availability
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/newuidmap
+    - /usr/bin/newgidmap
+  register: podman_uidmap_binaries
+  changed_when: false
+
+- name: Assert newuidmap/newgidmap are installed
+  ansible.builtin.assert:
+    that:
+      - podman_uidmap_binaries.results | map(attribute='stat.exists') | min
+    fail_msg: >-
+      Rootless Podman requires newuidmap/newgidmap. Install the uidmap/shadow
+      utilities package for your distro before continuing.
+  when: podman_rootless_enabled | bool
+
+- name: Set rootless systemd environment facts
+  ansible.builtin.set_fact:
+    podman_rootless_uid: "{{ podman_rootless_uid_cmd.stdout | trim }}"
+    podman_rootless_runtime_dir: "/run/user/{{ podman_rootless_uid_cmd.stdout | trim }}"
+    podman_rootless_dbus_address: "unix:path=/run/user/{{ podman_rootless_uid_cmd.stdout | trim }}/bus"
+    containers_systemd_env:
+      XDG_RUNTIME_DIR: "/run/user/{{ podman_rootless_uid_cmd.stdout | trim }}"
+      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ podman_rootless_uid_cmd.stdout | trim }}/bus"
+
+- name: Ensure subuid entry exists for rootless user
+  ansible.builtin.lineinfile:
+    path: /etc/subuid
+    regexp: "^{{ podman_rootless_user }}:"
+    line: "{{ podman_rootless_user }}:100000:65536"
+    create: true
+    mode: '0644'
+  become: true
+
+- name: Ensure subgid entry exists for rootless user
+  ansible.builtin.lineinfile:
+    path: /etc/subgid
+    regexp: "^{{ podman_rootless_user }}:"
+    line: "{{ podman_rootless_user }}:100000:65536"
+    create: true
+    mode: '0644'
+  become: true
+
+- name: Enable linger for rootless user (systemd --user)
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ podman_rootless_user }}"
+  become: true
+  changed_when: false
+
+- name: Check systemd user instance is running
+  ansible.builtin.command:
+    cmd: systemctl --user is-system-running
+  register: rootless_systemd_check
+  changed_when: false
+  failed_when: false
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ podman_rootless_user }}"
+
+- name: Assert systemd user instance is available
+  ansible.builtin.assert:
+    that:
+      - rootless_systemd_check.rc == 0
+    fail_msg: >-
+      Rootless Podman requires a running systemd user instance. Ensure
+      lingering is enabled and the user session can start
+      (loginctl enable-linger {{ podman_rootless_user }}).
+  when: podman_rootless_enabled | bool
+
+- name: Ensure rootless systemd quadlet directory exists
+  ansible.builtin.file:
+    path: "{{ containers_systemd_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ podman_rootless_user }}"
+    group: "{{ podman_rootless_user }}"
+  become: true
+
+- name: Ensure rootless secrets directory exists
+  ansible.builtin.file:
+    path: "{{ containers_secrets_dir }}"
+    state: directory
+    mode: '0700'
+    owner: "{{ podman_rootless_user }}"
+    group: "{{ podman_rootless_user }}"
+  become: true
+
+- name: Allow unprivileged ports if configured
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: "{{ podman_rootless_privileged_port_start }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-rootless-ports.conf
+    reload: true
+  become: true
+  when: podman_rootless_allow_privileged_ports | bool

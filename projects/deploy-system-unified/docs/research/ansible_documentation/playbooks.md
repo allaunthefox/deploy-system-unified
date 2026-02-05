@@ -13,7 +13,6 @@ Playbooks are written in YAML format and consist of one or more 'plays' in a lis
   become: yes
   vars:
     http_port: 80
-
   tasks:
     - name: Ensure apache is installed
       package:
@@ -31,7 +30,8 @@ Playbooks are written in YAML format and consist of one or more 'plays' in a lis
 
 A play is an ordered set of tasks to be applied to hosts selected by an inventory.
 
-### Key Components:
+### Key Components
+
 - `hosts`: Defines the host pattern for the play
 - `name`: Human-readable description of the play
 - `tasks`: List of tasks to execute
@@ -43,7 +43,8 @@ A play is an ordered set of tasks to be applied to hosts selected by an inventor
 
 Tasks are the units of action in Ansible. Each task calls a module.
 
-### Task Attributes:
+### Task Attributes
+
 - `name`: Descriptive name for the task
 - `module`: The module to call
 - `args`: Arguments to pass to the module
@@ -56,7 +57,8 @@ Tasks are the units of action in Ansible. Each task calls a module.
 
 Variables in Ansible can come from multiple sources with different precedence levels.
 
-### Variable Precedence (Highest to Lowest):
+### Variable Precedence (Highest to Lowest)
+
 1. Extras vars (-e/--extra-vars)
 2. Task vars
 3. Block vars
@@ -106,7 +108,6 @@ Handlers are special tasks that run only when notified by other tasks.
     src: nginx.conf
     dest: /etc/nginx/nginx.conf
   notify: restart nginx
-
 handlers:
   - name: restart nginx
     service:

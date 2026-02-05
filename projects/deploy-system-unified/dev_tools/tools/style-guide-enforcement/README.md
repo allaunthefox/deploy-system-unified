@@ -9,7 +9,8 @@ This directory contains comprehensive tools for maintaining code quality and enf
 ## Tools
 
 ### `enforce_style_guide.sh`
-**Primary style guide enforcement script**
+
+Primary style guide enforcement script
 
 Comprehensive tool that checks and enforces multiple categories of standards:
 
@@ -21,7 +22,6 @@ Comprehensive tool that checks and enforces multiple categories of standards:
    - Line length compliance
    - Newline at end of files
    - Uses `yamllint` for validation
-
 2. **Ansible-Specific Standards**
    - Role structure validation
    - Best practices enforcement
@@ -33,7 +33,6 @@ Comprehensive tool that checks and enforces multiple categories of standards:
    - Lowercase filenames in roles
    - Snake_case for variables
    - Auto-fixes where possible
-
 4. **Security Standards**
    - Hardcoded secrets detection
    - Unsafe file permissions
@@ -48,16 +47,15 @@ Comprehensive tool that checks and enforces multiple categories of standards:
 ## Usage
 
 ### Basic Usage
+
 ```bash
 # Run full style guide enforcement
 ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
-
 # Auto-fix all fixable issues
 ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --fix
 
 # Generate compliance report only
 ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report
-
 # Run quietly (suppress output except errors)
 ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --quiet
 
@@ -68,7 +66,9 @@ Comprehensive tool that checks and enforces multiple categories of standards:
 ### Integration with Development Workflow
 
 #### Pre-commit Hook
+
 Add to `.git/hooks/pre-commit`:
+
 ```bash
 #!/bin/sh
 # Run style guide enforcement before commit
@@ -80,6 +80,7 @@ fi
 ```
 
 #### CI/CD Pipeline
+
 ```yaml
 # Example GitHub Actions workflow
 - name: Enforce Style Guide
@@ -88,6 +89,7 @@ fi
 ```
 
 #### Regular Maintenance
+
 ```bash
 # Run weekly as part of maintenance
 ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --fix
@@ -96,27 +98,34 @@ fi
 ## Configuration
 
 ### Configuration File
+
 `style_guide_config.json` contains project-specific configuration:
+
 - Enabled/disabled rule categories
 - Auto-fix settings
 - File exclusions
 - Reporting preferences
 
 ### Tool-Specific Configurations
+
 - `.yamllint.yml` - YAML linting rules
 - `.ansible-lint.yml` - Ansible linting rules
 
 ## Output
 
 ### Console Output
+
 The script provides colored output with:
+
 - ✅ Success messages in green
 - ⚠️ Warnings in yellow
 - ❌ Errors in red
 - 📊 Summary statistics
 
 ### Compliance Reports
+
 Detailed markdown reports are generated showing:
+
 - Total issues found
 - Issues auto-fixed
 - Issues requiring manual attention
@@ -126,6 +135,7 @@ Detailed markdown reports are generated showing:
 ## Dependencies
 
 Required tools (must be installed):
+
 - `yamllint` - YAML linting
 - `ansible-lint` - Ansible-specific linting
 - `ripgrep` - Fast pattern matching
@@ -138,7 +148,6 @@ Required tools (must be installed):
    - Run before major commits
    - Include in CI/CD pipeline
    - Schedule regular maintenance runs
-
 2. **Gradual Adoption**
    - Start with auto-fixable issues
    - Gradually enable stricter rules
@@ -148,7 +157,6 @@ Required tools (must be installed):
    - Adjust rules based on project needs
    - Configure exclusions for legacy code
    - Customize reporting format
-
 4. **Integration**
    - Use with pre-commit hooks
    - Integrate with IDE/editor
@@ -159,6 +167,7 @@ Required tools (must be installed):
 ### Common Issues
 
 1. **Missing Dependencies**
+
    ```bash
    # Install required tools
    pip install yamllint ansible-lint
@@ -166,6 +175,7 @@ Required tools (must be installed):
    ```
 
 2. **Permission Errors**
+
    ```bash
    # Make scripts executable
    chmod +x dev_tools/tools/style-guide-enforcement/*.sh
@@ -185,17 +195,20 @@ Required tools (must be installed):
 ## Development
 
 ### Adding New Rules
+
 1. Add rule logic to the appropriate enforcement function
 2. Update `style_guide_config.json` with new rule
 3. Update documentation
 4. Test with sample violations
 
 ### Customizing Auto-fix
+
 1. Modify the auto-fix logic in enforcement functions
 2. Ensure fixes don't break functionality
 3. Test thoroughly with various file types
 
 ### Extending Categories
+
 1. Add new enforcement function
 2. Integrate into main execution flow
 3. Update configuration schema

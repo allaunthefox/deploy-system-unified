@@ -1,0 +1,216 @@
+---
+# AMD GPU Setup for x86_64
+
+- name: Define AMD Graphics Packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - libgl1-mesa-dri
+      - libglx-mesa0
+      - mesa-vulkan-drivers
+      - mesa-va-drivers
+      - mesa-vdpau-drivers
+    amd_packages_host:
+      - firmware-amd-graphics
+  when: ansible_os_family == 'Debian'
+
+- name: Define AMD Graphics Packages (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - mesa-dri-drivers
+      - mesa-vulkan-drivers
+      - mesa-libEGL
+      - mesa-libGL
+    amd_packages_host:
+      - amd-gpu-firmware
+  when: ansible_os_family == 'RedHat'
+
+- name: Define AMD Graphics Packages (Alpine)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - mesa-va-gallium
+      - mesa-vdpau-gallium
+      - mesa-vulkan-ati
+      - libdrm-amdgpu
+    amd_packages_host:
+      - linux-firmware-amdgpu
+  when: ansible_os_family == 'Alpine'
+
+- name: Define AMD Graphics Packages (Arch Linux)
+  ansible.builtin.set_fact:
+    amd_packages_common:
+      - mesa
+      - xf86-video-amdgpu
+      - vulkan-radeon
+      - libva-mesa-driver
+      - mesa-vdpau
+    amd_packages_host:
+      - linux-firmware
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install AMD Graphics Stack
+  ansible.builtin.package:
+    name: "{{ amd_packages_common + (amd_packages_host if not (_gpu_is_container|default(false)) else []) }}"
+    state: present
+  become: true
+  ignore_errors: true
+
+- name: Ensure AMDGPU kernel module is loaded
+  community.general.modprobe:
+    name: amdgpu
+    state: present
+  become: true
+  when:
+    - not _gpu_is_container | default(false)
+    - gpu_stack_reservation | default('host') != 'vfio'
+
+- name: Check current AMDGPU power profile
+  ansible.builtin.slurp:
+    src: /sys/class/drm/card0/device/power_dpm_force_performance_level
+  register: amd_power_profile
+  ignore_errors: true
+  failed_when: false
+  when:
+    - gpu_stack_mode == 'server'
+    - not _gpu_is_container | default(false)
+
+- name: Set AMDGPU power profiles (if supported and different)
+  ansible.builtin.shell:
+    cmd: "echo 'compute' > /sys/class/drm/card0/device/power_dpm_force_performance_level"
+  become: true
+  when:
+    - gpu_stack_mode == 'server'
+    - not _gpu_is_container | default(false)
+    - amd_power_profile['content'] | default('') | b64decode | trim != 'compute'
+  ignore_errors: true
+
+- name: Setup AMD ROCm Repository (Debian/Ubuntu)
+  block:
+    - name: Download AMD ROCm GPG key
+      ansible.builtin.get_url:
+        url: "{{ amd_rocm_gpg_key_url }}"
+        dest: "{{ amd_rocm_gpg_keyring_path }}"
+        mode: '0644'
+        checksum: "{{ 'sha256:' ~ amd_rocm_gpg_key_sha256 if (amd_rocm_gpg_key_verify | default(false)) else omit }}"
+
+    - name: Ensure ROCm GPG key checksum is configured when verification is enabled
+      ansible.builtin.assert:
+        that:
+          - amd_rocm_gpg_key_sha256 | length > 0
+        fail_msg: "amd_rocm_gpg_key_sha256 must be set when amd_rocm_gpg_key_verify=true."
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Read ROCm GPG key checksum
+      ansible.builtin.stat:
+        path: "{{ amd_rocm_gpg_keyring_path }}"
+        checksum_algorithm: sha256
+      register: rocm_key_stat
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Verify ROCm GPG key checksum
+      ansible.builtin.assert:
+        that:
+          - rocm_key_stat.stat.checksum == (amd_rocm_gpg_key_sha256 | lower)
+        fail_msg: "ROCm GPG key checksum mismatch. Expected {{ amd_rocm_gpg_key_sha256 }}, got {{ rocm_key_stat.stat.checksum }}."
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Add AMD ROCm repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by={{ amd_rocm_gpg_keyring_path }}] https://repo.radeon.com/rocm/apt/{{ rocm_version | default('6.0') }} {{ ansible_distribution_release }} main"  # yamllint disable-line rule:line-length
+        state: present
+        filename: rocm
+
+  become: true
+  when:
+    - ansible_os_family == 'Debian'
+    - gpu_stack_enable_rocm | default(false) | bool
+
+- name: Setup AMD ROCm Repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+  block:
+    - name: Download AMD ROCm GPG key (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.get_url:
+        url: "{{ amd_rocm_gpg_key_url }}"
+        dest: /etc/pki/rpm-gpg/rocm.pub
+        mode: '0644'
+        checksum: "{{ 'sha256:' ~ amd_rocm_gpg_key_sha256 if (amd_rocm_gpg_key_verify | default(false)) else omit }}"
+      become: true
+
+    - name: Ensure ROCm GPG key checksum is configured when verification is enabled (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.assert:
+        that:
+          - amd_rocm_gpg_key_sha256 | length > 0
+        fail_msg: "amd_rocm_gpg_key_sha256 must be set when amd_rocm_gpg_key_verify=true."
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Read ROCm GPG key checksum (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.stat:
+        path: /etc/pki/rpm-gpg/rocm.pub
+        checksum_algorithm: sha256
+      register: rocm_key_stat_rhel
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Verify ROCm GPG key checksum (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.assert:
+        that:
+          - rocm_key_stat_rhel.stat.checksum == (amd_rocm_gpg_key_sha256 | lower)
+        fail_msg: "ROCm GPG key checksum mismatch. Expected {{ amd_rocm_gpg_key_sha256 }}, got {{ rocm_key_stat_rhel.stat.checksum }}."
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Ensure ROCm GPG fingerprint is configured when verification is enabled (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.assert:
+        that:
+          - amd_rocm_gpg_fingerprint | length > 0
+        fail_msg: "amd_rocm_gpg_fingerprint must be set when amd_rocm_gpg_key_verify=true."
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Read ROCm GPG fingerprint (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.command:
+        cmd: "gpg --show-keys --with-colons /etc/pki/rpm-gpg/rocm.pub"
+      register: rocm_keyinfo
+      changed_when: false
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Extract ROCm GPG fingerprint (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.set_fact:
+        amd_rocm_actual_fingerprint: >-
+          {{ (rocm_keyinfo.stdout_lines
+              | select('match', '^fpr:')
+              | map('regex_replace', '^fpr:+([0-9A-F]+):.*', '\\1')
+              | list
+              | first
+              | default('')) | upper }}
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Verify ROCm GPG fingerprint (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.assert:
+        that:
+          - amd_rocm_actual_fingerprint != ""
+          - amd_rocm_actual_fingerprint == (amd_rocm_gpg_fingerprint | regex_replace('[^0-9A-Fa-f]', '') | upper)
+        fail_msg: "ROCm GPG fingerprint mismatch. Expected {{ amd_rocm_gpg_fingerprint }}, got {{ amd_rocm_actual_fingerprint }}."
+      when: amd_rocm_gpg_key_verify | default(false) | bool
+
+    - name: Import ROCm GPG key (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.rpm_key:
+        key: /etc/pki/rpm-gpg/rocm.pub
+        state: present
+      become: true
+
+    - name: Add AMD ROCm repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+      ansible.builtin.yum_repository:
+        name: rocm
+        description: AMD ROCm Repository
+        baseurl: "https://repo.radeon.com/rocm/rhel{{ ansible_distribution_major_version }}/{{ rocm_version | default('6.0') }}/main"
+        gpgcheck: true
+        repo_gpgcheck: true
+        gpgkey: file:///etc/pki/rpm-gpg/rocm.pub
+        enabled: true
+      become: true
+  when:
+    - ansible_os_family == 'RedHat'
+    - gpu_stack_enable_rocm | default(false) | bool
+
+- name: Install AMD ROCm Stack
+  ansible.builtin.package:
+    name: rocm-hip-sdk
+    state: present
+  become: true
+  when: gpu_stack_enable_rocm | default(false) | bool

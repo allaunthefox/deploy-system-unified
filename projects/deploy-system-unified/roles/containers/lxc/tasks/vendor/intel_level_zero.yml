@@ -1,0 +1,14 @@
+---
+- name: Configure LXC container for Intel Level Zero
+  block:
+    - name: Create LXC Level Zero configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/level-zero.conf
+        mode: '0644'
+      become: true
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "level-zero"
+    - lxc_gpu_vendor == "intel"
+    - not is_virtualized

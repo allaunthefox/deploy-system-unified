@@ -4,7 +4,6 @@
   tasks:
     - name: Gather service facts
       ansible.builtin.service_facts:
-
     - name: Assert haveged service is running
       ansible.builtin.assert:
         that:

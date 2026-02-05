@@ -1,70 +1,41 @@
 ---
 # Tasks for containers/runtime role
-- name: Install Podman on Debian/Ubuntu
-  ansible.builtin.apt:
-    name:
-      - podman
-      - podman-compose
-      - slirp4netns
-      - fuse-overlayfs
-    state: present
-    update_cache: true
-  when: ansible_facts['os_family'] == 'Debian'
-  become: true
 
-- name: Install Podman on RedHat/CentOS
-  ansible.builtin.dnf:
-    name:
-      - podman
-      - podman-compose
-      - slirp4netns
-      - fuse-overlayfs
-    state: present
-  when: ansible_facts['os_family'] == 'RedHat'
-  become: true
+- name: Apply rootless Podman prerequisites
+  ansible.builtin.include_tasks: rootless_prerequisites.yml
+  when: podman_rootless_enabled | bool
 
-- name: Install Podman on Arch
-  community.general.pacman:
-    name:
-      - podman
-      - podman-compose
-      - slirp4netns
-      - fuse-overlayfs
-    state: present
-  when: ansible_facts['distribution'] | lower == 'archlinux'
-  become: true
+- name: Install Podman and Core Dependencies
+  ansible.builtin.include_tasks: install_podman.yml
 
-- name: Create podman configuration directory
-  ansible.builtin.file:
-    path: /etc/containers
-    state: directory
-    mode: '0755'
-  become: true
+- name: Setup GPU Container Support
+  ansible.builtin.include_tasks: gpu_setup_dispatcher.yml
+  when: containers_enable_gpu_support
 
-- name: Configure container registries
-  ansible.builtin.copy:
-    dest: /etc/containers/registries.conf
-    content: |
-      # Container registries configuration
-      unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io"]
+- name: Discover GPU devices and capabilities
+  ansible.builtin.include_tasks: gpu_discovery.yml
+  when: containers_enable_gpu_support
 
-      [[registry]]
-      prefix = "docker.io"
-      location = "docker.io"
+- name: Validate GPU slicing configuration
+  ansible.builtin.include_tasks: gpu_validation.yml
+  when: containers_enable_gpu_support
 
-      [[registry.mirror]]
-      location = "mirror.gcr.io"
-    mode: '0644'
-  become: true
+- name: Configure GPU slicing
+  ansible.builtin.include_tasks: gpu_slicing.yml
+  when: containers_enable_gpu_support
 
-- name: Enable podman socket for rootless containers
-  ansible.builtin.systemd:
-    name: podman.socket
-    enabled: true
-    state: started
-    scope: user
-  become: false
-  failed_when: false
+- name: Report GPU configuration status
+  ansible.builtin.debug:
+    msg: |
+      {% if containers_enable_gpu_support %}
+      GPU support enabled:
+        Vendor: {{ containers_gpu_vendor_detected | default(containers_gpu_vendor) | upper }}
+        Strategy: {{ containers_gpu_slicing_strategy | default('passthrough') }}
+        Count: {{ containers_gpu_count_detected | default(containers_gpu_count) }}
+        Device Info: {{ containers_gpu_device_info | default([]) }}
+      {% else %}
+      GPU support disabled. Set containers_enable_gpu_support: true to enable.
+      {% endif %}
 
 - name: Set containers runtime completion flag
   ansible.builtin.set_fact:

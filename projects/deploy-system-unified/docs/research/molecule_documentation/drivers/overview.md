@@ -1,12 +1,15 @@
 # Molecule Drivers
 
 ## Overview
+
 Molecule drivers define the platform where test instances are created. Each driver provides a different way to create and manage test environments.
 
 ## Supported Drivers
 
 ### Docker Driver
+
 The most common driver for container-based testing:
+
 ```yaml
 driver:
   name: docker
@@ -22,7 +25,9 @@ driver:
 ```
 
 ### Podman Driver
+
 Alternative container driver for rootless containers:
+
 ```yaml
 driver:
   name: podman
@@ -30,7 +35,9 @@ driver:
 ```
 
 ### Vagrant Driver
+
 Virtual machine driver using Vagrant:
+
 ```yaml
 driver:
   name: vagrant
@@ -42,7 +49,9 @@ driver:
 ```
 
 ### EC2 Driver
+
 Amazon Web Services driver:
+
 ```yaml
 driver:
   name: ec2
@@ -52,7 +61,9 @@ driver:
 ```
 
 ### GCE Driver
+
 Google Cloud Platform driver:
+
 ```yaml
 driver:
   name: gce
@@ -62,7 +73,9 @@ driver:
 ```
 
 ### Azure Driver
+
 Microsoft Azure driver:
+
 ```yaml
 driver:
   name: azure
@@ -74,11 +87,13 @@ driver:
 ## Driver Configuration Options
 
 ### Common Options
+
 - `name`: Driver name
 - `options`: Driver-specific options
 - `safe_files`: Files to preserve during destroy
 
 ### Docker/Podman Options
+
 - `volumes`: Volume mounts
 - `tmpfs`: Temporary file systems
 - `capabilities`: Container capabilities
@@ -87,19 +102,23 @@ driver:
 - `cgroupns_mode`: Cgroup namespace mode
 
 ### Vagrant Options
+
 - `box`: Base box image
 - `memory`: VM memory allocation
 - `cpus`: Number of CPUs
 - `provider`: Virtualization provider
 
 ### Cloud Provider Options
+
 - `region`: Geographic region
 - `instance_type`: VM size/type
 - `image`: Base image
 - `security_groups`: Security group configuration
 
 ## Driver Selection Criteria
+
 Choose a driver based on:
+
 - **Speed**: Docker/Podman are fastest
 - **Isolation**: VMs provide better isolation
 - **Platform**: Match target deployment platform
@@ -108,9 +127,11 @@ Choose a driver based on:
 - **Cost**: Cloud vs local resources
 
 ## Custom Drivers
+
 Molecule supports custom drivers for specialized platforms. Custom drivers implement the driver interface and provide platform-specific functionality.
 
 ## Driver Best Practices
+
 - Use Docker/Podman for fast local testing
 - Use VMs for better isolation
 - Match test platform to production platform

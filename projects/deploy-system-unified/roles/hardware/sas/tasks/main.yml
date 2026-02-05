@@ -1,0 +1,117 @@
+---
+# Tasks for hardware/sas
+
+- name: Set SAS packages for Arch Linux
+  ansible.builtin.set_fact:
+    hardware_sas_packages:
+      - lsscsi
+      - sg3_utils
+      - sdparm
+      - smartmontools
+      - sysfsutils
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install SAS management utilities
+  ansible.builtin.package:
+    name: "{{ hardware_sas_packages }}"
+    state: present
+  when: hardware_sas_install_tools
+  become: true
+
+- name: Load SAS Kernel Modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ hardware_sas_drivers }}"
+  when: hardware_sas_load_drivers
+  become: true
+  register: sas_modprobe
+  failed_when: false
+  ignore_errors: true
+
+- name: Read kernel module lockdown state
+  ansible.builtin.slurp:
+    src: /proc/sys/kernel/modules_disabled
+  register: sas_modules_disabled
+  changed_when: false
+  failed_when: false
+  when: hardware_sas_load_drivers
+
+- name: Warn when kernel modules are locked down
+  ansible.builtin.debug:
+    msg: "Kernel modules are locked down (kernel.modules_disabled=1); skipping SAS module load."
+  when:
+    - hardware_sas_load_drivers
+    - (sas_modules_disabled.content | default('MA==') | b64decode | trim) == '1'
+
+- name: Ensure SAS modules are loaded on boot
+  ansible.builtin.copy:
+    content: |
+      {% for driver in hardware_sas_drivers %}
+      {{ driver }}
+      {% endfor %}
+    dest: /etc/modules-load.d/sas-drivers.conf
+    mode: '0644'
+  when: hardware_sas_load_drivers
+  become: true
+
+- name: Detect SAS Devices
+  ansible.builtin.shell: lsscsi -g
+  register: sas_devices_output
+  changed_when: false
+  failed_when: false
+  when: hardware_sas_install_tools
+
+- name: Display Detected SAS Devices
+  ansible.builtin.debug:
+    var: sas_devices_output.stdout_lines
+  when: hardware_sas_install_tools and not sas_devices_output.failed
+
+# HBA Specific Tuning
+- name: tune sas queue depth (Adaptive)
+  ansible.builtin.shell: |
+    # Find all SD devices that are actual disks (not enclosures/cdroms)
+    for dev in /sys/block/sd*; do
+      if [ -e "$dev/device/queue_depth" ]; then
+        # Check current vs target to avoid unnecessary writes
+        current=$(cat "$dev/device/queue_depth")
+        # Only tune if device allows deeper queues (hardware limit check)
+        max=$(cat "$dev/device/queue_depth_max" 2>/dev/null || echo 128)
+
+        target={{ hardware_sas_queue_depth }}
+
+        # Clamp target to hardware max
+        if [ "$target" -gt "$max" ]; then
+          target=$max
+        fi
+
+        if [ "$current" -lt "$target" ]; then
+          echo "$target" > "$dev/device/queue_depth"
+          echo "tuned $dev"
+        fi
+      fi
+    done
+  register: sas_queue_tuning
+  changed_when: "'tuned' in sas_queue_tuning.stdout"
+  become: true
+  when: hardware_sas_install_tools
+
+- name: Check Write Caching (WCE) status on SAS SSDs
+  ansible.builtin.shell: "sdparm --get=WCE /dev/{{ item }} | grep -q 'WCE.*1'"
+  loop: "{{ sas_devices_output.stdout_lines | default([]) | select('search', 'disk') | map('regex_replace', '^.*(/dev/sd[a-z]+).*$', '\\1') | list }}"
+  register: sas_wce_check
+  changed_when: false
+  failed_when: false
+  become: true
+  when:
+    - hardware_sas_install_tools
+    - hardware_sas_enable_write_cache | default(false)
+
+- name: Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)
+  ansible.builtin.command: "sdparm --set=WCE --save /dev/{{ item.item }}"
+  loop: "{{ sas_wce_check.results }}"
+  when:
+    - hardware_sas_install_tools
+    - hardware_sas_enable_write_cache | default(false)
+    - item.rc != 0 # rc != 0 meant grep failed to find WCE 1 (so it's 0 or off)
+  become: true

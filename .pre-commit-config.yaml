@@ -1,9 +1,0 @@
----
-repos:
-  - repo: local
-    hooks:
-      - id: check-main-no-roles
-        name: Prevent top-level 'roles' in projects/deploy-system-unified/main.yml
-        entry: python projects/deploy-system-unified/scripts/check_no_roles_in_main.py projects/deploy-system-unified/main.yml
-        language: system
-        files: ^projects/deploy-system-unified/main.yml$

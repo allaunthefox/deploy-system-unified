@@ -1,0 +1,86 @@
+---
+# Kubernetes GPU device plugin configuration
+# GPU device plugin installation
+k8s_gpu_device_plugins_enabled: false
+# NVIDIA GPU device plugin
+k8s_gpu_nvidia_device_plugin:
+  enabled: false
+  version: "v0.13.0"
+  image: "nvcr.io/nvidia/k8s-device-plugin:v0.13.0"
+  namespace: "kube-system"
+  resources:
+    limits:
+      cpu: "100m"
+      memory: "50Mi"
+    requests:
+      cpu: "100m"
+      memory: "50Mi"
+# AMD GPU device plugin
+k8s_gpu_amd_device_plugin:
+  enabled: false
+  version: "v0.10.0"
+  image: "rocm/k8s-device-plugin:v0.10.0"
+  namespace: "kube-system"
+  resources:
+    limits:
+      cpu: "100m"
+      memory: "50Mi"
+    requests:
+      cpu: "100m"
+      memory: "50Mi"
+# Intel GPU device plugin
+k8s_gpu_intel_device_plugin:
+  enabled: false
+  version: "v0.23.0"
+  image: "intel/intel-gpu-plugin:v0.23.0"
+  namespace: "kube-system"
+  resources:
+    limits:
+      cpu: "100m"
+      memory: "50Mi"
+    requests:
+      cpu: "100m"
+      memory: "50Mi"
+# GPU node labeling
+k8s_gpu_node_labels: []
+# Default GPU node labels per vendor
+k8s_gpu_default_node_labels:
+  nvidia:
+    - "nvidia.com/gpu.count={{ containers_gpu_count }}"
+    - "nvidia.com/gpu.model={{ containers_gpu_nvidia_model | join(',') }}"
+  amd:
+    - "amd.com/gpu.count={{ containers_gpu_count }}"
+    - "amd.com/gpu.model={{ containers_gpu_amd_model }}"
+  intel:
+    - "intel.com/gpu.count={{ containers_gpu_count }}"
+    - "intel.com/gpu.model={{ containers_gpu_intel_model }}"
+# GPU resource limits
+k8s_gpu_resource_limits:
+  cpu: "4"
+  memory: "8Gi"
+  gpu: "1"
+# GPU resource requests
+k8s_gpu_resource_requests:
+  cpu: "1"
+  memory: "2Gi"
+  gpu: "1"
+# GPU workload scheduling
+k8s_gpu_workload_scheduling:
+  enabled: false
+  scheduler_name: "gpu-scheduler"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "nvidia.com/gpu.count"
+                operator: "Gt"
+                values: ["0"]
+# GPU device plugin tolerations
+k8s_gpu_device_plugin_tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"

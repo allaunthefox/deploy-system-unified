@@ -1,0 +1,44 @@
+---
+# Adreno GPU Setup for aarch64 (OS Agnostic)
+# Target: Snapdragon X Elite / Compute Platforms using Freedreno
+
+- name: Define Adreno driver packages (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    adreno_driver_packages:
+      - mesa-vulkan-drivers
+      - mesa-va-drivers
+      - libgl1-mesa-dri
+  when: ansible_os_family == 'Debian'
+
+- name: Define Adreno driver packages (RedHat/Fedora)
+  ansible.builtin.set_fact:
+    adreno_driver_packages:
+      - mesa-dri-drivers
+      - mesa-vulkan-drivers
+      - mesa-libEGL
+      - mesa-libGL
+  when: ansible_os_family == 'RedHat'
+
+- name: Define Adreno driver packages (Alpine)
+  ansible.builtin.set_fact:
+    adreno_driver_packages:
+      - mesa-dri-gallium
+      - mesa-va-gallium
+      - mesa-vulkan-broadcom # sometimes mapped broadly or irrelevant, sticking to gallium base
+  when: ansible_os_family == 'Alpine'
+
+- name: Install Freedreno (Mesa) drivers
+  ansible.builtin.package:
+    name: "{{ adreno_driver_packages | default(['mesa-dri-drivers']) }}"
+    state: present
+  become: true
+
+- name: Check for MSM/Adreno kernel module
+  ansible.builtin.shell: lsmod | grep -E "msm|adreno"
+  register: adreno_module
+  ignore_errors: true
+  changed_when: false
+
+- name: Report Adreno Status
+  ansible.builtin.debug:
+    msg: "Adreno driver status: {{ 'Active' if adreno_module.rc == 0 else 'Not Found' }}"

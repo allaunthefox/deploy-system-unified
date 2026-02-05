@@ -1,0 +1,48 @@
+---
+# Defaults for core/memory
+
+# Optimization Strategy: 'auto', 'zram', 'zswap', 'none'
+# auto:
+#   - Use zram if < 8GB RAM (Standard setup)
+#   - Use zswap if > 8GB RAM (Hybrid setup with physical swap)
+#   - Use zram if system has NO physical swap partition
+#   - Use zram if system uses Shared Video Memory (IGPU/APU) to minimize bus contention
+memory_compression_strategy: auto
+
+# Shared Video Memory Handling
+# If true, forces 'zram' strategy to favor latency over capacity.
+# auto: attempts to detect Integrated Graphics (Intel/AMD APU)
+memory_shared_vram: auto
+
+# Workload Profile: 'standard', 'database', 'latency-sensitive'
+# standard: Balanced throughput/latency. Uses Aggressive ZRAM/ZSwap.
+# database: Low Swappiness (10), THP=madvise, tuned Dirty Ratios. Preserves Page Cache.
+# latency-sensitive: Disables THP, Low Swappiness, disables swapiness generally.
+memory_workload_profile: standard
+
+# Transparent Huge Pages (THP)
+# Options: 'always', 'madvise', 'never'
+# Databases (Redis, Mongo, Postgres) usually prefer 'madvise' or 'never'.
+memory_thp_state: always
+
+# ZRAM Configuration
+memory_zram_size_percent: 50
+memory_zram_algorithm: zstd
+memory_zram_priority: 100
+
+# ZSwap Configuration
+memory_zswap_compressor: zstd
+memory_zswap_zpool: zsmalloc
+memory_zswap_max_pool_percent: 20
+
+# Sysctl Tuning
+# Standard Profile uses High Swappiness (100) for ZRAM efficiency.
+# Database Profile overrides these to (10) and (100) respectively.
+memory_swappiness: "{{ 10 if memory_workload_profile == 'database' else 100 }}"
+memory_cache_pressure: "{{ 100 if memory_workload_profile == 'database' else 100 }}"
+
+# Dirty Page Tuning (Writeback Behavior)
+# Standard: Let OS handle it (usually ratio-based).
+# Database: Prefer fixed bytes to avoid "Stall on Flushing" large RAM buffers.
+memory_dirty_bytes: "{{ '536870912' if memory_workload_profile == 'database' else 0 }}" # 512MB
+memory_dirty_background_bytes: "{{ '268435456' if memory_workload_profile == 'database' else 0 }}" # 256MB

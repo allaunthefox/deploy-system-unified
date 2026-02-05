@@ -1,0 +1,44 @@
+---
+# Firewalld-specific rules (RedHat/CentOS/Fedora)
+- name: Enable Firewalld Service
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: true
+    state: started
+  become: true
+
+- name: Set Default Zone to Drop (Parity with UFW Default Deny)
+  ansible.posix.firewalld:
+    zone: public
+    state: enabled
+    permanent: true
+    target: DROP
+  become: true
+
+- name: Allow Configured TCP Ports (Firewalld)
+  ansible.posix.firewalld:
+    port: "{{ item }}/tcp"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop: "{{ firewall_allowed_tcp_ports }}"
+  become: true
+
+- name: Allow Configured UDP Ports (Firewalld)
+  ansible.posix.firewalld:
+    port: "{{ item }}/udp"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop: "{{ firewall_allowed_udp_ports | default([]) }}"
+  become: true
+
+- name: Apply Additional Rich Rules
+  ansible.posix.firewalld:
+    rich_rule: 'rule family="ipv4" source address="{{ item.src }}" port port="{{ item.port }}" protocol="{{ item.proto }}" accept'
+    permanent: true
+    state: enabled
+    immediate: true
+  loop: "{{ firewall_additional_rules | default([]) }}"
+  when: item.src is defined
+  become: true

@@ -1,11 +1,9 @@
 ---
 # Base layer playbook for Deploy-System-Unified
 # This provides the foundational setup that branches can extend
-
 - name: Deploy base system foundation
   hosts: all
   become: true
-
   pre_tasks:
     - name: Validate System Identity (FQDN Enforcement)
       ansible.builtin.assert:
@@ -14,7 +12,6 @@
           - ansible_fqdn != "localhost"
           - ansible_fqdn != "localhost.localdomain"
         fail_msg: "System must have a valid FQDN configured for secure deployment."
-
     - name: Precreate essential directories (idempotent)
       ansible.builtin.file:
         path: "{{ item.path }}"
@@ -34,33 +31,67 @@
         - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
       become: true
       tags: [bootstrap, directories]
-
     - name: Set directory precreation flag (idempotent)
       ansible.builtin.set_fact:
         directories_precreated: true
 
-    - name: Check if preflight validation already completed (idempotent)
+    # Checkpoint & Resume Logic (Style Guide Compliant)
+    - name: Check for existing deployment checkpoint
       ansible.builtin.stat:
-        path: /tmp/preflight_completed.flag
-      register: preflight_flag
+        path: /var/lib/deploy-system/checkpoints/session.json
+      register: checkpoint_file
 
-    - name: Include preflight checks if not already completed (idempotent)
+    - name: Initialize Deployment Mode
+      ansible.builtin.set_fact:
+        deployment_mode: "{{ 'resume' if (checkpoint_file.stat.exists and not force_new_session | default(false) | bool) else 'fresh' }}"
+
+    - name: Archive Previous Session (Atomic Preservation)
+      ansible.builtin.command:
+        cmd: "mv /var/lib/deploy-system/checkpoints/session.json /var/lib/deploy-system/backups/session_{{ ansible_date_time.iso8601 | replace(':', '-') }}.json"
+      when:
+        - deployment_mode == 'fresh'
+        - checkpoint_file.stat.exists
+
+    - name: Load Checkpoint Data (Resume)
+      ansible.builtin.slurp:
+        src: /var/lib/deploy-system/checkpoints/session.json
+      register: checkpoint_raw
+      when: deployment_mode == 'resume'
+
+    - name: Parse Checkpoint Data
+      ansible.builtin.set_fact:
+        checkpoint_data: "{{ checkpoint_raw['content'] | b64decode | from_json }}"
+        completed_phases: "{{ (checkpoint_raw['content'] | b64decode | from_json).completed_phases | default([]) }}"
+      when: deployment_mode == 'resume'
+
+    - name: Initialize Fresh Checkpoint Data
+      ansible.builtin.set_fact:
+        completed_phases: []
+      when: deployment_mode == 'fresh'
+
+    # Preflight Checks (Conditional on Resume)
+    - name: Include preflight checks if not already completed
       ansible.builtin.import_role:
-        name: preflight
-      when: not preflight_flag.stat.exists
+        name: ops/preflight
+      when: "'preflight' not in completed_phases"
       tags: [preflight]
 
-    - name: Create preflight completion flag (idempotent)
-      ansible.builtin.file:
-        path: /tmp/preflight_completed.flag
-        state: touch
-        mode: '0644'
-      when: not preflight_flag.stat.exists
+    - name: Mark Preflight Complete (Checkpoint)
+      ansible.builtin.include_tasks: tasks/save_checkpoint.yml
+      vars:
+        additional_phases: ['preflight']
+      when: "'preflight' not in completed_phases"
 
   # No roles in the base layer - these are added in branches
-
   post_tasks:
     - name: Base system verification (idempotent)
       ansible.builtin.debug:
-        msg: "Base system deployed with essential directories and preflight validation completed"
+        msg: "Base system deployed. Mode: {{ deployment_mode }}. Completed: {{ completed_phases }}"
       tags: [verification]
+
+    - name: Finalize Base Checkpoint
+      ansible.builtin.include_tasks: tasks/save_checkpoint.yml
+      vars:
+        additional_phases: ['base']
+        checkpoint_status: "base_complete"
+      tags: [checkpoint]

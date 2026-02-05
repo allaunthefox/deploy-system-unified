@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  # Define specific variables to test the role's data-driven logic
+  vars:
+    # Mimic inventory/group_vars/all/os_settings.yml
+    system_standard_directories:
+      - /usr/local/bin
+      - /opt/test_dir
+    system_base_packages:
+      common:
+        - sudo
+        - curl
+      Debian:
+        - gnupg
+
+  roles:
+    - role: core/bootstrap

@@ -1,0 +1,58 @@
+---
+# NVIDIA GPU Setup for aarch64 (ARM64)
+# Supports: NVIDIA Jetson (Tegra) and ARM Servers (Grace Hopper/PCIe)
+
+- name: Check for Tegra (Jetson) Hardware
+  ansible.builtin.stat:
+    path: /etc/nv_tegra_release
+  register: tegra_release
+
+- name: Install NVIDIA Drivers (ARM Server / PCIe)
+  block:
+    - name: Install standard NVIDIA drivers (Ubuntu ARM64)
+      ansible.builtin.package:
+        name:
+          - nvidia-driver-535-server
+          - nvidia-utils-535-server
+        state: present
+      become: true
+      when:
+        - ansible_distribution == 'Ubuntu'
+        - not _gpu_is_container | default(false)
+
+    - name: Install standard NVIDIA drivers (RedHat ARM64 - Attempt Generic)
+      ansible.builtin.package:
+        name:
+          - nvidia-driver
+          - nvidia-modprobe
+        state: present
+      become: true
+      when:
+        - ansible_os_family == 'RedHat'
+        - not _gpu_is_container | default(false)
+
+    - name: Install NVIDIA CUDA Toolkit (ARM64)
+      ansible.builtin.package:
+        name: nvidia-cuda-toolkit
+        state: present
+      become: true
+      when:
+        - ansible_distribution == 'Ubuntu'
+        - gpu_stack_enable_cuda | default(false) | bool
+  when:
+    - not tegra_release.stat.exists
+
+- name: Configure Jetson/Tegra specific settings
+  block:
+    - name: Ensure Jetson Power Mode is set (Max Power)
+      ansible.builtin.command: nvpmodel -m 0
+      become: true
+      ignore_errors: true
+
+    - name: Start Jetson clocks
+      ansible.builtin.command: jetson_clocks
+      become: true
+      ignore_errors: true
+  when:
+    - tegra_release.stat.exists
+    - not _gpu_is_container | default(false)

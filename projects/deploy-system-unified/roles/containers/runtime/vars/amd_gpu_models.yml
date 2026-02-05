@@ -1,0 +1,59 @@
+---
+# AMD GPU model profiles for GPU slicing
+# SR-IOV-capable GPUs (MI series)
+amd_sriov_capable_gpus:
+  - "AMD Radeon Instinct MI100"
+  - "AMD Radeon Instinct MI210"
+  - "AMD Radeon Instinct MI25"
+  - "AMD Radeon Pro VII"
+  - "AMD Radeon VII"
+# ROCm-supported GPUs
+amd_rocm_supported_gpus:
+  - "AMD Radeon Instinct"
+  - "AMD Radeon Pro"
+  - "AMD Radeon VII"
+  - "AMD Radeon RX 5000 series"
+  - "AMD Radeon RX 6000 series"
+  - "AMD Ryzen APUs"
+# Default SR-IOV virtual function count per GPU model
+amd_default_sriov_vf_count:
+  "AMD Radeon Instinct MI100": 8
+  "AMD Radeon Instinct MI210": 16
+  "AMD Radeon Instinct MI25": 4
+  "AMD Radeon Pro VII": 4
+  "AMD Radeon VII": 2
+# Default compute units per SR-IOV virtual function
+amd_default_sriov_compute_units:
+  "AMD Radeon Instinct MI100": 16
+  "AMD Radeon Instinct MI210": 8
+  "AMD Radeon Instinct MI25": 32
+  "AMD Radeon Pro VII": 32
+  "AMD Radeon VII": 64
+# Default memory per SR-IOV virtual function
+amd_default_sriov_memory:
+  "AMD Radeon Instinct MI100": "8GB"
+  "AMD Radeon Instinct MI210": "4GB"
+  "AMD Radeon Instinct MI25": "2GB"
+  "AMD Radeon Pro VII": "2GB"
+  "AMD Radeon VII": "4GB"
+# GPU architecture generation per model
+amd_gpu_architectures:
+  "AMD Radeon Instinct MI100": "CDNA 2"
+  "AMD Radeon Instinct MI210": "CDNA 2"
+  "AMD Radeon Instinct MI25": "GCN 5.0"
+  "AMD Radeon Pro VII": "GCN 5.0"
+  "AMD Radeon VII": "GCN 5.0"
+  "AMD Radeon RX 5000 series": "RDNA 1"
+  "AMD Radeon RX 6000 series": "RDNA 2"
+# Supported ROCm versions per GPU architecture
+amd_rocm_versions:
+  "CDNA 2": ["5.0", "5.1", "5.2"]
+  "GCN 5.0": ["4.5", "4.6", "5.0"]
+  "RDNA 1": ["4.5", "4.6", "5.0"]
+  "RDNA 2": ["5.0", "5.1", "5.2"]
+# Default ROCm version per GPU architecture
+amd_default_rocm_version:
+  "CDNA 2": "5.2"
+  "GCN 5.0": "5.0"
+  "RDNA 1": "5.0"
+  "RDNA 2": "5.2"

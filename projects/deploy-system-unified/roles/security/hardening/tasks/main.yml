@@ -1,12 +1,15 @@
 ---
-# Security hardening role - Core security configurations
+# Security hardening role - Enhanced core security configurations
+# Note: Firewalls are managed by networking/firewall
+# Note: Updates are managed by core/updates
+# Note: IPS/Fail2Ban is managed by security/ips
+# Note: Audit Integrity is managed by security/audit_integrity
+
 - name: Ensure security-related packages are installed (Debian/Ubuntu)
   ansible.builtin.apt:
     name:
-      - ufw
-      - fail2ban
-      - unattended-upgrades
-      - apt-listchanges
+      - libpam-tmpdir
+      - auditd
     state: present
   when: ansible_facts['os_family'] == 'Debian'
   become: true
@@ -14,64 +17,89 @@
 - name: Ensure security-related packages are installed (RedHat/CentOS)
   ansible.builtin.dnf:
     name:
-      - firewalld
-      - fail2ban
-      - dnf-automatic
+      - audit
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   become: true
 
-- name: Enable and start UFW (Debian/Ubuntu)
-  community.general.ufw:
-    state: enabled
-    policy: deny
-    direction: incoming
-  when: ansible_facts['os_family'] == 'Debian'
+- name: Ensure security-related packages are installed (Arch Linux)
+  community.general.pacman:
+    name:
+      - audit
+    state: present
+  when: ansible_distribution == 'Archlinux'
   become: true
 
-- name: Allow SSH through UFW
-  community.general.ufw:
-    rule: allow
-    port: "{{ access_sshd_port | default('22') }}"
-    proto: tcp
-  when: ansible_facts['os_family'] == 'Debian'
-  become: true
-
-- name: Enable fail2ban service
+- name: Configure auditd service
   ansible.builtin.systemd:
-    name: fail2ban
+    name: auditd
     enabled: true
     state: started
   become: true
-  when: ansible_service_mgr == 'systemd'
+  when:
+    - ansible_facts['service_mgr'] == 'systemd'
+    - not (is_virtualized | default(false))
 
-- name: Configure automatic security updates (Debian/Ubuntu)
-  ansible.builtin.copy:
-    dest: /etc/apt/apt.conf.d/20auto-upgrades
-    content: |
-      APT::Periodic::Update-Package-Lists "1";
-      APT::Periodic::Unattended-Upgrade "1";
-      APT::Periodic::AutocleanInterval "7";
-    mode: '0644'
+- name: Harden file system permissions
+  block:
+    - name: Set secure permissions on sensitive files
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: "{{ item.mode }}"
+        owner: root
+        group: root
+      loop:
+        - { path: '/etc/shadow', mode: '0600' }
+        - { path: '/etc/passwd', mode: '0644' }
+        - { path: '/etc/group', mode: '0644' }
+        - { path: '/etc/sudoers', mode: '0440' }
+        - { path: '/etc/ssh', mode: '0755' }
+        - { path: '/etc/ssh/sshd_config', mode: '0644' }
+      become: true
+      failed_when: false
+    - name: Set sticky bit on world-writable directories
+      ansible.builtin.shell: |
+        find / -type d -perm -0002 ! -perm -1000 ! -path '/proc*' ! -path '/sys*' ! -path '/dev*' ! -path '/run*' -exec chmod +t {} \; -print | wc -l
+      become: true
+      register: sticky_result
+      changed_when: sticky_result.stdout | int > 0
+      failed_when: false
+- name: Harden user accounts
+  block:
+    - name: Lock system accounts that should not login
+      ansible.builtin.user:
+        name: "{{ item }}"
+        password_lock: true
+      loop:
+        - bin
+        - daemon
+        - adm
+        - lp
+        - sync
+        - shutdown
+        - halt
+        - mail
+      become: true
+    - name: Set password aging limits
+      ansible.builtin.lineinfile:
+        path: /etc/login.defs
+        regexp: '^{{ item.regex }}'
+        line: '{{ item.line }}'
+      become: true
+      loop:
+        - { regex: 'PASS_MIN_DAYS', line: 'PASS_MIN_DAYS   7' }
+        - { regex: 'PASS_MAX_DAYS', line: 'PASS_MAX_DAYS   90' }
+        - { regex: 'PASS_WARN_AGE', line: 'PASS_WARN_AGE   14' }
+- name: Harden PAM configuration (Debian)
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { path: '/etc/pam.d/common-password', regexp: '^password.*pam_unix.so', line: 'password        [success=1 default=ignore]      pam_unix.so obscure sha512 rounds=65536' }
+    - { path: '/etc/pam.d/common-session', regexp: '^session.*pam_tmpdir.so', line: 'session optional        pam_tmpdir.so' }
   when: ansible_facts['os_family'] == 'Debian'
   become: true
-
-- name: Set kernel hardening parameters
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-    reload: true
-  loop:
-    - { name: 'net.ipv4.tcp_syncookies', value: '1' }
-    - { name: 'net.ipv4.conf.all.rp_filter', value: '1' }
-    - { name: 'net.ipv4.conf.default.rp_filter', value: '1' }
-    - { name: 'net.ipv4.icmp_echo_ignore_broadcasts', value: '1' }
-    - { name: 'net.ipv4.conf.all.accept_redirects', value: '0' }
-    - { name: 'net.ipv4.conf.default.accept_redirects', value: '0' }
-    - { name: 'kernel.randomize_va_space', value: '2' }
-  become: true
-
 - name: Set security hardening completion flag
   ansible.builtin.set_fact:
     security_hardening_complete: true

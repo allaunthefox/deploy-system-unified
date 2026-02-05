@@ -1,0 +1,20 @@
+---
+# Defaults for backup/rclone
+
+rclone_enable: true
+rclone_config_dir: "/etc/rclone"
+rclone_conf_file: "/etc/rclone/rclone.conf"
+rclone_user: "root"
+rclone_group: "root"
+
+# Rclone Configuration Content
+# This should be populated via encrypted variables (sops/vault).
+# The format is the raw content of the ~/.config/rclone/rclone.conf file.
+# Example:
+# rclone_config_content: |
+#   [drive]
+#   type = drive
+#   client_id = ...
+#   token = ...
+rclone_config_content: ""
+restic_script_dir: "/usr/local/bin"

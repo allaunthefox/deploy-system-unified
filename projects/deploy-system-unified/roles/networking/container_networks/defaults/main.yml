@@ -1,0 +1,54 @@
+---
+# Defaults for networking/container_networks
+
+container_networks_enable: true
+
+# Rootless Podman Support (shared defaults)
+podman_rootless_enabled: false
+podman_rootless_user: "{{ ansible_user | default('prod') }}"
+podman_rootless_user_home: "/home/{{ podman_rootless_user }}"
+
+containers_systemd_dir: >-
+  {{ podman_rootless_enabled | bool
+     | ternary(podman_rootless_user_home ~ '/.config/containers/systemd',
+               '/etc/containers/systemd') }}
+containers_systemd_scope: "{{ podman_rootless_enabled | bool | ternary('user', 'system') }}"
+containers_systemd_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_env: {}
+
+# Network Definitions
+# Each key represents a Quadlet .network file to manage
+
+container_networks_list:
+  - name: "deploy-net"
+    driver: "bridge"
+    subnet: "10.89.0.0/24"
+    gateway: "10.89.0.1"
+    label: "purpose=deployment_bridge"
+    dns_enabled: true
+    internal: false
+
+  - name: "monitoring_net"
+    driver: "bridge"
+    label: "stack=monitoring"
+    dns_enabled: true
+    internal: true # Only exposed via Proxy, no direct exposure needed usually
+
+  - name: "media_net"
+    driver: "bridge"
+    label: "stack=media"
+    dns_enabled: true
+    internal: true
+
+  - name: "ops_net"
+    driver: "bridge"
+    label: "stack=ops"
+    dns_enabled: true
+    internal: false # Needs to reach some external services maybe?
+
+  - name: "proxy_net"
+    driver: "bridge"
+    label: "role=gateway"
+    dns_enabled: true
+    internal: false # Caddy runs here

@@ -37,7 +37,6 @@ between scenarios. Multiple `Scenario` objects are contained in a `Scenarios` ob
 
 The `Scenarios` object contains a sequence of `Scenario` objects as well as some methods to produce a deterministic order of playbooks to run to execute them
 all.
-
 The base command module's `execute_cmdline_scenarios()` function thus generates config objects based on scenario names passed in, creates a `Scenarios` object
 with those configs (which internally creates the `Scenario` objects for individual processing), and then runs those scenarios by passing each `Scenario` to the
 `execute()` method of the relevant subcommand command class.

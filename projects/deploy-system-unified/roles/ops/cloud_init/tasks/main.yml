@@ -6,7 +6,6 @@
   changed_when: false
   register: cloud_init_status
   failed_when: false # Don't fail if cloud-init isn't present
-
 - name: Report cloud-init status
   ansible.builtin.debug:
     msg: "Cloud-init synchronization complete: {{ cloud_init_status.stdout | default('Not Present') }}"

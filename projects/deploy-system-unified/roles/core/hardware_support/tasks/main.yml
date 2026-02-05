@@ -1,35 +1,54 @@
 ---
-# Tasks for core/hardware_support - Bare Metal Foundation
+# Tasks for core/hardware_support
 
-- name: Detect CPU Tier (Server vs Consumer)
+- name: Retrieve CPU flags
+  ansible.builtin.shell: "grep '^flags' /proc/cpuinfo | head -n 1"
+  register: cpu_flags_output
+  changed_when: false
+  check_mode: false
+
+- name: Set Hardware Facts
   ansible.builtin.set_fact:
-    cpu_tier: "{{ 'server' if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else 'consumer' }}"
-    is_server_cpu: "{{ true if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else false }}"
+    host_cpu_has_avx: "{{ 'avx' in cpu_flags_output.stdout }}"
+    host_cpu_has_avx2: "{{ 'avx2' in cpu_flags_output.stdout }}"
+    host_cpu_has_sse4_2: "{{ 'sse4_2' in cpu_flags_output.stdout }}"
+    host_cpu_has_aes: "{{ 'aes' in cpu_flags_output.stdout }}"
+    host_cpu_has_sha: "{{ 'sha_ni' in cpu_flags_output.stdout or 'sha2' in cpu_flags_output.stdout }}"
+    host_cpu_has_rdrand: "{{ 'rdrand' in cpu_flags_output.stdout }}"
 
-- name: Report CPU Profile
-  ansible.builtin.debug:
-    msg: "Hardware detected as {{ cpu_tier | upper }} tier CPU."
+- name: Check for Intel QAT (QuickAssist Technology)
+  ansible.builtin.shell: "lspci -nn | grep -i QuickAssist || true"
+  register: qat_device_check
+  changed_when: false
+  failed_when: false
+  # Only run if lspci is available (part of pciutils)
+  ignore_errors: true
 
-- name: Install Hardware Security Tools
-  ansible.builtin.package:
-    name:
-      - tpm2-tools
-      - tpm2-abrmd # TPM2 Access Broker & Resource Manager
-    state: present
-  become: true
-
-- name: Detect Hardware TPM support
-  ansible.builtin.stat:
-    path: /dev/tpmrm0
-  register: hardware_tpm_stat
-
-- name: Set TPM fact
+- name: Set Crypto Accelerator Facts
   ansible.builtin.set_fact:
-    has_hardware_tpm: "{{ hardware_tpm_stat.stat.exists }}"
+    host_has_qat: "{{ qat_device_check.stdout | length > 0 }}"
+    # RDRAND is crucial for high-throughput crypto entropy
+    host_has_hardware_rng: "{{ host_cpu_has_rdrand | bool }}"
 
-- name: Report TPM Status
+- name: Report Hardware Capabilities
   ansible.builtin.debug:
-    msg: "Hardware TPM detected: {{ has_hardware_tpm }}"
+    msg:
+      - "AVX Support: {{ host_cpu_has_avx }}"
+      - "AVX2 Support: {{ host_cpu_has_avx2 }}"
+      - "AES-NI Support (Crypto): {{ host_cpu_has_aes }}"
+      - "SHA Extensions (Crypto): {{ host_cpu_has_sha }}"
+      - "Hardware RNG (RDRAND): {{ host_cpu_has_rdrand }}"
+      - "Intel QAT Detected: {{ host_has_qat }}"
+
+- name: Validate AVX Requirement (Generic Media/DB)
+  ansible.builtin.fail:
+    msg: "Host CPU lacks AVX instructions required for modern Multimedia/Database workloads."
+  when: (require_avx | default(false)) and not host_cpu_has_avx
+
+- name: Warn on missing AVX (Soft Check)
+  ansible.builtin.debug:
+    msg: "WARNING: Host CPU lacks AVX. Performance for MongoDB/Jellyfin may be severely degraded or fail."
+  when: (warn_on_missing_avx | default(false)) and not host_cpu_has_avx
 
 - name: Get timedatectl status
   ansible.builtin.command: timedatectl show
@@ -47,44 +66,12 @@
   become: true
   when: "'NTP=yes' not in timedatectl_show.stdout_lines"
 
-- name: Report Hardware Clock status
-  ansible.builtin.command: timedatectl status
-  register: timedate_status
-  changed_when: false
-  become: true
+- name: Validate Crypto Acceleration (Secure Nodes)
+  ansible.builtin.fail:
+    msg: "Host CPU lacks critical Crypto Extensions (AES-NI or SHA)."
+  when: (require_crypto_extensions | default(false)) and (not host_cpu_has_aes)
 
-- name: Install CPU microcode updates (Intel/AMD)
-  ansible.builtin.package:
-    name:
-      - intel-microcode
-      - amd64-microcode
-    state: present
-  become: true
-  ignore_errors: true # Some distros bundle microcode differently
-
-- name: Install hardware monitoring and watchdog tools
-  ansible.builtin.package:
-    name:
-      - lm-sensors
-      - smartmontools
-      - watchdog
-    state: present
-  become: true
-
-- name: Configure hardware watchdog
-  ansible.builtin.lineinfile:
-    path: /etc/watchdog.conf
-    regexp: "^#?watchdog-device"
-    line: "watchdog-device = /dev/watchdog"
-  become: true
-  notify: restart watchdog
-
-- name: Enable and start hardware services
-  ansible.builtin.systemd:
-    name: "{{ item }}"
-    enabled: true
-    state: started
-  loop:
-    - smartmontools
-    - watchdog
-  become: true
+- name: Warn on missing Crypto extensions
+  ansible.builtin.debug:
+    msg: "WARNING: Host lacks AES-NI. VPN/SSL performance will be poor."
+  when: (warn_on_missing_crypto | default(false)) and not host_cpu_has_aes

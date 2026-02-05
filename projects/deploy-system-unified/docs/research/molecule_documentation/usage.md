@@ -13,9 +13,8 @@
 
 - check
 - cleanup
-  - This action has cleanup and is not enabled by default.
+    - This action has cleanup and is not enabled by default.
     See the provisioner's documentation for further details.
-
 - **converge** : Converge will execute the sequence necessary to converge the instances.
 - create \*\* driver
 - dependency
@@ -61,11 +60,9 @@ facilitate an interactive connection to a system.
 
 When using an ansible-native configuration, the same connection methods used to connect to production systems
 are available.
-
 Options leveraging the resources defined in the ansible inventory include:
 
 - [ansible adhoc commands](https://docs.ansible.com/projects/ansible/latest/command_guide/intro_adhoc.html)
-
 - [ansible-console](https://docs.ansible.com/projects/ansible/latest/cli/ansible-console.html)
 
 Resource native connection options include:
@@ -73,11 +70,9 @@ Resource native connection options include:
 - `SSH`
 
 - `podman exec`
-
 - `curl`
 
 - `psql`, `mysql`, and `mongosh`
-
 - `oc`, `kubectl`, and `odo`
 
 - etc
@@ -125,7 +120,6 @@ molecule login
 ```
 
 We now have a free hand to experiment with the instance state.
-
 Finally, we can exit the instance and destroy it with:
 
 ```bash

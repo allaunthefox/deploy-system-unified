@@ -1,0 +1,154 @@
+---
+# GPU Workstation Deployment Template
+# For GPU-accelerated environments (AI/ML, data processing, visualization)
+# Features: GPU driver installation, container GPU support, CUDA toolkit, optimized system settings
+
+- name: Deploy GPU Workstation
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Validate System Identity (FQDN Enforcement)
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn is defined
+          - ansible_fqdn != "localhost"
+          - ansible_fqdn != "localhost.localdomain"
+        fail_msg: "System must have a valid FQDN configured for secure deployment."
+    - name: Precreate essential directories (idempotent)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
+      become: true
+      tags: [bootstrap, directories]
+    - name: Set directory precreation flag (idempotent)
+      ansible.builtin.set_fact:
+        directories_precreated: true
+    - name: Check if preflight validation already completed (idempotent)
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Include preflight checks if not already completed (idempotent)
+      ansible.builtin.import_role:
+        name: ops/preflight
+      when: not preflight_flag.stat.exists
+      tags: [preflight]
+    - name: Create preflight completion flag (idempotent)
+      ansible.builtin.file:
+        path: /tmp/preflight_completed.flag
+        state: touch
+        mode: '0644'
+      when: not preflight_flag.stat.exists
+
+  roles:
+    # Core system setup
+    - core/bootstrap
+    - core/identity
+    - core/logging
+    - role: ops/monitoring
+
+    # Networking Stack (Desktop/Workstation)
+    - role: networking/desktop # Installs NetworkManager + Wi-Fi Support
+    - role: networking/physical # Optimizes NICs (requires NM for some notifications)
+    - networking/firewall
+    - security/hardening
+    - security/access
+
+    # Hardware Drivers & Firmware (Explicitly required before Container Runtime)
+    - role: hardware/firmware
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ containers_gpu_vendor | default('nvidia') }}"
+        gpu_stack_mode: desktop # Enable Desktop/Workstation optimizations (Wayland, Audio, Input)
+        # eGPU Support (Optional)
+        # gpu_stack_enable_egpu: true
+        # gpu_stack_egpu_interface: 'thunderbolt' # or 'oculink'
+
+    # GPU-specific configuration
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_arch_override: "{{ ansible_facts['architecture'] }}"  # Auto-detect architecture
+        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed (Intel model list: roles/containers/runtime/vars/intel_gpu_models.yml)
+        containers_gpu_count: 1
+        containers_gpu_slicing:
+          strategy: "auto"
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          time_slicing: { enabled: false, max_instances: 4 }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+          passthrough: { devices: [] }
+
+    - role: containers/quadlets
+      vars:
+        quadlet_enable_gpu_support: true
+        quadlet_arch_override: "x86_64"  # Set explicitly per target (x86_64, arm64, riscv64)
+        quadlet_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed (Intel model list: roles/containers/runtime/vars/intel_gpu_models.yml)
+        quadlet_gpu_slicing:
+          strategy: "auto"
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          time_slicing: { enabled: false, max_instances: 4 }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+          passthrough: { devices: [] }
+        quadlet_gpu_capabilities: ["gpu", "compute", "video"]
+        quadlet_container_gpu_config:
+          anubis:
+            capabilities: ["gpu", "compute"]
+            devices: ["/dev/nvidia0"]
+          caddy:
+            capabilities: ["gpu"]
+            devices: ["/dev/nvidia0"]
+
+    # Container deployment with GPU support
+    - containers/anubis
+    - containers/caddy
+
+  post_tasks:
+    - name: GPU system optimization
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        regexp: "^#?vm.swappiness ="
+        line: "vm.swappiness = 10"
+      become: true
+
+    - name: Verify GPU functionality
+      ansible.builtin.command:
+        cmd: nvidia-smi
+      register: nvidia_smi_output
+      changed_when: false
+      failed_when: false
+      become: false
+      when: containers_gpu_vendor == "nvidia"
+
+    - name: Display GPU information
+      ansible.builtin.debug:
+        msg: |
+          GPU Workstation Deployment Complete
+          Vendor: {{ containers_gpu_vendor | upper }}
+          Device: {{ nvidia_smi_output.stdout | default('No GPU device detected') }}
+          Container Runtime: Podman with GPU support enabled
+          Quadlet GPU Support: {{ quadlet_enable_gpu_support }}

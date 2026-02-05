@@ -61,7 +61,6 @@ EOF
 ```bash
 # Linux container testing scenario
 molecule init scenario linux
-
 # Network device testing scenario
 molecule init scenario network
 ```
@@ -88,7 +87,6 @@ ansible:
     defaults:
       collections_path: collections
       inventory: inventory/hosts.yml
-
 scenario:
   test_sequence:
     - dependency
@@ -102,7 +100,6 @@ scenario:
 ```
 
 **Create `molecule/linux/inventory.yml`:**
-
 The inventory defines the testing resources and their configuration details that Molecule will use to create and manage test instances.
 
 ```yaml
@@ -163,7 +160,6 @@ The create playbook is used to instantiate the testing resources defined in the 
           - molecule-linux-test
         systemd: true
       loop: "{% raw %}{{ groups['all'] }}{% endraw %}"
-
     - name: Wait for containers to be ready
       ansible.builtin.wait_for_connection:
         timeout: 300
@@ -172,7 +168,6 @@ The create playbook is used to instantiate the testing resources defined in the 
 ```
 
 **Create `molecule/linux/prepare.yml`:**
-
 The prepare playbook configures the testing resources with any prerequisites needed before running the main playbook under test.
 
 ```yaml
@@ -200,7 +195,6 @@ The converge playbook executes the main playbook being tested, applying your aut
 ```
 
 **Create `molecule/linux/verify.yml`:**
-
 The verify playbook validates that the converge playbook achieved the desired results by testing the final state of the resources.
 
 ```yaml
@@ -212,7 +206,6 @@ The verify playbook validates that the converge playbook achieved the desired re
     - name: Check required packages are installed
       ansible.builtin.package_facts:
         manager: auto
-
     - name: Verify python3 is installed
       ansible.builtin.assert:
         that:
@@ -226,7 +219,6 @@ The verify playbook validates that the converge playbook achieved the desired re
       check_mode: true
       register: systemd_check
       failed_when: false
-
     - name: Assert systemd is active
       ansible.builtin.assert:
         that:
@@ -235,7 +227,6 @@ The verify playbook validates that the converge playbook achieved the desired re
 ```
 
 **Create `molecule/linux/cleanup.yml`:**
-
 The cleanup playbook removes temporary artifacts and resets the testing resources to a clean state before destruction.
 
 ```yaml
@@ -282,7 +273,6 @@ This scenario tests playbooks against Arista EOS network devices using container
 ### Configure the Network Scenario
 
 **Update `molecule/network/molecule.yml`:**
-
 This scenario-specific configuration adapts Molecule for network device testing with simplified sequences and network-specific settings.
 
 ```yaml
@@ -291,7 +281,6 @@ dependency:
   name: galaxy
   options:
     requirements-file: ../requirements.yml
-
 ansible:
   cfg:
     defaults:
@@ -338,7 +327,6 @@ all:
 ```
 
 **Create `molecule/network/create.yml`:**
-
 The create playbook launches containerized network devices and waits for both SSH and API services to become available for testing.
 
 ```yaml
@@ -351,7 +339,6 @@ The create playbook launches containerized network devices and waits for both SS
       containers.podman.podman_network:
         name: molecule-network-test
         state: present
-
     - name: Create EOS containers
       containers.podman.podman_container:
         name: "{% raw %}{{ hostvars[item].ansible_host }}{% endraw %}"
@@ -378,7 +365,6 @@ The create playbook launches containerized network devices and waits for both SS
         port: 22
         timeout: 300
       loop: "{% raw %}{{ groups['arista_switches'] }}{% endraw %}"
-
     - name: Wait for EOS API to be ready
       ansible.builtin.uri:
         url: "https://{% raw %}{{ hostvars[item].ansible_host }}{% endraw %}:443/command-api"
@@ -394,7 +380,6 @@ The create playbook launches containerized network devices and waits for both SS
 ```
 
 **Create `molecule/network/converge.yml`:**
-
 The converge playbook executes the network playbook under test against the containerized network devices.
 
 ```yaml
@@ -425,7 +410,6 @@ The verify playbook tests network device functionality using EOS-specific comman
         that:
           - "'Arista' in version_output.stdout[0]"
         fail_msg: "EOS version check failed"
-
     - name: Gather EOS facts
       arista.eos.eos_facts:
         gather_subset: min
@@ -459,7 +443,6 @@ The cleanup playbook removes any test configurations from the network devices to
 ```
 
 **Create `molecule/network/destroy.yml`:**
-
 The destroy playbook removes the containerized network devices and networks, completing the test lifecycle cleanup.
 
 ```yaml
@@ -474,7 +457,6 @@ The destroy playbook removes the containerized network devices and networks, com
         state: absent
       loop: "{% raw %}{{ groups['arista_switches'] }}{% endraw %}"
       failed_when: false
-
     - name: Remove container network
       containers.podman.podman_network:
         name: molecule-network-test
@@ -503,7 +485,6 @@ molecule verify --scenario-name linux --report --command-borders
 ```bash
 # Test the network scenario
 molecule test --scenario-name network --report --command-borders
-
 # Converge only
 molecule converge --scenario-name network --report --command-borders
 ```
@@ -566,7 +547,6 @@ INFO     linux ➜ idempotence: Executing
 INFO     linux ➜ verify: Executing
 INFO     linux ➜ cleanup: Executing
 INFO     linux ➜ destroy: Executing
-
 SCENARIO RECAP
 linux                       : actions=8  successful=8  disabled=0  skipped=0  missing=0  failed=0
 ```
@@ -589,7 +569,6 @@ Create scenarios to test different playbook combinations:
 ```bash
 # Initialize scenario for site.yml testing
 molecule init scenario site-testing
-
 # Test the complete site playbook
 molecule test --scenario-name site-testing --report --command-borders
 ```

@@ -6,3 +6,13 @@
     state: restarted
   become: true
   listen: "restart journald"
+  when: ansible_facts['service_mgr'] == 'systemd'
+  failed_when: false
+- name: restart rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: restarted
+  become: true
+  listen: "restart rsyslog"
+  when: ansible_facts['service_mgr'] == 'systemd'
+  failed_when: false

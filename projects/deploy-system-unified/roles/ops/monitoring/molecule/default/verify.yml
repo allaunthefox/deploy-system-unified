@@ -1,0 +1,47 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if node_exporter binary exists (Debian path)
+      ansible.builtin.stat:
+        path: /usr/bin/prometheus-node-exporter
+      register: node_exporter_bin_debian
+
+    - name: Check if node_exporter binary exists (Standard path)
+      ansible.builtin.stat:
+        path: /usr/local/bin/node_exporter
+      register: node_exporter_bin_local
+
+    - name: Check if node_exporter binary exists (RHEL path)
+      ansible.builtin.stat:
+        path: /usr/bin/node_exporter
+      register: node_exporter_bin_rhel
+
+    - name: Assert node_exporter installed
+      ansible.builtin.assert:
+        that:
+          - node_exporter_bin_debian.stat.exists or node_exporter_bin_local.stat.exists or node_exporter_bin_rhel.stat.exists
+
+    - name: Check node_exporter service status (Debian/Ubuntu)
+      ansible.builtin.systemd:
+        name: prometheus-node-exporter
+        state: started
+        enabled: true
+      check_mode: true
+      register: service_status_debian
+      ignore_errors: true
+
+    - name: Check node_exporter service status (Generic)
+      ansible.builtin.systemd:
+        name: node_exporter
+        state: started
+        enabled: true
+      check_mode: true
+      register: service_status_generic
+      when: service_status_debian.failed is defined and service_status_debian.failed
+
+    - name: Assert service is running
+      ansible.builtin.assert:
+        that:
+          - (service_status_debian.status.ActiveState == 'active') or (service_status_generic.status.ActiveState == 'active')

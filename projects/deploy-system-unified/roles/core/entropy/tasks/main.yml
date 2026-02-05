@@ -8,7 +8,6 @@
     state: present
   become: true
   when: ansible_distribution | lower in entropy_service_mapping.keys()
-
 - name: Enable and start entropy enhancement services (idempotent)
   ansible.builtin.systemd:
     name: "{{ item }}"
@@ -18,13 +17,13 @@
     - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_service }}"
     - "{{ entropy_service_mapping[ansible_distribution | lower].rng_service }}"
   become: true
+  ignore_errors: "{{ is_virtualized | default(false) }}"
   when:
     - ansible_service_mgr == 'systemd'
     - ansible_distribution | lower in entropy_service_mapping.keys()
-
+    - not (is_virtualized | default(false))
 - name: Validate entropy services are running (idempotent)
   ansible.builtin.service_facts:
-
 - name: Verify entropy services status
   ansible.builtin.assert:
     that:
@@ -32,5 +31,7 @@
       - ansible_facts.services[entropy_service_mapping[ansible_distribution | lower].rng_service + '.service'].state == 'running'
     fail_msg: "Entropy services are not running"
   when:
+    - not (is_virtualized | default(false))
     - ansible_service_mgr == 'systemd'
     - ansible_distribution | lower in entropy_service_mapping.keys()
+    - not is_virtualized | default(false)

@@ -12,16 +12,20 @@
 ## Issues by Category
 
 ### YAML Formatting
+
 21 issues found
 
-### Ansible Standards  
+### Ansible Standards
+
 1 issues found
 
 ### Naming Conventions
+
 0 files with spaces in names
 1 files with uppercase names in roles/
 
 ### Security Standards
+
 2 files with potential hardcoded secrets
 0 files with potentially unsafe permissions
 
@@ -37,4 +41,3 @@
 - yamllint: YAML linting
 - ansible-lint: Ansible-specific linting
 - ripgrep/awk/sed: Pattern matching and text processing
-

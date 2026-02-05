@@ -59,6 +59,7 @@ htmlcov/
 .venv/
 venv/
 .env/
+molecule_venv/
 
 # Packaging / build
 dist/
@@ -97,5 +98,11 @@ pip-wheel-metadata/
 **/ssh_keys/
 *.ppk
 # End SSH key ignores
+
+# Temporary Migration Assets
 migration_assets/
+
+# Generated Secrets
+inventory/group_vars/all/secrets.generated.yml
+inventory/group_vars/*/secrets.generated.yml
 secrets.generated.yml

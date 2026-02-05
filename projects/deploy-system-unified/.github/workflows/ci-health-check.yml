@@ -1,6 +1,5 @@
 ---
 name: CI Health Check
-
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -9,7 +8,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   health-check:
     runs-on: ubuntu-latest
@@ -19,3 +17,4 @@ jobs:
       - name: Echo
         run: |
           echo "CI health check: workflow runner is alive"
+

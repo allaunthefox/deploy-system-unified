@@ -1,6 +1,5 @@
 ---
 name: Style Guide Enforcement
-
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -10,33 +9,28 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   style-enforcement:
     name: Run style guide enforcement
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Make script executable
         run: chmod +x dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
-
       - name: Install style tooling
         run: |
           sudo apt-get update
           sudo apt-get install -y yamllint ripgrep fd-find shellcheck || true
           python -m pip install --upgrade pip || true
           python -m pip install --upgrade ansible-lint || true
-
       - name: Run enforcement (generate report)
         run: |
           set -o pipefail
           # Run in a way that always allows subsequent steps to run so we can upload the report
           ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report || echo $? > .enforce_status
         continue-on-error: true
-
       - name: List reports
         run: ls -l dev_tools/tools/style-guide-enforcement || true
 
@@ -45,7 +39,6 @@ jobs:
         with:
           name: style-compliance-report
           path: dev_tools/tools/style-guide-enforcement/compliance_report_*.md
-
       - name: Comment on PR with compliance report
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -79,7 +72,6 @@ jobs:
           else
             echo "No style issues detected; no comment posted"
           fi
-
       - name: Comment on PR on success
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -99,3 +91,4 @@ jobs:
             echo "Style enforcement detected issues; failing job with code $(cat .enforce_status)"
             exit $(cat .enforce_status)
           fi
+

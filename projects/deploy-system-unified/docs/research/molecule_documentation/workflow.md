@@ -77,7 +77,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       containers.podman.podman_network:
         name: molecule-test-network
         state: present
-
     - name: Launch test containers
       containers.podman.podman_container:
         name: "{% raw %}{{ item }}{% endraw %}"
@@ -116,7 +115,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
           - curl
           - jq
         state: present
-
     - name: Create test directories
       ansible.builtin.file:
         path: /opt/test-data
@@ -154,7 +152,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         dest: /etc/myapp/app.conf
         mode: "0644"
       notify: restart application service
-
     - name: Ensure services are running
       ansible.builtin.systemd:
         name: "{% raw %}{{ item }}{% endraw %}"
@@ -193,7 +190,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       ansible.builtin.stat:
         path: /etc/myapp/app.conf
       register: config_file
-
     - name: Assert configuration is correct
       ansible.builtin.assert:
         that:
@@ -206,7 +202,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         cmd: curl -s http://localhost:8080/api/status
       register: api_response
       changed_when: false
-
     - name: Validate API response format
       ansible.builtin.assert:
         that:
@@ -245,7 +240,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         url: "http://{% raw %}{{ ansible_host }}{% endraw %}:8080/health"
         method: GET
         status_code: [200, 503]
-
     - name: Restore network connectivity
       ansible.builtin.iptables:
         chain: OUTPUT
@@ -289,7 +283,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
         - /tmp/test-data
         - /opt/test-logs
         - /var/cache/test-artifacts
-
     - name: Reset configuration to defaults
       ansible.builtin.copy:
         src: default.conf
@@ -326,7 +319,6 @@ Actions are individual playbooks that perform specific testing lifecycle tasks. 
       containers.podman.podman_network:
         name: molecule-test-network
         state: absent
-
     - name: Clean up cloud resources
       amazon.aws.ec2_instance:
         instance_ids: "{% raw %}{{ hostvars[item].instance_id }}{% endraw %}"
@@ -432,7 +424,6 @@ scenario:
   test_sequence:
     - converge
     - verify
-
 # scenarios/role2/molecule.yml
 ---
 scenario:
@@ -470,7 +461,6 @@ scenario:
     - converge
     - verify
     - destroy
-
 shared_state: true
 ```
 
@@ -504,7 +494,6 @@ scenario:
     - verify
     - cleanup
     - destroy
-
 shared_state: false # Override global setting
 ```
 
@@ -530,7 +519,6 @@ scenario:
   test_sequence:
     - converge
     - verify
-
 # scenarios/role2/molecule.yml
 ---
 scenario:
@@ -563,9 +551,9 @@ These commands execute complete sequences of actions:
 - **Sequence**: `dependency`, `cleanup`, `destroy`, `syntax`, `create`, `prepare`, `converge`, `idempotence`, `side_effect`, `verify`, `cleanup`, `destroy`
 - **Usage**: `molecule test [scenario-name]`
 - **Behavior**:
-  - Always starts fresh (destroys existing resources)
-  - Runs all actions in sequence order
-  - Stops on first failure unless `--destroy=never`
+    - Always starts fresh (destroys existing resources)
+    - Runs all actions in sequence order
+    - Stops on first failure unless `--destroy=never`
 
 #### `molecule check`
 
@@ -683,7 +671,6 @@ molecule verify
 # Make changes, then repeat
 molecule converge
 molecule verify
-
 # Clean up when done
 molecule destroy
 ```
@@ -711,14 +698,12 @@ molecule destroy
 # Create and access resources
 molecule create
 molecule prepare
-
 # Debug interactively
 molecule login
 
 # Test changes
 molecule converge
 molecule verify
-
 # Leave resources for investigation
 # (skip destroy)
 ```
@@ -746,7 +731,6 @@ molecule create --scenario default
 # Component scenarios use existing resources
 molecule converge --scenario role1
 molecule verify --scenario role1
-
 molecule converge --scenario role2
 molecule verify --scenario role2
 
@@ -774,7 +758,6 @@ molecule test --destroy=never
 # Test with specific verbosity
 molecule test -v
 molecule converge -vvv
-
 # Force recreation
 molecule destroy
 molecule test

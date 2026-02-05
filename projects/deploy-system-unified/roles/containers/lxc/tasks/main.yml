@@ -1,0 +1,99 @@
+---
+# LXC GPU configuration tasks
+- name: Determine LXC GPU slicing strategy based on virtualization type (auto strategy)
+  ansible.builtin.set_fact:
+    lxc_gpu_slicing_strategy: >-
+      {% if lxc_gpu_slicing.strategy == "auto" %}
+        {% if not is_virtualized %}
+          {{ lxc_gpu_slicing.auto_strategy.bare_metal }}
+        {% elif ansible_virtualization_role == "host" %}
+          {{ lxc_gpu_slicing.auto_strategy.virtual_host }}
+        {% else %}
+          {{ lxc_gpu_slicing.auto_strategy.virtual_guest }}
+        {% endif %}
+      {% else %}
+        {{ lxc_gpu_slicing.strategy }}
+      {% endif %}
+  when: lxc_enable_gpu_support
+
+- name: Configure LXC container for GPU passthrough
+  block:
+    - name: Include Vendor Specific Passthrough Config
+      ansible.builtin.include_tasks: "vendor/{{ lxc_gpu_vendor }}.yml"
+      when: lxc_gpu_vendor in ['nvidia', 'amd', 'intel']
+
+    - name: Create LXC GPU configuration template
+      ansible.builtin.template:
+        src: lxc-gpu-config.j2
+        dest: /etc/lxc/default.conf.d/gpu.conf
+        mode: '0644'
+      become: true
+
+    - name: Apply GPU configuration to existing LXC containers
+      ansible.builtin.shell: |
+        EXISTING_CONFIG=$(lxc config show {{ item }} 2>/dev/null || true)
+        DESIRED_DEVICES="{{ lxc_gpu_passthrough_devices | default([]) | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join(\"\n\") }}"
+        
+        # Check if config is already present to avoid idempotent restarts
+        if echo "$EXISTING_CONFIG" | grep -q "lxc.cgroup2.devices.allow"; then
+            echo "Config present"
+            exit 0
+        fi
+        
+        # Apply config if missing
+        CMD_ARGS="{{ lxc_gpu_passthrough_devices | default([]) | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join('; ') }}"
+        lxc config set {{ item }} $CMD_ARGS
+      register: lxc_gpu_config_result
+      changed_when: "lxc_gpu_config_result.rc == 0 and 'Config present' not in lxc_gpu_config_result.stdout"
+      failed_when: false
+      loop: "{{ lxc_container_gpu_config.keys() | list }}"
+      when: lxc_container_gpu_config | length > 0
+      args:
+        executable: /bin/bash
+
+    - name: Restart LXC containers to apply GPU configuration
+      ansible.builtin.command:
+        cmd: lxc restart {{ item }}
+      register: lxc_restart_result
+      changed_when: true
+      failed_when: false
+      loop: "{{ lxc_container_gpu_config.keys() | list }}"
+      when: lxc_container_gpu_config | length > 0 and lxc_gpu_config_result.changed
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "passthrough"
+
+- name: Load Vendor Specific Strategy Config
+  include_tasks: "vendor/{{ item }}"
+  loop:
+    - nvidia_mig.yml
+    - nvidia_vgpu.yml
+    - amd_sriov.yml
+    - intel_level_zero.yml
+    - intel_oneapi.yml
+
+- name: Debug LXC GPU configuration
+  ansible.builtin.debug:
+    msg: |
+      LXC GPU Configuration:
+        Strategy: {{ lxc_gpu_slicing_strategy }}
+        Vendor: {{ lxc_gpu_vendor | upper }}
+        Virtualization Type: {{ ansible_virtualization_type | default('None') }}
+        Virtualization Role: {{ ansible_virtualization_role | default('None') }}
+        {% if lxc_gpu_slicing_strategy == "passthrough" %}
+        Passthrough Devices: {{ lxc_gpu_passthrough_devices | default([]) }}
+        Passthrough Mounts: {{ lxc_gpu_passthrough_mounts | default([]) }}
+        Passthrough Capabilities: {{ lxc_gpu_passthrough_capabilities | default([]) }}
+        {% elif lxc_gpu_slicing_strategy == "mig" %}
+        MIG Devices: {{ lxc_gpu_mig_devices | default([]) }}
+        {% elif lxc_gpu_slicing_strategy == "vgpu" %}
+        vGPU Device: {{ lxc_gpu_vgpu_device | default('') }}
+        {% elif lxc_gpu_slicing_strategy == "sriov" %}
+        SR-IOV Devices: {{ lxc_gpu_sriov_devices | default([]) }}
+        {% elif lxc_gpu_slicing_strategy == "level-zero" %}
+        Level Zero Partitions: {{ lxc_gpu_slicing.level_zero.partitions | default([]) }}
+        {% elif lxc_gpu_slicing_strategy == "oneapi" %}
+        OneAPI Toolkit: {{ lxc_gpu_slicing.oneapi.toolkit | default('') }}
+        OneAPI Components: {{ lxc_gpu_slicing.oneapi.components | default([]) }}
+        {% endif %}
+  when: lxc_enable_gpu_support

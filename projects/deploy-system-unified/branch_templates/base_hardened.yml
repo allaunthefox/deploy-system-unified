@@ -1,46 +1,50 @@
 ---
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
+- import_playbook: ../main.yml
 
 - ansible.builtin.import_playbook: main.yml
 
 - name: Apply Secure Infrastructure Base
   hosts: all
   become: true
-  roles:
-    # Operations Pre-Flight (Controller-side)
-    - role: ops/pre_connection
+  vars:
+    base_hardened_roles:
+      # Operations Pre-Flight (Controller-side)
+      - ops/pre_connection
+      # Core system setup (The Foundational Base)
+      - core/repositories
+      - core/updates
+      - core/bootstrap
+      - core/logging
+      - security/audit_integrity
+      - core/time
+      - core/entropy
+      - core/secrets
+      # Security Baseline (Establish Default-Deny First)
+      - networking/firewall
+      - security/mac_apparmor
+      - security/kernel
+      - security/hardware_isolation
+      - security/hardening
+      - security/access
+      - security/file_integrity
+      # Advanced Security & Isolation Measures
+      - security/sandboxing
+      - security/firejail
+      - security/resource_protection
+      - networking/container_networks
+      - networking/vpn_mesh
+      - networking/services/endlessh
+      - security/ips
+      - security/advanced
+      # Operations Utilities
+      - ops/session
+      - ops/connection_info
 
-    # Core system setup (The Foundational Base)
-    - role: core/repositories
-    - role: core/updates
-    - role: core/bootstrap
-    - role: core/logging
-    - role: security/audit_integrity
-    - role: core/time
-    - role: core/entropy
-    - role: core/secrets
-
-    # Security Baseline (Establish Default-Deny First)
-    - role: security/firewall
-    - role: security/mac_apparmor
-    - role: security/kernel
-    - role: security/hardware_isolation
-    - role: security/hardening
-    - role: security/access
-      access_sshd_port: "{{ access_sshd_port | default(22) }}"
-    - role: security/file_integrity
-
-    # Advanced Security & Isolation Measures
-    - role: security/sandboxing
-    - role: security/firejail
-    - role: security/resource_protection
-    - role: security/network_segmentation
-    - role: security/inter_pod_encryption
-    - role: security/endlessh
-    - role: security/ips
-    - role: security/advanced
-
-    # Operations Utilities
-    - role: ops/session
-    - role: ops/connection_info
+  tasks:
+    - name: Execute Base Hardened Roles with Granular Checkpoints
+      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      loop: "{{ base_hardened_roles }}"
+      loop_control:
+        loop_var: role_item

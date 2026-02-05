@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: sas
+  author: deploy-system-unified
+  description: Support for Serial Attached SCSI (SAS) HBAs and RAID controllers (LSI/Broadcom).
+  company: "Deploy System Unified"
+  license: "MIT"
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+    - name: EL
+      versions:
+        - "9"
+    - name: ArchLinux
+      versions:
+        - all
+  galaxy_tags:
+    - hardware
+    - sas
+    - raid
+    - lsi
+    - broadcom
+    - driver
+
+dependencies: []

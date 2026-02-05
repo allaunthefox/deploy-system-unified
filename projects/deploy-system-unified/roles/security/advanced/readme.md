@@ -5,16 +5,19 @@ This role provides optional advanced security hardening features that can be ena
 ## Features
 
 ### SSH Port Randomization
+
 - Randomizes the SSH port to a value between 10000-65535
 - Stores connection information in an encrypted file
 - Optionally syncs the encrypted file to a specified destination
 
 ### SSH Key Rotation
+
 - Enables automatic rotation of SSH host keys
 - Configures rotation interval (default: 90 days)
 - Creates backup of old keys before rotation
 
 ### TMUX Session Management
+
 - Ensures a persistent TMUX session is available during deployment
 - Helps prevent connection loss during configuration changes
 
@@ -34,6 +37,7 @@ This role provides optional advanced security hardening features that can be ena
 ## Use Cases
 
 ### 1. Ephemeral Docker Containers (Security-First Approach)
+
 **When to use**: Temporary environments where security is paramount but persistence isn't needed
 **Examples**: CI/CD runners, security testing environments, temporary compute resources
 
@@ -46,6 +50,7 @@ This role provides optional advanced security hardening features that can be ena
 ```
 
 ### 2. Production Servers (Balanced Approach)
+
 **When to use**: Production environments where both security and stability are critical
 **Examples**: Web servers, database servers, application servers
 
@@ -59,6 +64,7 @@ This role provides optional advanced security hardening features that can be ena
 ```
 
 ### 3. Development Environments (Flexibility Approach)
+
 **When to use**: Development environments where convenience is balanced with basic security
 **Examples**: Developer workstations, testing environments, staging systems
 

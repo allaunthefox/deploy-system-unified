@@ -1,12 +1,12 @@
 ---
 # Tasks for ops/pre_connection role
 # This role runs on the CONTROLLER to ensure connectivity and determine facts.
-
 - name: Check for existing custom SSH port on target (idempotent)
   ansible.builtin.shell: |
     # Find the configured port and ensure it is not the default 22
-    CURRENT_PORT=$(grep "^Port " /etc/ssh/sshd_config | awk '{print $2}' | head -n 1)
-    if ["$CURRENT_PORT" != "22"] && [-n "$CURRENT_PORT"]; then
+    # Use sshd -T to respect included configs and overrides
+    CURRENT_PORT=$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')
+    if [ "$CURRENT_PORT" != "22" ] && [ -n "$CURRENT_PORT" ]; then
       echo "$CURRENT_PORT"
     else
       echo ""
@@ -15,7 +15,6 @@
   changed_when: false
   when: ssh_randomize_port | default(false) | bool
   become: true
-
 - name: Compute SSH port range bounds (idempotent)
   ansible.builtin.set_fact:
     advanced_security_hardening_ssh_range_start: "{{ ssh_random_port_range_start | default(10000) | int }}"
@@ -25,7 +24,6 @@
     - existing_ssh_port.stdout | default('') == "" or existing_ssh_port.stdout | default('') == "22"
   delegate_to: localhost
   run_once: true
-
 - name: Generate random SSH port if enabled (idempotent)
   ansible.builtin.set_fact:
     advanced_security_hardening_random_ssh_port: >-
@@ -37,7 +35,6 @@
     - existing_ssh_port.stdout | default('') == "" or existing_ssh_port.stdout | default('') == "22"
   delegate_to: localhost
   run_once: true
-
 - name: Set final SSH port fact (idempotent)
   ansible.builtin.set_fact:
     advanced_security_hardening_random_ssh_port: "{{ existing_ssh_port.stdout }}"
@@ -45,7 +42,6 @@
     - ssh_randomize_port | default(false) | bool
     - existing_ssh_port.stdout | default('') != ""
     - existing_ssh_port.stdout | default('') != "22"
-
 - name: Check connectivity to target SSH port
   ansible.builtin.wait_for:
     host: "{{ inventory_hostname }}"
@@ -55,7 +51,6 @@
   delegate_to: localhost
   register: ssh_port_check
   ignore_errors: true
-
 - name: Inform operator if SSH port is closed (Anticipating Knocking)
   ansible.builtin.debug:
     msg: "SSH port appears closed. If Port Knocking is enabled, ensure you have knocked before running this playbook."

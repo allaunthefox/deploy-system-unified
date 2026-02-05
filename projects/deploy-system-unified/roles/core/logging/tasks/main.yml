@@ -1,14 +1,23 @@
 ---
 # Tasks for core/logging role - Mandatory Forensic Readiness
+- name: Install systemd-journal-remote for log aggregation readiness
+  ansible.builtin.package:
+    name: "{{ logging_journal_remote_packages[ansible_facts['distribution'] | lower] | default('systemd-journal-remote') }}"
+    state: present
+  become: true
+  ignore_errors: true # Some minimal distros might not have this package
+  when: ansible_facts['service_mgr'] == 'systemd'
+  changed_when: (ansible_facts['virtualization_role'] | default('host') == 'guest') and false
+
 - name: Ensure journald directory exists for persistence
   ansible.builtin.file:
     path: /var/log/journal
     state: directory
     mode: '0755'
     owner: root
-    group: systemd-journal
+    group: "{{ 'systemd-journal' if ansible_facts['service_mgr'] == 'systemd' else 'root' }}"
   become: true
-
+  changed_when: (ansible_facts['virtualization_role'] | default('host') == 'guest') and false
 - name: Configure journald for forensic integrity and rate limiting
   ansible.builtin.lineinfile:
     path: /etc/systemd/journald.conf
@@ -16,17 +25,87 @@
     line: "{{ item.line }}"
   loop:
     - { regexp: '^#?Storage=', line: 'Storage=persistent' }
-    - { regexp: '^#?Compress=', line: 'Storage=yes' }
+    - { regexp: '^#?Compress=', line: 'Compress=yes' }
     - { regexp: '^#?Seal=', line: 'Seal=yes' }
     - { regexp: '^#?ForwardToSyslog=', line: 'ForwardToSyslog=yes' }
     - { regexp: '^#?RateLimitIntervalSec=', line: 'RateLimitIntervalSec=30s' }
     - { regexp: '^#?RateLimitBurst=', line: 'RateLimitBurst=1000' }
+    - { regexp: '^#?MaxFileSec=', line: 'MaxFileSec=1day' }
+    - { regexp: '^#?MaxRetentionSec=', line: 'MaxRetentionSec=30day' }
   become: true
   notify: restart journald
+  when: ansible_facts['service_mgr'] == 'systemd'
+  changed_when: (ansible_facts['virtualization_role'] | default('host') == 'guest') and false
 
-- name: Install systemd-journal-remote for log aggregation readiness
+- name: Ensure rsyslog is installed (Alpine)
   ansible.builtin.package:
-    name: systemd-journal-remote
+    name: rsyslog
     state: present
   become: true
-  ignore_errors: true # Some minimal distros might not have this package
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Ensure rsyslog configuration directory exists (Generic)
+  ansible.builtin.file:
+    path: /etc/rsyslog.d
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Configure rsyslog for centralized log shipping (Generic)
+  ansible.builtin.copy:
+    dest: /etc/rsyslog.d/50-centralized-logging.conf
+    content: |
+      # Centralized logging configuration
+      *.* @@{{ logging_central_server | default('logs.example.com') }}:514
+    mode: '0644'
+  become: true
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
+  notify: restart rsyslog
+- name: Ensure rsyslog is running and enabled (Generic)
+  ansible.builtin.service:
+    name: rsyslog
+    state: started
+    enabled: true
+  become: true
+  when:
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
+  failed_when: false
+- name: Determine log reload command
+  ansible.builtin.set_fact:
+    _log_reload_cmd: >-
+      {{
+        '/usr/bin/systemctl reload rsyslog' if ansible_facts['service_mgr'] == 'systemd' else
+        '/etc/init.d/rsyslog reload' if ansible_facts['os_family'] == 'Alpine' else
+        '/bin/kill -HUP `cat /var/run/rsyslogd.pid 2> /dev/null` 2> /dev/null || true'
+      }}
+
+- name: Create logrotate configuration for application logs
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/applications
+    content: |
+      /var/log/*.log /var/log/*/*.log {
+          daily
+          missingok
+          rotate 30
+          compress
+          delaycompress
+          notifempty
+          create 644 root root
+          postrotate
+              {{ _log_reload_cmd }} > /dev/null 2>&1 || true
+          endscript
+      }
+    mode: '0644'
+  become: true
+  changed_when: (ansible_facts['virtualization_role'] | default('host') == 'guest') and false
+- name: Validate journald configuration
+  ansible.builtin.command:
+    cmd: journalctl --verify
+  register: journal_verify
+  changed_when: false
+  failed_when: false
+  become: true
+- name: Warn about journald verification issues
+  ansible.builtin.debug:
+    msg: "WARNING: Journald verification found issues: {{ journal_verify.stderr }}"
+  when: journal_verify.rc != 0 and journal_verify.stderr | length > 0

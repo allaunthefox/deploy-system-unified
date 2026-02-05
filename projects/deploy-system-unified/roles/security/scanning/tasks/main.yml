@@ -2,42 +2,37 @@
 # Security/Scanning role - Focused on system validation and vulnerability scanning
 - name: Validate preflight requirements (idempotent)
   ansible.builtin.import_role:
-    name: preflight
-
+    name: ops/preflight
 - name: Verify directory structure (idempotent)
   ansible.builtin.import_tasks: directory_verification.yml
-
 - name: Configure security tools (idempotent)
   ansible.builtin.import_tasks: enhanced_security_with_required_tools.yml
 - name: Mark security tools configured
   ansible.builtin.set_fact:
     enhanced_security_tools_configured: true
-
 - name: Verify Forensic Clock Synchronization (Chrony)
   ansible.builtin.shell: |
     set -o pipefail
     chronyc tracking | grep -q "System time.*slow\|System time.*fast\|Reference ID"
+  args:
+    executable: /bin/bash
   register: chrony_sync_check
   changed_when: false
   become: true
   ignore_errors: true
-
 - name: Validate clock precision
   ansible.builtin.assert:
     that:
       - chrony_sync_check.rc == 0
     fail_msg: "System clock is not synchronized. Forensic logs and certificate validation may fail."
-
 - name: Run enhanced security scanning (idempotent)
   ansible.builtin.import_tasks: enhanced_scanning.yml
 - name: Mark security scanning configured
   ansible.builtin.set_fact:
     security_scanning_configured: true
     enhanced_security_scanning_complete: true
-
-- name: Validate final security state (idempotent)
-  ansible.builtin.import_tasks: validation.yml
-
 - name: Set security framework applied flag
   ansible.builtin.set_fact:
     security_framework_applied: true
+- name: Validate final security state (idempotent)
+  ansible.builtin.import_tasks: validation.yml

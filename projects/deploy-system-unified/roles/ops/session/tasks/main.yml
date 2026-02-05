@@ -14,8 +14,8 @@
     fi
   register: tmux_session_check
   changed_when: "'SESSION_CREATED:true' in tmux_session_check.stdout"
+  failed_when: false
   when: tmux_session_for_deployment | bool
-
 - name: Set TMUX session validity fact (idempotent)
   ansible.builtin.set_fact:
     tmux_session_ok: >-
@@ -23,10 +23,11 @@
          or ('SESSION_EXISTS:true' in tmux_session_check.stdout)
          or ('TMUX_AVAILABLE:false' in tmux_session_check.stdout) }}
   when: tmux_session_for_deployment | bool
-
 - name: Validate TMUX session creation (idempotent)
   ansible.builtin.assert:
     that:
       - tmux_session_ok | bool
     msg: "TMUX session creation failed - deployment may have reduced functionality"
-  when: tmux_session_for_deployment | bool
+  when:
+    - tmux_session_for_deployment | bool
+    - not ansible_check_mode

@@ -8,7 +8,6 @@ from `requirements.yml` specified at the project level, installing a standalone
 role or a collection. The destination is `project_dir/.cache` and the
 code itself was reused from ansible-lint, which has to do the same
 actions. (Note: ansible-lint is not included with molecule.)
-
 This assures that when you include a role inside molecule playbooks,
 Ansible will be able to find that role and that the include is exactly
 the same as the one you are expecting to use in production.
@@ -16,7 +15,6 @@ the same as the one you are expecting to use in production.
 If for some reason the prerun action does not suit your needs, you can
 still disable it by adding `prerun: false` inside the
 configuration file.
-
 Keep in mind that you can add this value to the
 `.config/molecule/config.yml` file, in your `$HOME` or at the root of
 your project, in order to avoid adding it to each scenario.
@@ -28,7 +26,6 @@ standard. If not, it will raise an error.
 
 If the computed fully qualified role name does not follow current galaxy
 requirements, you can ignore it by adding `role_name_check:1` inside the configuration file.
-
 It is strongly recommended to follow the name standard of
 [namespace](https://docs.ansible.com/projects/ansible/latest/dev_guide/collections_galaxy_meta.html#structure)
 and
@@ -40,7 +37,6 @@ A `computed fully qualified role name` may further contain the dot character.
 By default, Molecule runs each scenario independently with its own isolated state and resources. When `shared_state` is enabled, scenarios share ephemeral state, allowing them to access resources created by the `default` scenario.
 
 This is particularly useful for multi-scenario testing where one scenario manages testing resource lifecycle while other scenarios perform testing against those resources.
-
 To enable shared state, add `shared_state: true` to your configuration file:
 
 ```yaml
@@ -56,7 +52,6 @@ shared_state: true
 - Component scenarios can access resources created by the default scenario
 - Scenarios skip their own create/destroy actions when shared resources are managed elsewhere
 - Faster execution with single infrastructure lifecycle instead of per-scenario setup/teardown
-
 **Configuration locations:**
 
 You can add this setting to:
@@ -79,12 +74,10 @@ entry:
 
 Molecule will substitute `$ENV_VAR` with the value of the
 `ENV_VAR` environment variable.
-
 !!! warning
 
     If an environment variable is not set, Molecule substitutes with an
     empty string.
-
 Both `$VARIABLE` and `${VARIABLE}` syntax are supported. Extended
 shell-style features, such as `${VARIABLE-default}` and
 `${VARIABLE:-default}` are also supported. Even the default as another
@@ -94,102 +87,81 @@ both variables are undefined.
 
 If a literal dollar sign is needed in a configuration, use a double dollar
 sign (`$$`).
-
 Molecule will substitute special `MOLECULE_` environment variables
 defined in `molecule.yml`.
 
 !!! note
-
     Remember, the ``MOLECULE_`` namespace is reserved for Molecule.  Do not
     prefix your own variables with `MOLECULE_`.
 
 A file may be placed in the root of the project as `.env.yml`, and Molecule
 will read variables when rendering `molecule.yml`. See command usage.
-
 Following are the environment variables available in `molecule.yml`:
 
 MOLECULE_DEBUG
-
 : If debug is turned on or off
 
 MOLECULE_FILE
-
 : Path to molecule config file, usually
 `~/.cache/molecule/<role-name>/<scenario-name>/molecule.yml`
 
 MOLECULE_ENV_FILE
-
 : Path to molecule environment file, usually `<role_path>/.env.yml`
 
 MOLECULE_STATE_FILE
-
 : The path to molecule state file contains the state of the instances
 (created, converged, etc.). Usually
 `~/.cache/molecule/<role-name>/<scenario-name>/state.yml`
 
 MOLECULE_INVENTORY_FILE
-
 : Path to generated inventory file, usually
 `~/.cache/molecule/<role-name>/<scenario-name>/inventory/ansible_inventory.yml`
 
 MOLECULE_EPHEMERAL_DIRECTORY
-
 : Path to generated directory, usually
 `~/.cache/molecule/<role-name>/<scenario-name>`
 
 MOLECULE_SCENARIO_DIRECTORY
-
 : Path to scenario directory, usually
 `<role_path>/molecule/<scenario-name>`
 
 MOLECULE_PROJECT_DIRECTORY
-
 : Path to your project (role) directory, usually `<role_path>`
 
 MOLECULE_INSTANCE_CONFIG
-
 : Path to the instance config file, contains instance name,
 connection, user, port, etc. (populated from driver). Usually
 `~/.cache/molecule/<role-name>/<scenario-name>/instance_config.yml`
 
 MOLECULE_ANSIBLE_ARGS_STRICT_MODE
-
 : When set to any non-empty value, reverts to legacy behavior where `ansible_args`
 are excluded from create and destroy actions regardless of playbook source.
 By default (unset), `ansible_args` are included for user-provided create/destroy
 playbooks but excluded for bundled playbooks for safety.
 
 MOLECULE_DEPENDENCY_NAME
-
 : Dependency type name, usually 'galaxy'
 
 MOLECULE_SCENARIO_NAME
-
 : Name of the scenario
 
 MOLECULE_VERBOSITY
-
 : Determine Ansible verbosity level.
 
 !!! note
-
     The following environment variables exist for pre ansible-native use and should not
     be used when using an ansible-native configuration.
 
 MOLECULE_DRIVER_NAME
-
 : Name of the molecule scenario driver
 
 MOLECULE_PROVISIONER_NAME
-
 : Name of the provisioner tool (usually 'ansible')
 
 MOLECULE_VERIFIER_NAME
-
 : Name of the verifier tool (usually 'ansible')
 
 MOLECULE_VERIFIER_TEST_DIRECTORY
-
 : Path of the directory that contains verifier tests, usually
 `<role_path>/<scenario-name>/<verifier-name>`
 
@@ -205,7 +177,6 @@ managers.
 [ANSIBLE_HOME]: https://docs.ansible.com/projects/ansible/latest/reference_appendices/config.html#ansible-home
 
 Galaxy is the default dependency manager.
-
 From v6.0.0, the dependencies are installed in the directory that defined
 in ansible configuration. The default installation directory is
 [DEFAULT_ROLES_PATH][]([ANSIBLE_HOME][]). If two versions of the same
@@ -214,7 +185,6 @@ directory is used because both are tried to be installed in one directory.
 
 Additional options can be passed to `ansible-galaxy install` through the
 options dict. Any option set in this section will override the defaults.
-
 The `role-file` and `requirements-file` search path is `<role-name>`
 directory. The default value for `role-file` is `requirements.yml`, and the
 default value for `requirements-file` is `collections.yml`.
@@ -225,7 +195,6 @@ default value for `requirements-file` is `collections.yml`.
 2. If they are defined in `options`, `molecule` will find them from
    `<role-name>/<the-value-of-role-file>` and
    `<role-name>/<the-value-of-requirements-file>`.
-
 !!! note
 
     Molecule will remove any options matching '^[v]+$', and pass ``-vvv``
@@ -261,7 +230,6 @@ If you want to combine them, then just point your `role-file` and
 older `role-file` only required a list of roles, while the collections
 must be under the `collections:` key within the file and pointing both to
 the same file by default could break existing code.
-
 The dependency manager can be disabled by setting `enabled` to False.
 
 ```yaml
@@ -282,13 +250,11 @@ dependency:
 ### Shell
 
 `Shell` is an alternate dependency manager.
-
 It is intended to run a command in situations where `Ansible Galaxy`\_
 don't suffice.
 
 The `command` to execute is required, and is relative to Molecule's
 project directory when referencing a script not in $PATH.
-
 !!! note
 
     Unlike the other dependency managers, ``options`` are ignored and not
@@ -327,14 +293,12 @@ configuration syntax.
 
 A scenario allows Molecule to test a role in a particular way, this is a
 fundamental change from Molecule v1.
-
 A scenario is a self-contained directory containing everything necessary
 for testing the role in a particular way. The default scenario is named
 `default`, and every role should contain a default scenario.
 
 Unless mentioned explicitly, the scenario name will be the directory name
 hosting the files.
-
 Any option set in this section will override the defaults.
 
 ```yaml
@@ -382,7 +346,6 @@ If needed, Molecule can run multiple side effects and tests within a scenario.
 This allows to perform advanced testing for stateful software under role/playbook
 management. Actions `side_effect` and `verify` can take optional arguments to change
 the playbook/test they execute.
-
 Example of test sequence with multiple side effects and tests:
 
 ```yaml
@@ -405,7 +368,6 @@ a playbook (playbooks) to execute. If the argument for `side_effect` is present,
 it's executed instead. The path to the playbook is relative to the molecule.yml location.
 Normal side effect settings (from `provisioner.playbooks`) are ignored for action with
 argument.
-
 `verify` without an argument is executing the usual tests configured in the verifier section
 of molecule.yml.
 
@@ -413,13 +375,11 @@ If one or more arguments (separated by spaces) are present, each argument is tre
 as a test name (file or directory) to pass to the verifier (either Ansible or Testinfra).
 The kind of verifier is set in the `verifier` section of molecule.yml and is applied to all
 `verify` actions in the scenario.
-
 The path to tests is relative to the molecule.yml file location. The `additional_files_or_dirs`
 setting for the verifier is ignored if the `verify` action is provided with an argument.
 
 Multiple `side_effect` and `verify` actions can be used to create a combination
 of playbooks and tests, for example, for end-to-end playbook testing.
-
 Additional `converge` and `idempotence` actions can be used multiple times:
 
 ```yaml
@@ -442,7 +402,6 @@ test_sequence:
 ## Driver (pre ansible-native)
 
 !!! note
-
     **Driver** is pre ansible-native construct. It is not necessary
     when using an ansible-native configuration.
     For details see [ansible-native](ansible-native.md).
@@ -450,7 +409,6 @@ test_sequence:
 Molecule uses Ansible to manage instances to operate on.
 Molecule supports any provider Ansible supports. This work
 is offloaded to the `provisioner`.
-
 The driver's name is specified in `molecule.yml`, and can
 be overridden on the command line. Molecule will remember the last
 successful driver used, and continue to use the driver for all
@@ -458,7 +416,6 @@ subsequent subcommands, or until the instances are destroyed by
 Molecule.
 
 !!! warning
-
     The verifier must support the Ansible provider for proper Molecule
     integration.
 
@@ -467,7 +424,6 @@ Molecule.
 ### Delegated
 
 Delegated is the default driver used in Molecule.
-
 Under this driver, it is the developers responsibility to implement the
 create and destroy playbooks. `Managed` is the default behavior of all
 drivers.
@@ -491,7 +447,6 @@ data, and the developer's destroy playbook must reset the instance-config.
   password: ssh_password # mutually exclusive with identity_file
   become_method: valid_ansible_become_method # optional
   become_pass: password_if_required # optional
-
 - address: winrm_endpoint
   instance: instance_name
   connection: "winrm"
@@ -506,8 +461,7 @@ data, and the developer's destroy playbook must reset the instance-config.
 ```
 
 This article covers how to configure and use WinRM with Ansible:
-https://docs.ansible.com/projects/ansible/latest/user_guide/windows_winrm.html
-
+<https://docs.ansible.com/projects/ansible/latest/user_guide/windows_winrm.html>
 Molecule can also skip the provisioning/deprovisioning steps. It is the
 developers responsibility to manage the instances, and properly configure
 Molecule to connect to said instances.
@@ -533,7 +487,6 @@ platforms:
 ```
 
 Use Molecule with delegated instances, which are accessible over ssh.
-
 !!! note
 
     It is the developer's responsibility to configure the ssh config file.
@@ -578,7 +531,6 @@ driver:
     **Platforms** is a pre ansible-native construct. It is not necessary
     when using an ansible-native configuration.
     For details see [ansible-native](ansible-native.md)
-
 Platforms define the instances to be tested, and the groups to which the instances belong.
 
 ```yaml
@@ -620,7 +572,6 @@ platforms:
 ## Provisioner (pre ansible-native)
 
 !!! note
-
     **Provisioner** is a pre ansible-native construct. It is not necessary
     when using an ansible-native configuration.
     For details see [ansible-native](ansible-native.md)
@@ -630,7 +581,6 @@ Molecule handles provisioning and converging the role.
 ### Ansible
 
 Ansible` is the default provisioner. No other provisioner will be supported.
-
 Molecule's provisioner manages the instances lifecycle. However, the user
 must provide the create, destroy, and converge playbooks. Molecule's
 `init` subcommand will provide the necessary files for convenience.
@@ -638,7 +588,6 @@ must provide the create, destroy, and converge playbooks. Molecule's
 Molecule will skip tasks which are tagged with either `molecule-notest` or
 `notest`. With the tag `molecule-idempotence-notest` tasks are only
 skipped during the idempotence action step.
-
 !!! warning
 
     Reserve the create and destroy playbooks for provisioning.  Do not
@@ -646,24 +595,20 @@ skipped during the idempotence action step.
     inside these playbooks.  Due to the gymnastics necessary to sync state
     between Ansible and Molecule, it is best to perform these tasks in the
     prepare or converge playbooks.
-
     It is the developers responsibility to properly map the modules' fact
     data into the instance_conf_dict fact in the create playbook.  This
     allows Molecule to properly configure Ansible inventory.
 
 Additional options can be passed to `ansible-playbook` through the options
 dict. Any option set in this section will override the defaults.
-
 !!! note
 
     Options do not affect the create and destroy actions.
-
 !!! note
 
     Molecule will remove any options matching `^[v]+$`, and pass ``-vvv``
     to the underlying ``ansible-playbook`` command when executing
     `molecule --debug`.
-
 Molecule will silence log output, unless invoked with the `--debug` flag.
 However, this results in quite a bit of output. To enable Ansible log
 output, add the following to the `provisioner` section of `molecule.yml`.
@@ -712,7 +657,6 @@ specific create/destroy playbooks, if the determined driver has a key in
 the playbooks section of the provisioner's dict.
 
 !!! note
-
     If the determined driver has a key in the playbooks dict, Molecule will
     use this dict to resolve all provisioning playbooks (create/destroy).
 
@@ -732,7 +676,6 @@ provisioner:
 
     Paths in this section are converted to absolute paths, where the
     relative parent is the $scenario_directory.
-
 The side effect playbook executes actions which produce side effects to the
 instances(s). Intended to test HA failover scenarios or the like. It is
 not enabled by default. Add the following to the provisioner's `playbooks`
@@ -748,7 +691,6 @@ provisioner:
 !!! note
 
     This feature should be considered experimental.
-
 The prepare playbook executes actions which bring the system to a given
 state prior to converge. It is executed after create, and only once for
 the duration of the instances life.
@@ -769,7 +711,6 @@ is for "cleaning up" changes that were made outside of Molecule's test
 environment. For example, remote database connections or user accounts.
 Intended to be used in conjunction with `prepare` to modify external
 resources when required.
-
 The cleanup step is executed directly before every destroy step. Just like
 the destroy step, it will be run twice. An initial clean before converge
 and then a clean before the last destroy step. This means that the cleanup
@@ -787,14 +728,12 @@ provisioner:
 ```
 
 !!! note
-
     This feature should be considered experimental.
 
 Environment variables can be passed to the provisioner. Variables in this
 section which match the names above will be appended to the above defaults,
 and converted to absolute paths, where the relative parent is the
 $scenario_directory.
-
 !!! note
 
     Paths in this section are converted to absolute paths, where the
@@ -820,7 +759,6 @@ provisioner:
 ```
 
 !!! note
-
     The following keys are disallowed to prevent Molecule from
     improperly functioning.  They can be specified through the
     provisioner's env setting described above, with the exception
@@ -837,7 +775,7 @@ provisioner:
 ```
 
 Roles which require host/groups to have certain variables set. Molecule
-uses the same `variables defined in a playbook`_ syntax as `Ansible`_.
+uses the same `variables defined in a playbook`_syntax as `Ansible`_.
 
 ```yaml
 provisioner:
@@ -863,7 +801,6 @@ the inventory that are not managed by Molecule.
 
 A typical use case is if you want to access some variables from another
 host in the inventory (using hostvars) without creating it.
-
 !!! note
 
     The content of ``hosts`` should follow the YAML based inventory syntax:
@@ -881,7 +818,6 @@ provisioner:
 ```
 
 !!! note
-
     The extra hosts added to the inventory using this key won't be
     created/destroyed by Molecule. It is the developers responsibility
     to target the proper hosts in the playbook. Only the hosts defined
@@ -891,7 +827,6 @@ An alternative to the above is symlinking. Molecule creates symlinks to
 the specified directory in the inventory directory. This allows ansible to
 converge utilizing its built in host/group_vars resolution. These two
 forms of inventory management are mutually exclusive.
-
 Like above, it is possible to pass an additional inventory file
 (or even dynamic inventory script), using the `hosts` key. `Ansible`\_ will
 automatically merge this inventory with the one generated by molecule.
@@ -899,13 +834,11 @@ This can be useful if you want to define extra hosts that are not managed
 by Molecule.
 
 !!! note
-
     Again, it is the developers responsibility to target the proper hosts
     in the playbook. Only the hosts defined under
     `Platforms`_ should be targeted instead of ``all``.
 
 !!! note
-
     The source directory linking is relative to the scenario's
     directory.
 
@@ -923,7 +856,6 @@ provisioner:
 ```
 
 !!! note
-
     You can use either `hosts`/`group_vars`/`host_vars` sections of inventory OR `links`.
     If you use both, links will win.
 
@@ -975,7 +907,7 @@ Don't forget to add a tag `always` in `converge.yml` as below.
             - always
 ```
 
-.. \_`variables defined in a playbook`: https://docs.ansible.com/projects/ansible/latest/user_guide/playbooks_variables.html#defining-variables-in-a-playbook
+.. \_`variables defined in a playbook`: <https://docs.ansible.com/projects/ansible/latest/user_guide/playbooks_variables.html#defining-variables-in-a-playbook>
 
 Add arguments to ansible-playbook when running converge:
 
@@ -994,7 +926,6 @@ provisioner:
     **Verifier** is a pre ansible-native construct. It is not necessary
     when using an ansible-native configuration.
     For details see [ansible-native](ansible-native.md).
-
 Molecule handles role testing by invoking configurable verifiers.
 
 ### Ansible
@@ -1032,7 +963,6 @@ Testinfra`\_ is no longer the default test verifier since version 3.0.
 
 Additional options can be passed to `testinfra` through the options
 dict. Any option set in this section will override the defaults.
-
 !!! note
 
     Molecule will remove any options matching '^[v]+$', and pass ``-vvv``
@@ -1083,4 +1013,4 @@ verifier:
     - ../path/to/directory/*
 ```
 
-.. \_`Testinfra`: https://testinfra.readthedocs.io
+.. \_`Testinfra`: <https://testinfra.readthedocs.io>

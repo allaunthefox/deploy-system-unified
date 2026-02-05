@@ -1,0 +1,34 @@
+---
+# Port-specific access rules for networking/firewall role
+- name: Allow configured TCP ports (UFW)
+  community.general.ufw:
+    rule: allow
+    port: "{{ item | string }}"
+    proto: tcp
+  loop: "{{ firewall_allowed_tcp_ports }}"
+  when:
+    - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
+    # Prevent conflict: skip if a granular rule for this port already exists
+    - firewall_additional_rules | length == 0 or (item | string) not in (firewall_additional_rules | map(attribute='port') | map('string') | list)
+  become: true
+- name: Allow configured UDP ports (UFW)
+  community.general.ufw:
+    rule: allow
+    port: "{{ item | string }}"
+    proto: udp
+  loop: "{{ firewall_allowed_udp_ports | default([]) }}"
+  when:
+    - ansible_os_family == 'Debian'
+    # Prevent conflict: skip if a granular rule for this port already exists
+    - firewall_additional_rules | length == 0 or (item | string) not in (firewall_additional_rules | map(attribute='port') | map('string') | list)
+  become: true
+- name: Apply granular IP-restricted firewall rules (UFW)
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port | string }}"
+    proto: "{{ item.proto | default('tcp') }}"
+    from_ip: "{{ item.src | default('any') }}"
+    comment: "{{ item.comment | default('Managed by Deploy-System-Unified') }}"
+  loop: "{{ firewall_additional_rules }}"
+  when: ansible_os_family == 'Debian'
+  become: true

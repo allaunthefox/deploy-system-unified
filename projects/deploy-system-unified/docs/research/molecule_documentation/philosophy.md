@@ -13,7 +13,6 @@ Testing requires precise control over test environments, whether they're compute
 
 **Test isolation and reproducibility**
 Each test must run in a predictable, isolated environment that doesn't interfere with other tests or external systems. For infrastructure testing, this means isolated compute resources. For application testing, this requires consistent application states and configuration baselines. For integration testing, this involves controlled staging environments. For API testing, this includes isolated service endpoints or mocked external dependencies. Reproducibility ensures that test results remain consistent across different execution environments, team members, and CI/CD pipelines regardless of the testing domain.
-
 **Flexible execution strategies**
 Modern development workflows demand flexibility in how and when tests execute. This includes support for different test sequences (syntax validation, unit testing, integration testing, end-to-end scenarios), selective test execution for rapid development cycles, parallel processing capabilities for complex multi-component systems, and the ability to share state between related tests when appropriate. The framework must accommodate both developer workflows (quick iteration on code changes) and automated pipeline requirements (comprehensive validation before deployment).
 
@@ -24,7 +23,6 @@ Testing frameworks must support diverse patterns and use cases. This includes mu
 
 **Multi-platform support**
 Software systems span diverse platforms and domains: infrastructure (containers, VMs, cloud services, bare metal), applications (web servers, databases, microservices), network devices (routers, switches, firewalls), cloud services (AWS, Azure, GCP), and external systems (REST APIs, SaaS platforms, monitoring tools). Testing frameworks must abstract platform differences while allowing domain-specific optimizations. This includes unified interfaces for common operations, platform-specific configuration options, and consistent behavior across different testing domains.
-
 **Variable and secret management**
 Testing environments require careful handling of configuration data, secrets, and environment-specific variables across all testing domains. This includes database connection strings, API keys, service endpoints, infrastructure credentials, application configuration parameters, and environment-specific overrides. The framework must provide secure secret injection, hierarchical variable override systems, environment-specific configuration, and integration with external secret management systems while supporting the diverse credential types needed for comprehensive testing.
 
@@ -35,13 +33,11 @@ Testing frameworks serve as components in larger development ecosystems spanning
 
 **Environment provisioning**
 The framework must create test environments that accurately reflect production conditions while remaining cost-effective and fast to provision. For infrastructure testing, this includes compute resources, networking, and storage. For application testing, this involves application instances, databases, and service dependencies. For API integration testing, this requires mock services or sandboxed external systems. For system testing, this includes multi-tier environments with realistic data flows. The framework must support template-based provisioning, dependency management, network isolation, and resource quota management across all these domains.
-
 **State management**
 Complex testing scenarios require sophisticated state management across multiple domains. This includes checkpointing successful infrastructure states, preserving application configurations between test phases, maintaining database states for integration testing, managing external service interactions, and coordinating state across distributed systems. The framework must support sharing state between test phases, managing concurrent access to shared resources, and providing rollback capabilities when tests fail unexpectedly, regardless of whether the testing targets infrastructure, applications, or external services.
 
 **Cleanup and resource recovery**
 Reliable cleanup prevents resource leaks and ensures consistent test environments across all testing domains. The framework must track all created resources (infrastructure, application instances, database entries, external service configurations), handle cleanup in the presence of failures, provide manual cleanup tools for debugging, and integrate with monitoring systems to detect orphaned resources. This includes cleaning up cloud resources, stopping application services, resetting database states, and reverting external system configurations.
-
 **Observability and debugging**
 When tests fail, teams need comprehensive visibility into what happened across all system layers. This includes detailed logging from infrastructure provisioning, application deployment logs, API interaction traces, configuration change tracking, and performance metrics. The framework must support artifact collection (logs, configurations, state dumps), state snapshots at multiple levels, and integration with debugging tools. It should make it easy to reproduce failures locally and provide enough context to quickly identify root causes whether they stem from infrastructure issues, application configuration problems, external service failures, or system logic errors.
 
@@ -56,19 +52,16 @@ The testing process begins with creating clean, isolated environments that accur
 
 **Dependency resolution**
 Before executing the system under test, the testing framework must ensure all required dependencies are available. This includes software modules, external libraries, configuration files, secrets, and any prerequisite services. Dependency resolution must handle version constraints, conflict detection, and both public and private repositories while supporting offline development scenarios.
-
 **Change application and convergence**
 The core testing phase applies the system logic being tested. This involves executing scripts, configurations, or procedures against the test environment and ensuring they complete successfully. The framework must capture detailed execution logs, handle failures gracefully, and provide mechanisms for incremental development and debugging. This phase validates that the system logic works correctly in realistic conditions.
 
 **Idempotence verification**
 A critical aspect of system testing involves verifying that operations can be run multiple times without causing unintended changes. The framework must re-execute the same system logic and confirm that no changes occur on subsequent runs. This validates that the system properly detects existing states and only makes necessary modifications, preventing drift and ensuring predictable behavior.
-
 **Functional verification**
 After applying changes, the testing framework must validate that the desired outcomes were achieved. This includes verifying infrastructure states (resources created, configurations applied), application behavior (services running, endpoints responding), integration functionality (APIs accessible, data flowing correctly), and business process outcomes (workflows completing, notifications sent). Verification must be comprehensive enough to catch subtle issues while being fast enough for rapid iteration.
 
 **Side effect detection**
 System changes can have unintended consequences beyond their primary objectives. The testing framework must detect side effects such as unexpected resource modifications, service disruptions, security policy changes, performance impacts, or external system effects. This phase helps identify potential issues before they impact production environments.
-
 **Resource cleanup and destruction**
 The final phase involves cleaning up all resources created during testing. This includes infrastructure resources, application instances, database entries, temporary files, external service configurations, and any other artifacts created during the test process. Proper cleanup prevents resource leaks, controls costs, and ensures clean states for subsequent test runs.
 
@@ -79,7 +72,6 @@ Testing frameworks must balance complete isolation (which ensures clean tests bu
 
 **Incremental vs. comprehensive testing**
 During development, teams need fast feedback loops that validate changes quickly. In CI/CD pipelines, comprehensive testing ensures production readiness. The framework must support both incremental testing (validating specific changes) and comprehensive testing (full end-to-end validation) while allowing teams to choose appropriate strategies for different contexts.
-
 **State preservation vs. fresh environments**
 Some testing scenarios benefit from preserving state between test phases (performance testing, migration validation, integration testing), while others require completely fresh environments (unit testing, isolation verification). The framework must support both approaches and allow teams to choose based on their specific testing requirements.
 
@@ -136,7 +128,6 @@ scenario:
     - create
     - converge
     - destroy
-
 # Integration testing sequence (preserves state between phases)
 scenario:
   test_sequence:
@@ -178,7 +169,6 @@ molecule verify    # Check outcomes
 molecule create    # Set up environment
 molecule prepare   # Configure environment
 # Manually investigate environment state
-
 # Test idempotence specifically
 molecule converge  # Apply automation
 molecule idempotence  # Verify no changes on re-run
@@ -191,7 +181,6 @@ molecule test      # Run complete sequence
 
 **Direct integration with Ansible inventory systems**
 Molecule provides comprehensive support for native Ansible inventory integration, enabling teams to test automation against existing inventory sources rather than relying solely on Molecule-generated inventory from platform configurations. This native inventory capability allows testing automation against the same inventory systems and patterns used in production environments, ensuring true production parity while testing against appropriate lab, staging, or test systems.
-
 **External inventory sources**
 Molecule supports the full spectrum of Ansible inventory sources through direct integration with the `ansible-playbook` command:
 
@@ -202,7 +191,6 @@ Molecule supports the full spectrum of Ansible inventory sources through direct 
 - **Mixed inventory sources**: Combine multiple inventory types within the same testing scenario
 - **Multi-source patterns**: Separate infrastructure provider inventory from molecule-specific configuration inventory
 - **File-based data sharing**: Use temporary files to persist and share host-specific data between actions
-
 **Native inventory workflow patterns**
 Teams can configure Molecule to use external inventory sources by leveraging the `ansible.executor.args.ansible_playbook` configuration to pass inventory parameters directly to `ansible-playbook`. Targeting can be achieved either through `--limit` flags at the molecule level or through `hosts:` directives at the individual playbook level:
 
@@ -213,7 +201,6 @@ ansible:
     args:
       ansible_playbook:
         - --inventory=${% raw %}{MOLECULE_SCENARIO_DIRECTORY}{% endraw %}/inventory/
-
 # Using cloud inventory plugin
 ansible:
   executor:
@@ -228,7 +215,6 @@ ansible:
       ansible_playbook:
         - --inventory=/path/to/enterprise/inventory/
         - --limit=staging_environment
-
 # Using multiple inventory sources
 ansible:
   executor:
@@ -245,7 +231,6 @@ ansible:
       ansible_playbook:
         - --inventory=aws_ec2.yml              # Cloud provider dynamic inventory
         - --inventory=${% raw %}{MOLECULE_SCENARIO_DIRECTORY}{% endraw %}/molecule_config.yml  # Molecule-specific config
-
 # Using inventory from parent directory (shared across scenarios)
 ansible:
   executor:
@@ -277,7 +262,6 @@ ansible:
 - **Multi-action data sharing**: Use simple file-based patterns to share host-specific data between create, converge, verify, and destroy actions
 - **Multi-environment testing**: Test automation against development, lab, and staging systems from the same inventory source using different targeting strategies
 - **Reduced complexity**: Eliminate the need for complex inventory generation and focus on testing automation logic against realistic inventory structures
-
 **Single source of truth patterns**
 A key advantage of native inventory integration is the ability to reuse existing inventory definitions that already contain multiple environments, eliminating the need to duplicate or manage inventory within the testing suite:
 
@@ -300,7 +284,6 @@ all:
           hosts:
             web-lab-01: { environment: lab }
             web-lab-02: { environment: lab }
-
 # Molecule scenarios using the same inventory with selective targeting
 # scenario1/molecule.yml - Test against staging systems
 ansible:
@@ -317,7 +300,6 @@ ansible:
       ansible_playbook:
         - --inventory=/opt/ansible/inventory/
         - --limit=web_lab
-
 # scenario3/molecule.yml - Test against specific environment
 ansible:
   executor:
@@ -348,7 +330,6 @@ Beyond using `--limit` at the molecule level, teams can also target specific gro
   tasks:
     - name: Configure database settings
       # configuration tasks here
-
 # verify.yml - Target specific environment group
 ---
 - name: Verify test environment
@@ -385,7 +366,6 @@ ansible:
 all:
   vars:
     aws_secret: "{% raw %}{{ vault_aws_secret }}{% endraw %}"
-
 # molecule_config.yml (molecule-specific test instances and configuration)
 all:
   vars:
@@ -438,7 +418,6 @@ When using native inventory patterns, teams often need to share host-specific da
       ansible.builtin.command: echo "Initializing host {% raw %}{{ item }}{% endraw %} at {% raw %}{{ ansible_date_time.iso8601 }}{% endraw %}"
       loop: "{% raw %}{{ groups['molecule'] }}{% endraw %}"
       register: results
-
     - name: Write host-specific data files for each molecule host
       ansible.builtin.copy:
         dest: "{% raw %}{{ execution_vars }}{% endraw %}host_{% raw %}{{ item.item }}{% endraw %}.yml"
@@ -462,7 +441,6 @@ When using native inventory patterns, teams often need to share host-specific da
     - name: Display host-specific data unique to this host
       ansible.builtin.debug:
         msg: "Host-specific value: {% raw %}{{ host_specific_value }}{% endraw %}"
-
 # default/destroy.yml - Clean up temp files after instances are destroyed
 ---
 - name: Final cleanup of host-specific data
@@ -492,7 +470,6 @@ This multi-action data sharing approach provides:
 - **Per-host data isolation**: Each host gets its own data file while sharing the same capture mechanism
 - **Action independence**: Each action can independently access host-specific data from previous actions without complex delegation
 - **Simple cleanup**: Single directory removal cleans up all execution data files efficiently
-
 **Advanced inventory patterns**
 Native inventory support enables sophisticated testing patterns that mirror production deployment workflows:
 
@@ -504,7 +481,6 @@ all:
     web-01: { role: web, environment: lab }
     web-02: { role: web, environment: staging }
     db-01: { role: database, environment: lab }
-
 # inventory/02-constructed.yml
 plugin: ansible.builtin.constructed
 strict: false
@@ -544,7 +520,6 @@ This approach provides inventory coordination benefits while maintaining standar
 
 **Testing strategy considerations**
 Teams must balance isolation, resource efficiency, and test reliability when designing their testing approach. Native inventory support enables flexible strategies that can be tailored to specific requirements:
-
 **Complete isolation scenarios (recommended for):**
 
 - **Independent feature testing**: Each test scenario uses separate inventory and infrastructure to avoid interference
@@ -552,7 +527,6 @@ Teams must balance isolation, resource efficiency, and test reliability when des
 - **Regression testing**: Ensuring new changes don't break existing functionality in clean environments
 - **CI/CD pipelines**: Parallel test execution where isolation prevents race conditions and resource conflicts
 - **Development workflows**: Individual developers use isolated environments for experimentation and iteration
-
 **Resource sharing scenarios (recommended for):**
 
 - **Integration testing**: Multiple scenarios test against the same infrastructure using shared inventory sources
@@ -560,7 +534,6 @@ Teams must balance isolation, resource efficiency, and test reliability when des
 - **Cost-sensitive environments**: Cloud testing where infrastructure costs are significant and resource reuse is beneficial
 - **Long-running test suites**: Complex scenarios where infrastructure setup time exceeds test execution time
 - **Production parity testing**: Testing against existing lab or staging inventory sources that mirror production patterns
-
 **Implementation strategies**
 Native inventory support enables various approaches to resource management and test isolation:
 
@@ -568,7 +541,6 @@ Native inventory support enables various approaches to resource management and t
 # Complete isolation - each scenario manages its own resources
 molecule test --scenario-name feature-test --report --command-borders
 # Uses scenario-specific inventory and infrastructure
-
 # Shared inventory coordination - multiple scenarios use common inventory
 molecule test --scenario-name infrastructure-test --report --command-borders  # Uses ../shared_inventory/
 molecule test --scenario-name application-test --report --command-borders     # Uses ../shared_inventory/
@@ -577,7 +549,6 @@ molecule test --scenario-name integration-test --report --command-borders     # 
 # External inventory testing - test against existing systems
 molecule test --scenario-name staging-validation --report --command-borders   # Uses --inventory=staging_hosts.yml
 molecule test --scenario-name lab-verification --report --command-borders     # Uses --inventory=lab_inventory.py
-
 # Single source of truth with selective targeting
 molecule test --scenario-name web-staging --report --command-borders          # Uses enterprise inventory --limit=web_staging
 molecule test --scenario-name db-lab --report --command-borders               # Uses enterprise inventory --limit=database_lab
@@ -587,7 +558,6 @@ molecule test --scenario-name app-test --report --command-borders             # 
 molecule test --scenario-name staging-deployment --report --command-borders   # Playbooks use hosts: web_staging, hosts: db_staging
 molecule test --scenario-name lab-testing --report --command-borders          # Playbooks use hosts: lab_environment
 molecule test --scenario-name multi-tier --report --command-borders           # Different actions target different groups
-
 # Multi-source inventory patterns
 molecule test --scenario-name cloud-discovery --report --command-borders      # Uses cloud inventory + molecule config
 molecule test --scenario-name hybrid-infrastructure --report --command-borders # Uses multiple provider inventories + test config
@@ -597,7 +567,6 @@ molecule test --scenario-name dynamic-targeting --report --command-borders    # 
 molecule test --scenario-name host-specific-data --report --command-borders   # Uses file-based vars sharing between actions
 molecule test --scenario-name secret-propagation --report --command-borders   # Shares secrets from create to converge/verify
 molecule test --scenario-name dynamic-configuration --report --command-borders # Generates host configs in create, uses in other actions
-
 # Shared-state with data propagation
 molecule test --all --shared-state --report --command-borders                 # Default creates infrastructure, other scenarios use shared data
 molecule test --scenario-name app-deploy --shared-state --report --command-borders    # Uses infrastructure data from default scenario
@@ -618,7 +587,6 @@ Molecule leverages Ansible as its default driver, providing significant benefits
 
 **Dependency management integration**
 Molecule integrates with Ansible Galaxy for dependency resolution, ensuring that test environments include all required roles and collections regardless of their domain focus. Whether testing infrastructure automation, application deployment, network configuration, or external service integration, this integration supports both public and private repositories while handling version constraints and conflict resolution across all types of Ansible content.
-
 **Using Ansible as provisioner and verifier**
 Molecule uses Ansible as both the provisioner and verifier, providing unified automation execution and validation logic across all testing scenarios. This approach ensures that teams use the same Ansible skills, modules, and patterns for both test execution and validation that they use in production automation. Whether provisioning infrastructure, deploying applications, configuring services, or validating outcomes, Ansible's extensive module ecosystem provides consistent interfaces for all automation domains. This unified approach reduces complexity, leverages existing team expertise, and ensures that test validation logic can be easily understood and maintained by any team member familiar with Ansible.
 
@@ -629,7 +597,6 @@ Molecule optimizes test environment creation through template reuse, incremental
 
 **Intelligent cleanup strategies**
 The framework provides multiple cleanup strategies, from complete teardown to selective resource removal across all automation domains. This flexibility supports both cost optimization (cleaning up expensive cloud resources) and debugging workflows where preserving failed environments aids troubleshooting (maintaining application logs, database states, or external service configurations for post-test analysis).
-
 **Integration with automation as code**
 Molecule's approach aligns naturally with automation as code principles, treating test environments as versioned, repeatable, and auditable across all domains. Whether managing infrastructure, applications, integrations, or business processes, this alignment ensures that testing practices support broader automation maturity goals and DevOps transformation initiatives.
 
@@ -643,13 +610,11 @@ As Ansible has emerged as the de facto DSL for automation, Molecule's developmen
 
 **Enhanced collection testing support**
 Molecule's native inventory integration capabilities provide comprehensive support for Ansible collection testing scenarios. This includes automatic collection detection to streamline testing workflows, improved collection dependency resolution, and optimized testing patterns that reflect how collections are developed and deployed in enterprise environments using existing inventory systems.
-
 **Unified user experience**
 Visual and functional alignment with Ansible's output patterns ensures that teams experience consistent interfaces across their automation toolkit. This includes UI changes that better integrate Molecule's test output with standard Ansible playbook output, making the transition between development, testing, and deployment workflows more natural and reducing cognitive overhead for automation practitioners.
 
 **Deeper inventory integration**
 More obvious and tighter integration with Ansible's inventory systems eliminates friction between test and production inventory patterns. This includes comprehensive native support for external inventory sources (static files, dynamic scripts, and inventory plugins), improved inventory validation during testing, and clearer mapping between test inventory structures and production deployment patterns. Teams can seamlessly test automation using production inventory patterns against appropriate lab and staging systems while maintaining flexibility for cross-scenario coordination through standard Ansible inventory patterns.
-
 **Extended executor support**
 Support for modern Ansible execution environments through tools like ansible-navigator enables testing within the same containerized environments used for production automation. This ensures test environments more accurately reflect production execution contexts while supporting the shift toward standardized, reproducible automation execution environments.
 
@@ -659,5 +624,4 @@ Automatic detection and configuration of Ansible collections, roles, and depende
 ### Strategic direction
 
 Molecule's roadmap focuses on becoming the definitive testing solution for Ansible automation rather than a generic testing framework. This specialization enables deeper integration, more intuitive workflows, and better alignment with Ansible ecosystem patterns while ensuring that teams can leverage their existing Ansible expertise throughout their entire testing lifecycle.
-
 The framework's evolution maintains backward compatibility with existing workflows while progressively enhancing the Ansible-native experience, ensuring that teams can adopt new capabilities at their own pace without disrupting established testing practices.

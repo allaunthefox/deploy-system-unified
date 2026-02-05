@@ -6,7 +6,6 @@ It is important to understand that Molecule does not do anything further
 than the default functionality of Ansible when determining if your tasks
 are idempotent or not. Molecule will simply run the converge action
 twice and check against Ansible's standard output.
-
 Therefore, if you are seeing idempotence failures, it is typically
 related to the underlying Ansible report and not Molecule.
 
@@ -20,7 +19,6 @@ Ansible provides a Python API. However, it is not intended for [direct
 consumption](https://docs.ansible.com/projects/ansible/latest/dev_guide/developing_api.html).
 We wanted to focus on making Molecule useful, so our efforts were spent
 consuming Ansible's CLI.
-
 Since we already consume Ansible's CLI, we decided to call additional
 binaries through their respective CLI.
 
@@ -79,7 +77,6 @@ variables:
 ```
 
 Where `CI_JOB_ID` is the random variable that Gitlab provides.
-
 Molecule will resolve the `INSTANCE_UUID` environment variable when
 creating and looking up the instance name. You can confirm all is in
 working order by running `molecule list`.

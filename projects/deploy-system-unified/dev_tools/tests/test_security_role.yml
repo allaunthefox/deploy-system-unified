@@ -1,0 +1,37 @@
+---
+- name: Test security hardening role
+  hosts: localhost
+  become: true
+  gather_facts: true
+  vars:
+    kernel_profile: "generic"
+    sshd_allow_x11_forwarding: false
+    sshd_allow_agent_forwarding: false
+    sshd_allow_tcp_forwarding: false
+    sshd_use_strong_ciphers: true
+    sshd_disable_weak_keys: false
+    sshd_backup_config: true
+  roles:
+    - role: security
+  tasks:
+    - name: Verify kernel hardening parameters
+      ansible.builtin.command:
+        cmd: sysctl -n {{ item }}
+      register: sysctl_result
+      loop:
+        - net.ipv4.tcp_syncookies
+        - net.ipv4.conf.all.rp_filter
+        - kernel.randomize_va_space
+        - net.ipv4.icmp_echo_ignore_all
+        - kernel.yama.ptrace_scope
+      changed_when: false
+    - name: Verify fail2ban is running
+      ansible.builtin.systemd:
+        name: fail2ban
+        state: started
+
+    - name: Verify sshd configuration
+      ansible.builtin.command:
+        cmd: sshd -t
+      register: sshd_test
+      changed_when: false
