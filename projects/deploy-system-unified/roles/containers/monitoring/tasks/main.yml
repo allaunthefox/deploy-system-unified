@@ -12,6 +12,15 @@
     fail_msg: "Grafana admin password is not set. Define 'monitoring_grafana_admin_password' in encrypted inventory."
   when: monitoring_enable | bool
 
+- name: Enforce CHANGE_ME policy for monitoring stack
+  ansible.builtin.include_tasks: "{{ role_path }}/../tasks/policy_change_me.yml"
+  vars:
+    change_me_policy_items:
+      - name: "monitoring_grafana_admin_password"
+        value: "{{ monitoring_grafana_admin_password | default('CHANGE_ME_IN_VAULT') }}"
+        bad_values: ["CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
+  when: monitoring_enable | bool
+
 - name: Create Monitoring Network Quadlet
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ monitoring_network }}.network"
