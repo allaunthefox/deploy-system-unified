@@ -32,8 +32,18 @@ containers_default_password_checks:
   - name: "transmission_user"
     value: "{{ transmission_user | default('') }}"
     bad_values: ["admin", "password", "admin123", "root", "changeme"]
+    enabled: "{{ transmission_enable | default(false) }}"
   - name: "transmission_pass"
     value: "{{ transmission_pass | default('') }}"
     bad_values: ["admin", "password", "admin123", "root", "changeme"]
+    enabled: "{{ transmission_enable | default(false) }}"
+  - name: "monitoring_grafana_admin_password"
+    value: "{{ monitoring_grafana_admin_password | default('') }}"
+    bad_values: ["admin", "password", "admin123", "root", "changeme"]
+    enabled: "{{ monitoring_enable | default(false) }}"
+  - name: "authentik_email_password"
+    value: "{{ authentik_email_password | default('') }}"
+    bad_values: ["admin", "password", "admin123", "root", "changeme"]
+    enabled: "{{ authentik_enable | default(false) }}"
 
 container_linger_users: "{{ podman_rootless_enabled | bool | ternary([podman_rootless_user], []) }}"
