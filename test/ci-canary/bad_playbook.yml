@@ -1,0 +1,45 @@
+---
+# CI Canary Ansible Playbook - Intentionally Bad
+# This file contains ansible-lint violations
+
+- name: Bad Playbook Example
+  hosts: all
+  become: yes  # Instead of true
+
+  tasks:
+    # Using command instead of appropriate module
+    - name: Install package wrong way
+      command: apt-get install -y nginx
+
+    # Using shell with inline password
+    - name: Bad shell usage
+      shell: echo "password123" | sudo -S some_command
+      
+    # Deprecated syntax
+    - name: Using with_items instead of loop
+      debug:
+        msg: "{{ item }}"
+      with_items:
+        - one
+        - two
+        - three
+    
+    # Missing name
+    - debug:
+        msg: "This task has no name"
+    
+    # Hardcoded password
+    - name: Task with hardcoded secret
+      mysql_user:
+        name: admin
+        password: SuperSecretDBPassword123!
+        priv: '*.*:ALL'
+    
+    # Using command for file operations
+    - name: Should use file module instead
+      command: chmod 755 /tmp/myfile
+      
+    # Very long line that definitely exceeds 80 characters and yamllint should catch this as a violation of the line-length rule
+    - name: Long line example
+      debug:
+        msg: "This is an extremely long message that goes on and on and definitely exceeds the maximum line length that is typically enforced by linting tools"
