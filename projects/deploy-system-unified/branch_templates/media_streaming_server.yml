@@ -23,7 +23,7 @@
     # VPS Provider Identification
     vps_provider: "contabo"
     sshd_allow_tcp_forwarding: true
-    access_sshd_port: 2222
+    system_ssh_port: 2222
 
     # Rootless Podman (Bridge Networking Model)
     podman_rootless_enabled: true
@@ -57,7 +57,7 @@
     firewall_enabled: true
     firewall_forward_policy: "ACCEPT" # Required for Podman CNI/Bridge functionality
     firewall_allowed_tcp_ports:
-      - 2222
+      - "{{ ssh_effective_port | default(system_ssh_port) | default(2222) }}"
       - 80
       - 443
       - 51413 # Transmission Peer

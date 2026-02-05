@@ -32,7 +32,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  when: 
+  when:
     - monitoring_enable | bool
     - monitoring_network != "host"
   notify: Reload systemd

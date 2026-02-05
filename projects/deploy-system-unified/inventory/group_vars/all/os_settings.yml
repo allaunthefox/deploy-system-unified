@@ -22,6 +22,10 @@ system_admin_shell: "/bin/bash"
 # Otherwise, SSHD runs on port 22 (or whatever is defined).
 system_enable_endlessh: false
 system_ssh_port: "{{ 2222 if system_enable_endlessh | default(false) else 22 }}"
+# Effective SSH port (single source of truth for roles). If randomization is
+# enabled, the randomized port takes precedence at runtime.
+ssh_effective_port: "{{ advanced_security_hardening_random_ssh_port | default(system_ssh_port) | default(22) }}"
+ssh_service_name: "{{ 'ssh' if ((ansible_facts | default({})).get('os_family', '') == 'Debian') else 'sshd' }}"
 
 system_ssh_permit_root_login: false   # Global override for security
 

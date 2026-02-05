@@ -2,6 +2,8 @@
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
 
+- ansible.builtin.import_playbook: playbooks/bootstrap_ssh.yml
+
 - name: Apply Secure Infrastructure Base
   hosts: all
   become: true
@@ -26,6 +28,7 @@
       - security/hardware_isolation
       - security/hardening
       - security/access
+      - security/sshd
       - security/file_integrity
       # Advanced Security & Isolation Measures
       - security/sandboxing

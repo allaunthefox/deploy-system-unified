@@ -21,7 +21,7 @@
     permanent: true
     state: enabled
     immediate: true
-  loop: "{{ firewall_allowed_tcp_ports }}"
+  loop: "{{ firewall_allowed_tcp_ports_effective | default(firewall_allowed_tcp_ports) }}"
   become: true
 
 - name: Allow Configured UDP Ports (Firewalld)

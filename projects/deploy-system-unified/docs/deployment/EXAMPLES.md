@@ -9,7 +9,7 @@ Best for stable, long-running servers where security and log integrity are param
 ### Configuration (`host_vars/prod-server.yml`)
 
 ```yaml
-access_sshd_port: 2222
+system_ssh_port: 2222
 ssh_key_rotation_enabled: true
 
 # Granular Firewall Rules

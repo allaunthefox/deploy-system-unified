@@ -16,6 +16,14 @@
   when: ansible_os_family == 'RedHat'
   become: true
 
+- name: Build effective firewall TCP port list
+  ansible.builtin.set_fact:
+    firewall_allowed_tcp_ports_effective: >-
+      {{ (firewall_allowed_tcp_ports
+          + ([firewall_endlessh_port] if firewall_allow_endlessh | bool else []))
+          | map('string') | unique | list }}
+  changed_when: false
+
 - name: Set UFW Default Forward Policy
   ansible.builtin.lineinfile:
     path: /etc/default/ufw

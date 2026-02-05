@@ -22,7 +22,19 @@ Defines the "Break-Glass" and standard entry mechanisms.
 * **Admin User**: The standard username created on all nodes.
 * **Endlessh Integration**: If `system_enable_endlessh` is true, port 22 is trapped, and real SSH moves to 2222.
 * **SSH Port**: The listening port for SSHD. (Dynamic based on Endlessh status).
+* **Effective SSH Port**: `ssh_effective_port` is the single source of truth used by roles. When port randomization is enabled, the randomized port takes precedence.
 * **Root Login**: Global security toggle to allow/deny direct root access.
+
+## SSH Idempotence Guardrails
+
+This project enforces a single effective SSH port and a single owner of `sshd_config` to prevent drift and duplicate directives.
+
+- `ssh_effective_port` is the only port used by SSHD, firewall rules, Fail2Ban, and connection info. This removes conflicting settings between roles.
+- If `ssh_randomize_port` is enabled, the randomized port **always** overrides `system_ssh_port`. This prevents toggling between ports across runs.
+- Port 22 is only opened automatically when Endlessh is enabled, so the honeytrap cannot accidentally stay exposed.
+- `roles/security/sshd` validates that `sshd_config` contains exactly one global `Port` directive and no duplicate global SSH directives, so misconfigurations fail fast.
+
+See `docs/deployment/SSH_IDEMPOTENCE_GUARDRAILS.md` for the full rationale and operational guidance.
 
 ### 3. Base Software (Bootstrap)
 
@@ -56,7 +68,8 @@ system_base_packages:
 ## How Roles Use These Variables
 
 * **`roles/core/bootstrap`**: Consumes `system_base_packages` to install software.
-* **`roles/security/sshd`**: Consumes `system_ssh_port` (via variable inheritance).
+* **`roles/security/sshd`**: Consumes `ssh_effective_port` (via `system_ssh_port` and runtime overrides).
+* **`roles/networking/firewall` / `roles/security/ips` / `roles/ops/connection_info`**: Use `ssh_effective_port` for consistency.
 
 ## Transfer Defaults (Least Privilege)
 

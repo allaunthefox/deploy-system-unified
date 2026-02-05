@@ -20,10 +20,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare Pages staging area
+        run: |
+          mkdir -p _site
+          # Copy only documentation and README
+          cp README.md _site/
+          if [ -d "docs" ]; then cp -r docs _site/; fi
+          # Optionally copy other relevant dirs if small, but exclude Offline_Research
+          # cp -r LLM_RESEARCH _site/ # Only if needed
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
+          # Root upload but we will use .eleventyignore or similar if eleventy is used.
+          # Since it's a simple upload, we'll just exclude the heavy stuff manually
+          # if the action supported it. It doesn't natively, so we'll move things to a staging area.
+          # We'll use a trick: move heavy stuff out before upload, or just upload a specific folder.
+          # Let's try to just exclude Offline_Research by moving it temporarily or using a proper 'docs' path.
+          # Given I see 'docs' folder in the file list earlier:
+          # path: docs
+
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4

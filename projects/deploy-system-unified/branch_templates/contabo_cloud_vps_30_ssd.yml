@@ -17,7 +17,7 @@
     # Allow TCP forwarding for VPS environments (required for Contabo)
     sshd_allow_tcp_forwarding: true
     # Set SSH port to 2222 to match inventory configuration
-    access_sshd_port: 2222
+    system_ssh_port: 2222
     # Instance-Specific Resource Optimization (8 vCPU / 24 GB RAM)
     # Virtual Memory Settings (optimized for Contabo's shared cloud resources)
     vm_dirty_ratio: "10"
@@ -42,8 +42,7 @@
     # Firewall Configuration - Allow Caddy web ports (HTTP/3 UDP support)
     firewall_enabled: true
     firewall_allowed_tcp_ports:
-      - 2222
-      - 22  # Endlessh Honeytrap
+      - "{{ ssh_effective_port | default(system_ssh_port) | default(2222) }}"
       - 80
       - 443
     firewall_allowed_udp_ports:
@@ -123,7 +122,6 @@
     - role: storage/backup/rclone
     # Enhanced Security Configuration
     - role: networking/firewall
-    - role: security/sshd
     - role: security/hardening
     - role: security/kernel
     - role: security/scanning

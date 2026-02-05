@@ -6,7 +6,7 @@
     # Find the configured port and ensure it is not the default 22
     # Use sshd -T to respect included configs and overrides
     CURRENT_PORT=$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')
-    if [ "$CURRENT_PORT" != "22" ] && [ -n "$CURRENT_PORT" ]; then
+    if ["$CURRENT_PORT" != "22"] && [-n "$CURRENT_PORT"]; then
       echo "$CURRENT_PORT"
     else
       echo ""
@@ -42,10 +42,26 @@
     - ssh_randomize_port | default(false) | bool
     - existing_ssh_port.stdout | default('') != ""
     - existing_ssh_port.stdout | default('') != "22"
+- name: Set effective SSH port fact (idempotent)
+  ansible.builtin.set_fact:
+    ssh_effective_port: >-
+      {{ advanced_security_hardening_random_ssh_port
+         | default(system_ssh_port)
+         | default(22) }}
+- name: Warn when randomization overrides Endlessh port conventions
+  ansible.builtin.debug:
+    msg: >-
+      SSH port randomization is enabled; ssh_effective_port={{ ssh_effective_port }} takes
+      precedence over system_ssh_port={{ system_ssh_port | default(22) }} even if Endlessh
+      is enabled. Ensure firewall access is aligned with the randomized port.
+  when:
+    - ssh_randomize_port | default(false) | bool
+    - system_enable_endlessh | default(false) | bool
+  changed_when: false
 - name: Check connectivity to target SSH port
   ansible.builtin.wait_for:
     host: "{{ inventory_hostname }}"
-    port: "{{ advanced_security_hardening_random_ssh_port | default(access_sshd_port) | default(22) }}"
+    port: "{{ ssh_effective_port | default(22) }}"
     timeout: 5
     state: started
   delegate_to: localhost

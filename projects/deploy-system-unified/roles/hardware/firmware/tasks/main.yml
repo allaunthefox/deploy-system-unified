@@ -83,7 +83,7 @@
     line: "watchdog-device = /dev/watchdog"
   become: true
   notify: restart watchdog
-  when: 
+  when:
     - not _hw_is_container
     - ansible_os_family != 'Archlinux'
 

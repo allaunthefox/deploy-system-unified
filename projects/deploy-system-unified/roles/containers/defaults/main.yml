@@ -29,6 +29,7 @@ containers_systemd_env: {}
 
 # Policy: warn on weak/default credentials (non-CHANGE_ME) during container deploys
 containers_default_password_checks:
+  # External-facing stack warnings (weak/default creds that are not placeholders)
   - name: "transmission_user"
     value: "{{ transmission_user | default('') }}"
     bad_values: ["admin", "password", "admin123", "root", "changeme"]
@@ -41,6 +42,14 @@ containers_default_password_checks:
     value: "{{ monitoring_grafana_admin_password | default('') }}"
     bad_values: ["admin", "password", "admin123", "root", "changeme"]
     enabled: "{{ monitoring_enable | default(false) }}"
+  - name: "authentik_email_password"
+    value: "{{ authentik_email_password | default('') }}"
+    bad_values: ["admin", "password", "admin123", "root", "changeme"]
+    enabled: "{{ authentik_enable | default(false) }}"
+  - name: "vaultwarden_admin_token"
+    value: "{{ vaultwarden_admin_token | default('') }}"
+    bad_values: ["admin", "password", "admin123", "root", "changeme"]
+    enabled: "{{ vaultwarden_enable | default(false) }}"
   - name: "authentik_email_password"
     value: "{{ authentik_email_password | default('') }}"
     bad_values: ["admin", "password", "admin123", "root", "changeme"]

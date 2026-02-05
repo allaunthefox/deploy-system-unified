@@ -5,7 +5,7 @@
     rule: allow
     port: "{{ item | string }}"
     proto: tcp
-  loop: "{{ firewall_allowed_tcp_ports }}"
+  loop: "{{ firewall_allowed_tcp_ports_effective | default(firewall_allowed_tcp_ports) }}"
   when:
     - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
     # Prevent conflict: skip if a granular rule for this port already exists

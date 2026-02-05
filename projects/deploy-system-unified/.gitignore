@@ -106,3 +106,6 @@ migration_assets/
 inventory/group_vars/all/secrets.generated.yml
 inventory/group_vars/*/secrets.generated.yml
 secrets.generated.yml
+
+# SSH port discovery cache (controller-side)
+inventory/.ssh_port_cache/

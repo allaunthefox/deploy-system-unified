@@ -72,7 +72,7 @@
   ansible.builtin.shell: |
     # Find all SD devices that are actual disks (not enclosures/cdroms)
     for dev in /sys/block/sd*; do
-      if [ -e "$dev/device/queue_depth" ]; then
+      if [-e "$dev/device/queue_depth"]; then
         # Check current vs target to avoid unnecessary writes
         current=$(cat "$dev/device/queue_depth")
         # Only tune if device allows deeper queues (hardware limit check)
@@ -81,11 +81,11 @@
         target={{ hardware_sas_queue_depth }}
 
         # Clamp target to hardware max
-        if [ "$target" -gt "$max" ]; then
+        if ["$target" -gt "$max"]; then
           target=$max
         fi
 
-        if [ "$current" -lt "$target" ]; then
+        if ["$current" -lt "$target"]; then
           echo "$target" > "$dev/device/queue_depth"
           echo "tuned $dev"
         fi

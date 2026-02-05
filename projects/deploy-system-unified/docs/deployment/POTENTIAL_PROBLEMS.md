@@ -116,7 +116,7 @@ This document identifies potential issues that may arise when deploying combinat
 **Example**:
 
 - `networking/virtual` and `networking/container_networks` both configure network interfaces
-- `access_sshd_port` variable may be set differently in multiple profiles
+- `system_ssh_port` variable may be set differently in multiple profiles
 
 **Solution**:
 

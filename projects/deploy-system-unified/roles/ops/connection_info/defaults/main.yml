@@ -6,4 +6,4 @@ ops_rsync_enable: false
 ops_rsync_allowlist: []
 ops_rsync_ephemeral_allow: false
 ssh_randomize_port: false
-access_sshd_port: 22
+ssh_port_cache_dir: ""

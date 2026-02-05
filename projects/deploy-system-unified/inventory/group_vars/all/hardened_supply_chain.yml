@@ -14,7 +14,7 @@
 # Toggle strict GPG key and fingerprint verification
 nvidia_gpg_key_verify: true
 # Get these values from: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/
-nvidia_gpg_key_sha256: "" 
+nvidia_gpg_key_sha256: ""
 nvidia_gpg_fingerprint: ""
 
 # AMD ROCm (Debian/Ubuntu/RHEL)

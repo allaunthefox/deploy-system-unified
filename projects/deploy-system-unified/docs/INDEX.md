@@ -46,6 +46,8 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Universal Deployment Guide](./deployment/UNIVERSAL_DEPLOYMENT_GUIDE.md)**: Master SOP for replicable system deployment.
 * **[Contabo Media Profile](./deployment/CONTABO_MEDIA_PROFILE.md)**: Specifications for the VPS 30 SSD Media Stack.
 * **[SSH Transfer Profile](./deployment/SSH_TRANSFER_PROFILE.md)**: Standard SSH transfer method and fallbacks.
+* **[SSH Incident Postmortem](./deployment/SSH_INCIDENT_POSTMORTEM.md)**: Root cause analysis and resolution timeline.
+* **[SSH Idempotence Guardrails](./deployment/SSH_IDEMPOTENCE_GUARDRAILS.md)**: Deterministic SSH configuration and anti-drift rules.
 * **[Hybrid Security Setup](./deployment/SECURITY_CROWDSEC_HYBRID.md)**: Implementation details for the Container+Host CrowdSec architecture.
 * **[Supply-Chain Hardening](./deployment/SUPPLY_CHAIN_HARDENING.md)**: Configuration guide for strict GPG/Checksum verification of third-party repositories.
 * **[Deployment Status](./deployment/DEPLOYMENT_STATUS.md)**: Current system readiness and implementation status.

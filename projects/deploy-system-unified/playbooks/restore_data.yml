@@ -1,4 +1,6 @@
 ---
+- ansible.builtin.import_playbook: bootstrap_ssh.yml
+
 - name: Restore Migration Data
   hosts: all
   become: true

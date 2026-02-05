@@ -30,6 +30,9 @@
       loop: "{{ production_roles }}"
       loop_control:
         loop_var: role_item
+      tags:
+        - containers
+        - monitoring
 
   post_tasks:
     - name: Create production container directories
