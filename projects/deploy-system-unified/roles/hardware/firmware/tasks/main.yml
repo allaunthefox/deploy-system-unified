@@ -49,26 +49,32 @@
   ignore_errors: true
   when: not _hw_is_container
 
+- name: Set distribution-specific hardware package names
+  ansible.builtin.set_fact:
+    microcode_packages: >-
+      {{ ['intel-ucode', 'amd-ucode'] if ansible_os_family == 'Archlinux' else ['intel-microcode', 'amd64-microcode'] }}
+    monitoring_packages: >-
+      {{ ['lm_sensors', 'smartmontools'] if ansible_os_family == 'Archlinux' else ['lm-sensors', 'smartmontools', 'watchdog'] }}
+    watchdog_service: "{{ [] if ansible_os_family == 'Archlinux' else ['watchdog'] }}"
+
 - name: Install CPU microcode updates (Intel/AMD)
   ansible.builtin.package:
-    name:
-      - intel-microcode
-      - amd64-microcode
+    name: "{{ item }}"
     state: present
+  loop: "{{ microcode_packages }}"
   become: true
-  ignore_errors: true # Some distros bundle microcode differently
+  ignore_errors: true
   when:
     - ansible_architecture == 'x86_64'
     - not _hw_is_container
 
 - name: Install hardware monitoring and watchdog tools
   ansible.builtin.package:
-    name:
-      - lm-sensors
-      - smartmontools
-      - watchdog
+    name: "{{ item }}"
     state: present
+  loop: "{{ monitoring_packages }}"
   become: true
+  when: not _hw_is_container
 
 - name: Configure hardware watchdog
   ansible.builtin.lineinfile:
@@ -77,15 +83,16 @@
     line: "watchdog-device = /dev/watchdog"
   become: true
   notify: restart watchdog
-  when: not _hw_is_container
+  when: 
+    - not _hw_is_container
+    - ansible_os_family != 'Archlinux'
 
 - name: Enable and start hardware services
   ansible.builtin.systemd:
     name: "{{ item }}"
     enabled: true
     state: started
-  loop:
-    - smartmontools
-    - watchdog
+  loop: "{{ ['smartmontools'] + watchdog_service }}"
   become: true
   when: not _hw_is_container
+  ignore_errors: true
