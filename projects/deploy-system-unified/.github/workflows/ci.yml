@@ -76,12 +76,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install molecule docker molecule-docker ansible
 
-      - name: Run molecule tests (default, ephemeral, production)
+      - name: Run molecule tests (default, ephemeral, production, gpu_slicing, ephemeral_desktop)
         env:
           MOLECULE_DEBUG: 'true'
         run: |
           set -euo pipefail
-          for scenario in default ephemeral production; do
+          for scenario in default ephemeral production gpu_slicing ephemeral_desktop; do
             echo "=== Running molecule scenario: ${scenario} ==="
             molecule test -s "${scenario}"
           done
