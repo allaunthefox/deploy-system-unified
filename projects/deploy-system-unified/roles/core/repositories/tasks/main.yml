@@ -45,12 +45,35 @@
   changed_when: false
   when: ansible_os_family == 'RedHat'
 
-- name: Install RPMFusion Free/NonFree (Fedora)
+- name: Securely download RPMFusion Free Release (Fedora)
+  ansible.builtin.get_url:
+    url: "{{ rpmfusion_free_url }}"
+    dest: "/tmp/rpmfusion-free-release.rpm"
+    mode: '0644'
+    checksum: "{{ 'sha256:' + rpmfusion_free_sha256 if (rpmfusion_verify_checksum and rpmfusion_free_sha256 | length > 0) else omit }}"
+  become: true
+  when:
+    - ansible_distribution == 'Fedora'
+    - "'rpmfusion-free' not in dnf_repolist.stdout"
+
+- name: Securely download RPMFusion NonFree Release (Fedora)
+  ansible.builtin.get_url:
+    url: "{{ rpmfusion_nonfree_url }}"
+    dest: "/tmp/rpmfusion-nonfree-release.rpm"
+    mode: '0644'
+    checksum: "{{ 'sha256:' + rpmfusion_nonfree_sha256 if (rpmfusion_verify_checksum and rpmfusion_nonfree_sha256 | length > 0) else omit }}"
+  become: true
+  when:
+    - ansible_distribution == 'Fedora'
+    - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
+
+- name: Install RPMFusion Free/NonFree from verified local files (Fedora)
   ansible.builtin.dnf:
     name:
-      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm
-      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm
+      - "/tmp/rpmfusion-free-release.rpm"
+      - "/tmp/rpmfusion-nonfree-release.rpm"
     state: present
+    disable_gpg_check: true # Release packages are self-signed, we verified the file checksum
   become: true
   when:
     - ansible_distribution == 'Fedora'

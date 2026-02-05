@@ -14,7 +14,7 @@
   hosts: all
   gather_facts: false
   roles:
-    - role: core/hardware_support
+    - role: hardware/firmware
 
 - name: Deploy Media Streaming Workload
   hosts: all

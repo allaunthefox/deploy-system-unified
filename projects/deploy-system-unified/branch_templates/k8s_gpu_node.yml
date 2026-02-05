@@ -2,7 +2,7 @@
 # Kubernetes GPU Node Deployment Template
 # For Kubernetes nodes with GPU device plugin support (AI/ML, data processing)
 # Features: GPU driver installation, Kubernetes device plugin deployment, node labeling
-- ansible.builtin.import_playbook: ../main.yml
+- ansible.builtin.import_playbook: main.yml
 
 - name: Deploy Kubernetes GPU Node
   hosts: all
@@ -64,7 +64,7 @@
 
   tasks:
     - name: Execute Kubernetes GPU Roles with Granular Checkpoints
-      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      ansible.builtin.include_tasks: tasks/run_role.yml
       loop: "{{ k8s_gpu_roles }}"
       loop_control:
         loop_var: role_item

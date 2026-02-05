@@ -2,7 +2,7 @@
 # GPU Slicing Bare Metal Deployment Template
 # For physical servers with GPU hardware slicing capabilities (A100, A30, H100)
 # Features: NVIDIA MIG configuration, hardware isolation, high-performance GPU access
-- ansible.builtin.import_playbook: ../main.yml
+- ansible.builtin.import_playbook: main.yml
 
 - name: Deploy GPU Slicing (Bare Metal)
   hosts: all
@@ -73,7 +73,7 @@
 
   tasks:
     - name: Execute GPU Roles with Granular Checkpoints
-      ansible.builtin.include_tasks: ../tasks/run_role.yml
+      ansible.builtin.include_tasks: tasks/run_role.yml
       loop: "{{ gpu_roles }}"
       loop_control:
         loop_var: role_item

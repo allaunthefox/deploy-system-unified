@@ -1,1 +1,14 @@
 ---
+# Defaults for core/repositories role
+
+# RPMFusion configuration
+rpmfusion_free_url: "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+rpmfusion_nonfree_url: "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+
+# Checksum pinning (SHA256)
+# Provide these via host/group vars for strict supply-chain hardening
+rpmfusion_free_sha256: ""
+rpmfusion_nonfree_sha256: ""
+
+# Verification toggle
+rpmfusion_verify_checksum: false
