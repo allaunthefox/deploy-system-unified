@@ -35,12 +35,14 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### [3. Deployment](./deployment/EXAMPLES.md)
 
 * **Solution Stacks**: How to use the Production, Development, and Ephemeral templates.
+* **Production Deploy Template**: Use `branch_templates/production_servers.yml` as the canonical production deployment playbook.
 * **Variables**: Configuring randomized ports, IP restrictions, and secrets.
 * **[Architecture & Vendor Profiles](./deployment/ARCH_VENDOR_PROFILES.md)**: Explicit arch/vendor selection to avoid x86-only assumptions.
 * **[Hardware Compatibility Matrix](./deployment/HARDWARE_COMPATIBILITY_MATRIX.md)**: Supported CPU/GPU combinations and platform tiers.
 * **[GPU Interaction Matrix](./deployment/GPU_INTERACTION_MATRIX.md)**: Behavior in VM, Container, and Hybrid environments.
 * **[OS Configuration](./deployment/OS_CONFIGURATION.md)**: The "Single Source of Truth" for fleet-wide OS settings.
 * **[GPU Stack Setup](./deployment/GPU_STACK_SETUP.md)**: Detailed guide for installing unified GPU drivers and compute stacks.
+* **[Container Runtime Guide](./deployment/CONTAINER_RUNTIME.md)**: Default Podman capabilities and runtime security settings.
 * **[Universal Deployment Guide](./deployment/UNIVERSAL_DEPLOYMENT_GUIDE.md)**: Master SOP for replicable system deployment.
 * **[Contabo Media Profile](./deployment/CONTABO_MEDIA_PROFILE.md)**: Specifications for the VPS 30 SSD Media Stack.
 * **[SSH Transfer Profile](./deployment/SSH_TRANSFER_PROFILE.md)**: Standard SSH transfer method and fallbacks.

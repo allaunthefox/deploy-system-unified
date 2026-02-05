@@ -97,7 +97,7 @@ containers_gpu_profiles:
         config_path: "/usr/share/containers/containers.conf"
       runc:
         enabled: false
-    capabilities: ["gpu"]
+    capabilities: []
     device_cgroups: ["/dev/nvidia*"]
     mount_points: ["/usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro", "/usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro"]
   # AMD GPU profiles
@@ -112,7 +112,7 @@ containers_gpu_profiles:
         config_path: "/usr/share/containers/containers.conf"
       runc:
         enabled: false
-    capabilities: ["gpu"]
+    capabilities: []
     device_cgroups: ["/dev/dri"]
     mount_points: ["/dev/dri:/dev/dri:rw", "/dev/kfd:/dev/kfd:rw"]
   # Intel GPU profiles
@@ -127,7 +127,7 @@ containers_gpu_profiles:
         config_path: "/usr/share/containers/containers.conf"
       runc:
         enabled: false
-    capabilities: ["gpu"]
+    capabilities: []
     device_cgroups: ["/dev/dri"]
     mount_points: ["/dev/dri:/dev/dri:rw"]
 # Default GPU device selectors

@@ -70,8 +70,8 @@ transmission_enable: true
 transmission_image: docker.io/linuxserver/transmission:4.1.0
 transmission_port_web: 9091
 transmission_port_peer: 51413
-transmission_user: "admin"
-transmission_pass: "admin"
+transmission_user: "CHANGE_ME_IN_SOPS"
+transmission_pass: "CHANGE_ME_IN_SOPS"
 
 # Networking
 # If true, all containers share a pod (e.g., 'media-pod') for local communication

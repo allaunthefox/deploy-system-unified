@@ -9,4 +9,4 @@ anubis_container_name: "anubis-gatekeeper"
 
 # GPU Support (inherited from Quadlet standards)
 quadlet_enable_gpu_support: false
-quadlet_gpu_capabilities: ["gpu"]
+quadlet_gpu_capabilities: []  # Linux capabilities only (CAP_*). Leave empty unless required.

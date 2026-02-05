@@ -84,6 +84,14 @@
   become: true
   when: caddy_generate_config | default(true)
   notify: restart caddy
+
+- name: Validate Quadlet GPU capabilities (Linux CAP_* only)
+  ansible.builtin.assert:
+    that:
+      - quadlet_gpu_capabilities | default([]) | reject('match', '^CAP_') | list | length == 0
+    fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
+  when: quadlet_enable_gpu_support | default(false)
+
 - name: Create Caddy container quadlet
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/caddy.container"
@@ -130,7 +138,10 @@
       Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro
       {% if quadlet_enable_gpu_support %}
       # GPU support configuration
-      Capabilities={{ quadlet_gpu_capabilities | join(' ') }}
+      {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
+      {% if caps | length > 0 %}
+      Capabilities={{ caps | join(' ') }}
+      {% endif %}
       {% for device in quadlet_gpu_devices | default(quadlet_gpu_default_configs[quadlet_gpu_vendor]['devices']) %}
       Device={{ device }}
       {% endfor %}

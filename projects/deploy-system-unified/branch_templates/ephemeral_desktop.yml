@@ -3,6 +3,7 @@
 # Solution: Base Ephemeral Infrastructure + Desktop/GUI Stack
 # Use Case: Live ISOs, Kiosks, Secure Temporary Workstations
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - ansible.builtin.import_playbook: base_ephemeral.yml
 
 - name: Deploy Ephemeral Desktop Workload

@@ -51,7 +51,7 @@ Enables OpenCL and Level Zero support for compute workloads (AI/ML).
 Containers are configured to inherit the correct device nodes.
 
 - Podman/Docker will receive `--device /dev/dri/...` via the `video` and `render` groups.
-- `default_capabilities` updated to include `gpu` (generic hook) but device groups are the primary mechanism for Intel.
+- `default_capabilities` must contain only `CAP_*` entries; GPU access is provided by device nodes and group membership.
 
 ## Testing
 

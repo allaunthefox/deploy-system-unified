@@ -2,7 +2,6 @@
 # Base Ephemeral Infrastructure - The Volatile Foundation
 # This playbook handles zero-footprint infrastructure setup.
 
-- ansible.builtin.import_playbook: main.yml
 
 - name: Prepare Volatile Environment
   hosts: all

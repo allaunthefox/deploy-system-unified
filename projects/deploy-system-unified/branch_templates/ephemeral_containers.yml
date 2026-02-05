@@ -1,6 +1,7 @@
 ---
 # Ephemeral Secure Container - Volatile Solution Stack
 # Solution: Base Ephemeral Infrastructure + Volatile Container Workload
+- ansible.builtin.import_playbook: base_hardened.yml
 - ansible.builtin.import_playbook: base_ephemeral.yml
 - name: Deploy Ephemeral Container Workload
   hosts: all

@@ -1,0 +1,16 @@
+---
+# Enforce placeholder policy for container stacks
+# Expected vars:
+#   change_me_policy_items: list of dicts: { name: str, value: any, bad_values: list }
+
+- name: Enforce placeholder policy for container stack secrets
+  ansible.builtin.assert:
+    that:
+      - item.value is defined
+      - item.value not in item.bad_values
+    fail_msg: >-
+      {{ item.name }} is default/unsafe ({{ item.value }}). Set it via SOPS/Vault
+      before deploying this stack.
+  loop: "{{ change_me_policy_items | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"

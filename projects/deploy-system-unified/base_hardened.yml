@@ -8,6 +8,7 @@
   vars:
     base_hardened_roles:
       # Operations Pre-Flight (Controller-side)
+      - ops/preflight
       - ops/pre_connection
       # Core system setup (The Foundational Base)
       - core/repositories
@@ -41,7 +42,7 @@
 
   tasks:
     - name: Execute Base Hardened Roles with Granular Checkpoints
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      ansible.builtin.include_tasks: tasks/run_role.yml
       loop: "{{ base_hardened_roles }}"
       loop_control:
         loop_var: role_item

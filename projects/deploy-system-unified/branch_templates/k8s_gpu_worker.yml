@@ -3,6 +3,7 @@
 # For Kubernetes worker nodes with GPU slicing support (AI/ML, data processing)
 # Features: GPU slicing configuration, Kubernetes device plugin deployment, node labeling
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy Kubernetes GPU Worker
   hosts: all
   become: true

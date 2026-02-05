@@ -3,6 +3,7 @@
 # Optimized for Large Language Model and Machine Learning workloads
 # Features: GPU resource allocation, high-performance settings, AI/ML frameworks support
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy LLM/ML GPU Workload
   hosts: all
   become: true
@@ -118,12 +119,10 @@
       vars:
         quadlet_enable_gpu_support: true
         quadlet_gpu_vendor: "nvidia"
-        quadlet_gpu_capabilities: ["gpu", "compute"]
+        quadlet_gpu_capabilities: []
         quadlet_container_gpu_config:
           anubis:
-            capabilities: ["gpu", "compute"]
           caddy:
-            capabilities: ["gpu"]
 
     # Container deployment with GPU support for LLM/ML
     - role: containers/anubis  # AI/ML platform

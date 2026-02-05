@@ -369,6 +369,18 @@
   when: prowlarr_enable
   notify: reload systemd
 
+- name: Enforce CHANGE_ME policy for media stack
+  ansible.builtin.include_tasks: "{{ role_path }}/../tasks/policy_change_me.yml"
+  vars:
+    change_me_policy_items:
+      - name: "transmission_user"
+        value: "{{ transmission_user | default('admin') }}"
+        bad_values: ["admin", "CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
+      - name: "transmission_pass"
+        value: "{{ transmission_pass | default('admin') }}"
+        bad_values: ["admin", "CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
+  when: transmission_enable
+
 - name: Create Transmission Secrets File
   ansible.builtin.copy:
     dest: "{{ containers_secrets_dir }}/transmission-{{ media_instance_name }}.env"

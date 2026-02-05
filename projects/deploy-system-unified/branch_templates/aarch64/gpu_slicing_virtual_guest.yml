@@ -3,6 +3,7 @@
 # For ARM KVM Guests with GPU Passthrough
 # Use Case: Virtualized desktop/compute nodes on ARM servers
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy GPU Slicing (Virtual Guest - ARM64)
   hosts: all
   become: true
@@ -44,7 +45,7 @@
       vars:
         quadlet_enable_gpu_support: true
         quadlet_gpu_vendor: "nvidia"
-        quadlet_gpu_capabilities: ["gpu", "compute"]
+        quadlet_gpu_capabilities: []
 
   post_tasks:
     - name: Verify GPU Configuration

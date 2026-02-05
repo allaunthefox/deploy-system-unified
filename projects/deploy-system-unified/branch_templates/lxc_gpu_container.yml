@@ -3,6 +3,7 @@
 # For LXC containers with GPU passthrough or slicing support (AI/ML, data processing)
 # Features: GPU device passthrough, resource limits, container configuration
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy LXC GPU Container
   hosts: all
   become: true
@@ -81,10 +82,8 @@
           oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
         lxc_container_gpu_config:
           ai_workload:
-            capabilities: ["gpu", "compute"]
             devices: ["/dev/nvidia0"]
           visualization:
-            capabilities: ["gpu", "video"]
             devices: ["/dev/nvidia0"]
         lxc_gpu_resource_limits:
           memory: "8Gi"

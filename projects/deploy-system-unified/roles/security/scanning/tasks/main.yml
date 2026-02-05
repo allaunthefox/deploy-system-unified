@@ -1,15 +1,54 @@
 ---
 # Security/Scanning role - Focused on system validation and vulnerability scanning
 - name: Validate preflight requirements (idempotent)
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: ops/preflight
+  loop: [1]
+  loop_control:
+    loop_var: _preflight_include
+  register: preflight_result
+- name: Checkpoint preflight completion (only when no changes)
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  vars:
+    additional_phases:
+      - "security/scanning:preflight"
+  when:
+    - preflight_result.results is defined
+    - (preflight_result.results | map(attribute='results') | list | flatten
+       | selectattr('changed', 'equalto', true) | list | length == 0)
 - name: Verify directory structure (idempotent)
-  ansible.builtin.import_tasks: directory_verification.yml
+  ansible.builtin.include_tasks: directory_verification.yml
+  loop: [1]
+  loop_control:
+    loop_var: _directory_include
+  register: directory_verification_result
+- name: Checkpoint directory verification completion (only when no changes)
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  vars:
+    additional_phases:
+      - "security/scanning:directory_verification"
+  when:
+    - directory_verification_result.results is defined
+    - (directory_verification_result.results | map(attribute='results') | list | flatten
+       | selectattr('changed', 'equalto', true) | list | length == 0)
 - name: Configure security tools (idempotent)
-  ansible.builtin.import_tasks: enhanced_security_with_required_tools.yml
+  ansible.builtin.include_tasks: enhanced_security_with_required_tools.yml
+  loop: [1]
+  loop_control:
+    loop_var: _tools_include
+  register: security_tools_result
 - name: Mark security tools configured
   ansible.builtin.set_fact:
     enhanced_security_tools_configured: true
+- name: Checkpoint security tools configuration (only when no changes)
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  vars:
+    additional_phases:
+      - "security/scanning:tools_configured"
+  when:
+    - security_tools_result.results is defined
+    - (security_tools_result.results | map(attribute='results') | list | flatten
+       | selectattr('changed', 'equalto', true) | list | length == 0)
 - name: Verify Forensic Clock Synchronization (Chrony)
   ansible.builtin.shell: |
     set -o pipefail
@@ -25,14 +64,47 @@
     that:
       - chrony_sync_check.rc == 0
     fail_msg: "System clock is not synchronized. Forensic logs and certificate validation may fail."
+  register: chrony_validation_result
+- name: Checkpoint chrony validation (only when no changes)
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  vars:
+    additional_phases:
+      - "security/scanning:chrony_validated"
+  when: not (chrony_validation_result.changed | default(false))
 - name: Run enhanced security scanning (idempotent)
-  ansible.builtin.import_tasks: enhanced_scanning.yml
+  ansible.builtin.include_tasks: enhanced_scanning.yml
+  loop: [1]
+  loop_control:
+    loop_var: _scanning_include
+  register: enhanced_scanning_result
 - name: Mark security scanning configured
   ansible.builtin.set_fact:
     security_scanning_configured: true
     enhanced_security_scanning_complete: true
+- name: Checkpoint enhanced scanning completion (only when no changes)
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  vars:
+    additional_phases:
+      - "security/scanning:enhanced_scanning"
+  when:
+    - enhanced_scanning_result.results is defined
+    - (enhanced_scanning_result.results | map(attribute='results') | list | flatten
+       | selectattr('changed', 'equalto', true) | list | length == 0)
 - name: Set security framework applied flag
   ansible.builtin.set_fact:
     security_framework_applied: true
 - name: Validate final security state (idempotent)
-  ansible.builtin.import_tasks: validation.yml
+  ansible.builtin.include_tasks: validation.yml
+  loop: [1]
+  loop_control:
+    loop_var: _validation_include
+  register: security_validation_result
+- name: Checkpoint final validation (only when no changes)
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  vars:
+    additional_phases:
+      - "security/scanning:final_validation"
+  when:
+    - security_validation_result.results is defined
+    - (security_validation_result.results | map(attribute='results') | list | flatten
+       | selectattr('changed', 'equalto', true) | list | length == 0)

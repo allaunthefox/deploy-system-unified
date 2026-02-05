@@ -3,6 +3,7 @@
 # For virtual machines with GPU passthrough or vGPU capabilities
 # Features: GPU passthrough configuration, guest OS GPU driver installation
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy GPU Slicing (Virtual Guest)
   hosts: all
   become: true
@@ -104,13 +105,11 @@
           sriov: { enabled: false, vf_count: 4 }
           level_zero: { enabled: false, partitions: [] }
           oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
-        quadlet_gpu_capabilities: ["gpu", "compute", "video"]
+        quadlet_gpu_capabilities: []
         quadlet_container_gpu_config:
           ai_workload:
-            capabilities: ["gpu", "compute"]
             devices: ["/dev/nvidia0"]
           visualization:
-            capabilities: ["gpu", "video"]
             devices: ["/dev/nvidia0"]
 
   post_tasks:

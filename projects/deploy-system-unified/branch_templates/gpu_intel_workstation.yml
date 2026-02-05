@@ -3,6 +3,7 @@
 # Replaces: battlemage_workstation.yml
 # Description: Workstation setup with Intel GPU acceleration
 
+- ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy Intel GPU Workstation
   hosts: all
   become: true
