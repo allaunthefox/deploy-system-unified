@@ -1,0 +1,11 @@
+name: CI Bisect Debug
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "Hello World"
