@@ -3,6 +3,7 @@ Description=Prometheus Container
 After=network-online.target
 
 [Container]
+ContainerName=prometheus-{{ monitoring_instance }}
 Image={{ monitoring_prometheus_image }}
 Pod={{ monitoring_pod_name }}
 Volume={{ monitoring_config_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro

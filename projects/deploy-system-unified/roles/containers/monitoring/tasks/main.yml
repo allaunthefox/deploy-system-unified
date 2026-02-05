@@ -1,7 +1,7 @@
 ---
 - name: Check Monitoring Enable
   ansible.builtin.debug:
-    msg: "Monitoring Stack deployment start"
+    msg: "Monitoring Stack deployment start (Instance: {{ monitoring_instance }})"
   when: monitoring_enable | bool
 
 - name: Validate Grafana admin password is set
@@ -14,16 +14,18 @@
 
 - name: Create Monitoring Network Quadlet
   ansible.builtin.copy:
-    dest: "{{ containers_systemd_dir }}/monitoring_net.network"
+    dest: "{{ containers_systemd_dir }}/{{ monitoring_network }}.network"
     content: |
       [Network]
-      NetworkName=monitoring_net
+      NetworkName={{ monitoring_network }}
       Driver=bridge
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  when: monitoring_enable | bool
+  when: 
+    - monitoring_enable | bool
+    - monitoring_network != "host"
   notify: Reload systemd
 
 - name: Create Monitoring Directories
@@ -45,7 +47,7 @@
 - name: Create Grafana secrets file
   ansible.builtin.template:
     src: grafana.env.j2
-    dest: "{{ containers_secrets_dir }}/grafana.env"
+    dest: "{{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env"
     mode: '0600'
     owner: "{{ containers_secrets_owner }}"
     group: "{{ containers_secrets_group }}"
@@ -64,7 +66,7 @@
 - name: Deploy Monitoring Pod Quadlet
   ansible.builtin.template:
     src: mon_pod.pod.j2
-    dest: "{{ containers_systemd_dir }}/mon_pod.pod"
+    dest: "{{ containers_systemd_dir }}/{{ monitoring_pod_name }}.pod"
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
@@ -75,7 +77,7 @@
 - name: Deploy Prometheus Container Quadlet
   ansible.builtin.template:
     src: prometheus.container.j2
-    dest: "{{ containers_systemd_dir }}/prometheus.container"
+    dest: "{{ containers_systemd_dir }}/prometheus-{{ monitoring_instance }}.container"
     mode: '0600'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
@@ -86,7 +88,7 @@
 - name: Deploy Grafana Container Quadlet
   ansible.builtin.template:
     src: grafana.container.j2
-    dest: "{{ containers_systemd_dir }}/grafana.container"
+    dest: "{{ containers_systemd_dir }}/grafana-{{ monitoring_instance }}.container"
     mode: '0600'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"

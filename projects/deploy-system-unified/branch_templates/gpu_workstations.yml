@@ -114,13 +114,11 @@
           level_zero: { enabled: false, partitions: [] }
           oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
           passthrough: { devices: [] }
-        quadlet_gpu_capabilities: ["gpu", "compute", "video"]
+        quadlet_gpu_capabilities: []
         quadlet_container_gpu_config:
           anubis:
-            capabilities: ["gpu", "compute"]
             devices: ["/dev/nvidia0"]
           caddy:
-            capabilities: ["gpu"]
             devices: ["/dev/nvidia0"]
 
     # Container deployment with GPU support

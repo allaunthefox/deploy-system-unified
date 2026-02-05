@@ -3,9 +3,10 @@ Description=Grafana Container
 After=network-online.target
 
 [Container]
+ContainerName=grafana-{{ monitoring_instance }}
 Image={{ monitoring_grafana_image }}
 Pod={{ monitoring_pod_name }}
-EnvironmentFile={{ containers_secrets_dir }}/grafana.env
+EnvironmentFile={{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env
 Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:Z
 
 [Install]

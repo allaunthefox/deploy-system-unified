@@ -62,13 +62,11 @@
             level_zero: { enabled: false, partitions: [] }
             oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
             passthrough: { devices: [] }
-          quadlet_gpu_capabilities: ["gpu", "compute"]
+          quadlet_gpu_capabilities: []
           quadlet_container_gpu_config:
             ai_workload:
-              capabilities: ["gpu", "compute"]
               devices: ["/dev/nvidia0"]
             data_processing:
-              capabilities: ["gpu"]
               devices: ["/dev/nvidia0"]
 
   tasks:

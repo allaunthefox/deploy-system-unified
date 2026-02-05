@@ -1,13 +1,14 @@
 ---
-# Defaults for containers/monitoring
+# Defaults for containers/monitoring (Standardized 2026 Structure)
 
 monitoring_enable: true
-monitoring_root_dir: "/srv/monitoring"
-monitoring_config_dir: "/srv/containers/monitoring_config"
+monitoring_instance: "default"
+monitoring_root_dir: "/srv/monitoring/{{ monitoring_instance }}"
+monitoring_config_dir: "/srv/containers/monitoring_config/{{ monitoring_instance }}"
 
 # Network
-monitoring_network: "monitoring_net"
-monitoring_pod_name: "mon_pod"
+monitoring_network: "host"
+monitoring_pod_name: "mon-pod-{{ monitoring_instance }}"
 
 # Images
 monitoring_prometheus_image: "docker.io/prom/prometheus:v3.9.1"

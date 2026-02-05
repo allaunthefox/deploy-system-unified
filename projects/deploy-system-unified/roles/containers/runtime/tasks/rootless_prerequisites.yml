@@ -61,7 +61,7 @@
 
 - name: Check systemd user instance is running
   ansible.builtin.command:
-    cmd: systemctl --user is-system-running
+    cmd: systemctl --user list-units --type=service
   register: rootless_systemd_check
   changed_when: false
   failed_when: false
@@ -74,7 +74,7 @@
     that:
       - rootless_systemd_check.rc == 0
     fail_msg: >-
-      Rootless Podman requires a running systemd user instance. Ensure
+      Rootless Podman requires a functional systemd user instance. Ensure
       lingering is enabled and the user session can start
       (loginctl enable-linger {{ podman_rootless_user }}).
   when: podman_rootless_enabled | bool

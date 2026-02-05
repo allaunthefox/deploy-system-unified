@@ -22,8 +22,9 @@ lxc.mount.entry = {{ device }} {{ device }} none bind,create=file,optional
 lxc.mount.entry = {{ mount_parts[0] }} {{ mount_parts[1] }} {{ mount_parts[2] }} {{ mount_parts[3] | default('none') }}
 {% endfor %}
 
-# GPU capabilities
-{% for cap in lxc_gpu_passthrough_capabilities %}
+# GPU capabilities (drop only valid Linux CAP_* values)
+{% set caps = lxc_gpu_passthrough_capabilities | default([]) | select('match', '^CAP_') | list %}
+{% for cap in caps %}
 lxc.cap.drop = {{ cap }}
 {% endfor %}
 {% endif %}

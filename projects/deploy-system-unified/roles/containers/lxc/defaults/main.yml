@@ -24,15 +24,15 @@ lxc_gpu_default_configs:
   nvidia:
     devices: ["/dev/nvidia0", "/dev/nvidiactl", "/dev/nvidia-uvm"]
     mounts: ["/usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro", "/usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro"]
-    capabilities: ["gpu", "compute"]
+    capabilities: []
   amd:
     devices: ["/dev/dri/card0", "/dev/dri/renderD128"]
     mounts: ["/dev/dri:/dev/dri:rw", "/dev/kfd:/dev/kfd:rw"]
-    capabilities: ["gpu", "compute"]
+    capabilities: []
   intel:
     devices: ["/dev/dri/card0", "/dev/dri/renderD128"]
     mounts: ["/dev/dri:/dev/dri:rw"]
-    capabilities: ["gpu", "video"]
+    capabilities: []
 # Container-specific GPU configurations
 lxc_container_gpu_config: {}  # Key-value map of container names to GPU config
 # LXC container security settings

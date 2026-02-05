@@ -5,7 +5,7 @@ After=network-online.target
 [Pod]
 PodName={{ monitoring_pod_name }}
 {% if podman_rootless_enabled | bool %}
-Network={{ monitoring_network }}.network
+Network={{ monitoring_network }}
 # Publish ports to host
 PublishPort=9090:9090
 PublishPort=3000:3000

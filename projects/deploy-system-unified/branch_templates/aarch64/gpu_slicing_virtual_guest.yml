@@ -44,7 +44,7 @@
       vars:
         quadlet_enable_gpu_support: true
         quadlet_gpu_vendor: "nvidia"
-        quadlet_gpu_capabilities: ["gpu", "compute"]
+        quadlet_gpu_capabilities: []
 
   post_tasks:
     - name: Verify GPU Configuration

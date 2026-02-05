@@ -16,4 +16,22 @@
   ansible.builtin.lineinfile:
     path: /etc/containers/containers.conf
     regexp: "^#?default_capabilities ="
-    line: 'default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE", "gpu"]'
+    line: 'default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE"]'
+
+- name: Validate default_capabilities contain only CAP_* entries (NVIDIA)
+  ansible.builtin.shell: |
+    python3 - <<'PY'
+    import re
+    path = "/etc/containers/containers.conf"
+    with open(path, "r", encoding="utf-8") as f:
+      content = f.read()
+    m = re.search(r'^default_capabilities\\s*=\\s*\\[(.*?)\\]$', content, re.MULTILINE)
+    if not m:
+      raise SystemExit("default_capabilities not found in containers.conf")
+    items = [i.strip().strip('"').strip("'") for i in m.group(1).split(",") if i.strip()]
+    invalid = [i for i in items if not i.startswith("CAP_")]
+    if invalid:
+      raise SystemExit("Invalid default_capabilities entries: " + ", ".join(invalid))
+    PY
+  changed_when: false
+  become: true
