@@ -2,8 +2,6 @@
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
 
-
-- ansible.builtin.import_playbook: main.yml
 - name: Apply Secure Infrastructure Base
   hosts: all
   become: true
@@ -43,7 +41,7 @@
 
   tasks:
     - name: Execute Base Hardened Roles with Granular Checkpoints
-      ansible.builtin.include_tasks: tasks/run_role.yml
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
       loop: "{{ base_hardened_roles }}"
       loop_control:
         loop_var: role_item
