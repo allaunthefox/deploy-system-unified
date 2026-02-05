@@ -1,31 +1,52 @@
+---
 name: Style Guide Enforcement
 
+# yamllint disable-line rule:truthy
 on:
   push:
-    branches: [ main, 'ci/**' ]
+    branches:
+      - main
+      - 'ci/**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   style-enforcement:
     name: Run style guide enforcement
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # yamllint disable rule:line-length
       - name: Make script executable
-        run: chmod +x projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+        run: |
+          chmod +x projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+      # yamllint enable rule:line-length
 
       - name: Run enforcement (generate report)
         run: |
           set -o pipefail
-          ./projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report || echo $? > .enforce_status
+          SCRIPT=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
+          ./$SCRIPT/enforce_style_guide.sh --report || echo $? > .enforce_status
         continue-on-error: true
 
       - name: List reports
-        run: ls -l projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement || true
+        run: |
+          SCRIPT=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
+          ls -l $SCRIPT || true
 
       - name: Install jq (needed for report comments)
         run: |
@@ -36,36 +57,42 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: style-compliance-report
-          path: projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/compliance_report_*.md
+          path: |
+            projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/compliance_report_*.md
 
       - name: Comment on PR with compliance report
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+        # yamllint disable rule:line-length
         run: |
           set -x
+          SCRIPT_DIR=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
           if [ -f .enforce_status ]; then
-            report_file=$(ls -t projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
+            report_file=$(ls -t $SCRIPT_DIR/compliance_report_*.md 2>/dev/null | head -n1)
             echo "PR_NUMBER=$PR_NUMBER report_file=$report_file"
             if [ -z "$report_file" ]; then
               echo "No report found to post"
               exit 0
             fi
             report=$(sed 's/```/` ` `/g' "$report_file")
-            # write report snippet and full report to tmp files for debugging
             echo "$report" | head -c 2000 > /tmp/report_snippet.txt || true
             echo "$report" > /tmp/report_full.txt || true
             # Build JSON body using Python for robust escaping
-            python - <<'PY' > /tmp/body.json
-import json
-with open('/tmp/report_full.txt','r',encoding='utf-8') as f:
-    rpt = f.read()
-body = {"body": "### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + rpt + "\n```\n</details>\n\nIf you'd like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR."}
-print(json.dumps(body))
-PY
+            python3 <<'PY' > /tmp/body.json
+          import json
+          with open('/tmp/report_full.txt', 'r', encoding='utf-8') as f:
+              rpt = f.read()
+          body = {"body": "### Style Guide Enforcement Report\n\nThe style enforcement job found issues. See report below:\n\n<details><summary>Click to expand report</summary>\n\n```\n" + rpt + "\n```\n</details>\n\nIf you'd like me to apply auto-fixable changes, reply with `--fix` and I can prepare a PR."}
+          print(json.dumps(body))
+          PY
             cat /tmp/body.json || true
-            http_code=$(curl -s -o /tmp/comment_response -w "%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" --data @/tmp/body.json "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments")
+            REPO_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+            http_code=$(curl -s -o /tmp/comment_response -w "%{http_code}" \
+              -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data @/tmp/body.json "$REPO_URL/issues/$PR_NUMBER/comments")
             if [ "$http_code" -ne 201 ]; then
               echo "Failed to post comment: HTTP $http_code"
               echo "Response:"
@@ -77,20 +104,25 @@ PY
           else
             echo "No style issues detected; no comment posted"
           fi
+        # yamllint enable rule:line-length
 
       - name: Comment on PR on success
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+        # yamllint disable rule:line-length
         run: |
           if [ ! -f .enforce_status ]; then
             body='{"body":"✅ Style enforcement passed. No issues detected. Good job!"}'
-            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
-              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
+            REPO_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "$body" "$REPO_URL/issues/$PR_NUMBER/comments"
           else
             echo "Issues were detected; not posting success message"
           fi
+        # yamllint enable rule:line-length
 
       - name: Upload PR comment debug artifacts
         if: ${{ github.event_name == 'pull_request' }}
@@ -105,6 +137,7 @@ PY
       - name: Fail if enforcement found issues
         run: |
           if [ -f .enforce_status ]; then
-            echo "Style enforcement detected issues; failing job with code $(cat .enforce_status)"
+            echo "Style enforcement detected issues"
+            echo "Failing job with code $(cat .enforce_status)"
             exit $(cat .enforce_status)
           fi
