@@ -1,0 +1,44 @@
+---
+# Hardened Supply Chain Configuration
+# Use this file to enforce strict verification of third-party repositories.
+#
+# USAGE:
+# 1. Fill in the SHA256 checksums and fingerprints for the versions you are deploying.
+# 2. This file is automatically loaded by the inventory if placed in group_vars/all.
+
+# -----------------------------------------------------------------------------
+# GPU Repository Verification (NVIDIA / AMD / Intel)
+# -----------------------------------------------------------------------------
+
+# NVIDIA CUDA (RHEL/CentOS)
+# Toggle strict GPG key and fingerprint verification
+nvidia_gpg_key_verify: true
+# Get these values from: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/
+nvidia_gpg_key_sha256: "" 
+nvidia_gpg_fingerprint: ""
+
+# AMD ROCm (Debian/Ubuntu/RHEL)
+# Toggle strict GPG key and fingerprint verification
+amd_rocm_gpg_key_verify: true
+# Get these values from: https://repo.radeon.com/rocm/rocm.gpg.key
+amd_rocm_gpg_key_sha256: ""
+amd_rocm_gpg_fingerprint: ""
+
+# Intel OneAPI (Debian/Ubuntu/RHEL)
+# Toggle strict GPG fingerprint verification
+intel_oneapi_gpg_fingerprint_verify: true
+# Canonical Fingerprint (2024): BF43 85F9 1CA5 FC00 5AB3 9E1C 1A84 97B1 1911 E097
+intel_oneapi_gpg_fingerprint: "BF4385F91CA5FC005AB39E1C1A8497B11911E097"
+
+# -----------------------------------------------------------------------------
+# Core Repository Verification (RPMFusion)
+# -----------------------------------------------------------------------------
+
+# RPMFusion (Fedora)
+# Enforce checksum validation for release RPMs before installation.
+rpmfusion_verify_checksum: true
+
+# Checksums for Fedora 40 (Example - UPDATE BEFORE USE)
+# Verify against: https://mirrors.rpmfusion.org/
+rpmfusion_free_sha256: ""
+rpmfusion_nonfree_sha256: ""
