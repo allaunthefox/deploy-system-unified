@@ -4,6 +4,7 @@
 # Multi-Tenancy / Instance Identification
 media_instance_name: "default"
 media_port_offset: 0
+# Network name the role will create for media pods (can be overridden)
 media_network: "media_net"
 
 # Hardware Acceleration
@@ -86,7 +87,7 @@ media_pod_name: "media_pod_{{ media_instance_name }}"
 media_gatekeeper_mode: false
 media_domain: "media.example.com"
 # Network to attach the pod to (must match Caddy's network if separate)
-media_pod_network: "media_net"
+media_pod_network: "{{ media_network }}"
 
 # Authentication Integration
 # Options: none, authentik

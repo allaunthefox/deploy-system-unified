@@ -16,12 +16,14 @@ This profile represents the "Media Stack" configuration specifically tuned for t
 
 ### Networking Strategy: `Network=host`
 
-Unlike standard container deployments that use bridged networks, this profile uses a **Host Network Pod** (`media_pod_default`).
+Unlike standard container deployments that use bridged networks, this profile uses a **Host Network Pod** (`media_pod_default`). Note that the role implements two execution modes: rootful (host networking) and rootless (user-defined pod network via `media_pod_network`). By default this profile targets VPS deployments and uses host networking for simplicity and performance.
 
 - **Reasoning**:
     - **Performance**: Eliminates NAT overhead for high-bandwidth streaming (Jellyfin) and peer-to-peer traffic (Transmission).
     - **Simplicity**: Resolves complex port mapping issues for BitTorrent DHT/PEX protocols.
     - **IPv6**: Native host IPv6 support without container CNI complexity.
+
+**Defaults & Gatekeeper**: `media_gatekeeper_mode` is `false` by default (services are directly accessible). Enable `media_gatekeeper_mode: true` to restrict direct host exposure and generate Caddy reverse-proxy snippets instead. The role creates a `media_net` bridge quadlet by default and exposes `media_network` as an override for the bridge name; `media_pod_network` defaults to `media_network`. Also, service credentials such as `transmission_user`/`transmission_pass` default to placeholder values (e.g., `CHANGE_ME_IN_SOPS`) and should be set via SOPS/Vault for production.
 
 ### Storage Layout
 
