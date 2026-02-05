@@ -1,0 +1,6 @@
+---
+# Shim to forward includes to the repository-level tasks/save_checkpoint.yml
+# This file exists so static analyzers and ansible-lint can resolve the include
+# without modifying the existing role logic.
+- name: Include repository-level save_checkpoint
+  ansible.builtin.include_tasks: "../../../../tasks/save_checkpoint.yml"
