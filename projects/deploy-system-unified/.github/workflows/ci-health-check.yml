@@ -1,6 +1,4 @@
----
 name: CI Health Check
-# yamllint disable-line rule:truthy
 on:
   push:
     branches:

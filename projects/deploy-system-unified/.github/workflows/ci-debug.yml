@@ -1,6 +1,4 @@
----
 name: CI Debug
-# yamllint disable-line rule:truthy
 on:
   push:
     branches:
