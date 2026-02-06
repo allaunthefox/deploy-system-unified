@@ -6,8 +6,10 @@ vps_provider: "contabo"
 # Deployment profile for VPS targets (least-privilege posture)
 deployment_profile: "vps"
 # Enable TCP forwarding for Contabo VPS environments
-# Required for VPNs, tunnels, and network operations
-sshd_allow_tcp_forwarding: true
+# Deprecated: enable forwarding for trusted groups instead
+sshd_allow_tcp_forwarding: false
+sshd_enable_trusted_group_exceptions: true
+sshd_trusted_groups: ['ssh-trusted']
 
 # Set SSH port to 2222 to match inventory configuration
 system_ssh_port: 2222

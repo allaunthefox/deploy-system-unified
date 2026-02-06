@@ -22,7 +22,9 @@
   vars:
     # VPS Provider Identification
     vps_provider: "contabo"
-    sshd_allow_tcp_forwarding: true
+    sshd_allow_tcp_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
     system_ssh_port: 2222
 
     # Rootless Podman (Bridge Networking Model)

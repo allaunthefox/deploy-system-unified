@@ -22,7 +22,10 @@
   become: true
   vars:
     # Allow TCP forwarding for VPS environments (required for Contabo)
-    sshd_allow_tcp_forwarding: true
+    # Deprecated: prefer trusted-group exceptions instead of allowing globally
+    sshd_allow_tcp_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
     vps_roles:
       # VPS Specialized Roles
       - hardware/virtual_guest

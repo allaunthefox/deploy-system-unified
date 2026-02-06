@@ -1,0 +1,33 @@
+name: SSH Policy Tests
+
+on:
+  push:
+    branches: [ "chore/ssh-policy-hardening", "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  idempotence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker container and run idempotence test
+        run: |
+          # Start an ephemeral container with the repo mounted
+          docker run --rm -d --name sshd-test -v "$GITHUB_WORKSPACE":/workspace -w /workspace ubuntu:22.04 sleep infinity
+          docker exec sshd-test bash -lc "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server python3-pip python3-apt gnupg2 --no-install-recommends"
+          docker exec sshd-test bash -lc "pip3 install ansible"
+          # Ensure sshd_config exists
+          docker exec sshd-test bash -lc "test -f /etc/ssh/sshd_config || dpkg-reconfigure -f noninteractive openssh-server"
+          # Run the idempotence test playbook inside the container
+          docker exec sshd-test bash -lc "ansible-playbook projects/deploy-system-unified/roles/security/sshd/tests/idempotence.yml"
+
+      - name: Collect container logs (if any)
+        if: failure()
+        run: |
+          docker logs sshd-test || true
+
+      - name: Tear down container
+        run: docker rm -f sshd-test || true

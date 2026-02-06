@@ -4,18 +4,29 @@
   become: true
   gather_facts: true
   vars:
-    sshd_allow_tcp_forwarding: true
+    # By default forwarding is disabled; enable a trusted group and verify Match block
+    sshd_allow_tcp_forwarding: false
     sshd_allow_agent_forwarding: false
     sshd_allow_x11_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
   roles:
     - role: security/sshd
   tasks:
-    - name: Verify TCP forwarding is enabled
+    - name: Verify global TCP forwarding is disabled
       ansible.builtin.command:
-        cmd: grep -E "AllowTcpForwarding.*yes" /etc/ssh/sshd_config
-      register: tcp_forwarding_check
+        cmd: grep -E "AllowTcpForwarding.*no" /etc/ssh/sshd_config
+      register: tcp_forwarding_global_check
       changed_when: false
-      failed_when: tcp_forwarding_check.rc != 0
+      failed_when: tcp_forwarding_global_check.rc != 0
+
+    - name: Verify trusted group Match block enables TCP forwarding
+      ansible.builtin.command:
+        cmd: |
+          awk '/^Match[[:space:]]+Group[[:space:]]+ssh-trusted/{in=1;next} in && /^[[:space:]]*AllowTcpForwarding/ { if ($2=="yes") { print "ok"; exit 0 } } END { exit 1 }' /etc/ssh/sshd_config
+      register: tcp_forwarding_match_check
+      changed_when: false
+      failed_when: tcp_forwarding_match_check.rc != 0
       notify: restart sshd
     - name: Verify agent forwarding is disabled
       ansible.builtin.command:
