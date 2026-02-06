@@ -1,0 +1,40 @@
+---
+# Idempotence test: apply the role twice and ensure the second run does not change sshd_config
+- name: Idempotence test for security/sshd
+  hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - name: Stat current sshd_config before any changes
+      ansible.builtin.stat:
+        path: "{{ sshd_config_path | default('/etc/ssh/sshd_config') }}"
+      register: sshd_before
+
+    - name: Apply security/sshd role (first run)
+      ansible.builtin.include_role:
+        name: security/sshd
+
+    - name: Stat sshd_config after first run
+      ansible.builtin.stat:
+        path: "{{ sshd_config_path | default('/etc/ssh/sshd_config') }}"
+      register: sshd_after_first
+
+    - name: Apply security/sshd role (second run)
+      ansible.builtin.include_role:
+        name: security/sshd
+      register: second_run_result
+
+    - name: Stat sshd_config after second run
+      ansible.builtin.stat:
+        path: "{{ sshd_config_path | default('/etc/ssh/sshd_config') }}"
+      register: sshd_after_second
+
+    - name: Assert second run did not change sshd_config
+      ansible.builtin.assert:
+        that:
+          - "sshd_after_first.stat.checksum == sshd_after_second.stat.checksum"
+        fail_msg: "sshd_config changed on second run - role is not idempotent"
+
+    - name: Assert second run reported no changes (if available)
+      ansible.builtin.debug:
+        msg: "Second run results: changed={{ second_run_result.changed | default('unknown') }}"

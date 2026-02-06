@@ -4,11 +4,15 @@
 - hosts: all
   become: true
   vars:
-    sshd_permit_root_login: "prohibit-password"
+    # Enforce authoritative ssh policy
+    sshd_permit_root_login: "no"
     sshd_password_authentication: "no"
     sshd_allow_x11_forwarding: false
-    sshd_allow_tcp_forwarding: true
+    sshd_allow_tcp_forwarding: false
     sshd_allow_agent_forwarding: false
+    # To enable limited exceptions for trusted groups, set these in inventory/group_vars
+    sshd_enable_trusted_group_exceptions: false
+    # sshd_trusted_groups: ['ssh-trusted']
   roles:
     - role: security/access
     - role: security/sshd

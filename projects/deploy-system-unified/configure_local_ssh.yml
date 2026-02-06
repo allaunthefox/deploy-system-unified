@@ -1,0 +1,11 @@
+---
+- name: Configure SSH locally
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    ssh_effective_port: 22
+    sshd_permit_root_login: "no"
+    sshd_password_authentication: "no"
+  roles:
+    - security/sshd

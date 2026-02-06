@@ -6,5 +6,13 @@ sshd_use_strong_ciphers: true
 sshd_allow_tcp_forwarding: false
 sshd_allow_agent_forwarding: false
 sshd_allow_x11_forwarding: false
-sshd_permit_root_login: "prohibit-password"
+# Authoritative policy: disable root SSH login by default
+sshd_permit_root_login: "no"
 sshd_password_authentication: "no"
+# Path to sshd config file (useful for testing with a temporary path)
+sshd_config_path: "/etc/ssh/sshd_config"
+# Trusted groups for limited exceptions (agent/tcp forwarding)
+# - Set sshd_enable_trusted_group_exceptions: true to enable
+# - Populate sshd_trusted_groups with group names (e.g., ['ssh-trusted'])
+sshd_enable_trusted_group_exceptions: false
+sshd_trusted_groups: []

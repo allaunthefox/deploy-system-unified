@@ -1,0 +1,30 @@
+---
+# Simple local verification playbook for sshd config directives
+- name: Verify sshd configuration (non-destructive)
+  hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - name: Test sshd config
+      command: sshd -T -f "{{ sshd_config_path | default('/etc/ssh/sshd_config') }}"
+      register: sshd_t
+      changed_when: false
+      failed_when: sshd_t.rc != 0
+
+    - name: Assert PermitRootLogin is disabled
+      assert:
+        that:
+          - "'permitrootlogin no' in sshd_t.stdout"
+        fail_msg: "PermitRootLogin is not set to 'no'"
+
+    - name: Assert agent forwarding is disabled by default
+      assert:
+        that:
+          - "'allowagentforwarding no' in sshd_t.stdout"
+        fail_msg: "AllowAgentForwarding is not set to 'no'"
+
+    - name: Assert tcp forwarding is disabled by default
+      assert:
+        that:
+          - "'allowtcpforwarding no' in sshd_t.stdout"
+        fail_msg: "AllowTcpForwarding is not set to 'no'"
