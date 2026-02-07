@@ -23,4 +23,4 @@ pipeline:
       - pip3 install ansible-lint
       - cd projects/deploy-system-unified && ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules main.yml
 
-branches: [ main, 'ci/**' ]
+branches: [main, 'ci/**']
