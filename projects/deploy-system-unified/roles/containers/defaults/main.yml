@@ -56,3 +56,7 @@ containers_default_password_checks:
     enabled: "{{ authentik_enable | default(false) }}"
 
 containers_linger_users: "{{ containers_podman_rootless_enabled | bool | ternary([containers_podman_rootless_user], []) }}"
+
+# Backwards-compatible convenience alias. Honours global core security flag by default
+# so container roles can check `containers_fail_secure` to gate stricter asserts.
+containers_fail_secure: "{{ core_security_fail_secure | default(true) }}"

@@ -5,3 +5,7 @@ identity_set_hostname: true
 identity_domain: local
 systemd_configure_journald: true
 systemd_configure_resolved: true
+
+# Global security policy: when true, roles will "fail secure" by asserting
+# required secrets and stricter configuration checks in untrusted environments.
+core_security_fail_secure: true

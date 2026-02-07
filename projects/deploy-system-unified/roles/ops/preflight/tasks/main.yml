@@ -192,7 +192,9 @@
       - item.value not in item.bad_values
     fail_msg: "Default or empty secret detected: {{ item.name }}. Set this in encrypted inventory."
   loop: "{{ preflight_secret_guards }}"
-  when: not preflight_allow_default_secrets | default(false) | bool
+  when:
+    - not preflight_allow_default_secrets | default(false) | bool
+    - core_security_fail_secure | default(true) | bool
 
 - name: Scan inventory for placeholder test_key usage (controller)
   ansible.builtin.find:
