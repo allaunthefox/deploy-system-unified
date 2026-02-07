@@ -12,10 +12,6 @@
       - service_mgr
       - virtual
 
-- name: Run preflight diagnose (non-failing)
-  ansible.builtin.include_tasks: diagnose.yml
-  when: preflight_diagnose_only | default(false)
-
 - name: Determine virtualization profile (preflight)
   ansible.builtin.set_fact:
     virt_type: >-
@@ -120,6 +116,10 @@
       - name: "restic_password"
         value: "{{ restic_password | default('CHANGE_ME_IN_VAULT') }}"
         bad_values: ["CHANGE_ME_IN_VAULT", ""]
+
+- name: Run preflight diagnose (non-failing)
+  ansible.builtin.include_tasks: diagnose.yml
+  when: preflight_diagnose_only | default(false)
 
 - name: Define deployment profile for transfer policy
   ansible.builtin.set_fact:
