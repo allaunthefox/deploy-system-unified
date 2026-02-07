@@ -36,10 +36,10 @@
     podman_rootless_privileged_port_start: 80
 
     # Memory Tuning - Database Profile for SQLite (Jellyfin/Arr) Performance
-    memory_workload_profile: "database"
+    core_memory_workload_profile: "database"
     memory_dirty_bytes: 4294967296
     memory_dirty_background_bytes: 1073741824
-    memory_swappiness: 10
+    core_memory_swappiness: 10
 
     # VM Tuning for Media Buffers
     vm_dirty_ratio: "10"

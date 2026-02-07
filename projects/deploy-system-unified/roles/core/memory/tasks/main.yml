@@ -14,21 +14,21 @@
     else echo "false"; fi
   register: uma_detection
   changed_when: false
-  when: memory_shared_vram == 'auto'
+  when: core_memory_shared_vram == 'auto' 
 
 - name: Determine Memory Strategy (Auto-Selection)
   ansible.builtin.set_fact:
     active_memory_strategy: >-
       {{
         'zram' if (
-           memory_compression_strategy == 'force_zram' or
-           (memory_compression_strategy == 'auto' and memory_shared_vram == true) or
+           core_memory_compression_strategy == 'force_zram'  or
+           (memory_compression_strategy == 'auto' and core_memory_shared_vram == true ) or
            (memory_compression_strategy == 'auto' and memory_shared_vram == 'auto' and uma_detection.stdout == 'true') or
            (memory_compression_strategy == 'auto' and ansible_memtotal_mb < 8192) or
            (memory_compression_strategy == 'auto' and physical_swap_count.stdout | int == 0)
         ) else
         'zswap' if (
-           memory_compression_strategy == 'force_zswap' or
+           core_memory_compression_strategy == 'force_zswap'  or
            (memory_compression_strategy == 'auto' and ansible_memtotal_mb >= 8192 and physical_swap_count.stdout | int > 0)
         ) else
         'none'
@@ -75,9 +75,9 @@
       ansible.builtin.copy:
         content: |
           [zram0]
-          zram-size = {{ (ansible_memtotal_mb * (memory_zram_size_percent | float / 100)) | int }}
-          compression-algorithm = {{ memory_zram_algorithm }}
-          swap-priority = {{ memory_zram_priority }}
+          zram-size = {{ (ansible_memtotal_mb * (core_memory_zram_size_percent | float / 100)) | int }}
+          compression-algorithm = {{ core_memory_zram_algorithm }}
+          swap-priority = {{ core_memory_zram_priority }}
           fs-type = swap
         dest: /etc/systemd/zram-generator.conf
         mode: '0644'
@@ -90,8 +90,8 @@
     - name: Enable ZSwap Kernel Parameters
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 zswap.enabled=1 zswap.compressor={{ memory_zswap_compressor }} zswap.max_pool_percent={{ memory_zswap_max_pool_percent }}"'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 zswap.enabled=1 zswap.compressor={{ core_memory_zswap_compressor }} zswap.max_pool_percent={{ core_memory_zswap_max_pool_percent }}"'
         backrefs: true
       become: true
       notify: update-grub
@@ -113,7 +113,7 @@
     sysctl_file: /etc/sysctl.d/99-memory-tuning.conf
   loop:
     - { key: 'vm.swappiness', value: '{{ memory_swappiness }}' }
-    - { key: 'vm.vfs_cache_pressure', value: '{{ memory_cache_pressure }}' }
+    - { key: 'vm.vfs_cache_pressure', value: '{{ core_memory_cache_pressure }}' }
     - { key: 'vm.page-cluster', value: '0' } # Essential for ZRAM/ZSwap effectiveness
     - { key: 'vm.dirty_bytes', value: '{{ memory_dirty_bytes }}', condition: "{{ memory_dirty_bytes | int > 0 }}" }
     - { key: 'vm.dirty_background_bytes', value: '{{ memory_dirty_background_bytes }}', condition: "{{ memory_dirty_background_bytes | int > 0 }}" }
