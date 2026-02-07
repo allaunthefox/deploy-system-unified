@@ -1,6 +1,6 @@
 ---
 # Handlers for containers/caddy
-- name: reload systemd
+- name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
@@ -8,7 +8,7 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
 
-- name: restart caddy
+- name: Restart Caddy
   ansible.builtin.systemd:
     name: caddy
     state: restarted
