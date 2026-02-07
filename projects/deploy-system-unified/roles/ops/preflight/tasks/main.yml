@@ -10,6 +10,14 @@
       - os_family
       - pkg_mgr
       - service_mgr
+      - virtual
+- name: Determine virtualization profile (preflight)
+  ansible.builtin.set_fact:
+    virt_type: >-
+      {{ 'bare-metal'
+         if (ansible_facts['virtualization_role'] | default('host') | lower) != 'guest'
+         else (ansible_facts['virtualization_type'] | default('kvm') | lower) }}
+  when: virt_type is not defined
 - name: Validate distribution is supported
   ansible.builtin.assert:
     that:

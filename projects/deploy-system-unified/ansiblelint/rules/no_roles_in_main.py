@@ -1,3 +1,5 @@
+from ansiblelint.errors import MatchError
+from ansiblelint.file_utils import Lintable
 from ansiblelint.rules import AnsibleLintRule
 
 
@@ -17,6 +19,11 @@ class NoRolesInMainRule(AnsibleLintRule):
             return file.get('path', '')
         return str(file)
 
+    def _make_match(self, file, message):
+        if isinstance(file, Lintable):
+            return MatchError(lintable=file, rule=self, message=message)
+        return message
+
     def matchplay(self, file, play):
         # Be defensive: only operate on dict plays and ensure roles is a non-empty list
         filename = self._get_path(file)
@@ -25,23 +32,23 @@ class NoRolesInMainRule(AnsibleLintRule):
         
         # Target any 'main.yml' that is not a task/handler/meta/defaults/vars file
         if not norm_path.endswith('main.yml'):
-            return False
+            return []
             
         # Avoid identifying files inside standard role structure as violations
         path_parts = norm_path.split('/')
         reserved_dirs = {'tasks', 'handlers', 'defaults', 'vars', 'meta', 'roles'}
         # Check if any parent directory is a reserved name
         if any(part in reserved_dirs for part in path_parts[:-1]):
-            return False
+            return []
             
         if not isinstance(play, dict):
-            return False
+            return []
         roles = play.get('roles')
         if isinstance(roles, list) and len(roles) > 0:
-            return True
-        return False
+            return [self._make_match(file, "Top-level 'roles' found in main.yml")]
+        return []
 
-    def matchyaml(self, file):
+    def matchyaml(self, file, yaml_doc=None):
         # YAML-aware check: process documents safely and return a list of messages
         matches = []
         filename = self._get_path(file)
@@ -57,14 +64,14 @@ class NoRolesInMainRule(AnsibleLintRule):
             return matches
 
         # Handle modern Lintable object or legacy dict
-        yaml_data = getattr(file, 'data', None)
+        yaml_data = yaml_doc
+        if yaml_data is None:
+            yaml_data = getattr(file, 'data', None)
         if yaml_data is None and hasattr(file, 'get'):
-             # Fallback for older versions if they don't pass data but file is dict? 
-             # Actually matchyaml(self, file) implies we must get data from file.
-             pass
+            yaml_data = file.get('data')
         
         if yaml_data is None:
-             return matches
+            return matches
 
         docs = yaml_data if isinstance(yaml_data, list) else [yaml_data]
         for idx, play in enumerate(docs):
@@ -72,7 +79,12 @@ class NoRolesInMainRule(AnsibleLintRule):
                 if isinstance(play, dict):
                     roles = play.get('roles')
                     if isinstance(roles, list) and roles:
-                        matches.append(f"Top-level 'roles' found in play index {idx}")
+                        matches.append(
+                            self._make_match(
+                                file,
+                                f"Top-level 'roles' found in play index {idx}",
+                            )
+                        )
             except Exception:
                 # Be tolerant of unexpected structures
                 continue

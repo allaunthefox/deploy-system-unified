@@ -30,7 +30,7 @@
 
 ### C. Secrets Management architecture
 
-- **Method**: SOPS + Ansible `community.sops`.
+- **Method**: Ansible Vault (active). SOPS is planned but not active.
 - **Injection**: `EnvironmentFile` via Systemd/Quadlet (Root-only access: `0600`).
 - **No plaintext secrets** in Unit files.
 
@@ -60,7 +60,7 @@ Before running the production playbook, you **MUST** perform the following confi
 To deploy the full verified stack:
 
 ```bash
-ansible-playbook site.yml -i inventory/production_servers.yml
+ansible-playbook production_deploy.yml -i inventory/contabo_cloud_vps_30_ssd.ini
 ```
 
-(Or use the specific branch template: `branch_templates/production_servers.yml`)
+Use `site.yml` only for development/stabilization. Treat `branch_templates/` as reference-only.

@@ -1,6 +1,6 @@
 # Branch Templates Directory
 
-This directory contains ready-to-use Ansible playbooks for different deployment scenarios. Each file represents a different use case and can be used as a template for creating profile branches. All templates build upon the base functionality provided in the main project.
+This directory contains reference Ansible playbooks for different deployment scenarios. Each file represents a use case and can be used as a template when you create a separate deployment directory. For production deployments from this repository, use `production_deploy.yml` in the repo root and treat `branch_templates/` as reference-only to avoid drift and preserve determinism.
 
 ## Available Templates
 
@@ -23,14 +23,22 @@ This directory contains ready-to-use Ansible playbooks for different deployment 
 
 ## Usage
 
-To use any of these templates, copy the appropriate template to your own deployment directory (separate from this repository):
+If you are deploying directly from this repository, run `production_deploy.yml` instead of copying a template. Use the templates below only when creating a custom deployment directory.
+
+Guidelines:
+
+- `production_deploy.yml` is the canonical entrypoint for real deployments.
+- Templates may diverge (tags, optional role ordering) and are not guaranteed to stay in lockstep.
+- When you copy a template out-of-tree, treat it as a fork and document your deltas.
+
+To use any of these templates in a separate deployment directory:
 
 1. Create your own deployment directory
 2. Copy the appropriate template to your deployment directory
 3. Customize the variables as needed for your specific requirements
 4. Ensure you have access to the roles from the main repository (set ANSIBLE_ROLES_PATH or use --extra-vars)
 5. Test thoroughly before deploying to production
-Example:
+Example (reference-only):
 
 ```bash
 # Create your own deployment directory (separate from the main repo)

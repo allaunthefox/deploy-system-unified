@@ -8,14 +8,21 @@
     loop_var: _preflight_include
   register: preflight_result
 - name: Checkpoint preflight completion (only when no changes)
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:preflight"
   when:
-    - preflight_result.results is defined
-    - (preflight_result.results | map(attribute='results') | list | flatten
-       | selectattr('changed', 'equalto', true) | list | length == 0)
+    - preflight_result is defined
+    - not (
+        (preflight_result.get('changed', false))
+        or
+        (preflight_result.get('results', [])
+         | map('combine', dict(changed=false))
+         | selectattr('changed', 'equalto', true)
+         | list
+         | length > 0)
+      )
 - name: Verify directory structure (idempotent)
   ansible.builtin.include_tasks: directory_verification.yml
   loop: [1]
@@ -23,14 +30,21 @@
     loop_var: _directory_include
   register: directory_verification_result
 - name: Checkpoint directory verification completion (only when no changes)
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:directory_verification"
   when:
-    - directory_verification_result.results is defined
-    - (directory_verification_result.results | map(attribute='results') | list | flatten
-       | selectattr('changed', 'equalto', true) | list | length == 0)
+    - directory_verification_result is defined
+    - not (
+        (directory_verification_result.get('changed', false))
+        or
+        (directory_verification_result.get('results', [])
+         | map('combine', dict(changed=false))
+         | selectattr('changed', 'equalto', true)
+         | list
+         | length > 0)
+      )
 - name: Configure security tools (idempotent)
   ansible.builtin.include_tasks: enhanced_security_with_required_tools.yml
   loop: [1]
@@ -41,14 +55,21 @@
   ansible.builtin.set_fact:
     enhanced_security_tools_configured: true
 - name: Checkpoint security tools configuration (only when no changes)
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:tools_configured"
   when:
-    - security_tools_result.results is defined
-    - (security_tools_result.results | map(attribute='results') | list | flatten
-       | selectattr('changed', 'equalto', true) | list | length == 0)
+    - security_tools_result is defined
+    - not (
+        (security_tools_result.get('changed', false))
+        or
+        (security_tools_result.get('results', [])
+         | map('combine', dict(changed=false))
+         | selectattr('changed', 'equalto', true)
+         | list
+         | length > 0)
+      )
 - name: Verify Forensic Clock Synchronization (Chrony)
   ansible.builtin.shell: |
     set -o pipefail
@@ -66,7 +87,7 @@
     fail_msg: "System clock is not synchronized. Forensic logs and certificate validation may fail."
   register: chrony_validation_result
 - name: Checkpoint chrony validation (only when no changes)
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:chrony_validated"
@@ -82,14 +103,21 @@
     security_scanning_configured: true
     enhanced_security_scanning_complete: true
 - name: Checkpoint enhanced scanning completion (only when no changes)
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:enhanced_scanning"
   when:
-    - enhanced_scanning_result.results is defined
-    - (enhanced_scanning_result.results | map(attribute='results') | list | flatten
-       | selectattr('changed', 'equalto', true) | list | length == 0)
+    - enhanced_scanning_result is defined
+    - not (
+        (enhanced_scanning_result.get('changed', false))
+        or
+        (enhanced_scanning_result.get('results', [])
+         | map('combine', dict(changed=false))
+         | selectattr('changed', 'equalto', true)
+         | list
+         | length > 0)
+      )
 - name: Set security framework applied flag
   ansible.builtin.set_fact:
     security_framework_applied: true
@@ -100,11 +128,18 @@
     loop_var: _validation_include
   register: security_validation_result
 - name: Checkpoint final validation (only when no changes)
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/save_checkpoint.yml"
+  ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:final_validation"
   when:
-    - security_validation_result.results is defined
-    - (security_validation_result.results | map(attribute='results') | list | flatten
-       | selectattr('changed', 'equalto', true) | list | length == 0)
+    - security_validation_result is defined
+    - not (
+        (security_validation_result.get('changed', false))
+        or
+        (security_validation_result.get('results', [])
+         | map('combine', dict(changed=false))
+         | selectattr('changed', 'equalto', true)
+         | list
+         | length > 0)
+      )

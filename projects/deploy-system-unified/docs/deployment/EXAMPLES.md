@@ -19,8 +19,11 @@ firewall_additional_rules:
 
 ### Execution
 
+Use `production_deploy.yml` from the repo root for actual deployments.
+CI/Molecule validates `production_deploy.yml` to keep the deployment path deterministic.
+
 ```bash
-ansible-playbook -i inventory.ini branch_templates/production_servers.yml
+ansible-playbook -i inventory.ini production_deploy.yml
 ```
 
 ---

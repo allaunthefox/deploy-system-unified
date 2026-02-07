@@ -6,3 +6,4 @@ SystemBackups/
 **/__pycache__/
 secrets.generated.ymlprojects/deploy-system-unified/.secrets_scan.*
 .secrets_scan.*
+third_party/universal-mcp-github/

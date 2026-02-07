@@ -167,7 +167,7 @@ This document identifies potential issues that may arise when deploying combinat
 
 ## Recommended Profile Combinations
 
-1. **Production Container Host**: `base_hardened.yml` + `production_servers.yml`
+1. **Production Container Host**: `base_hardened.yml` + `production_deploy.yml`
 2. **Development Environment**: `base_hardened.yml` + `development_servers.yml`
 3. **GPU Workstation**: `base_hardened.yml` + `gpu_workstations.yml`
 4. **Kubernetes GPU Node**: `base_hardened.yml` + `k8s_secure_node.yml` + `k8s_gpu_node.yml`

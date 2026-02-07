@@ -1,3 +1,5 @@
+from ansiblelint.errors import MatchError
+from ansiblelint.file_utils import Lintable
 from ansiblelint.rules import AnsibleLintRule
 
 
@@ -11,6 +13,7 @@ class NoGpuCapabilitiesRule(AnsibleLintRule):
     severity = 'HIGH'
     tags = ['capabilities', 'security', 'best-practice']
     version_added = '1.0.0'
+    version_changed = '1.0.0'
 
     def _get_path(self, file):
         if hasattr(file, 'path'):
@@ -28,9 +31,16 @@ class NoGpuCapabilitiesRule(AnsibleLintRule):
                 invalid.append(item)
         return invalid
 
-    def matchyaml(self, file):
+    def _make_match(self, file, message):
+        if isinstance(file, Lintable):
+            return MatchError(lintable=file, rule=self, message=message)
+        return message
+
+    def matchyaml(self, file, yaml_doc=None):
         matches = []
-        yaml_data = getattr(file, 'data', None)
+        yaml_data = yaml_doc
+        if yaml_data is None:
+            yaml_data = getattr(file, 'data', None)
         if yaml_data is None and isinstance(file, dict):
             yaml_data = file.get('data')
         if yaml_data is None:
@@ -50,7 +60,10 @@ class NoGpuCapabilitiesRule(AnsibleLintRule):
                             invalid = self._invalid_caps(value)
                             if invalid:
                                 matches.append(
-                                    f"Invalid capabilities in '{key}': {', '.join(invalid)}"
+                                    self._make_match(
+                                        file,
+                                        f"Invalid capabilities in '{key}': {', '.join(invalid)}",
+                                    )
                                 )
                         else:
                             if isinstance(value, (dict, list)):

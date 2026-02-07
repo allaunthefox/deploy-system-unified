@@ -1,5 +1,7 @@
 # Secrets Management Plan (SOPS + Age)
 
+**Status:** Planned. Ansible Vault is currently active for deployments.
+
 This project adopts **SOPS** (Secrets OPerationS) with **Age** encryption for managing sensitive credentials. This approach allows us to keep encrypted secrets in the Git repository while maintaining granular control and diff-ability.
 
 ## Why SOPS?

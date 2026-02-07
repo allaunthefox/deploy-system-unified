@@ -16,11 +16,15 @@
                        (ssh_randomize_port | default(false)) | ternary(0, 200)) }}
       changed_when: false
 
-    - name: Compute scan range size and step
+    - name: Compute scan range size
       ansible.builtin.set_fact:
         ssh_bootstrap_scan_range_size: >-
           {{ (ssh_bootstrap_scan_range_end_effective | int)
              - (ssh_bootstrap_scan_range_start_effective | int) + 1 }}
+      changed_when: false
+
+    - name: Compute scan step
+      ansible.builtin.set_fact:
         ssh_bootstrap_scan_step: >-
           {{ 1 if (ssh_bootstrap_scan_max_ports_effective | int == 0) else
              ([1, (ssh_bootstrap_scan_range_size | int) // (ssh_bootstrap_scan_max_ports_effective | int)] | max) }}
@@ -47,7 +51,7 @@
         ssh_port_candidates_resolved: >-
           {{ ([cached_ssh_port]
               + (ssh_bootstrap_port_candidates | default([]))
-              + [ansible_ssh_port | default(''),
+             + [ansible_ssh_port | default(''),
                  ansible_port | default(''),
                  ssh_effective_port | default(''),
                  system_ssh_port | default(''),
@@ -55,6 +59,7 @@
                  22])
              | reject('equalto','')
              | map('int')
+             | reject('equalto', 0)
              | list
              | unique }}
       changed_when: false
@@ -104,6 +109,7 @@
       register: ssh_port_probe
       failed_when: false
       changed_when: false
+      check_mode: no
 
     - name: Select discovered SSH port
       ansible.builtin.set_fact:

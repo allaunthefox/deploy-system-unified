@@ -27,10 +27,10 @@
 #
 # EXAMPLES:
 #   1. Run a protected deployment:
-#      ./scripts/run_deployment_session.sh ansible-playbook -i inventory/prod branch_templates/production_servers.yml
+#      ./scripts/run_deployment_session.sh ansible-playbook -i inventory/prod production_deploy.yml
 #
 #   2. Run with extra vars:
-#      ./scripts/run_deployment_session.sh ansible-playbook branch_templates/base_hardened.yml -e "force_new_session=true"
+#      ./scripts/run_deployment_session.sh ansible-playbook base_hardened.yml -e "force_new_session=true"
 #
 # SESSION MANAGEMENT:
 #   - To DETACH (keep running in background): Press 'Ctrl+b' then 'd'

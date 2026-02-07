@@ -124,7 +124,9 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
-  when: monitoring_enable | bool
+  when:
+    - monitoring_enable | bool
+    - not ansible_check_mode
 
 - name: Start monitoring pod and services (quadlet units)
   ansible.builtin.systemd:
@@ -138,4 +140,6 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
-  when: monitoring_enable | bool
+  when:
+    - monitoring_enable | bool
+    - not ansible_check_mode

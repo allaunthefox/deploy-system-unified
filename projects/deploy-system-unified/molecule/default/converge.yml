@@ -1,2 +1,2 @@
 ---
-- import_playbook: ../../main.yml
+- import_playbook: ../../production_deploy.yml
