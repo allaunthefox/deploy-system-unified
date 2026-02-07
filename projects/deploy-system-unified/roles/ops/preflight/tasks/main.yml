@@ -200,6 +200,7 @@
   when:
     - not preflight_allow_default_secrets | default(false) | bool
     - core_security_fail_secure | default(true) | bool
+    - not preflight_diagnose_only | default(false) | bool
 
 - name: Scan inventory for placeholder test_key usage (controller)
   ansible.builtin.find:
