@@ -1,6 +1,9 @@
 ---
 # Tasks for containers/ops
 
+- name: Run ops secret verifications
+  ansible.builtin.include_tasks: verify_secrets.yml
+
 - name: Pull Ops Images
   ansible.builtin.include_tasks: pull_images.yml
 

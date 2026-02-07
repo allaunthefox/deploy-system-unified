@@ -5,7 +5,14 @@
     that:
       - crowdsec_firewall_bouncer_key | default('CHANGE_ME') != 'CHANGE_ME'
     fail_msg: "Caddy secrets missing or default. Set crowdsec_firewall_bouncer_key."
-  when: crowdsec_enable | default(false)
+  when:
+    - crowdsec_enable | default(false)
+    - containers_caddy_fail_secure | default(true) | bool
+
+- name: Verify Caddy secret files when fail-secure is enabled
+  ansible.builtin.include_tasks: verify_secrets.yml
+  when:
+    - containers_caddy_fail_secure | default(true) | bool
 
 - name: Validate Porkbun API keys are set
   ansible.builtin.assert:

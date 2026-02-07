@@ -23,6 +23,9 @@ authentik_pg_pass: "changeme_please_secure_me"
 # Secret Key (Must be generated)
 authentik_secret_key: "generate_me_with_openssl_rand_base64_60"
 
+# Hardening: fail-secure gating for Authentik secret checks
+containers_authentik_fail_secure: "{{ containers_fail_secure | default(true) }}"
+
 # Email Configuration
 authentik_email_host: "smtp.example.com"
 authentik_email_port: 587

@@ -20,5 +20,8 @@ How to proceed
    - Global override: `core_security_fail_secure: false`
    - Per-role alias: `containers_fail_secure: false` or service override `vaultwarden_fail_secure: false`
 3. After remediation, enable hard enforcement by adding asserts and enforcement tasks guarded by `core_security_fail_secure`.
+Per-service hardening examples
+- `containers_vaultwarden_fail_secure` / `vaultwarden_fail_secure` (default: inherit from `containers_fail_secure`) — when true the role will assert the presence of `{{ containers_secrets_dir }}/vaultwarden.env` with mode `0600` and correct owner, and assert it does not contain placeholder values.
 
+Next steps (recommended): add Molecule/integration tests for each service to validate both failing (placeholder) and passing (real secret) behaviour before broad enforcement. (Added initial Molecule positive tests for: `containers/ops` (Vaultwarden), `storage/backup/restic`, `containers/monitoring`, `containers/caddy`, `containers/authentik`, and `containers/media`.)
 See docs/deployment/PERMISSIVE_ROLES.md in the repo for the canonical list and migration guidance.

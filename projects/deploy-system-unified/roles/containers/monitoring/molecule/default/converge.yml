@@ -1,0 +1,24 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
+    monitoring_enable: true
+    containers_monitoring_fail_secure: true
+    monitoring_instance: test
+  tasks:
+    - name: Ensure molecule_shared exists
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}"
+        state: directory
+        mode: '0700'
+    - name: Create valid grafana env for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env"
+        content: "GF_SECURITY_ADMIN_PASSWORD=somethingsecure"
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+    - name: Run verify_secrets directly
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"

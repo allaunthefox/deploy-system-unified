@@ -1,12 +1,10 @@
 ---
 # Tasks for containers/authentik
 
-- name: Validate Authentik Secrets (Red Team Hardening)
-  ansible.builtin.assert:
-    that:
-      - authentik_secret_key != "generate_me_with_openssl_rand_base64_60"
-      - authentik_pg_pass != "changeme_please_secure_me"
-    fail_msg: "Default weak secrets detected for Authentik. Please update 'authentik_secret_key' and 'authentik_pg_pass' in your variables."
+- name: Verify Authentik secrets when fail-secure is enabled
+  ansible.builtin.include_tasks: verify_secrets.yml
+  when:
+    - containers_authentik_fail_secure | default(true) | bool
 
 - name: Create Authentik Directories
   ansible.builtin.file:

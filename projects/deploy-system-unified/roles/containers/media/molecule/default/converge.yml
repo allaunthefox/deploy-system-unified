@@ -1,0 +1,13 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  vars:
+    containers_media_stack_enable: true
+    transmission_enable: true
+    containers_media_fail_secure: true
+    transmission_user: "trans_user"
+    transmission_pass: "trans_pass"
+  tasks:
+    - name: Run verify_secrets directly
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"

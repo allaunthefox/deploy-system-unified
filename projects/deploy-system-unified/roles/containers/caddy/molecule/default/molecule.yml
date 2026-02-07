@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: delegated
+platforms:
+  - name: instance
+provisioner:
+  name: ansible
+  inventory:
+    hosts:
+      instance:
+        ansible_connection: local
+  playbooks:
+    converge: converge.yml
+verifier:
+  name: none

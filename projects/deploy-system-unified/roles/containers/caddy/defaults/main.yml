@@ -28,6 +28,9 @@ containers_caddy_extra_networks: "{{ caddy_extra_networks | default(['media_net'
 containers_crowdsec_enable: "{{ crowdsec_enable | default(true) }}"
 containers_crowdsec_image: "{{ crowdsec_image | default('docker.io/crowdsecurity/crowdsec:latest') }}"
 containers_crowdsec_firewall_bouncer_key: "{{ crowdsec_firewall_bouncer_key | default(vault_crowdsec_firewall_bouncer_key | default('CHANGE_ME')) }}"
+
+# Hardening: fail-secure gating for Caddy secret checks
+containers_caddy_fail_secure: "{{ containers_fail_secure | default(true) }}"
 # Crowdsec firewall bouncer pinning (supply-chain hardening)
 containers_crowdsec_firewall_bouncer_version: "{{ crowdsec_firewall_bouncer_version | default('0.0.34') }}"
 containers_crowdsec_firewall_bouncer_sha256: "{{ crowdsec_firewall_bouncer_sha256 | default('8b07e08fb35a90b33eb2403eb93966679b39adb42c9cd03882de66cdf19a949f') }}"

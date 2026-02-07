@@ -93,6 +93,9 @@ containers_media_pod_network: "{{ media_pod_network | default('media_net') }}"
 containers_media_auth_provider: "{{ media_auth_provider | default('none') }}"
 containers_media_auth_url: "{{ media_auth_url | default('https://auth.example.com') }}"
 
+# Hardening: fail-secure gating for media secret checks
+containers_media_fail_secure: "{{ containers_fail_secure | default(true) }}"
+
 
 # Bazarr (Subtitle Management)
 containers_bazarr_enable: "{{ bazarr_enable | default(true) }}"

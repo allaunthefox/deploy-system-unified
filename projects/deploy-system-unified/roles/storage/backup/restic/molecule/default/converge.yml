@@ -1,0 +1,11 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  vars:
+    restic_enable: true
+    restic_fail_secure: true
+    restic_password: "supersecret"
+  tasks:
+    - name: Run restic verify_secrets directly
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"

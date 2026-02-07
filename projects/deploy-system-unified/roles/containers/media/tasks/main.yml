@@ -371,6 +371,11 @@
   when: containers_prowlarr_enable
   notify: reload systemd
 
+- name: Verify media secrets when fail-secure is enabled
+  ansible.builtin.include_tasks: verify_secrets.yml
+  when:
+    - transmission_enable
+
 - name: Enforce CHANGE_ME policy for media stack
   ansible.builtin.include_tasks: "{{ role_path }}/../tasks/policy_change_me.yml"
   vars:

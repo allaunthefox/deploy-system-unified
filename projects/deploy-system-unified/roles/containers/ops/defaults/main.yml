@@ -1,43 +1,80 @@
 ---
 # Defaults for containers/ops
 
-ops_enable: true
-ops_pod_name: "ops_pod"
-ops_pod_network: "ops_net"
-ops_root_dir: "/srv/ops"
-ops_config_dir: "/srv/containers/ops_config"
+# Canonical role variables (preferred)
+containers_ops_enable: true
+containers_ops_pod_name: "ops_pod"
+containers_ops_pod_network: "ops_net"
+containers_ops_root_dir: "/srv/ops"
+containers_ops_config_dir: "/srv/containers/ops_config"
 
-# Homarr (Dashboard)
-homarr_enable: true
-homarr_image: ghcr.io/ajnart/homarr:0.16.0
-homarr_port: 7575
+# Backward-compat aliases for legacy names
+ops_enable: "{{ containers_ops_enable }}"
+ops_pod_name: "{{ containers_ops_pod_name }}"
+ops_pod_network: "{{ containers_ops_pod_network }}"
+ops_root_dir: "{{ containers_ops_root_dir }}"
+ops_config_dir: "{{ containers_ops_config_dir }}"
 
-# Vaultwarden (Bitwarden compatible server)
-vaultwarden_enable: true
-vaultwarden_image: docker.io/vaultwarden/server:1.35.2
-vaultwarden_port: 8080 # Internal mapping
-# Vaultwarden specific security settings
-vaultwarden_signups_allowed: false
-# SECURITY: This should be an Argon2 hash, NOT plain text.
-# Run `argon2 <password> -e` to generate one.
-vaultwarden_admin_token: "CHANGE_ME_IN_VAULT_TO_HASH"
+# Homarr (Dashboard) - canonical names
+containers_homarr_enable: true
+containers_homarr_image: ghcr.io/ajnart/homarr:0.16.0
+containers_homarr_port: 7575
 
-# Wiki.js
-wiki_enable: false
-wiki_image: ghcr.io/requarks/wiki:2
-wiki_port: 3000
-wiki_db_secret: "wiki_pg_pass"
+# Backward-compatible legacy names
+homarr_enable: "{{ containers_homarr_enable }}"
+homarr_image: "{{ containers_homarr_image }}"
+homarr_port: "{{ containers_homarr_port }}"
 
-# Wastebin
-wastebin_enable: false
-wastebin_image: docker.io/quxfoo/wastebin:3.4.0
-wastebin_port: 8088
+# Vaultwarden (Bitwarden compatible server) - canonical names
+containers_vaultwarden_enable: true
+containers_vaultwarden_image: docker.io/vaultwarden/server:1.35.2
+containers_vaultwarden_port: 8080
+containers_vaultwarden_signups_allowed: false
+# SECURITY: This should be an Argon2 hash, NOT plain text. Run `argon2 <password> -e` to generate one.
+containers_vaultwarden_admin_token: "CHANGE_ME_IN_VAULT_TO_HASH"
 
-# Domain integration
-ops_domain: "owowatdis.lol"
+# Per-service fail-secure override (honours global `containers_fail_secure` by default)
+containers_vaultwarden_fail_secure: "{{ containers_fail_secure | default(true) }}"
+vaultwarden_fail_secure: "{{ containers_vaultwarden_fail_secure }}"
 
-# Filebrowser (File Management)
-filebrowser_enable: true
-filebrowser_image: filebrowser/filebrowser:v2.57.0
-# Internal port within the Pod (must not conflict with others in ops_pod)
-filebrowser_port: 8082
+# Backward-compatible legacy names
+vaultwarden_enable: "{{ containers_vaultwarden_enable }}"
+vaultwarden_image: "{{ containers_vaultwarden_image }}"
+vaultwarden_port: "{{ containers_vaultwarden_port }}"
+vaultwarden_signups_allowed: "{{ containers_vaultwarden_signups_allowed }}"
+vaultwarden_admin_token: "{{ containers_vaultwarden_admin_token }}"
+
+# Wiki.js - canonical names
+containers_wiki_enable: false
+containers_wiki_image: ghcr.io/requarks/wiki:2
+containers_wiki_port: 3000
+containers_wiki_db_secret: "wiki_pg_pass"
+
+# Backward-compatible legacy names
+wiki_enable: "{{ containers_wiki_enable }}"
+wiki_image: "{{ containers_wiki_image }}"
+wiki_port: "{{ containers_wiki_port }}"
+wiki_db_secret: "{{ containers_wiki_db_secret }}"
+
+# Wastebin - canonical names
+containers_wastebin_enable: false
+containers_wastebin_image: docker.io/quxfoo/wastebin:3.4.0
+containers_wastebin_port: 8088
+
+# Backward-compatible legacy names
+wastebin_enable: "{{ containers_wastebin_enable }}"
+wastebin_image: "{{ containers_wastebin_image }}"
+wastebin_port: "{{ containers_wastebin_port }}"
+
+# Domain integration (canonical)
+containers_ops_domain: "owowatdis.lol"
+ops_domain: "{{ containers_ops_domain }}"
+
+# Filebrowser (File Management) - canonical
+containers_filebrowser_enable: true
+containers_filebrowser_image: filebrowser/filebrowser:v2.57.0
+containers_filebrowser_port: 8082
+# Backward-compatible legacy names
+filebrowser_enable: "{{ containers_filebrowser_enable }}"
+filebrowser_image: "{{ containers_filebrowser_image }}"
+filebrowser_port: "{{ containers_filebrowser_port }}"

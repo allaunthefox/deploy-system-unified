@@ -1,0 +1,24 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
+    containers_caddy_fail_secure: true
+    crowdsec_enable: true
+    containers_crowdsec_firewall_bouncer_key: "real_key_here"
+  tasks:
+    - name: Ensure molecule_shared exists
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}"
+        state: directory
+        mode: '0700'
+    - name: Create valid caddy env for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/caddy.env"
+        content: "CADDY_ADMIN=1"
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+    - name: Run verify_secrets directly
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"

@@ -1,0 +1,26 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
+    containers_authentik_fail_secure: true
+    authentik_pg_pass: "secure_pass"
+    authentik_secret_key: "supersecretkey"
+  tasks:
+    - name: Ensure molecule_shared exists
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}"
+        state: directory
+        mode: '0700'
+    - name: Create valid authentik env for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/authentik.env"
+        content: |
+          AUTHENTIK_SECRET_KEY=supersecretkey
+          POSTGRES_PASSWORD=secure_pass
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+    - name: Run verify_secrets directly
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
