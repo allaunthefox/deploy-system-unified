@@ -87,6 +87,16 @@
   when: ops_enable
   notify: reload systemd
 
+- name: Set Ops proxy hosts
+  ansible.builtin.set_fact:
+    containers_ops_homarr_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'homarr' }}"
+    containers_ops_vaultwarden_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}"
+    containers_ops_wiki_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wiki' }}"
+    containers_ops_anubis_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'anubis-gatekeeper' }}"
+    containers_ops_wastebin_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wastebin' }}"
+    containers_ops_filebrowser_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'filebrowser' }}"
+  when: ops_enable
+
 - name: Deploy Ops Caddy Configuration
   ansible.builtin.copy:
     dest: "/srv/containers/caddy/conf.d/ops_stack.caddy"
@@ -95,36 +105,36 @@
 
       # Homarr
       dashboard.{{ ops_domain }} {
-        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'homarr' }}:7575
+        reverse_proxy {{ containers_ops_homarr_host }}:7575
       }
 
       # Vaultwarden
       vault.{{ ops_domain }} {
-        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}:8081 {
+        reverse_proxy {{ containers_ops_vaultwarden_host }}:8081 {
            header_up X-Real-IP {remote_host}
         }
-        reverse_proxy /notifications/hub/negotiate {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}:8081
-        reverse_proxy /notifications/hub {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}:3012
+        reverse_proxy /notifications/hub/negotiate {{ containers_ops_vaultwarden_host }}:8081
+        reverse_proxy /notifications/hub {{ containers_ops_vaultwarden_host }}:3012
       }
 
       # Wiki.js
       wiki.{{ ops_domain }} {
-        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wiki' }}:31337
+        reverse_proxy {{ containers_ops_wiki_host }}:31337
       }
 
       # Anubis
       anubis.{{ ops_domain }} {
-        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'anubis-gatekeeper' }}:31338
+        reverse_proxy {{ containers_ops_anubis_host }}:31338
       }
 
       # Wastebin
       paste.{{ ops_domain }} {
-        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wastebin' }}:8088
+        reverse_proxy {{ containers_ops_wastebin_host }}:8088
       }
 
       # Filebrowser
       files.{{ ops_domain }} {
-        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'filebrowser' }}:8082
+        reverse_proxy {{ containers_ops_filebrowser_host }}:8082
       }
     mode: '0644'
   become: true
