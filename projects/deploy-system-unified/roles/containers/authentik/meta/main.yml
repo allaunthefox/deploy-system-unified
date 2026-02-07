@@ -1,0 +1,3 @@
+---
+assumes_permissive: true
+# Authentik role has secrets and may be used with host-network assumptions in some profiles.

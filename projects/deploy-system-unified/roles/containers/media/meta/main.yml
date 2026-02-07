@@ -1,0 +1,3 @@
+---
+assumes_permissive: true
+# Media stack often uses host networking and placeholder credentials in examples.

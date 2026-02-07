@@ -1,0 +1,5 @@
+---
+# Role metadata
+assumes_permissive: true
+# This role configures services that may assume permissive defaults (placeholder secrets, Host networking).
+# See docs/deployment/PERMISSIVE_ROLES.md for details and mitigation steps.

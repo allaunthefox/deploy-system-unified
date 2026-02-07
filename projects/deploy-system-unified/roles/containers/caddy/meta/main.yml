@@ -1,0 +1,3 @@
+---
+assumes_permissive: true
+# Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.

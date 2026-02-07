@@ -1,0 +1,8 @@
+---
+- name: Preflight - produce diagnostic report (non-failing)
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: ops/preflight
+      vars:
+        preflight_diagnose_only: true

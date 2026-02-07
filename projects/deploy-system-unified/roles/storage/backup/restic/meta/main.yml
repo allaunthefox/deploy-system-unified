@@ -1,0 +1,3 @@
+---
+assumes_permissive: true
+# Restic role has default placeholder restic_password values in defaults; consider enforcing via preflight diagnostics.
