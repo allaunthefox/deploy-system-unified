@@ -5,26 +5,26 @@ caddy_generate_config: true
 quadlet_create_network: true
 
 # Rootless Podman Support
-podman_rootless_enabled: false
-podman_rootless_user: "{{ ansible_user | default('prod') }}"
-podman_rootless_user_home: "/home/{{ podman_rootless_user }}"
-podman_rootless_network_mode: "slirp4netns"
-podman_rootless_allow_privileged_ports: false
-podman_rootless_privileged_port_start: 1024
+containers_podman_rootless_enabled: "{{ podman_rootless_enabled | default(false) }}"
+containers_podman_rootless_user: "{{ podman_rootless_user | default(ansible_user | default('prod')) }}"
+containers_podman_rootless_user_home: "{{ podman_rootless_user_home | default('/home/' ~ containers_podman_rootless_user) }}"
+containers_podman_rootless_network_mode: "{{ podman_rootless_network_mode | default('slirp4netns') }}"
+containers_podman_rootless_allow_privileged_ports: "{{ podman_rootless_allow_privileged_ports | default(false) }}"
+containers_podman_rootless_privileged_port_start: "{{ podman_rootless_privileged_port_start | default(1024) }}"
 
 containers_systemd_dir: >-
-  {{ podman_rootless_enabled | bool
-     | ternary(podman_rootless_user_home ~ '/.config/containers/systemd',
+  {{ containers_podman_rootless_enabled | bool
+     | ternary(containers_podman_rootless_user_home ~ '/.config/containers/systemd',
                '/etc/containers/systemd') }}
-containers_systemd_scope: "{{ podman_rootless_enabled | bool | ternary('user', 'system') }}"
-containers_systemd_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
-containers_systemd_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_systemd_scope: "{{ containers_podman_rootless_enabled | bool | ternary('user', 'system') }}"
+containers_systemd_owner: "{{ containers_podman_rootless_enabled | bool | ternary(containers_podman_rootless_user, 'root') }}"
+containers_systemd_group: "{{ containers_podman_rootless_enabled | bool | ternary(containers_podman_rootless_user, 'root') }}"
 containers_secrets_dir: >-
-  {{ podman_rootless_enabled | bool
-     | ternary(podman_rootless_user_home ~ '/.config/containers/secrets',
+  {{ containers_podman_rootless_enabled | bool
+     | ternary(containers_podman_rootless_user_home ~ '/.config/containers/secrets',
                '/etc/containers/secrets') }}
-containers_secrets_owner: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
-containers_secrets_group: "{{ podman_rootless_enabled | bool | ternary(podman_rootless_user, 'root') }}"
+containers_secrets_owner: "{{ containers_podman_rootless_enabled | bool | ternary(containers_podman_rootless_user, 'root') }}"
+containers_secrets_group: "{{ containers_podman_rootless_enabled | bool | ternary(containers_podman_rootless_user, 'root') }}"
 containers_systemd_env: {}
 
 # Policy: warn on weak/default credentials (non-CHANGE_ME) during container deploys
@@ -55,4 +55,4 @@ containers_default_password_checks:
     bad_values: ["admin", "password", "admin123", "root", "changeme"]
     enabled: "{{ authentik_enable | default(false) }}"
 
-container_linger_users: "{{ podman_rootless_enabled | bool | ternary([podman_rootless_user], []) }}"
+containers_linger_users: "{{ containers_podman_rootless_enabled | bool | ternary([containers_podman_rootless_user], []) }}"

@@ -7,10 +7,10 @@
   vars:
     migration_source: "{{ playbook_dir }}/../migration_assets"
     # Destination Paths (Must match role defaults)
-    media_config_dir: "/srv/containers/media_config/default"
+    containers_media_config_dir: "/srv/containers/media_config/default"
     ops_config_dir: "/srv/containers/ops_config"
-    media_puid: 1000
-    media_pgid: 1000
+    containers_media_puid: 1000
+    containers_media_pgid: 1000
 
   tasks:
     # -------------------------------------------------------
@@ -20,36 +20,36 @@
     # Jellyfin
     - name: Ensure Jellyfin config dir exists
       ansible.builtin.file:
-        path: "{{ media_config_dir }}/jellyfin/data"
+        path: "{{ containers_media_config_dir }}/jellyfin/data"
         state: directory
         recurse: true
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
 
     - name: Restore Jellyfin DB
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/jellyfin.db"
-        dest: "{{ media_config_dir }}/jellyfin/data/jellyfin.db"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        dest: "{{ containers_media_config_dir }}/jellyfin/data/jellyfin.db"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
         mode: '0644'
 
     # Radarr (Root config dir usually contains radarr.db)
     - name: Restore Radarr DB
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/radarr.db"
-        dest: "{{ media_config_dir }}/radarr/radarr.db"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        dest: "{{ containers_media_config_dir }}/radarr/radarr.db"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
         mode: '0644'
 
     # Sonarr
     - name: Restore Sonarr DB
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/sonarr.db"
-        dest: "{{ media_config_dir }}/sonarr/sonarr.db"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        dest: "{{ containers_media_config_dir }}/sonarr/sonarr.db"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
         mode: '0644'
 
     # Vaultwarden (Volume Archive)
@@ -57,15 +57,15 @@
       ansible.builtin.file:
         path: "{{ ops_config_dir }}/vaultwarden"
         state: directory
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
 
     - name: Restore Vaultwarden Data
       ansible.builtin.unarchive:
         src: "{{ migration_source }}/databases/volumes/vaultwarden.tar"
         dest: "{{ ops_config_dir }}/vaultwarden"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
         # "strip_components" depends on how it was tarred.
         # Inspecting lists showed "databases/volumes/vaultwarden.tar", contents inside usually start with "data/" or "."
         # Safest is to extract and then move if needed, or assume standard structure.
@@ -78,16 +78,16 @@
       ansible.builtin.unarchive:
         src: "{{ migration_source }}/databases/volumes/homarr.tar"
         dest: "{{ ops_config_dir }}/homarr"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
 
     # Wastebin
     - name: Restore Wastebin Data
       ansible.builtin.unarchive:
         src: "{{ migration_source }}/databases/volumes/wastebin.tar"
         dest: "{{ ops_config_dir }}/wastebin"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
 
     # -------------------------------------------------------
     # 2. POSTGRESQL RESTORATIONS (Authentik & Wiki.js)
@@ -128,9 +128,9 @@
     - name: Fix Recursive Permissions
       ansible.builtin.file:
         path: "{{ item }}"
-        owner: "{{ media_puid }}"
-        group: "{{ media_pgid }}"
+        owner: "{{ containers_media_puid }}"
+        group: "{{ containers_media_pgid }}"
         recurse: true
       loop:
-        - "{{ media_config_dir }}"
+        - "{{ containers_media_config_dir }}"
         - "{{ ops_config_dir }}"

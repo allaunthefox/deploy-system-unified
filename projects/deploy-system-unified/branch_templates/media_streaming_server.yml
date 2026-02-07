@@ -29,6 +29,7 @@
     system_ssh_port: 2222
 
     # Rootless Podman (Host Networking Model)
+    # Reconfigured via kernel tuning to allow unprivileged binding
     podman_rootless_enabled: true
     podman_rootless_user: "{{ system_admin_user | default('admin') }}"
     podman_rootless_user_home: "/home/{{ system_admin_user | default('admin') }}"
@@ -36,10 +37,11 @@
     podman_rootless_privileged_port_start: 80
 
     # Memory Tuning - Database Profile for SQLite (Jellyfin/Arr) Performance
-    core_memory_workload_profile: "database"
-    memory_dirty_bytes: 4294967296
-    memory_dirty_background_bytes: 1073741824
-    core_memory_swappiness: 10
+    memory_workload_profile: "database"
+    # Mapping vm_dirty_* to memory_dirty_* for core/memory role compatibility
+    memory_dirty_bytes: 4294967296          # 4GB Dirty Limit for massive file moves
+    memory_dirty_background_bytes: 1073741824 # 1GB Background starting point
+    memory_swappiness: 10
 
     # VM Tuning for Media Buffers
     vm_dirty_ratio: "10"
@@ -54,25 +56,47 @@
       - { path: "/@var", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var" }
       - { path: "/@srv", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@srv" }
 
-    # Firewall Configuration
-    firewall_enabled: true
-    firewall_forward_policy: "DROP"
+# Firewall Configuration
+# Host Mode requires strictly allowing the service ports
+firewall_enabled: true
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+# Volatile Secrets Configuration
+volatile_secrets: false  # Set to true to use tmpfs for secrets
+    firewall_forward_policy: "DROP" # Forwarding not required for Host Mode
     firewall_allowed_tcp_ports:
-      - "{{ ssh_effective_port | default(system_ssh_port) }}"
+      - "{{ ssh_effective_port | default(system_ssh_port) | default(2222) }}"
       - 80
       - 443
-      - 51413
+      - 51413 # Transmission Peer
     firewall_allowed_udp_ports:
       - 443
-      - 51413
-
-    # Volatile Secrets
-    volatile_secrets: false
+      - 51413 # Transmission Peer
 
   pre_tasks:
     - name: Ensure Facts are Gathered
       ansible.builtin.setup:
 
+    - name: Reconfigure Kernel for Host Based Networking (Media Profile)
+
+  pre_tasks:
     - name: Mount secrets directory as tmpfs (volatile mode)
       ansible.builtin.mount:
         path: /var/lib/deploy-system/secrets
@@ -83,7 +107,71 @@
       when: volatile_secrets | bool
       tags: [security, ephemeral]
 
-    - name: Reconfigure Kernel for Host Based Networking (Media Profile)
+  pre_tasks:
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
+
+  pre_tasks:
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
+
+  pre_tasks:
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
+
+  pre_tasks:
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
+
+  pre_tasks:
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
+
+  pre_tasks:
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
       ansible.posix.sysctl:
         name: "{{ item.name }}"
         value: "{{ item.value }}"
@@ -91,8 +179,11 @@
         sysctl_file: /etc/sysctl.d/99-media-profile.conf
         reload: true
       loop:
+        # Allow Rootless Podman to use User Namespaces (Required on Hardened Arch)
         - { name: 'kernel.unprivileged_userns_clone', value: '1' }
+        # Allow Rootless Podman to bind to privileged ports (80/443)
         - { name: 'net.ipv4.ip_unprivileged_port_start', value: '80' }
+        # Performance Tuning for Media Buffers
         - { name: 'vm.dirty_ratio', value: '{{ vm_dirty_ratio }}' }
         - { name: 'vm.dirty_background_ratio', value: '{{ vm_dirty_background_ratio }}' }
         - { name: 'vm.dirty_bytes', value: '{{ vm_dirty_bytes }}' }
@@ -152,3 +243,118 @@
       when: volatile_secrets | bool
       tags: [cleanup, ephemeral]
       changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true

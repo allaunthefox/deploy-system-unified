@@ -46,22 +46,7 @@
     content: |
       [Pod]
       PodName={{ ops_pod_name }}
-      {% if podman_rootless_enabled | bool %}
-      Network={{ ops_pod_network }}.network
-
-      # Published Ports (rootless)
-      # Homarr
-      PublishPort={{ homarr_port }}:7575
-
-      # Vaultwarden (WebSocket + HTTP)
-      PublishPort=3012:3012
-
-      # Filebrowser
-      PublishPort={{ filebrowser_port }}:8082
-
-      # HTTP port usually proxied, but exposing for verify
-      PublishPort=8081:8081
-      {% else %}
+      {% if ops_pod_network == 'host' or (not podman_rootless_enabled | bool) %}
       Network=host
 
       # Published Ports are implicit in Network=host mode
@@ -76,6 +61,21 @@
 
       # HTTP port usually proxied, but exposing for verify
       # PublishPort={{ vaultwarden_port }}:80
+      {% else %}
+      Network={{ ops_pod_network }}.network
+
+      # Published Ports (rootless)
+      # Homarr
+      PublishPort={{ homarr_port }}:7575
+
+      # Vaultwarden (WebSocket + HTTP)
+      PublishPort=3012:3012
+
+      # Filebrowser
+      PublishPort={{ filebrowser_port }}:8082
+
+      # HTTP port usually proxied, but exposing for verify
+      PublishPort=8081:8081
       {% endif %}
 
       [Install]
@@ -95,36 +95,36 @@
 
       # Homarr
       dashboard.{{ ops_domain }} {
-        reverse_proxy {{ podman_rootless_enabled | bool | ternary('homarr', 'localhost') }}:7575
+        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'homarr' }}:7575
       }
 
       # Vaultwarden
       vault.{{ ops_domain }} {
-        reverse_proxy {{ podman_rootless_enabled | bool | ternary('vaultwarden', 'localhost') }}:8081 {
+        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}:8081 {
            header_up X-Real-IP {remote_host}
         }
-        reverse_proxy /notifications/hub/negotiate {{ podman_rootless_enabled | bool | ternary('vaultwarden', 'localhost') }}:8081
-        reverse_proxy /notifications/hub {{ podman_rootless_enabled | bool | ternary('vaultwarden', 'localhost') }}:3012
+        reverse_proxy /notifications/hub/negotiate {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}:8081
+        reverse_proxy /notifications/hub {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}:3012
       }
 
       # Wiki.js
       wiki.{{ ops_domain }} {
-        reverse_proxy {{ podman_rootless_enabled | bool | ternary('wiki', 'localhost') }}:31337
+        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wiki' }}:31337
       }
 
       # Anubis
       anubis.{{ ops_domain }} {
-        reverse_proxy {{ podman_rootless_enabled | bool | ternary('anubis-gatekeeper', 'localhost') }}:31338
+        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'anubis-gatekeeper' }}:31338
       }
 
       # Wastebin
       paste.{{ ops_domain }} {
-        reverse_proxy {{ podman_rootless_enabled | bool | ternary('wastebin', 'localhost') }}:8088
+        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wastebin' }}:8088
       }
 
       # Filebrowser
       files.{{ ops_domain }} {
-        reverse_proxy {{ podman_rootless_enabled | bool | ternary('filebrowser', 'localhost') }}:8082
+        reverse_proxy {{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'filebrowser' }}:8082
       }
     mode: '0644'
   become: true

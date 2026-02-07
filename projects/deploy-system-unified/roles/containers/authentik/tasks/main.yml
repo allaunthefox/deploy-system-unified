@@ -46,7 +46,11 @@
       Image={{ authentik_postgres_image }}
       ContainerName=authentik-postgres
 
+      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      Network=host
+      {% else %}
       Network={{ authentik_network_name }}.network
+      {% endif %}
 
       EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
@@ -75,7 +79,11 @@
       Image={{ authentik_redis_image }}
       ContainerName=authentik-redis
 
+      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      Network=host
+      {% else %}
       Network={{ authentik_network_name }}.network
+      {% endif %}
 
       [Service]
       Restart=always
@@ -101,8 +109,14 @@
       Image={{ authentik_image }}
       ContainerName=authentik-server
 
+      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      Network=host
+      {% else %}
       Network={{ authentik_network_name }}.network
+      {% endif %}
       # Internal port 9000, exposed to Caddy via bridge
+
+      Exec=server
 
       EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
@@ -111,8 +125,6 @@
 
       [Service]
       Restart=always
-      # Command required for server component
-      ExecStart=server
 
       [Install]
       WantedBy=multi-user.target default.target
@@ -135,7 +147,13 @@
       Image={{ authentik_image }}
       ContainerName=authentik-worker
 
+      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      Network=host
+      {% else %}
       Network={{ authentik_network_name }}.network
+      {% endif %}
+
+      Exec=worker
 
       EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
@@ -144,8 +162,6 @@
 
       [Service]
       Restart=always
-      # Command required for worker component
-      ExecStart=worker
 
       [Install]
       WantedBy=multi-user.target default.target
@@ -161,12 +177,12 @@
     content: |
       # Authentik Config
       auth.example.com {
-        reverse_proxy authentik-server:9000
+        reverse_proxy {{ 'localhost' if (authentik_network_name == 'host' or not podman_rootless_enabled | default(true) | bool) else 'authentik-server' }}:9000
       }
 
       # Reusable snippet for other sites to protect themselves
       (authentik_protect) {
-        forward_auth authentik-server:9000 {
+        forward_auth {{ 'localhost' if (authentik_network_name == 'host' or not podman_rootless_enabled | default(true) | bool) else 'authentik-server' }}:9000 {
             uri /outpost.goauthentik.io/auth/caddy
             copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name
             copy_headers X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks

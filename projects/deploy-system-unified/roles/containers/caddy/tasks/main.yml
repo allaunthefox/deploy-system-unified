@@ -110,7 +110,10 @@
       EnvironmentFile={{ containers_secrets_dir }}/caddy.env
 
       ContainerName=caddy
-      {% if podman_rootless_enabled | bool %}
+      {% if caddy_network == 'host' or (not podman_rootless_enabled | bool) %}
+      # Primary Gateway Network (Host Mode for VPS compatibility)
+      Network=host
+      {% else %}
       # Rootless networking uses user-defined networks + published ports
       Network={{ caddy_network }}.network
       {% for net in caddy_extra_networks | default([]) %}
@@ -119,17 +122,6 @@
       PublishPort={{ caddy_http_port }}:80
       PublishPort={{ caddy_https_port }}:443
       PublishPort={{ caddy_https_port_udp }}:443/udp
-      {% else %}
-      # Primary Gateway Network (Host Mode for VPS compatibility)
-      Network=host
-      # Networks disabled due to missing bridge support
-      # Network={{ caddy_network }}.network
-      # {% for net in caddy_extra_networks | default([]) %}
-      # Network={{ net }}.network
-      # {% endfor %}
-      # PublishPort=80:80
-      # PublishPort=443:443
-      # PublishPort=443:443/udp
       {% endif %}
       Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       Volume=/srv/containers/caddy/data:/data:Z
