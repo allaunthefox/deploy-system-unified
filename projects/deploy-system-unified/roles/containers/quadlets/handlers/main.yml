@@ -1,6 +1,6 @@
 ---
 # Handlers for containers/quadlets role
-- name: reload systemd
+- name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"

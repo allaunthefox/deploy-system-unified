@@ -11,20 +11,20 @@
 - name: Check for Quadlet checkpoint
   ansible.builtin.stat:
     path: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
-  register: quadlet_checkpoint_stat
+  register: containers_quadlet_checkpoint_stat
   become: true
 
 - name: Read existing checkpoint
   ansible.builtin.slurp:
     src: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
-  register: checkpoint_content
-  when: quadlet_checkpoint_stat.stat.exists
+  register: containers_checkpoint_content
+  when: containers_quadlet_checkpoint_stat.stat.exists
   become: true
 
 - name: Restore object UUID from checkpoint
   ansible.builtin.set_fact:
-    object_uuid: "{{ (checkpoint_content.content | b64decode | from_json).uuid }}"
-  when: quadlet_checkpoint_stat.stat.exists
+    containers_object_uuid: "{{ (containers_checkpoint_content.content | b64decode | from_json).uuid }}"
+  when: containers_quadlet_checkpoint_stat.stat.exists
 
 - name: Generate new Network UUID (if no checkpoint)
   ansible.builtin.import_role:
@@ -55,6 +55,9 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: quadlet_create_network | default(true)
+  # Ensure object_uuid compatibility with legacy variable name
+  vars:
+    object_uuid: "{{ containers_object_uuid | default(object_uuid | default('')) }}"
 - name: Deploy custom quadlet files
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -78,10 +81,10 @@
 - name: List generated quadlet services
   ansible.builtin.shell:
     cmd: >-
-      {{ (podman_rootless_enabled | bool)
+      {{ (containers_podman_rootless_enabled | bool)
          | ternary("bash -o pipefail -c 'systemctl --user list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'",
                    "bash -o pipefail -c 'systemctl list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'") }}
-  register: quadlet_services
+  register: containers_quadlet_services
   changed_when: false
   failed_when: false
   environment: "{{ containers_systemd_env }}"
@@ -90,7 +93,7 @@
   when: ansible_facts['service_mgr'] == 'systemd'
 - name: Display available quadlet services
   ansible.builtin.debug:
-    msg: "Available quadlet services: {{ quadlet_services.stdout_lines | default([]) }}"
+    msg: "Available quadlet services: {{ containers_quadlet_services.stdout_lines | default([]) }}"
   when: ansible_facts['service_mgr'] == 'systemd'
 - name: Set containers quadlets completion flag
   ansible.builtin.set_fact:
