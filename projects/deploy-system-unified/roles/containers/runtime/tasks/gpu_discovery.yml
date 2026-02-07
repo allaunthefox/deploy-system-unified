@@ -18,21 +18,24 @@
   block:
     - name: Check for NVIDIA GPUs
       ansible.builtin.shell:
-        cmd: lspci -nn | grep -E "(NVIDIA|3D Controller)"
+        cmd: >-
+          bash -o pipefail -c 'lspci -nn | grep -E "(NVIDIA|3D Controller)"'
       register: nvidia_gpu_info
       changed_when: false
       failed_when: false
       become: false
     - name: Check for AMD GPUs
       ansible.builtin.shell:
-        cmd: lspci -nn | grep -E "(AMD|ATI)"
+        cmd: >-
+          bash -o pipefail -c 'lspci -nn | grep -E "(AMD|ATI)"'
       register: amd_gpu_info
       changed_when: false
       failed_when: false
       become: false
     - name: Check for Intel GPUs
       ansible.builtin.shell:
-        cmd: lspci -nn | grep -E "(Intel|VGA compatible controller)"
+        cmd: >-
+          bash -o pipefail -c 'lspci -nn | grep -E "(Intel|VGA compatible controller)"'
       register: intel_gpu_info
       changed_when: false
       failed_when: false
@@ -63,7 +66,8 @@
       when: containers_gpu_vendor_detected == "nvidia" and nvidia_gpu_model.stdout | length > 0
     - name: Detect NVIDIA MIG support
       ansible.builtin.shell:
-        cmd: nvidia-smi -q | grep -E "(Multi-Instance GPU|Disabled|MIG)"
+        cmd: >-
+          bash -o pipefail -c 'nvidia-smi -q | grep -E "(Multi-Instance GPU|Disabled|MIG)"'
       register: nvidia_mig_support
       changed_when: false
       failed_when: false
@@ -75,7 +79,8 @@
       when: containers_gpu_vendor_detected == "nvidia" and nvidia_mig_support.stdout | length > 0
     - name: Detect AMD GPU model
       ansible.builtin.shell:
-        cmd: lspci -nn -s $(lspci -nn | grep -E "(AMD|ATI)" | head -1 | cut -d' ' -f1) | cut -d':' -f3
+        cmd: >-
+          bash -o pipefail -c 'lspci -nn -s $(lspci -nn | grep -E "(AMD|ATI)" | head -1 | cut -d" " -f1) | cut -d":" -f3'
       register: amd_gpu_model
       changed_when: false
       failed_when: false
@@ -87,7 +92,8 @@
       when: containers_gpu_vendor_detected == "amd" and amd_gpu_model.stdout | length > 0
     - name: Detect Intel GPU model
       ansible.builtin.shell:
-        cmd: lspci -nn -s $(lspci -nn | grep -E "(Intel)" | head -1 | cut -d' ' -f1) | cut -d':' -f3
+        cmd: >-
+          bash -o pipefail -c 'lspci -nn -s $(lspci -nn | grep -E "(Intel)" | head -1 | cut -d" " -f1) | cut -d":" -f3'
       register: intel_gpu_model
       changed_when: false
       failed_when: false

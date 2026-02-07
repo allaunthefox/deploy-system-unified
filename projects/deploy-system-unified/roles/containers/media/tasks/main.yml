@@ -26,11 +26,11 @@
     group: "{{ media_pgid }}"
   loop:
     - "{{ media_root_dir }}"
-    - "{{ media_root_dir}}/movies"
-    - "{{ media_root_dir}}/tv"
-    - "{{ media_root_dir}}/music"
-    - "{{ media_root_dir}}/books"
-    - "{{ media_root_dir}}/downloads"
+    - "{{ media_root_dir }}/movies"
+    - "{{ media_root_dir }}/tv"
+    - "{{ media_root_dir }}/music"
+    - "{{ media_root_dir }}/books"
+    - "{{ media_root_dir }}/downloads"
     - "{{ media_config_dir }}"
     - "{{ media_config_dir }}/jellyfin"
     - "{{ media_config_dir }}/plex"
@@ -54,7 +54,22 @@
       [Pod]
       PodName={{ media_pod_name }}
 
-      {% if podman_rootless_enabled | bool %}
+      {% if media_pod_network == 'host' or (not podman_rootless_enabled | bool) %}
+      # Host Networking (Rootless or Rootful)
+      Network=host
+
+      # Published Ports are implicit in Network=host mode
+      # {% if not media_gatekeeper_mode %}
+      # PublishPort={{ jellyfin_port_http }}:8096
+      # ...
+      # {% endif %}
+
+      # BitTorrent Peer Ports (Must be Public/Ingress)
+      # Apply port offset for multi-tenancy support
+      # PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413
+      # PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413/udp
+
+      {% else %}
       # Rootless networking uses user-defined networks + published ports
       Network={{ media_pod_network }}.network
 
@@ -78,31 +93,6 @@
       # Apply port offset for multi-tenancy support
       PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413
       PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413/udp
-      {% else %}
-      # Networking - Host Mode for VPS compatibility
-      Network=host
-
-      # Published Ports are implicit in Network=host mode and invalid to specify explicitly
-      # {% if not media_gatekeeper_mode %}
-      # PublishPort={{ jellyfin_port_http }}:8096
-      # PublishPort={{ plex_port_http }}:32400
-      # PublishPort={{ radarr_port }}:7878
-      # PublishPort={{ sonarr_port }}:8989
-      # PublishPort={{ lidarr_port }}:8686
-      # PublishPort={{ readarr_port }}:8787
-      # PublishPort={{ prowlarr_port }}:9696
-      # PublishPort={{ jellyseerr_port }}:5055
-      # PublishPort={{ navidrome_port }}:4533
-      # PublishPort={{ transmission_port_web }}:9091
-      # PublishPort={{ bazarr_port }}:6767
-      # PublishPort={{ kavita_port }}:5000
-      # PublishPort={{ audiobookshelf_port }}:13378
-      # {% endif %}
-
-      # BitTorrent Peer Ports (Must be Public/Ingress)
-      # Apply port offset for multi-tenancy support
-      # PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413
-      # PublishPort={{ transmission_port_peer | int + media_port_offset | int }}:51413/udp
       {% endif %}
 
       [Install]
@@ -120,15 +110,14 @@
     content: |
       # Media Stack Reverse Proxy Configuration
       # Instance: {{ media_instance_name }}
-      # Assumes Caddy and Media Pod share the same network (deploy-net)
-      # and can resolve container names.
+      # Assumes Caddy and Media Pod share the same network (deploy-net) OR both are Host Mode.
 
       # Jellyfin
       jellyfin.{{ media_domain }} {
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy jellyfin-{{ media_instance_name }}:8096
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'jellyfin-' + media_instance_name }}:8096
       }
 
       # Radarr
@@ -136,7 +125,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy radarr-{{ media_instance_name }}:7878
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'radarr-' + media_instance_name }}:7878
       }
 
       # Sonarr
@@ -144,7 +133,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy sonarr-{{ media_instance_name }}:8989
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'sonarr-' + media_instance_name }}:8989
       }
 
       # Lidarr
@@ -152,7 +141,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy lidarr-{{ media_instance_name }}:8686
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'lidarr-' + media_instance_name }}:8686
       }
 
       # Readarr
@@ -160,7 +149,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy readarr-{{ media_instance_name }}:8787
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'readarr-' + media_instance_name }}:8787
       }
 
       # Prowlarr
@@ -168,7 +157,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy prowlarr-{{ media_instance_name }}:9696
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'prowlarr-' + media_instance_name }}:9696
       }
 
       # Jellyseerr
@@ -176,7 +165,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy jellyseerr-{{ media_instance_name }}:5055
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'jellyseerr-' + media_instance_name }}:5055
       }
 
       # Navidrome
@@ -184,13 +173,13 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy navidrome-{{ media_instance_name }}:4533
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'navidrome-' + media_instance_name }}:4533
       }
 
       # Plex
       # Plex typically handles its own auth and remote access, but we can proxy it.
       plex.{{ media_domain }} {
-        reverse_proxy plex-{{ media_instance_name }}:32400
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'plex-' + media_instance_name }}:32400
       }
 
       # Transmission
@@ -198,7 +187,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy transmission-{{ media_instance_name }}:9091
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'transmission-' + media_instance_name }}:9091
       }
 
       # Bazarr
@@ -206,7 +195,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy bazarr-{{ media_instance_name }}:6767
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'bazarr-' + media_instance_name }}:6767
       }
 
       # Kavita
@@ -214,7 +203,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy kavita-{{ media_instance_name }}:5000
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'kavita-' + media_instance_name }}:5000
       }
 
       # Audiobookshelf
@@ -222,7 +211,7 @@
         {% if media_auth_provider == 'authentik' %}
         import authentik_protect
         {% endif %}
-        reverse_proxy audiobookshelf-{{ media_instance_name }}:13378
+        reverse_proxy {{ 'localhost' if (media_pod_network == 'host' or not podman_rootless_enabled | bool) else 'audiobookshelf-' + media_instance_name }}:13378
       }
     mode: '0644'
   become: true
@@ -249,8 +238,6 @@
       {% endif %}
 
       # Resource Limits
-      MemoryMax={{ jellyfin_memory_max }}
-
       # Volumes
       Volume={{ media_config_dir }}/jellyfin:/config:Z
       Volume={{ media_root_dir }}:/data:Z
@@ -259,6 +246,7 @@
       Environment=TZ={{ media_timezone }}
 
       [Service]
+      MemoryMax={{ jellyfin_memory_max }}
       Restart=always
       TimeoutStartSec=300
 

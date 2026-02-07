@@ -79,8 +79,8 @@
   ansible.builtin.shell:
     cmd: >-
       {{ (podman_rootless_enabled | bool)
-         | ternary('systemctl --user list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"',
-                   'systemctl list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"') }}
+         | ternary("bash -o pipefail -c 'systemctl --user list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'",
+                   "bash -o pipefail -c 'systemctl list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'") }}
   register: quadlet_services
   changed_when: false
   failed_when: false
