@@ -14,8 +14,11 @@
   vars:
     # VPS Provider Identification
     vps_provider: "contabo"
-    # Allow TCP forwarding for VPS environments (required for Contabo)
-    sshd_allow_tcp_forwarding: true
+    # Allow TCP forwarding for VPS environments (deprecated).
+    # Prefer enabling trusted-group exceptions instead of a global allow.
+    sshd_allow_tcp_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
     # Set SSH port to 2222 to match inventory configuration
     system_ssh_port: 2222
     # Instance-Specific Resource Optimization (8 vCPU / 24 GB RAM)

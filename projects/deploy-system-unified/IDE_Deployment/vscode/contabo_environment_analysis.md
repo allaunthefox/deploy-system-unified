@@ -55,12 +55,14 @@ The current MTU is set to 1500, but Contabo's virtual bridge environment recomme
 
 ### TCP Forwarding
 
-The project's `vps_hardened.yml` template enables TCP forwarding:
+The project's `vps_hardened.yml` template sets TCP forwarding to disabled by default and uses a trusted-group exception pattern:
 
 ```yaml
 vars:
-    # Allow TCP forwarding for VPS environments (required for Contabo)
-    sshd_allow_tcp_forwarding: true
+    # Allow TCP forwarding for VPS environments (deprecated). Use trusted-group exceptions instead
+    sshd_allow_tcp_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
 ```
 
 ### Existing Contabo Role

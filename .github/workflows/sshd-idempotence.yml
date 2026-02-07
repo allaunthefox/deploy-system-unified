@@ -1,0 +1,25 @@
+name: SSHD Idempotence Test
+
+on:
+  push:
+    branches: [ main, 'chore/*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  idempotence:
+    name: Run idempotence verification in container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run idempotence test inside Docker container
+        run: |
+          set -euo pipefail
+          # Run an ephemeral container, install minimal deps and run the test playbook
+          docker run --rm -v "$PWD":/workspace -w /workspace ubuntu:22.04 bash -lc '
+            export DEBIAN_FRONTEND=noninteractive; apt-get update -y; apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg; 
+            pip3 install --no-cache-dir "ansible-core>=2.20"; 
+            ansible-playbook projects/deploy-system-unified/roles/security/sshd/tests/idempotence.yml --connection=local;
+          '
