@@ -6,7 +6,15 @@ from ansiblelint.rules import RulesCollection
 from ansiblelint.rules import RulesCollection
 
 # Import the rule class directly
-from ansiblelint.rules.no_roles_in_main import NoRolesInMainRule
+# Import the rule module directly from file to ensure tests load the local rule
+import importlib.util
+import pathlib
+
+rule_path = pathlib.Path(__file__).resolve().parent.parent / 'rules' / 'no_roles_in_main.py'
+spec = importlib.util.spec_from_file_location('dsu_rules.no_roles_in_main', str(rule_path))
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+NoRolesInMainRule = module.NoRolesInMainRule
 
 
 def make_file(path):
