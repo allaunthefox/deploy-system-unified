@@ -3,7 +3,9 @@
 - name: Validate Caddy Secrets (Red Team Hardening)
   ansible.builtin.assert:
     that:
-      - crowdsec_firewall_bouncer_key | default('CHANGE_ME') != 'CHANGE_ME'
+      - crowdsec_firewall_bouncer_key is defined
+      - (crowdsec_firewall_bouncer_key | default('')) != 'CHANGE_ME'
+      - (crowdsec_firewall_bouncer_key | default('') | length) > 0
     fail_msg: "Caddy secrets missing or default. Set crowdsec_firewall_bouncer_key."
   when:
     - crowdsec_enable | default(false)
