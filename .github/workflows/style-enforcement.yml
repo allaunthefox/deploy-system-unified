@@ -39,6 +39,9 @@ jobs:
       - name: Run enforcement (generate report)
         run: |
           set -o pipefail
+          # Ensure style tools are available in the runner
+          python -m pip install --upgrade pip || true
+          python -m pip install --upgrade ansible-lint yamllint || true
           SCRIPT=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
           ./$SCRIPT/enforce_style_guide.sh --report || echo $? > .enforce_status
         continue-on-error: true
