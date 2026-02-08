@@ -13,7 +13,8 @@
   ansible.builtin.assert:
     that:
       - monitoring_grafana_admin_password is defined
-      - monitoring_grafana_admin_password != "CHANGE_ME_IN_VAULT"
+      - (monitoring_grafana_admin_password | default('')) != "CHANGE_ME_IN_VAULT"
+      - (monitoring_grafana_admin_password | default('') | length) > 0
     fail_msg: "Grafana admin password is not set. Define 'monitoring_grafana_admin_password' in encrypted inventory."
   when: monitoring_enable | bool
 

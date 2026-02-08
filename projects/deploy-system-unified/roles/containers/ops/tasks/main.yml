@@ -11,7 +11,8 @@
   ansible.builtin.assert:
     that:
       - vaultwarden_admin_token is defined
-      - vaultwarden_admin_token != "CHANGE_ME_IN_VAULT_TO_HASH"
+      - (vaultwarden_admin_token | default('')) != "CHANGE_ME_IN_VAULT_TO_HASH"
+      - (vaultwarden_admin_token | default('') | length) > 0
     fail_msg: "Vaultwarden admin token is not set. Define 'vaultwarden_admin_token' in encrypted inventory."
   when:
     - vaultwarden_enable | bool
