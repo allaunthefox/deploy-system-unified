@@ -8,7 +8,7 @@ driver:
   name: podman
 platforms:
   - name: caddy-negative-test
-    image: docker.io/library/fedora:latest
+    image: quay.io/ansible/ansible-runner:latest
     command: /sbin/init
     privileged: true
     volumes:
