@@ -54,19 +54,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-<<<<<<< HEAD
       - name: Install Podman via apt
         run: |
           sudo apt-get update
           sudo apt-get install -y podman
           podman --version
-=======
-      - name: Install Podman via apt
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
-          podman --version
-
 
       - name: Check Podman availability
         run: |
