@@ -56,11 +56,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      - name: Set up Podman
-        uses: containers/podman-action@v2
-        with:
-          # Use latest stable Podman available via the action
-          install: true
+      - name: Install Podman (apt)
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install podman
 
       - name: Check Podman availability
         run: |
@@ -104,7 +103,7 @@ jobs:
           test_case: ${{ matrix.test_case }}
           
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: negative-test-results-${{ matrix.role }}-${{ matrix.test_case }}
