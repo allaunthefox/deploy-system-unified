@@ -5,8 +5,8 @@
   tasks:
     - name: Run verify_secrets and capture result
       ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
-      ignore_errors: true
       register: verify_result
+      failed_when: false
     
     - name: Assert that verify_secrets failed as expected
       ansible.builtin.assert:
