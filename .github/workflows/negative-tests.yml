@@ -101,6 +101,7 @@ jobs:
           test_case: ${{ matrix.test_case }}
 
       - name: Set artifact name
+        if: always()
         run: |
           ART="${{ matrix.role }}"
           ART=${ART//\//-}
