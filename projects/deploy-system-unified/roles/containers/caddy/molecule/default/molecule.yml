@@ -5,7 +5,7 @@ driver:
   name: podman
 platforms:
   - name: instance
-    image: fedora:latest
+    image: docker.io/library/fedora:latest
     command: /sbin/init
     privileged: true
     volumes:
