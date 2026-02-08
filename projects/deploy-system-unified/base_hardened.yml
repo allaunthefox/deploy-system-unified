@@ -5,7 +5,7 @@
 - ansible.builtin.import_playbook: playbooks/bootstrap_ssh.yml
 
 - name: Apply Secure Infrastructure Base
-  hosts: all
+  hosts: local
   become: true
   vars:
     base_hardened_roles:

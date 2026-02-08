@@ -1,0 +1,73 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
+    media_enable: true
+    media_secrets_fail_secure: true
+    test_case: "{{ lookup('env','test_case') | default('missing_file') }}"
+  tasks:
+    - name: Ensure molecule_shared exists
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}"
+        state: directory
+        mode: '0700'
+    
+    # Test Case 1: Missing jellyfin.env file (should fail)
+    - name: Create missing jellyfin.env for test
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}/jellyfin.env"
+        state: absent
+      when: test_case == 'missing_jellyfin_file'
+    
+    # Test Case 2: Wrong permissions on jellyfin.env (should fail)
+    - name: Create jellyfin.env with wrong permissions for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/jellyfin.env"
+        content: |
+          JELLYFIN_PWD_HASH=real_password_hash_here
+          JELLYFIN_API_KEY=real_api_key_here
+        mode: '0644'  # Wrong permissions
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'wrong_jellyfin_permissions'
+    
+    # Test Case 3: Placeholder values in jellyfin.env (should fail)
+    - name: Create jellyfin.env with placeholder values for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/jellyfin.env"
+        content: |
+          JELLYFIN_PWD_HASH=CHANGE_ME_IN_VAULT_TO_HASH
+          JELLYFIN_API_KEY=CHANGE_ME_IN_VAULT_TO_HASH
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'placeholder_jellyfin_values'
+    
+    # Test Case 4: Missing radarr.env file (should fail)
+    - name: Create missing radarr.env for test
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}/radarr.env"
+        state: absent
+      when: test_case == 'missing_radarr_file'
+    
+    # Test Case 5: Wrong owner on media secrets (should fail)
+    - name: Create media secrets with wrong owner for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/jellyfin.env"
+        content: |
+          JELLYFIN_PWD_HASH=real_password_hash_here
+          JELLYFIN_API_KEY=real_api_key_here
+        mode: '0600'
+        owner: "root"  # Wrong owner
+      when: test_case == 'wrong_media_owner'
+    
+    # Test Case 6: Empty media secrets file (should fail)
+    - name: Create empty media secrets for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/jellyfin.env"
+        content: ""
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'empty_media_file'
+    

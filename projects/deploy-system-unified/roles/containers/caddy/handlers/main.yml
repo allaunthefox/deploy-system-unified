@@ -1,6 +1,6 @@
 ---
-# Handlers for containers roles
-- name: reload systemd
+# Handlers for containers/caddy
+- name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
@@ -8,27 +8,13 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
 
-- name: restart caddy
-  block:
-    - name: Check if caddy unit exists
-      ansible.builtin.command:
-        cmd: >-
-          {{ containers_systemd_scope == 'user'
-             | ternary('systemctl --user cat caddy.service',
-                       'systemctl cat caddy.service') }}
-      register: caddy_unit_check
-      changed_when: false
-      failed_when: false
-      become: true
-      become_user: "{{ containers_systemd_owner }}"
-
-    - name: Restart caddy service
-      ansible.builtin.systemd:
-        name: caddy
-        state: restarted
-        enabled: true
-        scope: "{{ containers_systemd_scope }}"
-      environment: "{{ containers_systemd_env }}"
-      become: true
-      become_user: "{{ containers_systemd_owner }}"
-      when: caddy_unit_check.rc == 0
+- name: Restart Caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: restarted
+    enabled: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  failed_when: false # Allow skip if not yet deployed

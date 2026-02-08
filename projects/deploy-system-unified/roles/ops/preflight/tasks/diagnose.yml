@@ -1,0 +1,42 @@
+---
+# Non-failing diagnostics for preflight: collects placeholder/secrets issues and writes a JSON report locally.
+- name: Initialize preflight diagnose report
+  ansible.builtin.set_fact:
+    preflight_diagnose_report: []
+  changed_when: false
+  failed_when: false
+
+- name: Collect change-me / placeholder secret status
+  ansible.builtin.set_fact:
+    preflight_diagnose_report: "{{ preflight_diagnose_report + [ {'name': item.name, 'ok': (item.value not in item.bad_values), 'value': (item.value | default('')) } ] }}"
+  loop: "{{ preflight_secret_guards | default([]) }}"
+  changed_when: false
+  failed_when: false
+
+- name: Stat secrets directory
+  ansible.builtin.stat:
+    path: "{{ containers_secrets_dir | default('/srv/containers/secrets') }}"
+  register: preflight_secrets_dir
+  changed_when: false
+  failed_when: false
+
+- name: Append secrets dir info to report
+  ansible.builtin.set_fact:
+    preflight_diagnose_report: "{{ preflight_diagnose_report + [ {'secrets_dir': {'path': preflight_secrets_dir.stat.path|default(''), 'exists': preflight_secrets_dir.stat.exists | default(false), 'mode': preflight_secrets_dir.stat.mode | default('') } } ] }}"
+  when: preflight_secrets_dir is defined
+  changed_when: false
+  failed_when: false
+
+- name: Write JSON report to local CI artifacts (non-failing)
+  ansible.builtin.copy:
+    content: "{{ preflight_diagnose_report | to_nice_json }}"
+    dest: "{{ playbook_dir | default('.') }}/ci-artifacts/preflight_diagnose_{{ inventory_hostname }}.json"
+  delegate_to: localhost
+  changed_when: false
+  failed_when: false
+
+- name: Show diagnostic summary
+  ansible.builtin.debug:
+    var: preflight_diagnose_report
+  changed_when: false
+  failed_when: false

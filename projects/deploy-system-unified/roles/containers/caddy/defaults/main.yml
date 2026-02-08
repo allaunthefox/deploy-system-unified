@@ -1,48 +1,43 @@
 ---
 # Defaults for containers/caddy role
-caddy_generate_config: true
-caddy_acme_email: admin@owowatdis.lol
+containers_caddy_generate_config: "{{ caddy_generate_config | default(true) }}"
+containers_caddy_acme_email: "{{ caddy_acme_email | default('admin@owowatdis.lol') }}"
 
 # Host ports for Caddy (rootless defaults shift to high ports unless privileged ports are enabled)
-caddy_http_port: >-
-  {{ (podman_rootless_enabled | default(false) | bool
-      and not (podman_rootless_allow_privileged_ports | default(false) | bool))
-     | ternary(8080, 80) }}
-caddy_https_port: >-
-  {{ (podman_rootless_enabled | default(false) | bool
-      and not (podman_rootless_allow_privileged_ports | default(false) | bool))
-     | ternary(8443, 443) }}
-caddy_https_port_udp: "{{ caddy_https_port }}"
+containers_caddy_http_port: >-
+  {{ caddy_http_port | default((containers_podman_rootless_enabled | default(false) | bool
+      and not (containers_podman_rootless_allow_privileged_ports | default(false) | bool))
+     | ternary(8080, 80)) }}
+containers_caddy_https_port: >-
+  {{ caddy_https_port | default((containers_podman_rootless_enabled | default(false) | bool
+      and not (containers_podman_rootless_allow_privileged_ports | default(false) | bool))
+     | ternary(8443, 443)) }}
+containers_caddy_https_port_udp: "{{ containers_caddy_https_port }}"
 
 # Porkbun DNS Credentials (required for DNS challenge)
-porkbun_api_key: "{{ vault_porkbun_api_key | default('') }}"
-porkbun_secret_api_key: "{{ vault_porkbun_secret_api_key | default('') }}"
+containers_porkbun_api_key: "{{ porkbun_api_key | default(vault_porkbun_api_key | default('')) }}"
+containers_porkbun_secret_api_key: "{{ porkbun_secret_api_key | default(vault_porkbun_secret_api_key | default('')) }}"
 
 # Caddy acts as the ingress gateway and must have access to all app networks
 # OR, we run it on "proxy_net" and expose app ports there.
 # For simplicity with Quadlets, we can attach multiple networks to the Caddy Pod.
-caddy_network: "proxy_net"
-caddy_extra_networks:
-  - "media_net"
-  - "ops_net"
-  - "monitoring_net"
-  - "anubis_net"
+containers_caddy_network: "{{ caddy_network | default('proxy_net') }}"
+containers_caddy_extra_networks: "{{ caddy_extra_networks | default(['media_net', 'ops_net', 'monitoring_net', 'anubis_net']) }}"
 
 # Crowdsec (Security Automation)
-crowdsec_enable: true
-crowdsec_image: docker.io/crowdsecurity/crowdsec:latest
-crowdsec_firewall_bouncer_key: "{{ vault_crowdsec_firewall_bouncer_key | default('CHANGE_ME') }}"
+containers_crowdsec_enable: "{{ crowdsec_enable | default(true) }}"
+containers_crowdsec_image: "{{ crowdsec_image | default('docker.io/crowdsecurity/crowdsec:latest') }}"
+containers_crowdsec_firewall_bouncer_key: "{{ crowdsec_firewall_bouncer_key | default(vault_crowdsec_firewall_bouncer_key | default('CHANGE_ME')) }}"
+
+# Hardening: fail-secure gating for Caddy secret checks
+containers_caddy_fail_secure: "{{ containers_fail_secure | default(true) }}"
 # Crowdsec firewall bouncer pinning (supply-chain hardening)
-crowdsec_firewall_bouncer_version: "0.0.34"
-crowdsec_firewall_bouncer_sha256: "8b07e08fb35a90b33eb2403eb93966679b39adb42c9cd03882de66cdf19a949f"
+containers_crowdsec_firewall_bouncer_version: "{{ crowdsec_firewall_bouncer_version | default('0.0.34') }}"
+containers_crowdsec_firewall_bouncer_sha256: "{{ crowdsec_firewall_bouncer_sha256 | default('8b07e08fb35a90b33eb2403eb93966679b39adb42c9cd03882de66cdf19a949f') }}"
 # crowdsec_firewall_bouncer_image: docker.io/crowdsec/crowdsec-firewall-bouncer-iptables:latest (Deprecated/Missing)
-crowdsec_secrets_dir: /srv/containers/secrets
+containers_crowdsec_secrets_dir: "{{ crowdsec_secrets_dir | default('/srv/containers/secrets') }}"
 # Crowdsec reads logs from Caddy, so it maps that volume
-crowdsec_collections:
-  - crowdsecurity/linux
-  - crowdsecurity/sshd
-  - crowdsecurity/caddy
-  - crowdsecurity/whitelist-good-actors
+containers_crowdsec_collections: "{{ crowdsec_collections | default(['crowdsecurity/linux', 'crowdsecurity/sshd', 'crowdsecurity/caddy', 'crowdsecurity/whitelist-good-actors']) }}"
 
 # GPU Support (Inherited logic from Quadlets)
-quadlet_enable_gpu_support: false
+containers_quadlet_enable_gpu_support: "{{ quadlet_enable_gpu_support | default(false) }}"

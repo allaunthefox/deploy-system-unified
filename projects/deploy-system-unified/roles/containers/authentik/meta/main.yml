@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: authentik
+  author: prod
+  description: Authentik container role with negative tests
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Fedora
+      versions: [all]
+  galaxy_tags: [containers,authentik]
+assumes_permissive: true
+# Authentik role has secrets and may be used with host-network assumptions in some profiles.
+
+# Negative Testing
+# This role includes comprehensive negative testing to ensure secret validation works correctly.
+# Test files are located in: molecule/negative/
+#
+# Test scenarios cover:
+# - Missing authentik.env file
+# - Wrong file permissions (should be 0600)
+# - Placeholder values in environment variables
+# - Wrong file ownership
+# - Missing Redis password file
+# - Empty secrets files
+#
+# To run negative tests locally:
+# cd roles/containers/authentik && molecule test --scenario-name negative

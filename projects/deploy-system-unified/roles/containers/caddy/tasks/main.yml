@@ -5,7 +5,14 @@
     that:
       - crowdsec_firewall_bouncer_key | default('CHANGE_ME') != 'CHANGE_ME'
     fail_msg: "Caddy secrets missing or default. Set crowdsec_firewall_bouncer_key."
-  when: crowdsec_enable | default(false)
+  when:
+    - crowdsec_enable | default(false)
+    - containers_caddy_fail_secure | default(true) | bool
+
+- name: Verify Caddy secret files when fail-secure is enabled
+  ansible.builtin.include_tasks: verify_secrets.yml
+  when:
+    - containers_caddy_fail_secure | default(true) | bool
 
 - name: Validate Porkbun API keys are set
   ansible.builtin.assert:
@@ -110,7 +117,10 @@
       EnvironmentFile={{ containers_secrets_dir }}/caddy.env
 
       ContainerName=caddy
-      {% if podman_rootless_enabled | bool %}
+      {% if caddy_network == 'host' or (not podman_rootless_enabled | bool) %}
+      # Primary Gateway Network (Host Mode for VPS compatibility)
+      Network=host
+      {% else %}
       # Rootless networking uses user-defined networks + published ports
       Network={{ caddy_network }}.network
       {% for net in caddy_extra_networks | default([]) %}
@@ -119,17 +129,6 @@
       PublishPort={{ caddy_http_port }}:80
       PublishPort={{ caddy_https_port }}:443
       PublishPort={{ caddy_https_port_udp }}:443/udp
-      {% else %}
-      # Primary Gateway Network (Host Mode for VPS compatibility)
-      Network=host
-      # Networks disabled due to missing bridge support
-      # Network={{ caddy_network }}.network
-      # {% for net in caddy_extra_networks | default([]) %}
-      # Network={{ net }}.network
-      # {% endfor %}
-      # PublishPort=80:80
-      # PublishPort=443:443
-      # PublishPort=443:443/udp
       {% endif %}
       Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       Volume=/srv/containers/caddy/data:/data:Z
@@ -222,7 +221,7 @@
   notify: reload systemd
 
 - name: Install Crowdsec Bouncer Dependencies
-  pacman:
+  community.general.pacman:
     name: ipset
     state: present
   become: true
@@ -251,7 +250,7 @@
 - name: Check if Bouncer is installed
   ansible.builtin.stat:
     path: /usr/local/bin/crowdsec-firewall-bouncer
-  register: bouncer_bin
+  register: containers_bouncer_bin
   become: true
 
 - name: Install Firewall Bouncer (Host)
@@ -297,7 +296,7 @@
           WantedBy=multi-user.target
         mode: '0644'
   become: true
-  when: (crowdsec_enable | default(false)) and (not bouncer_bin.stat.exists)
+  when: (crowdsec_enable | default(false)) and (not containers_bouncer_bin.stat.exists)
 
 - name: Enable and Start Firewall Bouncer
   ansible.builtin.systemd:

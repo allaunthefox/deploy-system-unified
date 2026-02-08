@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
+    vaultwarden_enable: true
+    containers_vaultwarden_fail_secure: true
+    test_case: "{{ lookup('env','test_case') | default('missing_file') }}"
+  tasks:
+    - name: Run verify_secrets and capture failure
+      block:
+        - name: Run verify_secrets
+          ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
+      rescue:
+        - name: Mark verify_failed true
+          ansible.builtin.set_fact:
+            verify_failed: true
+
+    - name: Assert that verify_secrets failed
+      ansible.builtin.assert:
+        that:
+          - verify_failed is defined and verify_failed | bool
+        msg: "Expected verify_secrets to fail, but it succeeded"

@@ -11,6 +11,9 @@ restic_repo: "/srv/backups/restic"
 # Defaults to a placeholder. MUST be overridden securely (e.g. via SOPS/Vault).
 restic_password: "CHANGE_ME_IN_VAULT"
 
+# Hardening: fail-secure gating for restic checks
+restic_fail_secure: "{{ core_security_fail_secure | default(true) }}"
+
 # Configuration
 restic_user: "root"
 restic_group: "root"

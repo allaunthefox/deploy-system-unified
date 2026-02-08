@@ -1,0 +1,95 @@
+---
+name: Negative Testing for Permissive Roles
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'roles/containers/**'
+      - '.github/workflows/negative-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'roles/containers/**'
+      - '.github/workflows/negative-tests.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  negative-tests:
+    name: Negative Testing for Permissive Roles
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        role:
+          - containers/ops
+          - containers/caddy
+          - containers/authentik
+          - containers/media
+        test_case:
+          - missing_file
+          - wrong_permissions
+          - placeholder_values
+          - wrong_owner
+        include:
+          # Additional test cases for specific roles
+          - role: containers/caddy
+            test_case: missing_ssl_dir
+          - role: containers/caddy
+            test_case: wrong_ssl_permissions
+          - role: containers/authentik
+            test_case: missing_redis_file
+          - role: containers/authentik
+            test_case: empty_file
+          - role: containers/media
+            test_case: missing_jellyfin_file
+          - role: containers/media
+            test_case: missing_radarr_file
+          - role: containers/media
+            test_case: empty_media_file
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible molecule[docker] docker yamllint ansible-lint
+          
+      - name: Run negative tests
+        run: |
+          cd roles/${{ matrix.role }}
+          echo "Running negative test: ${{ matrix.test_case }} for role ${{ matrix.role }}"
+          MOLECULE_DISTRO=ubuntu-latest molecule test --scenario-name negative
+        env:
+          test_case: ${{ matrix.test_case }}
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: negative-test-results-${{ matrix.role }}-${{ matrix.test_case }}
+          path: roles/${{ matrix.role }}/molecule/negative/
+          retention-days: 7
+
+  validate-workflow:
+    name: Validate GitHub Actions Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Validate workflow syntax
+        run: |
+          echo "Validating .github/workflows/negative-tests.yml"
+          python -c "import yaml; yaml.safe_load(open('.github/workflows/negative-tests.yml')); print('✅ Workflow syntax is valid')"

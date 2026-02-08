@@ -1,0 +1,16 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Check that Podman is available
+      command: podman info
+      register: podman_info
+      changed_when: false
+      failed_when: podman_info.rc != 0
+
+    - name: Fail with remediation message if podman not available
+      ansible.builtin.fail:
+        msg: |
+          Podman is not accessible. Ensure the `podman.socket` is active and your user can access the socket (add user to the socket group or enable rootless podman).
+          See `scripts/ensure_podman_access.sh` for guidance.

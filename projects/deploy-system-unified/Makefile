@@ -1,10 +1,13 @@
-.PHONY: lint lint-markdown test test-x86 test-arm64
+.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck
 
 lint:
 	ansible-lint .
 
 lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
+
+molecule-precheck:
+	@./scripts/ensure_podman_access.sh || true
 
 test: test-x86
 

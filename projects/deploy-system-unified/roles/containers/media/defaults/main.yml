@@ -2,109 +2,112 @@
 # Defaults for containers/media
 
 # Multi-Tenancy / Instance Identification
-media_instance_name: "default"
-media_port_offset: 0
-media_network: "media_net"
+containers_media_instance_name: "{{ media_instance_name | default('default') }}"
+containers_media_port_offset: 0
+containers_media_network: "media_net"
 
 # Hardware Acceleration
 # Enables passing /dev/dri to relevant containers (Jellyfin, Plex, potentially TDARR if added)
-media_hw_accel: false
+containers_media_hw_accel: false
 # Require Host AVX support for MongoDB/Jellyfin images (Fail if missing)
-media_require_avx: false
+containers_media_require_avx: false
 
-media_stack_enable: true
-media_root_dir: "/srv/media/{{ media_instance_name }}"
-media_config_dir: "/srv/containers/media_config/{{ media_instance_name }}"
+containers_media_stack_enable: true
+containers_media_root_dir: "{{ media_root_dir | default('/srv/media/' ~ containers_media_instance_name) }}"
+containers_media_config_dir: "{{ media_config_dir | default('/srv/containers/media_config/' ~ containers_media_instance_name) }}"
 
 # User/Group for media permissions (Podman rootless or mapped)
 # We typically run containers as root (Quadlet default) mapping to host users if needed.
 # For simplicity with Podman Quadlets, we'll keep internal container users mapped.
-media_puid: 1000
-media_pgid: 1000
-media_timezone: "UTC"
+containers_media_puid: "{{ media_puid | default(1000) }}"
+containers_media_pgid: "{{ media_pgid | default(1000) }}"
+containers_media_timezone: "{{ media_timezone | default('UTC') }}"
 
 # Jellyfin (Media Server)
-jellyfin_enable: true
-jellyfin_image: docker.io/jellyfin/jellyfin:10.11.6
-jellyfin_port_http: 8096
-jellyfin_memory_max: 8G
+containers_jellyfin_enable: true
+containers_jellyfin_image: docker.io/jellyfin/jellyfin:10.11.6
+containers_jellyfin_port_http: 8096
+containers_jellyfin_memory_max: 8G
 
 # Plex (Media Server Alternative)
-plex_enable: false
-plex_image: docker.io/plexinc/pms-docker:1.43.0.10467-2b1ba6e69
-plex_port_http: 32400
-plex_claim_token: ""
+containers_plex_enable: false
+containers_plex_image: docker.io/plexinc/pms-docker:1.43.0.10467-2b1ba6e69
+containers_plex_port_http: "{{ plex_port_http | default(32400) }}"
+containers_plex_claim_token: "{{ plex_claim_token | default('') }}"
 
 # Servarr Stack
-radarr_enable: true
-radarr_image: docker.io/linuxserver/radarr:6.0.4
-radarr_port: 7878
+containers_radarr_enable: true
+containers_radarr_image: docker.io/linuxserver/radarr:6.0.4
+containers_radarr_port: "{{ radarr_port | default(7878) }}"
 
-sonarr_enable: true
-sonarr_image: docker.io/linuxserver/sonarr:4.0.16
-sonarr_port: 8989
+containers_sonarr_enable: true
+containers_sonarr_image: docker.io/linuxserver/sonarr:4.0.16
+containers_sonarr_port: "{{ sonarr_port | default(8989) }}"
 
-lidarr_enable: false
-lidarr_image: docker.io/linuxserver/lidarr:3.1.0
-lidarr_port: 8686
+containers_lidarr_enable: "{{ lidarr_enable | default(false) }}"
+containers_lidarr_image: "{{ lidarr_image | default('docker.io/linuxserver/lidarr:3.1.0') }}"
+containers_lidarr_port: "{{ lidarr_port | default(8686) }}"
 
-readarr_enable: false
-readarr_image: docker.io/tainrs/readarr:develop
-readarr_port: 8787
+containers_readarr_enable: "{{ readarr_enable | default(false) }}"
+containers_readarr_image: "{{ readarr_image | default('docker.io/tainrs/readarr:develop') }}"
+containers_readarr_port: "{{ readarr_port | default(8787) }}"
 
-prowlarr_enable: true
-prowlarr_image: docker.io/linuxserver/prowlarr:2.3.0
-prowlarr_port: 9696
+containers_prowlarr_enable: true
+containers_prowlarr_image: docker.io/linuxserver/prowlarr:2.3.0
+containers_prowlarr_port: "{{ prowlarr_port | default(9696) }}"
 
 # Sub-services
-jellyseerr_enable: false
-jellyseerr_image: docker.io/fallenbagel/jellyseerr:2.7.3
-jellyseerr_port: 5055
+containers_jellyseerr_enable: "{{ jellyseerr_enable | default(false) }}"
+containers_jellyseerr_image: "{{ jellyseerr_image | default('docker.io/fallenbagel/jellyseerr:2.7.3') }}"
+containers_jellyseerr_port: "{{ jellyseerr_port | default(5055) }}"
 
-navidrome_enable: false
-navidrome_image: docker.io/deluan/navidrome:0.59.0
-navidrome_port: 4533
+containers_navidrome_enable: "{{ navidrome_enable | default(false) }}"
+containers_navidrome_image: "{{ navidrome_image | default('docker.io/deluan/navidrome:0.59.0') }}"
+containers_navidrome_port: "{{ navidrome_port | default(4533) }}"
 
 # Download Client (Transmission)
-transmission_enable: true
-transmission_image: docker.io/linuxserver/transmission:4.1.0
-transmission_port_web: 9091
-transmission_port_peer: 51413
-transmission_user: "CHANGE_ME_IN_SOPS"
-transmission_pass: "CHANGE_ME_IN_SOPS"
+containers_transmission_enable: true
+containers_transmission_image: docker.io/linuxserver/transmission:4.1.0
+containers_transmission_port_web: "{{ transmission_port_web | default(9091) }}"
+containers_transmission_port_peer: "{{ transmission_port_peer | default(51413) }}"
+containers_transmission_user: "{{ transmission_user | default('CHANGE_ME_IN_SOPS') }}"
+containers_transmission_pass: "{{ transmission_pass | default('CHANGE_ME_IN_SOPS') }}"
 
 # Networking
 # If true, all containers share a pod (e.g., 'media-pod') for local communication
-media_pod_enable: true
-media_pod_name: "media_pod_{{ media_instance_name }}"
+containers_media_pod_enable: true
+containers_media_pod_name: "{{ media_pod_name | default('media_pod_' ~ containers_media_instance_name) }}"
 
 # Reverse Proxy Configuration (Gatekeeper Mode)
 # If true:
 # 1. Binds service ports to internal pod network (deploy-net) if possible or localhost
 # 2. Deploys Caddy configuration snippets for access
 # 3. Requires 'containers/caddy' role to be enabled
-media_gatekeeper_mode: false
-media_domain: "media.example.com"
+containers_media_gatekeeper_mode: "{{ media_gatekeeper_mode | default(false) }}"
+containers_media_domain: "{{ media_domain | default('media.example.com') }}"
 # Network to attach the pod to (must match Caddy's network if separate)
-media_pod_network: "media_net"
+containers_media_pod_network: "{{ media_pod_network | default('media_net') }}"
 
 # Authentication Integration
 # Options: none, authentik
-media_auth_provider: "none"
-media_auth_url: "https://auth.example.com"
+containers_media_auth_provider: "{{ media_auth_provider | default('none') }}"
+containers_media_auth_url: "{{ media_auth_url | default('https://auth.example.com') }}"
+
+# Hardening: fail-secure gating for media secret checks
+containers_media_fail_secure: "{{ containers_fail_secure | default(true) }}"
 
 
 # Bazarr (Subtitle Management)
-bazarr_enable: true
-bazarr_image: lscr.io/linuxserver/bazarr:1.5.5
-bazarr_port: 6767
+containers_bazarr_enable: "{{ bazarr_enable | default(true) }}"
+containers_bazarr_image: "{{ bazarr_image | default('lscr.io/linuxserver/bazarr:1.5.5') }}"
+containers_bazarr_port: "{{ bazarr_port | default(6767) }}"
 
 # Kavita (Manga/Comics Server)
-kavita_enable: true
-kavita_image: docker.io/jvmilazz0/kavita:0.8.9
-kavita_port: 5000
+containers_kavita_enable: "{{ kavita_enable | default(true) }}"
+containers_kavita_image: "{{ kavita_image | default('docker.io/jvmilazz0/kavita:0.8.9') }}"
+containers_kavita_port: "{{ kavita_port | default(5000) }}"
 
 # Audiobookshelf (Audiobook Server)
-audiobookshelf_enable: true
-audiobookshelf_image: ghcr.io/advplyr/audiobookshelf:2.32.1
-audiobookshelf_port: 13378
+containers_audiobookshelf_enable: "{{ audiobookshelf_enable | default(true) }}"
+containers_audiobookshelf_image: "{{ audiobookshelf_image | default('ghcr.io/advplyr/audiobookshelf:2.32.1') }}"
+containers_audiobookshelf_port: "{{ audiobookshelf_port | default(13378) }}"

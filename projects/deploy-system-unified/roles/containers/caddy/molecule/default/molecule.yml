@@ -1,0 +1,37 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: instance
+    image: fedora:latest
+    command: /sbin/init
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    tmpfs:
+      - /run
+      - /tmp
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      stdout_callback: default
+      callback_whitelist: profile_tasks
+      deprecation_warnings: false
+      command_warnings: true
+      system_warnings: false
+  inventory:
+    hosts:
+      instance:
+        ansible_connection: local
+  playbooks:
+    converge: converge.yml
+verifier:
+  name: ansible
+
+lint: |
+  set -e
+  yamllint .
+  ansible-lint

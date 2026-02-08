@@ -1,0 +1,35 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: instance
+    image: quay.io/ansible/ansible-runner:latest
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      stdout_callback: default
+      callback_whitelist: profile_tasks
+      deprecation_warnings: false
+      command_warnings: false
+      system_warnings: false
+      remote_tmp: /tmp/.ansible
+  inventory:
+    hosts:
+      instance:
+        ansible_connection: local
+  playbooks:
+    converge: converge.yml
+verifier:
+  name: ansible
+lint: |
+  set -e
+  yamllint .
+  ansible-lint

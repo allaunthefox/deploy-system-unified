@@ -4,6 +4,11 @@
     msg: "Monitoring Stack deployment start (Instance: {{ monitoring_instance }})"
   when: monitoring_enable | bool
 
+- name: Verify monitoring secrets when fail-secure is enabled
+  ansible.builtin.include_tasks: verify_secrets.yml
+  when:
+    - monitoring_enable | bool
+
 - name: Validate Grafana admin password is set
   ansible.builtin.assert:
     that:
