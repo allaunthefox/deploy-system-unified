@@ -15,7 +15,7 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      stdout_callback: yaml
+      stdout_callback: default
       callback_whitelist: profile_tasks
       deprecation_warnings: false
       command_warnings: false
@@ -26,7 +26,7 @@ provisioner:
     ANSIBLE_RETRY_FILES_ENABLED: false
     ANSIBLE_ROLES_PATH: ../../../../
 verifier:
-  name: testinfra
+  name: ansible
   options:
     verbose: true
 lint: |

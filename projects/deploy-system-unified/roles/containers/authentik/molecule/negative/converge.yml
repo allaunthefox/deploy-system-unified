@@ -1,5 +1,5 @@
 ---
-- hosts: instance
+- hosts: localhost
   connection: local
   gather_facts: false
   vars:
@@ -7,6 +7,7 @@
     containers_secrets_owner: "{{ lookup('env','USER') }}"
     authentik_enable: true
     authentik_secrets_fail_secure: true
+    test_case: "{{ lookup('env','test_case') | default('missing_file') }}"
   tasks:
     - name: Ensure molecule_shared exists
       ansible.builtin.file:
@@ -73,6 +74,3 @@
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'empty_file'
     
-    - name: Run verify_secrets directly (expecting failure)
-      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
-      ignore_errors: true  # We expect this to fail in negative tests

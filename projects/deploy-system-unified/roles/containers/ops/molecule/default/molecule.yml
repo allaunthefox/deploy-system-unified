@@ -15,7 +15,7 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      stdout_callback: yaml
+      stdout_callback: default
       callback_whitelist: profile_tasks
       deprecation_warnings: false
       command_warnings: false

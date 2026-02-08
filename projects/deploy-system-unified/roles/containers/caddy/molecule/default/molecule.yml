@@ -15,6 +15,13 @@ platforms:
       - /tmp
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      stdout_callback: default
+      callback_whitelist: profile_tasks
+      deprecation_warnings: false
+      command_warnings: true
+      system_warnings: false
   inventory:
     hosts:
       instance:

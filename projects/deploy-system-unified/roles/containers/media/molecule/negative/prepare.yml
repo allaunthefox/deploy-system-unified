@@ -1,5 +1,5 @@
 ---
-- hosts: instance
+- hosts: localhost
   connection: local
   gather_facts: false
   tasks:
@@ -14,3 +14,4 @@
         msg: |
           Podman is not accessible. Ensure the `podman.socket` is active and your user can access the socket (add user to the socket group or enable rootless podman).
           See `scripts/ensure_podman_access.sh` for guidance.
+      when: podman_info is failed
