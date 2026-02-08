@@ -53,6 +53,7 @@
     
     # Test Case 5: Wrong owner on media secrets (should fail)
     - name: Create media secrets with wrong owner for test
+      become: true
       ansible.builtin.copy:
         dest: "{{ containers_secrets_dir }}/jellyfin.env"
         content: |

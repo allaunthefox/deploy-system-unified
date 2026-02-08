@@ -48,6 +48,7 @@
     
     # Test Case 4: Wrong owner on authentik.env (should fail)
     - name: Create authentik.env with wrong owner for test
+      become: true
       ansible.builtin.copy:
         dest: "{{ containers_secrets_dir }}/authentik.env"
         content: |
