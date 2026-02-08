@@ -14,4 +14,4 @@ provisioner:
   playbooks:
     converge: converge.yml
 verifier:
-  name: none
+  name: ansible
