@@ -5,12 +5,12 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'roles/containers/**'
+      - 'projects/deploy-system-unified/roles/containers/**'
       - '.github/workflows/negative-tests.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'roles/containers/**'
+      - 'projects/deploy-system-unified/roles/containers/**'
       - '.github/workflows/negative-tests.yml'
   workflow_dispatch:
 
@@ -26,40 +26,37 @@ jobs:
       fail-fast: false
       matrix:
         role:
-          - containers/ops
-          - containers/caddy
-          - containers/authentik
-          - containers/media
+          - projects/deploy-system-unified/roles/containers/ops
+          - projects/deploy-system-unified/roles/containers/caddy
+          - projects/deploy-system-unified/roles/containers/authentik
+          - projects/deploy-system-unified/roles/containers/media
         test_case:
           - missing_file
           - wrong_permissions
           - placeholder_values
           - wrong_owner
         include:
-          # Additional test cases for specific roles
-          - role: containers/caddy
+          - role: projects/deploy-system-unified/roles/containers/caddy
             test_case: missing_ssl_dir
-          - role: containers/caddy
+          - role: projects/deploy-system-unified/roles/containers/caddy
             test_case: wrong_ssl_permissions
-          - role: containers/authentik
+          - role: projects/deploy-system-unified/roles/containers/authentik
             test_case: missing_redis_file
-          - role: containers/authentik
+          - role: projects/deploy-system-unified/roles/containers/authentik
             test_case: empty_file
-          - role: containers/media
+          - role: projects/deploy-system-unified/roles/containers/media
             test_case: missing_jellyfin_file
-          - role: containers/media
+          - role: projects/deploy-system-unified/roles/containers/media
             test_case: missing_radarr_file
-          - role: containers/media
+          - role: projects/deploy-system-unified/roles/containers/media
             test_case: empty_media_file
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Podman
         uses: containers/podman-action@v2
         with:
-          # Use latest stable Podman available via the action
           install: true
 
       - name: Check Podman availability
@@ -97,18 +94,18 @@ jobs:
 
       - name: Run negative tests
         run: |
-          cd roles/${{ matrix.role }}
+          cd ${{ matrix.role }}
           echo "Running negative test: ${{ matrix.test_case }} for role ${{ matrix.role }}"
           test_case=${{ matrix.test_case }} molecule test --scenario-name negative
         env:
           test_case: ${{ matrix.test_case }}
-          
+
       - name: Upload test results
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: negative-test-results-${{ matrix.role }}-${{ matrix.test_case }}
-          path: roles/${{ matrix.role }}/molecule/negative/
+          path: ${{ matrix.role }}/molecule/negative/
           retention-days: 7
 
   validate-workflow:
@@ -117,7 +114,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Validate workflow syntax
         run: |
           echo "Validating .github/workflows/negative-tests.yml"
