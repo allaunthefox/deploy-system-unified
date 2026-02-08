@@ -6,14 +6,14 @@ This document outlines the complete implementation of negative testing for the p
 
 ## Implementation Summary
 
-### Preflight Docker Access
+### Preflight Podman Access
 
-For local testing with Molecule and the Docker driver, ensure the test runner has access to the Docker socket. A convenience script and Makefile target are provided to attempt to add the current user to the `docker` group (requires sudo) and to fail with clear remediation instructions if access still fails:
+For local testing with Molecule and the Podman driver, ensure the test runner has access to the Podman socket. A convenience script and Makefile target are provided to check `podman info` and to fail with clear remediation instructions if access still fails:
 
-- scripts/ensure_docker_access.sh
+- scripts/ensure_podman_access.sh
 - Makefile target: `molecule-precheck`
 
-Run `make molecule-precheck` before `molecule test` to preflight Docker access.
+Run `make molecule-precheck` before `molecule test` to preflight Podman access.
 
 
 ### 1. Current State Analysis

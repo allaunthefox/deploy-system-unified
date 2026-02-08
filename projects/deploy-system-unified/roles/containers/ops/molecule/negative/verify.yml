@@ -1,0 +1,16 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Verify that verify_secrets failed as expected
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
+      ignore_errors: true
+      register: verify_result
+    
+    - name: Assert that verify_secrets failed
+      ansible.builtin.assert:
+        that:
+          - verify_result is failed
+        fail_msg: "Expected verify_secrets to fail, but it succeeded"
+        success_msg: "verify_secrets correctly failed as expected"

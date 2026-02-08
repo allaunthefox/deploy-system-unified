@@ -1,0 +1,28 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Run verify_secrets and capture result
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
+      ignore_errors: true
+      register: verify_result
+    
+    - name: Assert that verify_secrets failed as expected
+      ansible.builtin.assert:
+        that:
+          - verify_result is failed
+        fail_msg: "Expected verify_secrets to fail, but it succeeded"
+        success_msg: "verify_secrets correctly failed as expected"
+    
+    - name: Verify specific failure conditions
+      ansible.builtin.assert:
+        that:
+          - verify_result is failed
+          - verify_result.msg is defined
+        fail_msg: "verify_secrets failed but no error message provided"
+        success_msg: "verify_secrets failed with proper error message"
+    
+    - name: Log test case and result
+      ansible.builtin.debug:
+        msg: "Test case '{{ test_case }}' - verify_secrets {{ 'PASSED' if verify_result is failed else 'FAILED' }}"

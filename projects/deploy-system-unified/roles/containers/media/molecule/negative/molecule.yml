@@ -20,15 +20,15 @@ provisioner:
       deprecation_warnings: false
       command_warnings: false
       system_warnings: false
-      remote_tmp: /tmp/.ansible
-  inventory:
-    hosts:
-      instance:
-        ansible_connection: local
-  playbooks:
-    converge: converge.yml
+  env:
+    ANSIBLE_FORCE_COLOR: 1
+    ANSIBLE_HOST_KEY_CHECKING: false
+    ANSIBLE_RETRY_FILES_ENABLED: false
+    ANSIBLE_ROLES_PATH: ../../../../
 verifier:
-  name: ansible
+  name: testinfra
+  options:
+    verbose: true
 lint: |
   set -e
   yamllint .

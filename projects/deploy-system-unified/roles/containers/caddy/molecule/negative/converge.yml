@@ -1,0 +1,90 @@
+---
+- hosts: instance
+  connection: local
+  gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
+    caddy_enable: true
+    caddy_secrets_fail_secure: true
+  tasks:
+    - name: Ensure molecule_shared exists
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}"
+        state: directory
+        mode: '0700'
+    
+    # Test Case 1: Missing Caddyfile (should fail)
+    - name: Create missing Caddyfile for test
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}/Caddyfile"
+        state: absent
+      when: test_case == 'missing_file'
+    
+    # Test Case 2: Wrong permissions on Caddyfile (should fail)
+    - name: Create Caddyfile with wrong permissions for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/Caddyfile"
+        content: |
+          {
+              email admin@example.com
+          }
+          
+          example.com {
+              reverse_proxy localhost:8080
+          }
+        mode: '0644'  # Wrong permissions
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'wrong_permissions'
+    
+    # Test Case 3: Placeholder values in Caddyfile (should fail)
+    - name: Create Caddyfile with placeholder values for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/Caddyfile"
+        content: |
+          {
+              email CHANGE_ME_IN_VAULT_TO_EMAIL
+          }
+          
+          example.com {
+              reverse_proxy localhost:8080
+          }
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'placeholder_values'
+    
+    # Test Case 4: Wrong owner on Caddyfile (should fail)
+    - name: Create Caddyfile with wrong owner for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/Caddyfile"
+        content: |
+          {
+              email admin@example.com
+          }
+          
+          example.com {
+              reverse_proxy localhost:8080
+          }
+        mode: '0600'
+        owner: "root"  # Wrong owner
+      when: test_case == 'wrong_owner'
+    
+    # Test Case 5: Missing SSL certificate directory (should fail)
+    - name: Create missing SSL directory for test
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}/ssl"
+        state: absent
+      when: test_case == 'missing_ssl_dir'
+    
+    # Test Case 6: Wrong permissions on SSL directory (should fail)
+    - name: Create SSL directory with wrong permissions for test
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir }}/ssl"
+        state: directory
+        mode: '0755'  # Wrong permissions
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'wrong_ssl_permissions'
+    
+    - name: Run verify_secrets directly (expecting failure)
+      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
+      ignore_errors: true  # We expect this to fail in negative tests

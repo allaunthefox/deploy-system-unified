@@ -7,7 +7,7 @@ lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
 
 molecule-precheck:
-	@./scripts/ensure_docker_access.sh || true
+	@./scripts/ensure_podman_access.sh || true
 
 test: test-x86
 

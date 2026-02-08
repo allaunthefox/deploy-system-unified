@@ -27,8 +27,11 @@ provisioner:
         ansible_connection: local
   playbooks:
     converge: converge.yml
+    verify: verify.yml
 verifier:
-  name: ansible
+  name: testinfra
+  options:
+    verbose: true
 lint: |
   set -e
   yamllint .
