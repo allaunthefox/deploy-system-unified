@@ -42,6 +42,7 @@
     
     # Test Case 4: Wrong owner (should fail)
     - name: Create vaultwarden.env with wrong owner for test
+      become: true
       ansible.builtin.copy:
         dest: "{{ containers_secrets_dir }}/vaultwarden.env"
         content: "ADMIN_TOKEN=real_token"

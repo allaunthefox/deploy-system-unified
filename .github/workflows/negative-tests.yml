@@ -54,11 +54,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+<<<<<<< HEAD
       - name: Install Podman via apt
         run: |
           sudo apt-get update
           sudo apt-get install -y podman
           podman --version
+=======
+      - name: Install Podman via apt
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+          podman --version
+
 
       - name: Check Podman availability
         run: |
@@ -100,19 +108,41 @@ jobs:
         env:
           test_case: ${{ matrix.test_case }}
 
+      - name: Set artifact name
+        if: always()
+        run: |
+          ART="${{ matrix.role }}"
+          ART=${ART//\//-}
+          echo "ARTIFACT_NAME=$ART" >> $GITHUB_ENV
+
+      - name: Set artifact name
+        if: always()
+        run: |
+          ART="${{ matrix.role }}"
+          ART=${ART//\//-}
+          echo "ARTIFACT_NAME=$ART" >> $GITHUB_ENV
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: negative-test-results-${{ matrix.role }}-${{ matrix.test_case }}
-          path: ${{ matrix.role }}/molecule/negative/
+          name: ${{ env.ARTIFACT_NAME }}-${{ matrix.test_case }}
+          path: |
+            ${{ matrix.role }}/molecule
+            ${{ matrix.role }}/.molecule
           if-no-files-found: warn
-          retention-days: 7
 
   validate-workflow:
     name: Validate GitHub Actions Workflow
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate workflow syntax
+        run: |
+          echo "Validating .github/workflows/negative-tests.yml"
+          python -c "import yaml; yaml.safe_load(open('.github/workflows/negative-tests.yml')); print('✅ Workflow syntax is valid')"
       - name: Checkout repository
         uses: actions/checkout@v4
 
