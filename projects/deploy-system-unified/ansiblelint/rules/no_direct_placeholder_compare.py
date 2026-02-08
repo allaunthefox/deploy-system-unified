@@ -1,3 +1,4 @@
+import re
 from ansiblelint.errors import MatchError
 from ansiblelint.file_utils import Lintable
 from ansiblelint.rules import AnsibleLintRule
@@ -58,6 +59,11 @@ class NoDirectPlaceholderCompareRule(AnsibleLintRule):
         if yaml_data is None:
             return matches
 
+        # Precompile regexes for performance
+        placeholder_re = re.compile(r'CHANGE_ME')
+        operator_re = re.compile(r"!=|==|\bin\b|\bnot\s+in\b")
+        default_re = re.compile(r"\|\s*default\s*\(\s*['\"]CHANGE_ME")
+
         docs = yaml_data if isinstance(yaml_data, list) else [yaml_data]
         for doc in docs:
             try:
@@ -66,8 +72,8 @@ class NoDirectPlaceholderCompareRule(AnsibleLintRule):
                         continue
                     s = node
                     # Detect direct comparisons and default comparisons to placeholders
-                    if ('CHANGE_ME' in s or 'CHANGE_ME_IN_' in s) and (
-                        '!=' in s or "| default('CHANGE_ME" in s or '| default("CHANGE_ME' in s
+                    if placeholder_re.search(s) and (
+                        operator_re.search(s) or default_re.search(s)
                     ):
                         matches.append(self._make_match(file, f"Direct placeholder comparison detected: {s}"))
             except Exception:
