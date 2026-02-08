@@ -100,18 +100,17 @@ jobs:
         env:
           test_case: ${{ matrix.test_case }}
 
+      - name: Set artifact name
+        run: |
+          ART="${{ matrix.role }}"
+          ART=${ART//\//-}
+          echo "ARTIFACT_NAME=$ART" >> $GITHUB_ENV
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: negative-test-results-${{ matrix.role }}-${{ matrix.test_case }}
-          path: ${{ matrix.role }}/molecule/negative/
-          retention-days: 7
-
-  validate-workflow:
-    name: Validate GitHub Actions Workflow
-    runs-on: ubuntu-latest
-    steps:
+          name: ${{ env.ARTIFACT_NAME }}-${{ matrix.test_case }}
       - name: Checkout repository
         uses: actions/checkout@v4
 
