@@ -6,6 +6,7 @@ driver:
 platforms:
   - name: instance
     image: quay.io/ansible/ansible-runner:latest
+    pre_build_image: true
     command: /sbin/init
     privileged: true
     volumes:
