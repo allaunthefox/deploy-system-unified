@@ -56,16 +56,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      - name: Set up Podman
-        uses: containers/podman-action@v2
-        with:
-          # Use latest stable Podman available via the action
-          install: true
+      - name: Install Podman via apt
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+          podman --version
 
       - name: Check Podman availability
         run: |
-          podman --version
-          podman info
+          podman info || true
 
       - name: Cache pip
         uses: actions/cache@v4
@@ -104,11 +103,12 @@ jobs:
           test_case: ${{ matrix.test_case }}
           
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: negative-test-results-${{ matrix.role }}-${{ matrix.test_case }}
           path: roles/${{ matrix.role }}/molecule/negative/
+          if-no-files-found: warn
           retention-days: 7
 
   validate-workflow:
