@@ -111,6 +111,27 @@ fi
 - `.yamllint.yml` - YAML linting rules
 - `.ansible-lint.yml` - Ansible linting rules
 
+### `.styleignore` format and advanced patterns
+
+`.styleignore` supports several useful pattern types to control which files are excluded from style checks:
+
+- One pattern per line. Blank lines and lines beginning with `#` are ignored.
+- Shell-style glob patterns (e.g., `*/molecule/*`, `roles/ops`).
+- Negation: prefix a pattern with `!` to re-include files. Patterns are applied in order; a later negation overrides earlier matches.
+- Regular expressions: prefix a pattern with `re:` to treat the remainder as a POSIX ERE and evaluate with `grep -E` (for advanced matching).
+
+Examples:
+
+- `*/molecule/*` — ignore all molecule config files (recommended for the FQCN step)
+- `roles/ops` — ignore an entire role directory
+- `!roles/containers/caddy/molecule/*` — exclude caddy molecule files from being ignored by an earlier glob
+- `re:^roles/.*/molecule/` — ignore any molecule directory under `roles/` using regex
+
+Notes:
+
+- Patterns are processed top-to-bottom. A match sets 'ignored' and a later `!`-prefixed pattern can unset it.
+- Use `re:` for complex matches; regular expressions are evaluated with `grep -E` and should follow POSIX ERE syntax.
+
 ## Output
 
 ### Console Output

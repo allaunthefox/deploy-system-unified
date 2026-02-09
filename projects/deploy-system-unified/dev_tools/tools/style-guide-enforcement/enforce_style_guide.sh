@@ -20,18 +20,53 @@ ANSIBLE_LINT_CONFIG="$PROJECT_ROOT/.ansible-lint.yml"
 STYLE_GUIDE="$PROJECT_ROOT/LLM_RESEARCH/Style_Guide.md"
 STYLE_IGNORE="$PROJECT_ROOT/dev_tools/tools/style-guide-enforcement/.styleignore"
 
-# Check style ignore patterns (supports glob patterns)
+# Check style ignore patterns (supports glob patterns, negation with '!pattern', and regex using 're:pattern')
+# Behavior: patterns are applied in file order. A match sets ignored=true; a
+# later negation '!pattern' can unset it. Regex patterns are prefixed with 're:'.
 is_ignored() {
     local path="$1"
     [ ! -f "$STYLE_IGNORE" ] && return 1
-    while IFS= read -r pattern; do
-        [[ -z "$pattern" ]] && continue
-        [[ "$pattern" =~ ^# ]] && continue
-        if [[ "$path" == "$pattern" ]]; then
-            return 0
+
+    local ignored=0
+    local line
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Strip trailing CR if present
+        line="${line%$'\r'}"
+        # Skip blank lines and comments
+        [[ -z "${line//[[:space:]]/}" ]] && continue
+        [[ "${line:0:1}" == "#" ]] && continue
+
+        local neg=0
+        local pat="$line"
+        if [[ "${pat:0:1}" == "!" ]]; then
+            neg=1
+            pat="${pat:1}"
+        fi
+
+        if [[ "$pat" == re:* ]]; then
+            local regex="${pat#re:}"
+            if printf '%s' "$path" | grep -Eq -- "$regex"; then
+                if [ $neg -eq 1 ]; then
+                    ignored=0
+                else
+                    ignored=1
+                fi
+            fi
+        else
+            # Shell glob match using case (preserves glob semantics)
+            case "$path" in
+                $pat)
+                    if [ $neg -eq 1 ]; then
+                        ignored=0
+                    else
+                        ignored=1
+                    fi
+                    ;;
+            esac
         fi
     done < "$STYLE_IGNORE"
-    return 1
+
+    [ $ignored -eq 1 ] && return 0 || return 1
 }
 
 # Counters
