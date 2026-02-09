@@ -25,7 +25,6 @@
   register: gpu_arch_tasks
   delegate_to: localhost
 
-
 - name: Include Architecture/Vendor specific tasks
   ansible.builtin.include_tasks:
     file: "{{ _gpu_arch_path }}"

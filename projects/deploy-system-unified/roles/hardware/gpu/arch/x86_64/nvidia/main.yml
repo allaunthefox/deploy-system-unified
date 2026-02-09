@@ -76,7 +76,6 @@
     - not _gpu_is_container | default(false)
     - gpu_stack_reservation | default('host') != 'vfio'
 
-
 - name: Setup NVIDIA CUDA Repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
   block:
     - name: Download NVIDIA GPG key (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))

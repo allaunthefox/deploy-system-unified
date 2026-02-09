@@ -44,7 +44,6 @@
     - ansible_facts['os_family'] == 'Alpine'
     - not _gpu_is_container | default(false)
 
-
 - name: update_grub
   ansible.builtin.shell: |
     if command -v update-grub >/dev/null 2>&1; then

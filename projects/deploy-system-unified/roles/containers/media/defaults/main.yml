@@ -96,7 +96,6 @@ containers_media_auth_url: "{{ media_auth_url | default('https://auth.example.co
 # Hardening: fail-secure gating for media secret checks
 containers_media_fail_secure: "{{ containers_fail_secure | default(true) }}"
 
-
 # Bazarr (Subtitle Management)
 containers_bazarr_enable: "{{ bazarr_enable | default(true) }}"
 containers_bazarr_image: "{{ bazarr_image | default('lscr.io/linuxserver/bazarr:1.5.5') }}"

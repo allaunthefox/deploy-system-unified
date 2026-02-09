@@ -14,7 +14,7 @@
     else echo "false"; fi
   register: uma_detection
   changed_when: false
-  when: core_memory_shared_vram == 'auto' 
+  when: core_memory_shared_vram == 'auto'
 
 - name: Determine Memory Strategy (Auto-Selection)
   ansible.builtin.set_fact:

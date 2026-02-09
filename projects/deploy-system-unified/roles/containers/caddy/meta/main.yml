@@ -15,7 +15,7 @@ assumes_permissive: true
 # Negative Testing
 # This role includes comprehensive negative testing to ensure secret validation works correctly.
 # Test files are located in: molecule/negative/
-# 
+#
 # Test scenarios cover:
 # - Missing Caddyfile
 # - Wrong file permissions (should be 0600)
