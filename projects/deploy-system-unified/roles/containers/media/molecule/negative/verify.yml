@@ -38,4 +38,4 @@
     
     - name: Log test case and result
       ansible.builtin.debug:
-        msg: "Test case '{{ test_case }}' - verify_secrets {{ 'PASSED' if verify_result.failed | default(false) else 'FAILED' }}"
+        msg: "Test case '{{ lookup('env','test_case') | default('unknown') }}' - verify_secrets {{ 'PASSED' if verify_result.failed | default(false) else 'FAILED' }}"
