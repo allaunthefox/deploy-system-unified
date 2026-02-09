@@ -90,3 +90,7 @@ roles/orchestration/k8s_node/defaults/main.yml
 roles/networking/vpn_mesh/defaults/main.yml
 # Reason: Security task uses example password for tests
 roles/security/access/tasks/main.yml
+
+# Reason: Templates are optional and may be intentionally empty for many roles
+roles/*/templates/*
+roles/*/*/templates/*
