@@ -228,3 +228,4 @@ def test_ignores_workflows_and_artifacts(tmp_path):
     out = r.stdout + r.stderr
     # No 'Found' lines should be present
     assert 'Found' not in out
+
