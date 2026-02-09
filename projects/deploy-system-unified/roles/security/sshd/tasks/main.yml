@@ -12,7 +12,7 @@
     dest: "{{ sshd_config_path }}.backup"
     remote_src: true
     mode: '0600'
-    force: no
+    force: false
   become: true
   when:
     - sshd_backup_config.stat.exists is not defined or not sshd_config_backup.stat.exists
