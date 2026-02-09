@@ -370,6 +370,35 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
         state: latest # noqa package-latest
     ```
 
+* **DSU003 (no_direct_placeholder_compare)**: This rule flags direct comparisons to placeholder values (e.g., `CHANGE_ME`, `CHANGE_ME_IN_VAULT`). Some files intentionally list placeholder defaults for validation (for example a central `preflight` guard). Prefer one of the following approaches to avoid false positives:
+
+    1. Avoid literal placeholder defaults by using an empty default and a `bad_values` list (recommended):
+
+    ```yaml
+    - name: Define placeholder guard
+      value: "{{ some_secret | default('') }}"
+      bad_values: ["CHANGE_ME", ""]
+    ```
+
+    2. If a literal placeholder is required for policy/documentation, annotate the offending line with `# noqa DSU003` and, when appropriate, add the file to `.ansible-lint.yml` via `exclude_paths:` to scope the suppression (preferred over global rule disable):
+
+    ```yaml
+    # roles/ops/preflight/tasks/main.yml
+    - name: "restic_password"
+      value: "{{ restic_password | default('CHANGE_ME_IN_VAULT') }}" # noqa DSU003
+      bad_values: ["CHANGE_ME_IN_VAULT", ""]
+    ```
+
+    ```yaml
+    # .ansible-lint.yml
+    rulesdir:
+      - ansiblelint/rules
+    exclude_paths:
+      - roles/ops/preflight/tasks/main.yml
+    ```
+
+    Also add the file to `dev_tools/tools/style-guide-enforcement/.styleignore` when the style enforcement tool should ignore it entirely.
+
 ### Error Handling & Block Patterns
 
 * **Block Error Handling**: Always include `rescue` and `always` sections when using `block` for critical operations:
