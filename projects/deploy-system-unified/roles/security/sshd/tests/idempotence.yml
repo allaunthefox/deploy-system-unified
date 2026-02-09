@@ -28,7 +28,7 @@
       register: sshd_before
 
     - name: Apply security/sshd role (first run)
-      ansible.builtin.include_role:
+      ansible.builtin.import_role:
         name: security/sshd
 
     - name: Stat sshd_config after first run
@@ -37,7 +37,7 @@
       register: sshd_after_first
 
     - name: Apply security/sshd role (second run)
-      ansible.builtin.include_role:
+      ansible.builtin.import_role:
         name: security/sshd
       register: second_run_result
 
