@@ -2,6 +2,9 @@
 - hosts: instance
   connection: local
   gather_facts: false
+  vars:
+    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
+    containers_secrets_owner: "{{ lookup('env','USER') }}"
   tasks:
     - name: Run verify_secrets and capture result
       block:
