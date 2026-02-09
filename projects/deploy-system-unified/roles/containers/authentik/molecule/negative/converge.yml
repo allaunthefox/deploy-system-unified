@@ -14,14 +14,14 @@
         path: "{{ containers_secrets_dir }}"
         state: directory
         mode: '0700'
-    
+
     # Test Case 1: Missing authentik.env file (should fail)
     - name: Create missing authentik.env for test
       ansible.builtin.file:
         path: "{{ containers_secrets_dir }}/authentik.env"
         state: absent
       when: test_case == 'missing_file'
-    
+
     # Test Case 2: Wrong permissions on authentik.env (should fail)
     - name: Create authentik.env with wrong permissions for test
       ansible.builtin.copy:
@@ -33,7 +33,7 @@
         mode: '0644'  # Wrong permissions
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'wrong_permissions'
-    
+
     # Test Case 3: Placeholder values in authentik.env (should fail)
     - name: Create authentik.env with placeholder values for test
       ansible.builtin.copy:
@@ -45,7 +45,7 @@
         mode: '0600'
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'placeholder_values'
-    
+
     # Test Case 4: Wrong owner on authentik.env (should fail)
     - name: Create authentik.env with wrong owner for test
       become: true
@@ -58,14 +58,14 @@
         mode: '0600'
         owner: "root"  # Wrong owner
       when: test_case == 'wrong_owner'
-    
+
     # Test Case 5: Missing Redis password file (should fail)
     - name: Create missing redis.env for test
       ansible.builtin.file:
         path: "{{ containers_secrets_dir }}/redis.env"
         state: absent
       when: test_case == 'missing_redis_file'
-    
+
     # Test Case 6: Empty authentik.env file (should fail)
     - name: Create empty authentik.env for test
       ansible.builtin.copy:
@@ -74,4 +74,3 @@
         mode: '0600'
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'empty_file'
-    
