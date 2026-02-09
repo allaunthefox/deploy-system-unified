@@ -22,7 +22,7 @@
   vars:
     change_me_policy_items:
       - name: "monitoring_grafana_admin_password"
-        value: "{{ monitoring_grafana_admin_password | default('CHANGE_ME_IN_VAULT') }}"
+        value: "{{ monitoring_grafana_admin_password | default('') }}"
         bad_values: ["CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
   when: monitoring_enable | bool
 
