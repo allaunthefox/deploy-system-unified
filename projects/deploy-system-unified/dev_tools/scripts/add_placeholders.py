@@ -17,6 +17,16 @@ def add_placeholders(group):
             if not d.exists():
                 d.parent.mkdir(parents=True, exist_ok=True)
                 d.write_text('---\n# Placeholder defaults\n# Intentionally empty\n')
+            # Add handlers placeholder where missing
+            h = r/'handlers'/'main.yml'
+            if not h.exists():
+                h.parent.mkdir(parents=True, exist_ok=True)
+                h.write_text('---\n# Placeholder handlers file\n# Intentionally empty\n')
+            # Add vars placeholder where missing
+            v = r/'vars'/'main.yml'
+            if not v.exists():
+                v.parent.mkdir(parents=True, exist_ok=True)
+                v.write_text('---\n# Placeholder vars file\n# Intentionally empty\n')
             f = r/'files'
             if not f.exists():
                 f.mkdir(parents=True, exist_ok=True)
