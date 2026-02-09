@@ -31,7 +31,7 @@
           JELLYFIN_API_KEY=real_api_key_here
         mode: '0644'  # Wrong permissions
         owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'wrong_jellyfin_permissions'
+      when: test_case in ['wrong_jellyfin_permissions', 'wrong_permissions']
     
     # Test Case 3: Placeholder values in jellyfin.env (should fail)
     - name: Create jellyfin.env with placeholder values for test
@@ -42,7 +42,7 @@
           JELLYFIN_API_KEY=CHANGE_ME_IN_VAULT_TO_HASH
         mode: '0600'
         owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'placeholder_jellyfin_values'
+      when: test_case in ['placeholder_jellyfin_values', 'placeholder_values']
     
     # Test Case 4: Missing radarr.env file (should fail)
     - name: Create missing radarr.env for test
@@ -61,7 +61,7 @@
           JELLYFIN_API_KEY=real_api_key_here
         mode: '0600'
         owner: "root"  # Wrong owner
-      when: test_case == 'wrong_media_owner'
+      when: test_case in ['wrong_media_owner', 'wrong_owner']
     
     # Test Case 6: Empty media secrets file (should fail)
     - name: Create empty media secrets for test
