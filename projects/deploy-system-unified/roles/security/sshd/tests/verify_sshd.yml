@@ -6,7 +6,7 @@
   become: true
   tasks:
     - name: Test sshd config
-      command: sshd -T -f "{{ sshd_config_path | default('/etc/ssh/sshd_config') }}"
+      ansible.builtin.command: sshd -T -f "{{ sshd_config_path | default('/etc/ssh/sshd_config') }}"
       register: sshd_t
       changed_when: false
       failed_when: sshd_t.rc != 0
