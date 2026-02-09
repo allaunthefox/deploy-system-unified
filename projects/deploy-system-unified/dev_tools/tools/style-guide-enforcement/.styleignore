@@ -67,3 +67,6 @@ roles/containers/media/defaults/main.yml
 */molecule/*
 # Also ignore top-level molecule directory configs
 molecule/*
+
+# Specific: restic molecule test contains templated password placeholder; harmless
+roles/storage/backup/restic/molecule/default/converge.yml
