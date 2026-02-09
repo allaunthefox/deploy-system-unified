@@ -68,6 +68,14 @@ roles/containers/media/defaults/main.yml
 # Also ignore top-level molecule directory configs
 molecule/*
 
+# Reason: GitHub Actions workflow YAMLs (not Ansible playbooks/tasks)
+.github/workflows/*.yml
+.github/workflows/*.yaml
+
+# Reason: CI artifacts and generated reports that may include commands and placeholders
+projects/*/ci-artifacts/*
+projects/*/ci-artifacts/**
+
 # Specific: restic molecule test contains templated password placeholder; harmless
 roles/storage/backup/restic/molecule/default/converge.yml
 
