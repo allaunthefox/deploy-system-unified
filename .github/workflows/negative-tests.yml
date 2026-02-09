@@ -117,6 +117,7 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
           name: ${{ env.ARTIFACT_NAME }}-${{ matrix.test_case }}
           path: |
