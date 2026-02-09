@@ -1,5 +1,8 @@
 ---
 # Preflight role - Validation and readiness checks ONLY
+# Reason: This file centralized placeholder detection for inventory variables; these
+# values are intentionally listed for validation policy and may include "CHANGE_ME" placeholders.
+# noqa DSU003
 # Package installation has been moved to core/bootstrap
 - name: Gather minimum facts for preflight checks
   ansible.builtin.setup:
