@@ -10,7 +10,7 @@ Playbooks are written in YAML format and consist of one or more 'plays' in a lis
 ---
 - name: Install and configure web servers
   hosts: webservers
-  become: yes
+  become: true
   vars:
     http_port: 80
   tasks:
@@ -23,7 +23,7 @@ Playbooks are written in YAML format and consist of one or more 'plays' in a lis
       service:
         name: apache2
         state: started
-        enabled: yes
+        enabled: true
 ```
 
 ## Plays
