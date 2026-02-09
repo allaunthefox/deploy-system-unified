@@ -1,5 +1,8 @@
 ---
 # Preflight role - Validation and readiness checks ONLY
+# Reason: This file centralized placeholder detection for inventory variables; these
+# values are intentionally listed for validation policy and may include "CHANGE_ME" placeholders.
+# noqa DSU003
 # Package installation has been moved to core/bootstrap
 - name: Gather minimum facts for preflight checks
   ansible.builtin.setup:
@@ -105,16 +108,16 @@
   ansible.builtin.set_fact:
     preflight_secret_guards:
       - name: "crowdsec_firewall_bouncer_key"
-        value: "{{ vault_crowdsec_firewall_bouncer_key | default('CHANGE_ME') }}"
+        value: "{{ vault_crowdsec_firewall_bouncer_key | default('') }}" # noqa DSU003
         bad_values: ["CHANGE_ME", ""]
       - name: "vaultwarden_admin_token"
-        value: "{{ vaultwarden_admin_token | default('CHANGE_ME_IN_VAULT_TO_HASH') }}"
+        value: "{{ vaultwarden_admin_token | default('') }}" # noqa DSU003
         bad_values: ["CHANGE_ME_IN_VAULT_TO_HASH", ""]
       - name: "monitoring_grafana_admin_password"
-        value: "{{ monitoring_grafana_admin_password | default('CHANGE_ME_IN_VAULT') }}"
+        value: "{{ monitoring_grafana_admin_password | default('') }}" # noqa DSU003
         bad_values: ["CHANGE_ME_IN_VAULT", ""]
       - name: "restic_password"
-        value: "{{ restic_password | default('CHANGE_ME_IN_VAULT') }}"
+        value: "{{ restic_password | default('') }}" # noqa DSU003
         bad_values: ["CHANGE_ME_IN_VAULT", ""]
 
 - name: Run preflight diagnose (non-failing)

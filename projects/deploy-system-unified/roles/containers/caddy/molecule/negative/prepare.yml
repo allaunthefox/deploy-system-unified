@@ -14,7 +14,7 @@
       ansible.builtin.user:
         name: "{{ molecule_runner_user }}"
         groups: podman
-        append: yes
+        append: true
       when: podman_info is failed
       become: true
 

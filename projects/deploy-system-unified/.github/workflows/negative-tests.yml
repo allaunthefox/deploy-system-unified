@@ -51,24 +51,16 @@ jobs:
             test_case: missing_radarr_file
           - role: containers/media
             test_case: empty_media_file
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-<<<<<<< HEAD
-      - name: Install Podman via apt
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
-          podman --version
-=======
-      - name: Install Podman via apt
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
-          podman --version
 
+      - name: Install Podman via apt
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+          podman --version
 
       - name: Check Podman availability
         run: |
@@ -109,7 +101,7 @@ jobs:
           test_case=${{ matrix.test_case }} molecule test --scenario-name negative
         env:
           test_case: ${{ matrix.test_case }}
-          
+
       - name: Set artifact name
         if: always()
         run: |
@@ -134,7 +126,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Validate workflow syntax
         run: |
           echo "Validating .github/workflows/negative-tests.yml"

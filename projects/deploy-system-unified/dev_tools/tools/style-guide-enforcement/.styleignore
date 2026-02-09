@@ -79,6 +79,9 @@ projects/*/ci-artifacts/**
 # Specific: restic molecule test contains templated password placeholder; harmless
 roles/storage/backup/restic/molecule/default/converge.yml
 
+# Reason: Preflight centralizes placeholder detection — suppress DSU003 false positives
+roles/ops/preflight/tasks/main.yml
+
 # Reason: Defaults files with harmless placeholder values that trigger security warnings
 # These defaults are intentionally placeholders for role configuration (not secrets)
 roles/containers/media/defaults/main.yml

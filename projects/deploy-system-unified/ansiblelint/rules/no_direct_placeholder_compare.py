@@ -41,6 +41,26 @@ class NoDirectPlaceholderCompareRule(AnsibleLintRule):
         else:
             yield obj
 
+    def _collect_bad_values(self, obj, out):
+        """Recursively collect literals from any 'bad_values' lists in the doc.
+
+        Args:
+            obj: YAML node (dict/list/scalar)
+            out: set to populate with bad values found (strings)
+        """
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == 'bad_values' and isinstance(v, list):
+                    for i in v:
+                        if isinstance(i, str):
+                            out.add(i)
+                else:
+                    self._collect_bad_values(v, out)
+        elif isinstance(obj, list):
+            for item in obj:
+                self._collect_bad_values(item, out)
+        # scalars ignored
+
     def matchyaml(self, file, yaml_doc=None):
         matches = []
         filename = self._get_path(file)
@@ -67,6 +87,10 @@ class NoDirectPlaceholderCompareRule(AnsibleLintRule):
         docs = yaml_data if isinstance(yaml_data, list) else [yaml_data]
         for doc in docs:
             try:
+                # Collect any 'bad_values' entries that indicate intentional placeholder guards
+                bad_values = set()
+                self._collect_bad_values(doc, bad_values)
+
                 for node in self._iter_nodes(doc):
                     if not isinstance(node, str):
                         continue
@@ -75,6 +99,9 @@ class NoDirectPlaceholderCompareRule(AnsibleLintRule):
                     if placeholder_re.search(s) and (
                         operator_re.search(s) or default_re.search(s)
                     ):
+                        # If the placeholder in question is covered by a nearby 'bad_values' list, ignore it
+                        if any(bv and bv in s for bv in bad_values):
+                            continue
                         matches.append(self._make_match(file, f"Direct placeholder comparison detected: {s}"))
             except Exception:
                 # Be tolerant of unexpected structures

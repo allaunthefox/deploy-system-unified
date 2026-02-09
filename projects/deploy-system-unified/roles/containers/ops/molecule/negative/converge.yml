@@ -14,14 +14,14 @@
         path: "{{ containers_secrets_dir }}"
         state: directory
         mode: '0700'
-    
+
     # Test Case 1: Missing secret file (should fail)
     - name: Create missing vaultwarden.env for test
       ansible.builtin.file:
         path: "{{ containers_secrets_dir }}/vaultwarden.env"
         state: absent
       when: test_case == 'missing_file'
-    
+
     # Test Case 2: Wrong permissions (should fail)
     - name: Create vaultwarden.env with wrong permissions for test
       ansible.builtin.copy:
@@ -30,7 +30,7 @@
         mode: '0644'  # Wrong permissions
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'wrong_permissions'
-    
+
     # Test Case 3: Placeholder values (should fail)
     - name: Create vaultwarden.env with placeholder values for test
       ansible.builtin.copy:
@@ -39,7 +39,7 @@
         mode: '0600'
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'placeholder_values'
-    
+
     # Test Case 4: Wrong owner (should fail)
     - name: Create vaultwarden.env with wrong owner for test
       become: true
@@ -49,4 +49,3 @@
         mode: '0600'
         owner: "root"  # Wrong owner
       when: test_case == 'wrong_owner'
-    

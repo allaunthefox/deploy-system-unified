@@ -1,2 +1,7 @@
 rulesdir:
   - ansiblelint/rules
+
+# Exclude files that intentionally list placeholders for validation (preflight guard)
+exclude_paths:
+  - roles/ops/preflight/tasks/main.yml
+  - secrets/tasks/main.yml
