@@ -1,3 +1,4 @@
+---
 name: Style Guide Enforcement
 on:
   push:
@@ -24,6 +25,11 @@ jobs:
           sudo apt-get install -y yamllint ripgrep fd-find shellcheck || true
           python -m pip install --upgrade pip || true
           python -m pip install --upgrade ansible-lint || true
+      - name: Run style tooling unit tests
+        run: |
+          # Ensure pytest is available and run the new style tooling tests
+          python -m pip install --upgrade pytest || true
+          pytest -q dev_tools/tools/style-guide-enforcement/tests -q
       - name: Run enforcement (generate report)
         run: |
           set -o pipefail
