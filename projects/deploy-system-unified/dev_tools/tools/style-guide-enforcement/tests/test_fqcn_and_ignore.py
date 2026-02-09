@@ -69,3 +69,45 @@ def test_enforce_fqcn_respects_molecule_ignore(tmp_path):
 
     out = r_yes.stdout + r_yes.stderr
     assert 'Found' not in out
+
+
+def test_security_ignore_respects_styleignore(tmp_path):
+    # Prepare a project with a file that contains a password-like literal
+    proj = tmp_path
+    sec_dir = proj / 'roles' / 'example' / 'molecule' / 'default'
+    sec_dir.mkdir(parents=True)
+
+    sec_file = sec_dir / 'converge.yml'
+    sec_file.write_text(textwrap.dedent("""
+        ---
+        - hosts: localhost
+          vars:
+            some_password: "changeme"
+          tasks:
+            - name: noop
+              debug:
+                msg: "ok"
+    """))
+
+    # Run security check without ignore should report the file
+    cmd_no_ignore = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        PROJECT_ROOT="{proj}"
+        enforce_security_standards
+    """)
+    r_no = run_cmd(cmd_no_ignore, cwd=proj)
+    assert 'Found' in (r_no.stdout + r_no.stderr)
+
+    # Add an ignore entry and ensure the file is skipped
+    styleignore = proj / '.styleignore'
+    styleignore.write_text("*/molecule/*\n")
+
+    cmd_with_ignore = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        PROJECT_ROOT="{proj}"
+        STYLE_IGNORE="{styleignore}"
+        enforce_security_standards
+    """)
+    r_yes = run_cmd(cmd_with_ignore, cwd=proj)
+    out = r_yes.stdout + r_yes.stderr
+    assert 'Found' not in out
