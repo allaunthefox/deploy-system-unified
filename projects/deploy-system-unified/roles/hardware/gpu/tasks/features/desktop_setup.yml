@@ -56,7 +56,6 @@
       loop: "{{ human_users.stdout_lines }}"
       when: human_users.stdout_lines | length > 0
 
-
 - name: "[Desktop] Verify Input Device Support"
   when: gpu_desktop_enable_wayland_support | bool
   block:

@@ -51,7 +51,6 @@ nvidia_gpg_key_sha256: ""
 nvidia_gpg_fingerprint: ""
 nvidia_gpg_key_verify: false
 
-
 # Desktop/Workstation Specific Configuration
 # These settings apply when gpu_stack_mode is 'desktop' or 'hybrid'
 gpu_desktop_enable_audio: true            # Enable GPU Audio (HDMI/DP) - Ensures drivers are loaded
@@ -59,7 +58,6 @@ gpu_desktop_power_profile: "balanced"     # Options: performance, balanced, powe
 gpu_desktop_enable_wayland_support: true  # Enable DRM KMS for Wayland (essential for GNOME/KDE)
 gpu_desktop_enable_x11_support: true      # Ensure X11 drivers/utilities are present
 gpu_desktop_grant_user_access: true       # Grant 'video'/'render' group access to standard users
-
 
 # Variable Namespacing:
 # All variables internal to this role should be prefixed with gpu_stack_ or specific
