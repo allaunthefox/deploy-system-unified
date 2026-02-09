@@ -54,7 +54,7 @@ is_ignored() {
             fi
         else
             # Shell glob match using case (preserves glob semantics)
-            # shellcheck disable=SC2254: glob pattern intended for case matching
+            # shellcheck disable=SC2254
             case "$path" in
                 $pat)
                     if [ $neg -eq 1 ]; then

@@ -7,7 +7,7 @@ if command -v podman >/dev/null 2>&1; then
     exit 0
   else
     echo "Podman is installed but the socket is not accessible. Try: 'sudo systemctl enable --now podman.socket' and add your user to the socket group or enable rootless podman."
-    echo "Example: 'sudo usermod -aG <group> "${USER}"' and then re-login."
+    echo "Example: 'sudo usermod -aG <group> \"${USER}\"' and then re-login."
     exit 1
   fi
 else
