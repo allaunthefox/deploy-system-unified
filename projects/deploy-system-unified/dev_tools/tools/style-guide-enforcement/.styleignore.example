@@ -4,3 +4,9 @@
 
 # Ignore ops role category
 roles/ops
+
+# Negation example: do not ignore caddy molecule files even if a broad pattern applies
+!roles/containers/caddy/molecule/*
+
+# Regex example: ignore any molecule directory under roles (POSIX ERE)
+re:^roles/.*/molecule/

@@ -154,3 +154,77 @@ def test_bulk_security_ignores(tmp_path):
     r_yes = run_cmd(cmd_yes, cwd=proj)
     out = r_yes.stdout + r_yes.stderr
     assert 'Found' not in out
+
+
+def test_is_ignored_negation_and_regex(tmp_path):
+    # Prepare a styleignore with a broad glob, a negation, and a regex
+    styleignore = tmp_path / '.styleignore'
+    styleignore.write_text(textwrap.dedent('''
+        */molecule/*
+        !roles/containers/caddy/molecule/*
+        re:^roles/.*/molecule/negative/
+    '''))
+
+    # Path that should be ignored by glob
+    p1 = 'roles/containers/media/molecule/negative/molecule.yml'
+    # Path that should be explicitly un-ignored by negation
+    p2 = 'roles/containers/caddy/molecule/negative/molecule.yml'
+    # Path that should be ignored by regex
+    p3 = 'roles/special/molecule/negative/molecule.yml'
+
+    cmd = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        STYLE_IGNORE="{styleignore}"
+        is_ignored "{p1}" && echo P1_IGNORED || echo P1_NOT
+        is_ignored "{p2}" && echo P2_IGNORED || echo P2_NOT
+        is_ignored "{p3}" && echo P3_IGNORED || echo P3_NOT
+    """)
+
+    r = run_cmd(cmd, cwd=tmp_path)
+    out = r.stdout.strip().splitlines()
+    assert 'P1_IGNORED' in out
+    assert 'P2_NOT' in out
+    assert 'P3_IGNORED' in out
+
+
+def test_ignores_workflows_and_artifacts(tmp_path):
+    # Create a fake GH workflow and a CI artifact file that would otherwise match patterns
+    proj = tmp_path
+    wf = proj / '.github' / 'workflows'
+    wf.mkdir(parents=True)
+    wf_file = wf / 'ci-debug.yml'
+    wf_file.write_text(textwrap.dedent('''
+        ---
+        name: Fake workflow
+        on: [push]
+        jobs:
+          test:
+            runs-on: ubuntu-latest
+            steps:
+              - name: Run something
+                run: |
+                  echo "hello"
+    '''))
+
+    artifact_dir = proj / 'projects' / 'deploy-system-unified' / 'ci-artifacts'
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    artifact_file = artifact_dir / 'compliance_report.md'
+    artifact_file.write_text('some report with commands: copy: something')
+
+    # Create styleignore containing our new patterns
+    styleignore = proj / '.styleignore'
+    styleignore.write_text('.github/workflows/*.yml\nprojects/*/ci-artifacts/*\n')
+
+    cmd = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        PROJECT_ROOT="{proj}"
+        STYLE_IGNORE="{styleignore}"
+        # Ensure workflows are not reported by FQCN check
+        enforce_fqcn_standards
+        # Ensure artifacts are not reported by security check
+        enforce_security_standards
+    """)
+    r = run_cmd(cmd, cwd=proj)
+    out = r.stdout + r.stderr
+    # No 'Found' lines should be present
+    assert 'Found' not in out
