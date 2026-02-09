@@ -69,7 +69,6 @@
       loop_control:
         loop_var: role_item
 
-
   post_tasks:
     - name: Verify Kubernetes GPU device plugin status
       ansible.builtin.command:

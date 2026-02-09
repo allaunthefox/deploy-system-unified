@@ -20,4 +20,3 @@ rules:
   new-lines:
     type: unix
     level: error
-
