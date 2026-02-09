@@ -49,7 +49,7 @@
       ansible.builtin.file:
         path: "{{ containers_secrets_dir }}/radarr.env"
         state: absent
-      when: test_case == 'missing_radarr_file'
+      when: test_case in ['missing_radarr_file', 'missing_file']
     
     # Test Case 5: Wrong owner on media secrets (should fail)
     - name: Create media secrets with wrong owner for test
