@@ -4,25 +4,34 @@
   gather_facts: false
   tasks:
     - name: Run verify_secrets and capture result
-      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
-      register: verify_result
-      failed_when: false
+      block:
+        - ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
+      rescue:
+        - name: Capture failure into verify_result
+          ansible.builtin.set_fact:
+            verify_result:
+              failed: true
+              msg: "{{ (ansible_failed_result.msg | default(ansible_failed_result)) | string }}"
+      always:
+        - name: Ensure verify_result exists
+          ansible.builtin.set_fact:
+            verify_result: "{{ verify_result | default({'failed': false}) }}"
     
     - name: Assert that verify_secrets failed as expected
       ansible.builtin.assert:
         that:
-          - verify_result is failed
+          - verify_result.failed | default(false)
         fail_msg: "Expected verify_secrets to fail, but it succeeded"
         success_msg: "verify_secrets correctly failed as expected"
     
     - name: Verify specific failure conditions
       ansible.builtin.assert:
         that:
-          - verify_result is failed
+          - verify_result.failed | default(false)
           - verify_result.msg is defined
         fail_msg: "verify_secrets failed but no error message provided"
         success_msg: "verify_secrets failed with proper error message"
     
     - name: Log test case and result
       ansible.builtin.debug:
-        msg: "Test case '{{ test_case }}' - verify_secrets {{ 'PASSED' if verify_result is failed else 'FAILED' }}"
+        msg: "Test case '{{ test_case }}' - verify_secrets {{ 'PASSED' if verify_result.failed | default(false) else 'FAILED' }}"
