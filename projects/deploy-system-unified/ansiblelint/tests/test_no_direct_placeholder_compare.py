@@ -105,3 +105,19 @@ def test_ignores_molecule_and_defaults():
     }
     matches = rule.matchyaml(file, yaml_doc)
     assert not matches, "Expected the rule to ignore molecule fixtures"
+
+
+def test_ignores_guard_with_bad_values():
+    rule = NoDirectPlaceholderCompareRule()
+    file = make_file('roles/ops/preflight/tasks/main.yml')
+    yaml_doc = {
+        'preflight_secret_guards': [
+            {
+                'name': 'example_secret',
+                'value': "{{ example_secret | default('CHANGE_ME_IN_VAULT') }}",
+                'bad_values': ['CHANGE_ME_IN_VAULT', '']
+            }
+        ]
+    }
+    matches = rule.matchyaml(file, yaml_doc)
+    assert not matches, "Expected the rule to ignore placeholder comparisons that are guarded by bad_values"
