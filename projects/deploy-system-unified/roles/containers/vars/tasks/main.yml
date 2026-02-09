@@ -1,0 +1,4 @@
+---
+- name: placeholder task (no-op)
+  debug:
+    msg: 'Placeholder: no action'
