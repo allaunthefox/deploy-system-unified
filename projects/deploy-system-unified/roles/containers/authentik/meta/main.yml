@@ -8,7 +8,7 @@ galaxy_info:
   platforms:
     - name: Fedora
       versions: [all]
-  galaxy_tags: [containers,authentik]
+  galaxy_tags: [containers, authentik]
 assumes_permissive: true
 # Authentik role has secrets and may be used with host-network assumptions in some profiles.
 

@@ -8,7 +8,7 @@ galaxy_info:
   platforms:
     - name: Fedora
       versions: [all]
-  galaxy_tags: [containers,caddy]
+  galaxy_tags: [containers, caddy]
 assumes_permissive: true
 # Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.
 
