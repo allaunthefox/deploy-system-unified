@@ -63,9 +63,7 @@ roles/storage/backup/rclone/defaults/main.yml
 roles/containers/media/defaults/main.yml
 
 # Reason: Molecule Config files (Not Playbooks)
-molecule/ephemeral_desktop/molecule.yml
-roles/networking/physical/molecule/default/molecule.yml
-roles/hardware/sas/molecule/default/molecule.yml
-roles/core/bootstrap/molecule/default/molecule.yml
-roles/ops/monitoring/molecule/default/molecule.yml
-roles/hardware/gpu/molecule/default/molecule.yml
+# Broad pattern to ignore all molecule configuration files (not Ansible tasks/playbooks)
+*/molecule/*
+# Also ignore top-level molecule directory configs
+molecule/*

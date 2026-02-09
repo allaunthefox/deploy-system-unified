@@ -1,0 +1,6 @@
+# Example .styleignore (copy to .styleignore in project root for local testing)
+# Ignore molecule config files (these are not Ansible tasks)
+*/molecule/*
+
+# Ignore ops role category
+roles/ops
