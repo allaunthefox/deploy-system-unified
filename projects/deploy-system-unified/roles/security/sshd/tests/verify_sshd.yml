@@ -12,19 +12,19 @@
       failed_when: sshd_t.rc != 0
 
     - name: Assert PermitRootLogin is disabled
-      assert:
+      ansible.builtin.assert:
         that:
           - "'permitrootlogin no' in sshd_t.stdout"
         fail_msg: "PermitRootLogin is not set to 'no'"
 
     - name: Assert agent forwarding is disabled by default
-      assert:
+      ansible.builtin.assert:
         that:
           - "'allowagentforwarding no' in sshd_t.stdout"
         fail_msg: "AllowAgentForwarding is not set to 'no'"
 
     - name: Assert tcp forwarding is disabled by default
-      assert:
+      ansible.builtin.assert:
         that:
           - "'allowtcpforwarding no' in sshd_t.stdout"
         fail_msg: "AllowTcpForwarding is not set to 'no'"
