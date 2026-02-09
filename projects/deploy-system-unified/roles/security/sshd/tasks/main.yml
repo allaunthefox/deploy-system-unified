@@ -21,6 +21,14 @@
 - name: Determine SSH service name
   ansible.builtin.set_fact:
     ssh_service_name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
+
+- name: Ensure SSH privilege separation directory exists (for validation in containers)
+  ansible.builtin.file:
+    path: /run/sshd
+    state: directory
+    mode: '0755'
+  become: true
+
 - name: Configure SSH port
   ansible.builtin.lineinfile:
     path: "{{ sshd_config_path }}"
