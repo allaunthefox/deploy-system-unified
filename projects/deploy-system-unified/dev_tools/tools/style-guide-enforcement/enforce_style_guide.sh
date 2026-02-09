@@ -20,6 +20,20 @@ ANSIBLE_LINT_CONFIG="$PROJECT_ROOT/.ansible-lint.yml"
 STYLE_GUIDE="$PROJECT_ROOT/LLM_RESEARCH/Style_Guide.md"
 STYLE_IGNORE="$PROJECT_ROOT/dev_tools/tools/style-guide-enforcement/.styleignore"
 
+# Check style ignore patterns (supports glob patterns)
+is_ignored() {
+    local path="$1"
+    [ ! -f "$STYLE_IGNORE" ] && return 1
+    while IFS= read -r pattern; do
+        [[ -z "$pattern" ]] && continue
+        [[ "$pattern" =~ ^# ]] && continue
+        if [[ "$path" == "$pattern" ]]; then
+            return 0
+        fi
+    done < "$STYLE_IGNORE"
+    return 1
+}
+
 # Counters
 TOTAL_ISSUES=0
 FIXED_ISSUES=0
@@ -233,12 +247,16 @@ enforce_fqcn_standards() {
         done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
     fi
 
-    # Filter out ignored files
+    # Filter out ignored files and non-playbook config files like molecule configs
     local filtered_matches=()
     for file in "${short_form_matches[@]}"; do
         local relative_path
         relative_path=$(realpath --relative-to="$PROJECT_ROOT" "$file")
-        if [ ! -f "$STYLE_IGNORE" ] || ! grep -qx "$relative_path" "$STYLE_IGNORE"; then
+        # Ignore molecule directories (molecule configs are not Ansible tasks)
+        if [[ "$relative_path" == */molecule/* || "$relative_path" == molecule/* ]]; then
+            continue
+        fi
+        if ! is_ignored "$relative_path"; then
             filtered_matches+=("$file")
         fi
     done
@@ -440,7 +458,7 @@ enforce_file_structure() {
         local relative_path
         relative_path=$(realpath --relative-to="$PROJECT_ROOT" "$role_path")
 
-        if [ -f "$STYLE_IGNORE" ] && grep -qx "$relative_path" "$STYLE_IGNORE"; then
+        if is_ignored "$relative_path"; then
             log "Skipping ignored path: $relative_path"
             continue
         fi
@@ -501,7 +519,7 @@ enforce_security_standards() {
         fi
 
         for file in "${candidates[@]}"; do
-             if [ -f "$STYLE_IGNORE" ] && grep -qx "$(realpath --relative-to="$PROJECT_ROOT" "$file")" "$STYLE_IGNORE"; then
+             if is_ignored "$(realpath --relative-to="$PROJECT_ROOT" "$file")"; then
                  continue
              fi
              
