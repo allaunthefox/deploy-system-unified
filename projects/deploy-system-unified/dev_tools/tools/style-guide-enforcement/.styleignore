@@ -70,3 +70,12 @@ molecule/*
 
 # Specific: restic molecule test contains templated password placeholder; harmless
 roles/storage/backup/restic/molecule/default/converge.yml
+
+# Reason: Defaults files with harmless placeholder values that trigger security warnings
+# These defaults are intentionally placeholders for role configuration (not secrets)
+roles/containers/media/defaults/main.yml
+roles/containers/caddy/defaults/main.yml
+roles/orchestration/k8s_node/defaults/main.yml
+roles/networking/vpn_mesh/defaults/main.yml
+# Reason: Security task uses example password for tests
+roles/security/access/tasks/main.yml
