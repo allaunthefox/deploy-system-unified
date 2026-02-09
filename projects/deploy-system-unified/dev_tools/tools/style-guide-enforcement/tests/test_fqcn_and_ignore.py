@@ -111,3 +111,46 @@ def test_security_ignore_respects_styleignore(tmp_path):
     r_yes = run_cmd(cmd_with_ignore, cwd=proj)
     out = r_yes.stdout + r_yes.stderr
     assert 'Found' not in out
+
+
+def test_bulk_security_ignores(tmp_path):
+    # Create multiple files that would be flagged by security checks
+    proj = tmp_path
+    candidates = [
+        'roles/containers/media/defaults/main.yml',
+        'roles/containers/caddy/defaults/main.yml',
+        'roles/orchestration/k8s_node/defaults/main.yml',
+        'roles/networking/vpn_mesh/defaults/main.yml',
+        'roles/security/access/tasks/main.yml',
+    ]
+
+    for p in candidates:
+        f = proj / p
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(textwrap.dedent('''
+            ---
+            some_secret: "changeme_placeholder"
+        '''))
+
+    # Run security check without ignore should report matches
+    cmd_no = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        PROJECT_ROOT="{proj}"
+        enforce_security_standards
+    """)
+    r_no = run_cmd(cmd_no, cwd=proj)
+    assert 'Found' in (r_no.stdout + r_no.stderr)
+
+    # Add targeted ignore entries and verify they are skipped
+    styleignore = proj / '.styleignore'
+    styleignore.write_text('\n'.join(candidates) + '\n')
+
+    cmd_yes = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        PROJECT_ROOT="{proj}"
+        STYLE_IGNORE="{styleignore}"
+        enforce_security_standards
+    """)
+    r_yes = run_cmd(cmd_yes, cwd=proj)
+    out = r_yes.stdout + r_yes.stderr
+    assert 'Found' not in out
