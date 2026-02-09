@@ -29,7 +29,7 @@
 
     - name: Apply security/sshd role (first run)
       ansible.builtin.import_role:
-        name: security/sshd
+        name: security.sshd
       register: first_run_result
 
     - name: Stat sshd_config after first run
@@ -55,7 +55,7 @@
 
     - name: Apply security/sshd role (second run)
       ansible.builtin.import_role:
-        name: security/sshd
+        name: security.sshd
       register: second_run_result
 
     - name: Stat sshd_config after second run
