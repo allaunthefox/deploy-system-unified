@@ -20,8 +20,10 @@ jobs:
           # Run an ephemeral container, install minimal deps and run the test playbook
           docker run --rm -v "$PWD":/workspace -w /workspace ubuntu:22.04 bash -lc '
             export DEBIAN_FRONTEND=noninteractive; 
-            export ANSIBLE_ROLES_PATH=/workspace/projects/deploy-system-unified/roles; 
+            export ANSIBLE_ROLES_PATH=/workspace/projects/deploy-system-unified/roles:/workspace/projects/deploy-system-unified; 
             apt-get update -y; apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg; 
             pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"; 
+            # Ensure role resolution works by providing a convenience symlink when roles are nested
+            ln -s /workspace/projects/deploy-system-unified/roles/security/sshd /workspace/projects/deploy-system-unified/roles/sshd || true; 
             ansible-playbook projects/deploy-system-unified/roles/security/sshd/tests/idempotence.yml --connection=local;
           '

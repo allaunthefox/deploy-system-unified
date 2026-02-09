@@ -7,3 +7,10 @@ SystemBackups/
 secrets.generated.ymlprojects/deploy-system-unified/.secrets_scan.*
 .secrets_scan.*
 third_party/universal-mcp-github/
+
+# Ignore Molecule ephemeral shared artifacts
+projects/deploy-system-unified/roles/**/molecule/**/molecule_shared/
+projects/deploy-system-unified/roles/**/molecule/**/molecule_shared/**
+
+# Ignore symlink helper created in CI or locally
+projects/deploy-system-unified/roles/sshd

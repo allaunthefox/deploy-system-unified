@@ -18,11 +18,13 @@ jobs:
           # Start an ephemeral container with the repo mounted
           docker run --rm -d --name sshd-test -v "$GITHUB_WORKSPACE":/workspace -w /workspace ubuntu:22.04 sleep infinity
           docker exec sshd-test bash -lc "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server python3-pip python3-apt gnupg2 --no-install-recommends"
-          docker exec sshd-test bash -lc "pip3 install ansible"
+          docker exec sshd-test bash -lc "pip3 install 'ansible-core>=2.15,<2.16'"
           # Ensure sshd_config exists
           docker exec sshd-test bash -lc "test -f /etc/ssh/sshd_config || dpkg-reconfigure -f noninteractive openssh-server"
+          # Provide convenience symlink so the role can be referenced by short name
+          docker exec sshd-test bash -lc "ln -s /workspace/projects/deploy-system-unified/roles/security/sshd /workspace/projects/deploy-system-unified/roles/sshd || true"
           # Run the idempotence test playbook inside the container
-          docker exec sshd-test bash -lc "ansible-playbook projects/deploy-system-unified/roles/security/sshd/tests/idempotence.yml"
+          docker exec sshd-test bash -lc "ANSIBLE_ROLES_PATH=/workspace/projects/deploy-system-unified/roles:/workspace/projects/deploy-system-unified ansible-playbook projects/deploy-system-unified/roles/security/sshd/tests/idempotence.yml"
 
       - name: Collect container logs (if any)
         if: failure()
