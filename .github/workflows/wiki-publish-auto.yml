@@ -111,8 +111,10 @@ jobs:
           cd wiki-repo
           git add -A
           git commit -m "chore(wiki): publish wiki_pages from main (auto-run)" || echo "No changes to commit"
-          # If SSH deploy key used, push via origin (SSH); otherwise use HTTPS URL
-          if [ -n "$WIKI_SSH_KEY" ] || [ -n "$SSH_DEPLOY_KEY" ]; then
+          # Choose push method based on origin remote URL (SSH) or fall back to HTTPS URL
+          REMOTE_URL="$(git remote get-url origin || true)"
+          echo "Detected origin URL: $REMOTE_URL"
+          if echo "$REMOTE_URL" | grep -q '^git@github.com:'; then
             git push origin master || git push origin main || (echo "Push failed" && exit 1)
           else
             git push "$WIKI_GIT_URL" HEAD:master || git push "$WIKI_GIT_URL" HEAD:main || (echo "Push failed" && exit 1)
