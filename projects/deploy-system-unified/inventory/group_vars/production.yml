@@ -1,0 +1,6 @@
+---
+# Ontological Profile: Production
+deployment_profile: "production"
+core_security_fail_secure: true
+firewall_enabled: true
+monitoring_enabled: true

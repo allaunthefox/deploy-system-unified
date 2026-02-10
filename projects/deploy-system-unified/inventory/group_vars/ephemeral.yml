@@ -1,0 +1,6 @@
+---
+# Ontological Profile: Ephemeral
+deployment_profile: "ephemeral"
+ephemeral_volatile_secrets: true
+core_security_fail_secure: true
+firewall_enabled: true

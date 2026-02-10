@@ -1,0 +1,6 @@
+---
+# Ontological Profile: Development
+deployment_profile: "dev"
+core_security_fail_secure: false
+firewall_enabled: true
+ssh_randomize_port: false
