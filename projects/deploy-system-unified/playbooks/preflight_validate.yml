@@ -3,6 +3,14 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Enforce single ontological profile group membership
+      ansible.builtin.assert:
+        that:
+          - (group_names | intersect(['hardened', 'ephemeral', 'production', 'dev']) | length) == 1
+        fail_msg: >-
+          Host {{ inventory_hostname }} must belong to exactly one ontological profile group.
+          Found in: {{ group_names | intersect(['hardened', 'ephemeral', 'production', 'dev']) | join(', ') }}
+
     - name: Assert deployment_profile is defined and typed correctly
       ansible.builtin.assert:
         that:
