@@ -61,12 +61,21 @@ jobs:
               printf '%s\n' "$SSH_DEPLOY_KEY" > "$deploy_key_file"
             fi
             chmod 600 "$deploy_key_file"
-            # If passphrase provided, decrypt encrypted PEM
+            # If passphrase provided, try to decrypt. Support both PEM and OpenSSH formats.
             if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
-              echo "Decrypting encrypted PEM"
-              openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
-              mv "${deploy_key_file}.dec" "$deploy_key_file"
-              chmod 600 "$deploy_key_file"
+              echo "Attempting to decrypt/convert private key"
+              if openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec" 2>/tmp/openssl.err; then
+                mv "${deploy_key_file}.dec" "$deploy_key_file"
+                chmod 600 "$deploy_key_file"
+              else
+                echo "openssl pkey failed, trying ssh-keygen conversion (OpenSSH -> PEM)"
+                # Try converting OpenSSH private key to PEM using ssh-keygen; overwrite in place
+                if ssh-keygen -p -P "$WIKI_SSH_PASSPHRASE" -N "" -f "$deploy_key_file" -m PEM 2>/tmp/sshkeygen.err; then
+                  echo "ssh-keygen conversion succeeded"
+                else
+                  echo "ssh-keygen conversion failed; see /tmp/openssl.err and /tmp/sshkeygen.err" && cat /tmp/openssl.err || true && cat /tmp/sshkeygen.err || true && exit 7
+                fi
+              fi
             fi
             eval "$(ssh-agent -s)"
             ssh-add "$deploy_key_file"
