@@ -1,7 +1,7 @@
-name: Wiki Publish Debug
+name: Wiki Publish Debug (clean)
 
-# Manual debug workflow to run publish steps in dry-run mode with verbose logging.
-# Only to be used temporarily and removed after debugging.
+# Cleaner manual debug workflow to run publish steps in real mode with verbose logging.
+# This copy was added to avoid accidental formatting issues in the original file.
 
 on:
   workflow_dispatch:
@@ -47,6 +47,7 @@ jobs:
           CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
           WIKI_SSH_KEY: ${{ secrets.WIKI_SSH_KEY }}
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+          WIKI_SSH_PASSPHRASE: ${{ secrets.WIKI_SSH_PASSPHRASE }}
         run: |
           set -x
           # Prefer SSH deploy key when present, otherwise use CI_PAT for HTTPS
@@ -55,17 +56,19 @@ jobs:
             mkdir -p ~/.ssh
             deploy_key_file=~/.ssh/wiki_deploy_key
             if [ -n "$WIKI_SSH_KEY" ]; then
-              echo "$WIKI_SSH_KEY" > "$deploy_key_file"
+              printf '%s\n' "$WIKI_SSH_KEY" > "$deploy_key_file"
             else
-              echo "$SSH_DEPLOY_KEY" > "$deploy_key_file"
+              printf '%s\n' "$SSH_DEPLOY_KEY" > "$deploy_key_file"
             fi
-            chmod 600 "$deploy_key_file"            # If passphrase provided, decrypt encrypted PEM
+            chmod 600 "$deploy_key_file"
+            # If passphrase provided, decrypt encrypted PEM
             if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
               echo "Decrypting encrypted PEM"
               openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
               mv "${deploy_key_file}.dec" "$deploy_key_file"
               chmod 600 "$deploy_key_file"
-            fi            eval "$(ssh-agent -s)"
+            fi
+            eval "$(ssh-agent -s)"
             ssh-add "$deploy_key_file"
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             git clone "git@github.com:${{ github.repository }}.wiki.git" wiki-repo || (echo 'ssh clone failed' && ls -la && git remote -v && exit 4)
