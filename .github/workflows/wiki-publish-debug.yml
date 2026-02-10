@@ -121,6 +121,8 @@ jobs:
         env:
           WIKI_PAT: ${{ secrets.WIKI_PAT }}
           CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_SSH_KEY: ${{ secrets.WIKI_SSH_KEY }}
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         run: |
           set -x
           # Strip newlines from tokens before building URL
