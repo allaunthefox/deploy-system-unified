@@ -29,9 +29,7 @@ is_ignored() {
 
     local ignored=0
     local line
-    while IFS= read -r line || [ -n "$line" ]; do
-        # Strip trailing CR if present
-        line="${line%$'\r'}"
+    while read -r line || [ -n "$line" ]; do
         # Skip blank lines and comments
         [[ -z "${line//[[:space:]]/}" ]] && continue
         [[ "${line:0:1}" == "#" ]] && continue

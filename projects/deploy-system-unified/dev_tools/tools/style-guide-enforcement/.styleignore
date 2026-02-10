@@ -20,7 +20,7 @@ roles/core/systemd/tasks/main.yml
 roles/core/time/defaults/main.yml
 roles/core/time/tasks/main.yml
 roles/core/secrets/tasks/main.yml
-secrets/tasks/main.yml
+re:^secrets/tasks/main\.yml$
 roles/security/hardening/tasks/main.yml
 
 roles/security/secrets/tasks/main.yml
