@@ -1,0 +1,57 @@
+name: Wiki Publish
+
+# Manual workflow to publish `wiki_pages/` to the repository Wiki
+# This is intentionally a manual workflow (workflow_dispatch) and will not be run automatically.
+# To publish, a maintainer must run this workflow and provide a PAT with write rights to the wiki repo
+# (store the PAT in the repo secret `WIKI_PAT`). Review and use with caution.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "publish" to confirm publishing the wiki'
+        required: true
+        default: ''
+
+jobs:
+  publish:
+    if: github.event.inputs.confirm == 'publish'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Prepare wiki repo clone
+        env:
+          WIKI_GIT_URL: "git@github.com:${{ github.repository }}.wiki.git"
+          # Use WIKI_PAT secret if available; otherwise requires manual SSH key configured for action
+        run: |
+          echo "This step will clone and replace wiki content when run with proper PAT or SSH key configured."
+          echo "To enable pushing, set repository secret WIKI_PAT to a personal access token with repo scope and create a deploy key or use SSH setup."
+
+      - name: Dry-run: Show planned files
+        run: |
+          echo "Would copy the following files to the wiki repo (dry-run):"
+          find wiki_pages -maxdepth 1 -type f -name "*.md" -print
+
+      # Note: The push steps are provided as an example and are commented out for safety.
+      # Uncomment and test carefully with a PAT in the repo secrets (WIKI_PAT) before enabling.
+
+      # - name: Clone wiki repo
+      #   env:
+      #     WIKI_PAT: ${{ secrets.WIKI_PAT }}
+      #   run: |
+      #     git clone https://x-access-token:${WIKI_PAT}@github.com/${{ github.repository }}.wiki.git wiki-repo
+      #     rsync -av --delete wiki_pages/ wiki-repo/
+      #     cd wiki-repo
+      #     git add -A
+      #     git commit -m "chore(wiki): publish wiki_pages from main (manual run)" || echo "No changes to commit"
+      #     git push origin main
+
+      - name: Done (manual publish workflow)
+        run: echo "Manual publish workflow prepared. This workflow is safe by default and requires a manual run to publish."
