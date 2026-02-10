@@ -5,6 +5,7 @@
     cat /proc/sys/kernel/random/uuid
   register: generated_uuid_output
   changed_when: false
+  changed_when: false
   # This provides a new UUID every time it is called,
   # or it can be gated by a condition.
 - name: Set object identity fact

@@ -63,7 +63,9 @@
       THP set to {{ memory_thp_state }} (Reason: {{ 'Database-Latency-Protection' if memory_workload_profile == 'database' else 'User-Configured' }}).
 
 - name: Configure ZRAM (zram-generator)
-  when: active_memory_strategy == 'zram'
+  when:
+    - active_memory_strategy == 'zram'
+    - virt_type == 'bare-metal' or virt_type == 'virtual'
   block:
     - name: Install zram-generator
       ansible.builtin.package:
@@ -85,12 +87,14 @@
       notify: restart systemd-zram-setup
 
 - name: Configure ZSwap (Kernel Modules)
-  when: active_memory_strategy == 'zswap'
+  when:
+    - active_memory_strategy == 'zswap'
+    - virt_type == 'bare-metal' or virt_type == 'virtual'
   block:
     - name: Enable ZSwap Kernel Parameters
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!zswap\.enabled=1).)*"$'
         line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 zswap.enabled=1 zswap.compressor={{ core_memory_zswap_compressor }} zswap.max_pool_percent={{ core_memory_zswap_max_pool_percent }}"'
         backrefs: true
       become: true
@@ -122,8 +126,14 @@
 
 - name: Configure Transparent Huge Pages (THP)
   ansible.builtin.shell: |
-    echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
-    echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/defrag
-  changed_when: false
+    if ! grep -q '\[{{ memory_thp_state }}\]' /sys/kernel/mm/transparent_hugepage/enabled; then
+      echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
+      echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/defrag
+      echo "changed"
+    fi
+  register: thp_result
+  changed_when: "'changed' in thp_result.stdout"
   become: true
-  when: memory_workload_profile != 'standard'
+  when:
+    - memory_workload_profile != 'standard'
+    - virt_type == 'bare-metal' or virt_type == 'virtual'
