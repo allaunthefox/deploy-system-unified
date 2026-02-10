@@ -1,4 +1,4 @@
-# Stability Plan (2026)
+# STABILITY_PLAN
 
 **Date:** February 7, 2026  
 **Scope:** Production and development playbooks, base hardening, container stack, secrets handling, backups, and observability.

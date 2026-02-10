@@ -1,4 +1,4 @@
-# FAQ
+# faq
 
 ## Why is my idempotence action failing?
 

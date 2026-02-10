@@ -3,7 +3,7 @@ hide:
   - navigation
   - toc
 ---
-# About Ansible Molecule
+# index
 
 Molecule is an Ansible testing framework designed for developing and testing
 [Ansible](https://ansible.com) collections, playbooks, and roles.

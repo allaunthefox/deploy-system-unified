@@ -1,4 +1,4 @@
-# Secrets Management Plan (SOPS + Age)
+# SECRETS_MANAGEMENT
 
 **Status:** Planned. Ansible Vault is currently active for deployments.
 

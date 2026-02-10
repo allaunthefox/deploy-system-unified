@@ -1,4 +1,4 @@
-# Molecule Execution
+# execution
 
 This document aims to describe how molecule execution goes from commandline to playbook execution. It assumes you have a basic understanding of Molecule
 scenarios and playbooks.

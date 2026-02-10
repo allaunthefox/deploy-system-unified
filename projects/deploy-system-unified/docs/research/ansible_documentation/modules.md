@@ -1,4 +1,4 @@
-# Ansible Modules
+# modules
 
 Modules are the executable bits of Ansible that do the actual work. Each module is a self-contained script that can be invoked by the Ansible API, or by the `ansible` or `ansible-playbook` programs.
 

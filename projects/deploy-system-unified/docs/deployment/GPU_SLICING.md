@@ -1,4 +1,4 @@
-# GPU Slicing Setup Guide
+# GPU_SLICING
 
 ## Introduction
 

@@ -1,4 +1,4 @@
-# Testing philosophy
+# philosophy
 
 This document explores the fundamental principles of automation testing and how Molecule addresses the core needs of modern Ansible development across all domains.
 

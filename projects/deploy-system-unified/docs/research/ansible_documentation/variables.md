@@ -1,4 +1,4 @@
-# Ansible Variables
+# variables
 
 Variables in Ansible allow you to abstract your playbooks and make them reusable. They can store values that can be used throughout your playbooks and roles.
 

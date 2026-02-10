@@ -1,4 +1,4 @@
-# Ansible native inventory
+# ansible_native_inventory
 
 !!! note
 

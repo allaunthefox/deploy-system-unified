@@ -1,4 +1,4 @@
-# Contributing
+# contributing
 
 Noticed a bug or have an idea to improve Ansible Molecule?
 Want to write some documentation or share your expertise on the forum?

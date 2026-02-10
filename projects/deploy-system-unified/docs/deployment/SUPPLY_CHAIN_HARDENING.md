@@ -1,4 +1,4 @@
-# Supply-Chain Hardening Profile
+# SUPPLY_CHAIN_HARDENING
 
 ## Overview
 The Supply-Chain Hardening Profile is an optional, high-security configuration layer designed to protect against **Repository Hijacking** and **Compromised Mirrors**. It enforces strict cryptographic verification (SHA256 Checksums and GPG Fingerprints) for third-party software sources.

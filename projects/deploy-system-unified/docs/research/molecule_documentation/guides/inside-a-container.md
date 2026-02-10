@@ -1,4 +1,4 @@
-## Running inside a container
+#inside-a-container
 
 Molecule is built into a Docker image by the [Ansible Dev Tools](https://docs.ansible.com/projects/dev-tools/container/) project.
 

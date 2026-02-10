@@ -1,4 +1,4 @@
-# GPU Stack Deployment Guide
+# GPU_STACK_SETUP
 
 ## Overview
 

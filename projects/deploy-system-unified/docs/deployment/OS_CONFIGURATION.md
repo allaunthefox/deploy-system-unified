@@ -1,4 +1,4 @@
-# OS Configuration Controls
+# OS_CONFIGURATION
 
 The `os_settings.yml` file serves as the **Single Source of Truth (SSOT)** for fleet-wide operating system configurations.
 

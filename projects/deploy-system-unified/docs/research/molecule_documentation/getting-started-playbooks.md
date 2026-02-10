@@ -1,4 +1,4 @@
-# Playbook Testing
+# getting-started-playbooks
 
 This guide demonstrates testing Ansible playbooks using Molecule within an ansible-creator playbook project. It covers the fundamentals of playbook testing, container and network device testing scenarios, and complete test lifecycle management.
 

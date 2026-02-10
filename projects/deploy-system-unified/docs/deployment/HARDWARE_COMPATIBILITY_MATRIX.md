@@ -1,4 +1,4 @@
-# Hardware Compatibility & Synergy Matrix
+# HARDWARE_COMPATIBILITY_MATRIX
 
 This document details supported hardware platforms, CPU-GPU pairings, and system-level capabilities for the `deploy-system-unified` project. It serves as a guide for selecting hardware for specific deployment roles (Compute, VDI, Edge, Workstation).
 

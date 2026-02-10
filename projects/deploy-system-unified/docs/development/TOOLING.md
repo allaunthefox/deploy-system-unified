@@ -1,4 +1,4 @@
-# Development Tooling
+# TOOLING
 
 The project uses a high-performance enforcement engine to maintain architectural integrity.
 

@@ -1,4 +1,4 @@
-# Development Style Guide
+# Style_Guide
 
 To maintain consistency and ensure clean linting across the Deploy-System-Unified project, all contributions must adhere to the following style requirements. These standards are enforced via the `make lint` suite.
 

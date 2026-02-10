@@ -1,4 +1,4 @@
-# Idempotency & Blocker Audit (Static)
+# IDEMPOTENCY_BLOCKERS
 
 Audit date: 2026-02-03  
 Scope: `deploy-system-unified` (all roles + branch templates)  

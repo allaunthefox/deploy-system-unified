@@ -1,4 +1,4 @@
-# Pre-commit & Local Enforcement
+# PRE_COMMIT
 
 This document explains how to install and use the repository's local pre-commit hook and run the style enforcement script locally.
 

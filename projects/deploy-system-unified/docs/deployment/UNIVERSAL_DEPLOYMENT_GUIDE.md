@@ -1,4 +1,4 @@
-# Universal Deployment Guide
+# UNIVERSAL_DEPLOYMENT_GUIDE
 
 This guide outlines the standard operating procedure (SOP) for deploying the **Deploy-System-Unified** stack to any new target system. It isolates the replicable steps required to bring a server from "Fresh OS" to "Production Ready".
 
@@ -20,7 +20,7 @@ This guide outlines the standard operating procedure (SOP) for deploying the **D
 
 ## 2. Infrastructure Profile Selection
 
-The system uses a "Template" architecture. Do not edit `site.yml` directly. Instead, select a **Branch Template** that matches your hardware/use-case.
+The system uses a "Template" architecture. Do not edit `site.yml` directly. Instead, select a **Branch Template** that matches your hardware/use-case and customize for your specific goal.
 
 **Available Templates (`branch_templates/`)**:
 
@@ -46,7 +46,7 @@ Edit your local `my_deployment.yml` to define environment-specific variables.
 |:---|:---|:---|
 | `media_domain` | The base domain for Caddy proxying | `media.example.com` |
 | `caddy_acme_email` | Email for Let's Encrypt | `admin@example.com` |
-| `porkbun_api_key` | (If using DNS-01 challenge) | `pk1_...` |
+| `porkbun_api_key` | (If using DNS-01 challenge via the custom Caddy Porkbun module) | `pk1_...` |
 | `media_instance_name` | Unique Identifier for this stack | `default`, `node2` |
 | `crowdsec_enable` | Toggle security stack | `true` |
 
@@ -161,7 +161,11 @@ See the GPU Enablement Recipe in `docs/deployment/CONTAINER_RUNTIME.md` for safe
 
 ## 6. Post-Deployment: The "Hybrid Security" Hook
 
-**Critical Step**: The CrowdSec "Hybrid" architecture (Container Agent + Host Binary Bouncer) requires a one-time cryptographic handshake that cannot be fully automated inside the playbook due to circular dependencies between the API readiness and the Host Service.
+**Critical Step**: The CrowdSec "Hybrid" architecture (Container Agent + Host Binary Bouncer) requires a one-time cryptographic handshake that cannot be fully automated inside the playbook due to circular dependencies between the API readiness and the Host Service. **This step is mandatory if `crowdsec_enable` is true.**
+
+**Requirement Context**:
+- **Bouncer Dependency**: Requires the `ipset` package on the host.
+- **Caddy DNS-01**: If using Porkbun for DNS validation, you MUST use a custom Caddy image/binary compiled with the `caddy-dns/porkbun` module.
 
 **Action**:
 Run the included setup script **on the target server**.

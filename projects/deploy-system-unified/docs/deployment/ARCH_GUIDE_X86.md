@@ -1,4 +1,4 @@
-# x86_64 Architecture Deployment Guide
+# ARCH_GUIDE_X86
 
 ## Overview
 

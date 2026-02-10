@@ -1,4 +1,4 @@
-### [Home](Home)
+#_Sidebar
 - [Role Reference](Role_Reference)
 - [Variable Reference](Variable_Reference)
 ### [Documentation Index](Documentation_Index)
