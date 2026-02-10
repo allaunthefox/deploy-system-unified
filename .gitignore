@@ -18,3 +18,6 @@ wiki_audit/
 wiki_clean_sync/
 wiki_crowdsec_audit/
 wiki_final/
+
+# Ignore linter/report artifacts
+.reports/
