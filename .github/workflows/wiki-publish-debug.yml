@@ -1,0 +1,73 @@
+name: Wiki Publish Debug
+
+# Manual debug workflow to run publish steps in dry-run mode with verbose logging.
+# Only to be used temporarily and removed after debugging.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_mode:
+        description: 'dry-run or real (default dry-run)'
+        required: false
+        default: 'dry-run'
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git --version
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Debug info
+        run: |
+          echo "RUN MODE: ${{ github.event.inputs.run_mode }}"
+          echo "Repo: ${{ github.repository }}"
+          echo "BRANCH: ${{ github.ref }}"
+          echo "Secrets present: CI_ARTIFACT_PAT=${{ secrets.CI_ARTIFACT_PAT != '' }}"
+          env | sort
+
+      - name: Try API read of wiki repo refs
+        env:
+          PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_REPO_API: "https://api.github.com/repos/${{ github.repository }}.wiki"
+        run: |
+          set -x
+          if [ -z "$PAT" ]; then echo "CI_ARTIFACT_PAT not set"; exit 3; fi
+          echo "GET refs via API:"
+          curl -i -s -H "Authorization: token $PAT" "$WIKI_REPO_API/git/refs" | sed -n '1,80p'
+
+      - name: Clone wiki repo (verbose)
+        env:
+          WIKI_GIT_URL: "https://x-access-token:${{ secrets.CI_ARTIFACT_PAT }}@github.com/${{ github.repository }}.wiki.git"
+        run: |
+          set -x
+          git clone "${WIKI_GIT_URL}" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
+          ls -la wiki-repo || true
+
+      - name: Rsync dry-run
+        run: |
+          set -x
+          rsync -av --delete --dry-run wiki_pages/ wiki-repo/ || true
+
+      - name: Simulate push (dry-run)
+        run: |
+          set -x
+          if [ -d wiki-repo/.git ]; then
+            cd wiki-repo
+            git add -A || true
+            git commit -m "debug: test commit" || echo 'no commit'
+            git push --dry-run origin master || echo 'master push dry-run failed or no master'
+            git push --dry-run origin main || echo 'main push dry-run failed or no main'
+            cd ..
+          else
+            echo 'No wiki-repo git dir' && exit 5
+          fi
+
+      - name: Done
+        run: echo "Debug run completed (dry-run). Check logs above for details."
