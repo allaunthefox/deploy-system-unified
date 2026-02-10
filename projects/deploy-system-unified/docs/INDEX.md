@@ -1,4 +1,4 @@
-# Deploy-System-Unified Documentation
+# INDEX
 
 Welcome to the documentation for **Deploy-System-Unified**, a modular, security-first infrastructure deployment system built on Ansible.
 
@@ -19,9 +19,9 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Virtual Networking](./architecture/VIRTUAL_NETWORKING.md)**: VLANs, VXLANs, and L2/L3 isolation.
 * **[Backup Strategy](./architecture/BACKUP_STRATEGY.md)**: rclone, restic, and system snapshots.
 * **[GPU Slicing Architecture](./architecture/GPU_SLICING.md)**: Architectural overview of GPU slicing implementation.
-* **Modular Layers**: Understanding the split between "The Base" and "The Stack."
-* **Layered Security**: How firewalls, access controls, and scanning work together.
-* **Ephemeral Design**: Logic behind zero-footprint deployments.
+* **[Modular Layers](./architecture/MODULAR_LAYERS.md)**: Understanding the split between "The Base" and "The Stack."
+* **[Layered Security](./architecture/LAYERED_SECURITY.md)**: How firewalls, access controls, and scanning work together.
+* **[Ephemeral Design](./architecture/EPHEMERAL_DESIGN.md)**: Logic behind zero-footprint deployments.
 
 ### [2. Development](./development/CONTRIBUTING.md)
 
