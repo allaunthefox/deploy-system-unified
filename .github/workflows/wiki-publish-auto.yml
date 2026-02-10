@@ -26,8 +26,9 @@ jobs:
 
       - name: Clone wiki repo and push
         env:
-          WIKI_PAT: ${{ secrets.WIKI_PAT }}
-          WIKI_GIT_URL: "https://x-access-token:${{ secrets.WIKI_PAT }}@github.com/${{ github.repository }}.wiki.git"
+          # Use the existing CI_ARTIFACT_PAT secret for wiki publishing (must have repo scope)
+          WIKI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_GIT_URL: "https://x-access-token:${{ secrets.CI_ARTIFACT_PAT }}@github.com/${{ github.repository }}.wiki.git"
         run: |
           if [ -z "${WIKI_PAT}" ]; then
             echo "WIKI_PAT is not set; aborting publish"
