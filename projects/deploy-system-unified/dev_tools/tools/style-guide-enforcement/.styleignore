@@ -20,8 +20,9 @@ roles/core/systemd/tasks/main.yml
 roles/core/time/defaults/main.yml
 roles/core/time/tasks/main.yml
 roles/core/secrets/tasks/main.yml
-roles/core/logging/tasks/main.yml
+secrets/tasks/main.yml
 roles/security/hardening/tasks/main.yml
+
 roles/security/secrets/tasks/main.yml
 roles/security/sshd/tasks/main.yml
 roles/security/advanced/tasks/main.yml
@@ -75,6 +76,7 @@ molecule/*
 # Reason: CI artifacts and generated reports that may include commands and placeholders
 projects/*/ci-artifacts/*
 projects/*/ci-artifacts/**
+playbooks/preflight_assertions.yml
 
 # Specific: restic molecule test contains templated password placeholder; harmless
 roles/storage/backup/restic/molecule/default/converge.yml
