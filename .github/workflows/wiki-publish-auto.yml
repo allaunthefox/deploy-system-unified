@@ -40,6 +40,29 @@ jobs:
           if [ $(jq '.errors' wiki-lint.json) -ne 0 ]; then echo 'Errors detected'; exit 2; fi
           if [ $(jq '.warnings' wiki-lint.json) -ne 0 ]; then echo 'Warnings detected'; exit 1; fi
 
+      - name: Validate PAT (if using HTTPS)
+        env:
+          WIKI_PAT: ${{ secrets.WIKI_PAT }}
+          CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+        run: |
+          set -x
+          SAFE_WIKI_PAT="$(echo "${WIKI_PAT:-}" | tr -d '\r\n')"
+          SAFE_CI_PAT="$(echo "${CI_PAT:-}" | tr -d '\r\n')"
+          if [ -n "$SAFE_WIKI_PAT" ]; then
+            PAT="$SAFE_WIKI_PAT"
+          else
+            PAT="$SAFE_CI_PAT"
+          fi
+          if [ -z "$PAT" ]; then
+            echo "No PAT available; will rely on SSH deploy key if configured"
+            exit 0
+          fi
+          code=$(curl -o /dev/null -s -w "%{http_code}" -H "Authorization: token $PAT" https://api.github.com/user)
+          if [ "$code" != "200" ]; then
+            echo "Token validation failed (HTTP $code)"; exit 1
+          fi
+          echo "Token validated (HTTP $code)"
+
       - name: Clone wiki repo and push (support SSH deploy key)
         env:
           WIKI_PAT: ${{ secrets.WIKI_PAT }}
