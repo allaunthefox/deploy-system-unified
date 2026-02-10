@@ -43,27 +43,28 @@ is_ignored() {
             pat="${pat:1}"
         fi
 
+        local match=0
         if [[ "$pat" == re:* ]]; then
             local regex="${pat#re:}"
             if printf '%s' "$path" | grep -Eq -- "$regex"; then
-                if [ $neg -eq 1 ]; then
-                    ignored=0
-                else
-                    ignored=1
-                fi
+                match=1
             fi
         else
             # Shell glob match using case (preserves glob semantics)
             # shellcheck disable=SC2254
             case "$path" in
                 $pat)
-                    if [ $neg -eq 1 ]; then
-                        ignored=0
-                    else
-                        ignored=1
-                    fi
+                    match=1
                     ;;
             esac
+        fi
+
+        if [ $match -eq 1 ]; then
+            if [ $neg -eq 1 ]; then
+                ignored=0
+            else
+                ignored=1
+            fi
         fi
     done < "$STYLE_IGNORE"
 
@@ -270,14 +271,16 @@ enforce_fqcn_standards() {
     log "Enforcing FQCN standards..."
 
     local short_form_matches=()
-    # Use a PCRE that matches module names only when used as top-level task entries,
-    # either directly under '-' or after '- name:', to avoid matching parameter keys like 'group:'
-    local better_pattern='(?s)(-\s+name:.*?\n\s{2,}(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)|(^-\s+(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)'
+    # Robust PCRE for matching non-FQCN module calls in tasks.
+    # Matches '- name: ...' followed by a newline and an indented short-form module name.
+    # Also matches the direct short-form '- module:' at the start of a line.
+    local modules="apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role"
+    local better_pattern="(?m)(^\s*-\s+name:.*\n\s+($modules):)|(^\s*-\s+($modules):)"
 
     if command -v rg >/dev/null 2>&1; then
         while IFS= read -r file; do
             short_form_matches+=("$file")
-        done < <(rg -P -U --no-ignore -l "$better_pattern" -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
+        done < <(rg -P -U --no-ignore -l "$better_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT")
     else
         while IFS= read -r file; do
             short_form_matches+=("$file")
@@ -542,7 +545,7 @@ enforce_security_standards() {
             while IFS= read -r file;
  do
                 candidates+=("$file")
-            done < <(rg -l -e "$pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
+            done < <(rg -l -e "$pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT")
         elif [ -n "$fd_cmd" ]; then
             while IFS= read -r file;
  do

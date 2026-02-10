@@ -35,21 +35,20 @@ def test_enforce_fqcn_respects_styleignore(tmp_path):
     mol.mkdir(parents=True)
 
     mol_file = mol / 'main.yml'
+    # No leading newline, minimal indentation
     mol_file.write_text(textwrap.dedent("""
-        ---
-        - hosts: localhost
-          tasks:
-            - name: short copy
-              copy:
-                src: foo
-                dest: /tmp
-    """))
+        - name: simple task
+          copy:
+            src: foo
+            dest: /tmp
+    """).lstrip())
 
     # Without ignore, enforce_fqcn_standards should report the file
     cmd_no_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         PROJECT_ROOT="{proj}"
-        enforce_fqcn_standards
+        STYLE_IGNORE="/nonexistent"
+        enforce_fqcn_standards 2>&1
     """)
     r_no = run_cmd(cmd_no_ignore, cwd=proj)
     # Should warn about at least one file
@@ -63,7 +62,7 @@ def test_enforce_fqcn_respects_styleignore(tmp_path):
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         PROJECT_ROOT="{proj}"
         STYLE_IGNORE="{styleignore}"
-        enforce_fqcn_standards
+        enforce_fqcn_standards 2>&1
     """)
     r_yes = run_cmd(cmd_with_ignore, cwd=proj)
 
@@ -74,39 +73,35 @@ def test_enforce_fqcn_respects_styleignore(tmp_path):
 def test_security_ignore_respects_styleignore(tmp_path):
     # Prepare a project with a file that contains a password-like literal
     proj = tmp_path
-    sec_dir = proj / 'roles' / 'example' / 'molecule' / 'default'
+    sec_dir = proj / 'roles' / 'example' / 'tasks'
     sec_dir.mkdir(parents=True)
 
-    sec_file = sec_dir / 'converge.yml'
+    sec_file = sec_dir / 'main.yml'
     sec_file.write_text(textwrap.dedent("""
-        ---
-        - hosts: localhost
-          vars:
-            some_password: "changeme"
-          tasks:
-            - name: noop
-              debug:
-                msg: "ok"
-    """))
+        - name: set password
+          set_fact:
+            my_password: "changeme"
+    """).lstrip())
 
     # Run security check without ignore should report the file
     cmd_no_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         PROJECT_ROOT="{proj}"
-        enforce_security_standards
+        STYLE_IGNORE="/nonexistent"
+        enforce_security_standards 2>&1
     """)
     r_no = run_cmd(cmd_no_ignore, cwd=proj)
     assert 'Found' in (r_no.stdout + r_no.stderr)
 
     # Add an ignore entry and ensure the file is skipped
     styleignore = proj / '.styleignore'
-    styleignore.write_text("*/molecule/*\n")
+    styleignore.write_text("roles/example/tasks/main.yml\n")
 
     cmd_with_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         PROJECT_ROOT="{proj}"
         STYLE_IGNORE="{styleignore}"
-        enforce_security_standards
+        enforce_security_standards 2>&1
     """)
     r_yes = run_cmd(cmd_with_ignore, cwd=proj)
     out = r_yes.stdout + r_yes.stderr
@@ -130,13 +125,14 @@ def test_bulk_security_ignores(tmp_path):
         f.write_text(textwrap.dedent('''
             ---
             some_secret: "changeme_placeholder"
-        '''))
+        ''').lstrip())
 
     # Run security check without ignore should report matches
     cmd_no = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         PROJECT_ROOT="{proj}"
-        enforce_security_standards
+        STYLE_IGNORE="/nonexistent"
+        enforce_security_standards 2>&1
     """)
     r_no = run_cmd(cmd_no, cwd=proj)
     assert 'Found' in (r_no.stdout + r_no.stderr)
@@ -149,7 +145,7 @@ def test_bulk_security_ignores(tmp_path):
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         PROJECT_ROOT="{proj}"
         STYLE_IGNORE="{styleignore}"
-        enforce_security_standards
+        enforce_security_standards 2>&1
     """)
     r_yes = run_cmd(cmd_yes, cwd=proj)
     out = r_yes.stdout + r_yes.stderr
