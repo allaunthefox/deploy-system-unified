@@ -55,7 +55,7 @@ is_ignored() {
             case "$path" in
                 $pat)
                     match=1
-                    ;;
+                    ;; 
             esac
         fi
 
@@ -784,23 +784,23 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             usage
             exit 0
-            ;;
+            ;; 
         -q|--quiet)
             exec > /dev/null
             shift
-            ;;
+            ;; 
         -f|--fix)
             AUTO_FIX=true
             shift
-            ;;
+            ;; 
         -p|--low-risk-repair)
             LOW_RISK_REPAIR=true
             shift
-            ;;
+            ;; 
         -r|--report)
             REPORT_ONLY=true
             shift
-            ;;
+            ;; 
         *)
             error "Unknown option: $1"
             usage

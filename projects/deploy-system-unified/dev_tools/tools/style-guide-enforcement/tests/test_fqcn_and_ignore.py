@@ -14,14 +14,14 @@ def run_cmd(cmd, env=None, cwd=None):
 def test_is_ignored_basic(tmp_path):
     # Prepare a minimal styleignore and test paths
     styleignore = tmp_path / '.styleignore'
-    styleignore.write_text("""# ignore molecule configs\n*/molecule/*\nroles/ops\n""")
+    styleignore.write_text("# ignore molecule configs\n*/molecule/*\nroles/ops\n")
 
     # Source the script and call is_ignored for a molecule path
     cmd = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         STYLE_IGNORE="{styleignore}"
         is_ignored "roles/containers/media/molecule/negative/molecule.yml" && echo YES || echo NO
-    """)
+    ")
 
     r = run_cmd(cmd, cwd=tmp_path)
     assert r.returncode == 0
@@ -155,11 +155,11 @@ def test_bulk_security_ignores(tmp_path):
 def test_is_ignored_negation_and_regex(tmp_path):
     # Prepare a styleignore with a broad glob, a negation, and a regex
     styleignore = tmp_path / '.styleignore'
-    styleignore.write_text(textwrap.dedent('''
+    styleignore.write_text(textwrap.dedent("""
         */molecule/*
         !roles/containers/caddy/molecule/*
         re:^roles/special/molecule/negative/
-    '''))
+    """))
 
     # Path that should be ignored by glob
     p1 = 'roles/containers/media/molecule/negative/molecule.yml'
@@ -189,7 +189,7 @@ def test_ignores_workflows_and_artifacts(tmp_path):
     wf = proj / '.github' / 'workflows'
     wf.mkdir(parents=True)
     wf_file = wf / 'ci-debug.yml'
-    wf_file.write_text(textwrap.dedent('''
+    wf_file.write_text(textwrap.dedent("""
         ---
         name: Fake workflow
         on: [push]
@@ -200,7 +200,7 @@ def test_ignores_workflows_and_artifacts(tmp_path):
               - name: Run something
                 run: |
                   echo "hello"
-    '''))
+    """))
 
     artifact_dir = proj / 'projects' / 'deploy-system-unified' / 'ci-artifacts'
     artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -240,7 +240,7 @@ def test_fqcn_ignores_group_param(tmp_path):
             name: testuser
             group: testgroup
             state: present
-    """))
+    """).lstrip())
 
     # We expect FQCN check to PASS (no output) because 'group:' is indented and clearly a param
     cmd = textwrap.dedent(f"""
