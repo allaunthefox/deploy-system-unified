@@ -115,7 +115,8 @@ jobs:
       - name: Rsync dry-run
         run: |
           set -x
-          rsync -av --delete --dry-run wiki_pages/ wiki-repo/ || true
+          # Exclude .git so we don't accidentally remove git metadata during sync
+          rsync -av --exclude '.git' --delete --dry-run wiki_pages/ wiki-repo/ || true
 
       - name: Conditional push (real when run_mode=real)
         env:

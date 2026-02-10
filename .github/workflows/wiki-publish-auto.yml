@@ -107,7 +107,8 @@ jobs:
             fi
             git clone "$WIKI_GIT_URL" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
           fi
-          rsync -av --delete wiki_pages/ wiki-repo/
+          # Exclude .git to avoid removing repository metadata during sync
+          rsync -av --exclude '.git' --delete wiki_pages/ wiki-repo/
           cd wiki-repo
           git add -A
           git commit -m "chore(wiki): publish wiki_pages from main (auto-run)" || echo "No changes to commit"
