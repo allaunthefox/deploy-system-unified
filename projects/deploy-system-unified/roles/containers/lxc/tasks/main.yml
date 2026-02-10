@@ -64,7 +64,7 @@
     - lxc_gpu_slicing_strategy == "passthrough"
 
 - name: Load Vendor Specific Strategy Config
-  include_tasks: "vendor/{{ item }}"
+  ansible.builtin.include_tasks: "vendor/{{ item }}"
   loop:
     - nvidia_mig.yml
     - nvidia_vgpu.yml
