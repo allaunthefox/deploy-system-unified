@@ -138,8 +138,10 @@ jobs:
             cd wiki-repo
             git add -A || true
             git commit -m "debug: test commit" || echo 'no commit'
-            # If an SSH deploy key was used for clone, push via the existing 'origin' (SSH); otherwise push via HTTPS URL
-            if [ -n "${WIKI_SSH_KEY:-}" ] || [ -n "${SSH_DEPLOY_KEY:-}" ]; then
+            # Choose push method based on the origin remote URL (SSH) or fall back to HTTPS URL
+            REMOTE_URL="$(git remote get-url origin || true)"
+            echo "Detected origin URL: $REMOTE_URL"
+            if echo "$REMOTE_URL" | grep -q '^git@github.com:'; then
               if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
                 echo "Attempting real push to wiki repository via SSH (origin)..."
                 git push origin master || git push origin main || (echo 'real push failed' && exit 6)
