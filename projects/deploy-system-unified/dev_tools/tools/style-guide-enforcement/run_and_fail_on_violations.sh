@@ -11,6 +11,7 @@ fi
 "$ENFORCE_SCRIPT" "$@"
 
 # Find latest report
+# shellcheck disable=SC2012
 LATEST_REPORT=$(ls -1t "$REPORT_DIR"/compliance_report_*.md 2>/dev/null | head -n1 || true)
 if [ -z "$LATEST_REPORT" ]; then
   echo "Enforcement script did not produce a report in $REPORT_DIR"
