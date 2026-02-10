@@ -13,8 +13,8 @@ The absolute entry point. It handles physical system readiness (directory struct
 
 These are pure infrastructure playbooks that define the system's personality without assuming a workload.
 
-* **[Base Hardened](../../../wiki_pages/base_hardened.md)**: Standard secure foundation (Firewall, SSH Hardening, Time Sync).
-* **[Base Ephemeral](../../../wiki_pages/base_ephemeral.md)**: Volatile foundation (RAM-disks, secure shredding, immutable audit trails).
+* **[Base Hardened](../../../../wiki_pages/base_hardened.md)**: Standard secure foundation (Firewall, SSH Hardening, Time Sync).
+* **[Base Ephemeral](../../../../wiki_pages/base_ephemeral.md)**: Volatile foundation (RAM-disks, secure shredding, immutable audit trails).
 
 ### 3. The Solution Stacks (Branches)
 
