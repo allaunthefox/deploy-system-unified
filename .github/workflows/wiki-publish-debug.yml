@@ -42,12 +42,32 @@ jobs:
           echo "GET refs via API:"
           curl -i -s -H "Authorization: token $PAT" "$WIKI_REPO_API/git/refs" | sed -n '1,80p'
 
-      - name: Clone wiki repo (verbose)
+      - name: Clone wiki repo (verbose, SSH fallback)
         env:
-          WIKI_GIT_URL: "https://x-access-token:${{ secrets.CI_ARTIFACT_PAT }}@github.com/${{ github.repository }}.wiki.git"
+          CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_SSH_KEY: ${{ secrets.WIKI_SSH_KEY }}
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         run: |
           set -x
-          git clone "${WIKI_GIT_URL}" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
+          # Prefer SSH deploy key when present, otherwise use CI_PAT for HTTPS
+          if [ -n "$WIKI_SSH_KEY" ] || [ -n "$SSH_DEPLOY_KEY" ]; then
+            echo "Using SSH deploy key for clone"
+            mkdir -p ~/.ssh
+            deploy_key_file=~/.ssh/wiki_deploy_key
+            if [ -n "$WIKI_SSH_KEY" ]; then
+              echo "$WIKI_SSH_KEY" > "$deploy_key_file"
+            else
+              echo "$SSH_DEPLOY_KEY" > "$deploy_key_file"
+            fi
+            chmod 600 "$deploy_key_file"
+            eval "$(ssh-agent -s)"
+            ssh-add "$deploy_key_file"
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            git clone "git@github.com:${{ github.repository }}.wiki.git" wiki-repo || (echo 'ssh clone failed' && ls -la && git remote -v && exit 4)
+          else
+            if [ -z "$CI_PAT" ]; then echo 'CI_ARTIFACT_PAT not set and no SSH key found'; exit 3; fi
+            git clone "https://x-access-token:${CI_PAT}@github.com/${{ github.repository }}.wiki.git" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
+          fi
           ls -la wiki-repo || true
 
       - name: Rsync dry-run
