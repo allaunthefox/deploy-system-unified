@@ -1,4 +1,4 @@
-# Contributing to Deploy-System-Unified
+# CONTRIBUTING
 
 We welcome contributions to Deploy-System-Unified! This document outlines the process for contributing code, documentation, and other improvements.
 

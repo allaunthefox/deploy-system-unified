@@ -1,4 +1,4 @@
-# CrowdSec Deployment Documentation (Hybrid Architecture)
+# SECURITY_CROWDSEC_HYBRID
 
 ## 1. Architecture Overview
 

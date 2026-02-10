@@ -1,4 +1,4 @@
-# Architecture and Vendor Profiles
+# ARCH_VENDOR_PROFILES
 
 This project favors explicit architecture and vendor selection to avoid accidental x86-only deployments. When a role supports architecture/vendor profiles, set the target explicitly in inventory or branch templates.
 

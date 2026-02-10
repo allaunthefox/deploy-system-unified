@@ -1,4 +1,4 @@
-# Permissive Roles
+# PERMISSIVE_ROLES
 
 This document lists roles that currently *assume permissive defaults* (placeholder secrets, host networking, or files written world-readable). Use these guidelines when hardening.
 

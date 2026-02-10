@@ -1,4 +1,4 @@
-# Modular Layers: The Base vs. The Stack
+# MODULAR_LAYERS
 
 Deploy-System-Unified utilizes a layered architecture to maintain a clear separation of concerns. This design ensures that infrastructure hardening is decoupled from application workloads.
 

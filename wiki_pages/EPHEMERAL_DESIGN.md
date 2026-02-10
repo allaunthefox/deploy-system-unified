@@ -1,4 +1,4 @@
-# Ephemeral Design: Zero-Footprint Logic
+# EPHEMERAL_DESIGN
 
 The Ephemeral profile is designed for high-security environments where system state must be volatile and zero-footprint is a requirement.
 

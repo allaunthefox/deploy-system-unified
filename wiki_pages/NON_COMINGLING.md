@@ -1,4 +1,4 @@
-# Philosophy: Non-Comingling of Tasks
+# NON_COMINGLING
 
 The foundational rule of this project is:
 > **Complexity is not a problem, but comingling tasks is.**

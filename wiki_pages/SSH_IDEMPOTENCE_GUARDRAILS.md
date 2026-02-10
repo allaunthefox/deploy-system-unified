@@ -1,4 +1,4 @@
-# SSH Idempotence and Security Guardrails
+# SSH_IDEMPOTENCE_GUARDRAILS
 
 ## Overview
 

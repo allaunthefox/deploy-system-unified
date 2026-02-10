@@ -1,4 +1,4 @@
-# Layered Security Architecture
+# LAYERED_SECURITY
 
 Security in this project is not a single task but a multi-layered defense strategy. By strictly ordering the execution of security roles, we ensure a "Fail-Secure" posture.
 

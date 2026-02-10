@@ -1,4 +1,4 @@
-# Backup & Disaster Recovery Strategy
+# BACKUP_STRATEGY
 
 This project implements a tiered backup strategy to ensure data persistence and system recoverability across all solution stacks.
 

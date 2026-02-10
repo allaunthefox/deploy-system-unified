@@ -1,4 +1,4 @@
-# Virtualization Networking: VLANs vs. VXLANs
+# VIRTUAL_NETWORKING
 
 This project handles virtualization networking through modular L2 and L3 isolation strategies. By separating these concerns into `networking/virtual`, we ensure that physical network logic never comingles with virtual overlay logic.
 

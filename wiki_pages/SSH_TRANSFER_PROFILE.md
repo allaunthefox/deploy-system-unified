@@ -1,4 +1,4 @@
-# SSH Transfer Profile
+# SSH_TRANSFER_PROFILE
 
 ## 1. Purpose
 

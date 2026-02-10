@@ -1,4 +1,4 @@
-# Contabo Media Profile Documentation
+# CONTABO_MEDIA_PROFILE
 
 ## 1. Overview
 

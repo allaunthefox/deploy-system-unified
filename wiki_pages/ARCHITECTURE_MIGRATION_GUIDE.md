@@ -1,4 +1,4 @@
-# Migration Guide: Architecture-Based Restructuring
+# ARCHITECTURE_MIGRATION_GUIDE
 
 ## Overview
 

@@ -1,4 +1,4 @@
-# Intel Video & GPU Support Guide
+# INTEL_VIDEO_GUIDE
 
 This document outlines the configuration provided for Intel GPUs, specifically focusing on "Basic Video" (Media/Display) and "Compute" (OneAPI) profiles.
 

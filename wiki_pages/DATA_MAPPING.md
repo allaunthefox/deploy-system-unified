@@ -1,4 +1,4 @@
-# Data Migration file Mapping
+# DATA_MAPPING
 
 This document details exactly where legacy backup data moves during the migration process.
 

@@ -1,4 +1,4 @@
-# Media Stack V2 Architecture
+# MEDIA_STACK_V2
 
 ## Overview
 

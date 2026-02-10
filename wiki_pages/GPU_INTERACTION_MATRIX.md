@@ -1,4 +1,4 @@
-# GPU Compatibility & Interaction Matrix
+# GPU_INTERACTION_MATRIX
 
 This document defines the supported combinations of GPU vendors, architectures, and deployment environments within the `deploy-system-unified` project. It also analyzes potential interactions and edge cases, particularly for hybrid and virtualized setups.
 

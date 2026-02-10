@@ -1,4 +1,4 @@
-# Welcome to the Deploy-System-Unified Wiki
+# Home
 
 Modular, security-first infrastructure deployment. This wiki serves as the comprehensive knowledge base for the project architecture, development standards, and deployment procedures.
 

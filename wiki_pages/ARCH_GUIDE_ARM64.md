@@ -1,4 +1,4 @@
-# ARM64 (aarch64) Architecture Deployment Guide
+# ARCH_GUIDE_ARM64
 
 ## Overview
 

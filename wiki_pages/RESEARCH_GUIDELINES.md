@@ -1,4 +1,4 @@
-# LLM Research Guidelines
+# RESEARCH_GUIDELINES
 
 This directory contains documentation for Ansible and Molecule to enable LLMs to research these topics effectively.
 

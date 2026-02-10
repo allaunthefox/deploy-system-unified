@@ -1,4 +1,4 @@
-# Intel GPU (Battlemage & Xe) Setup Guide
+# INTEL_BATTLEMAGE_GUIDE
 
 ## Overview
 

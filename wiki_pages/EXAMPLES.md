@@ -1,4 +1,4 @@
-# Deployment Examples
+# EXAMPLES
 
 This document provides practical examples for deploying various Solution Stacks using the modular architecture.
 

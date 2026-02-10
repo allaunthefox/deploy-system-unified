@@ -1,4 +1,4 @@
-# SSH Incident Postmortem
+# SSH_INCIDENT_POSTMORTEM
 
 ## Summary
 This document describes an SSH connectivity incident that occurred during the deployment of the `deploy-system-unified` project.
