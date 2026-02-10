@@ -8,7 +8,7 @@
 
 - name: Collect change-me / placeholder secret status
   ansible.builtin.set_fact:
-    preflight_diagnose_report: "{{ preflight_diagnose_report + [ {'name': item.name, 'ok': (item.value not in item.bad_values), 'value': (item.value | default('')) } ] }}"
+    preflight_diagnose_report: "{{ preflight_diagnose_report + [{'name': item.name, 'ok': (item.value not in item.bad_values), 'value': (item.value | default('')) }] }}"
   loop: "{{ preflight_secret_guards | default([]) }}"
   changed_when: false
   failed_when: false
@@ -22,7 +22,7 @@
 
 - name: Append secrets dir info to report
   ansible.builtin.set_fact:
-    preflight_diagnose_report: "{{ preflight_diagnose_report + [ {'secrets_dir': {'path': preflight_secrets_dir.stat.path|default(''), 'exists': preflight_secrets_dir.stat.exists | default(false), 'mode': preflight_secrets_dir.stat.mode | default('') } } ] }}"
+    preflight_diagnose_report: "{{ preflight_diagnose_report + [{'secrets_dir': {'path': preflight_secrets_dir.stat.path|default(''), 'exists': preflight_secrets_dir.stat.exists | default(false), 'mode': preflight_secrets_dir.stat.mode | default('') } }] }}"
   when: preflight_secrets_dir is defined
   changed_when: false
   failed_when: false

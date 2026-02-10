@@ -6,7 +6,7 @@
   tasks:
     - name: Verify secrets encryption (Ansible Vault)
       ansible.builtin.shell:
-        cmd: "grep -q '\$ANSIBLE_VAULT;' {{ playbook_dir }}/inventory/group_vars/all/secrets.generated.yml"
+        cmd: "grep -q '\\$ANSIBLE_VAULT;' {{ playbook_dir }}/inventory/group_vars/all/secrets.generated.yml"
       delegate_to: localhost
       register: vault_check
       failed_when: false
@@ -38,5 +38,5 @@
         that:
           - inventory_file is defined
           - inventory_file | length > 0
-        fail_msg: "CRITICAL: No inventory file specified. Use -i <inventory_path>."
+        fail_msg: "CRITICAL: no inventory file specified. Use -i <inventory_path>."
       delegate_to: localhost
