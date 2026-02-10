@@ -14,3 +14,7 @@ projects/deploy-system-unified/roles/**/molecule/**/molecule_shared/**
 
 # Ignore symlink helper created in CI or locally
 projects/deploy-system-unified/roles/sshd
+wiki_audit/
+wiki_clean_sync/
+wiki_crowdsec_audit/
+wiki_final/
