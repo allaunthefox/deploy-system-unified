@@ -24,6 +24,22 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Run generator and linter (ensure up-to-date)
+        run: |
+          python3 .scripts/generate_role_pages.py
+          # If generator produced changes on main, fail and surface diffs (so changes are committed via PR and audited)
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Generator produced changes on main. Please commit generated files before publishing." >&2
+            git --no-pager status --porcelain
+            git --no-pager diff --name-only
+            exit 2
+          fi
+          python3 .scripts/wiki_wiki_lint.py --json > wiki-lint.json || true
+          cat wiki-lint.json
+          jq '{errors: (.errors | length), warnings: (.warnings | length)}' wiki-lint.json
+          if [ $(jq '.errors' wiki-lint.json) -ne 0 ]; then echo 'Errors detected'; exit 2; fi
+          if [ $(jq '.warnings' wiki-lint.json) -ne 0 ]; then echo 'Warnings detected'; exit 1; fi
+
       - name: Clone wiki repo and push
         env:
           # Use the existing CI_ARTIFACT_PAT secret for wiki publishing (must have repo scope)
