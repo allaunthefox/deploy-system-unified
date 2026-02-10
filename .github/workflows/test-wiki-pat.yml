@@ -12,6 +12,18 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
 
+      - name: Dump PAT headers
+        env:
+          PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_REPO_API: "https://api.github.com/repos/${{ github.repository }}.wiki"
+        run: |
+          set -x
+          echo "GET /user headers:"
+          curl -i -s -H "Authorization: token $PAT" https://api.github.com/user | sed -n '1,80p'
+          echo
+          echo "GET repo headers:"
+          curl -i -s -H "Authorization: token $PAT" "$WIKI_REPO_API" | sed -n '1,80p'
+
       - name: Test CI_ARTIFACT_PAT write to wiki repo
         env:
           PAT: ${{ secrets.CI_ARTIFACT_PAT }}
