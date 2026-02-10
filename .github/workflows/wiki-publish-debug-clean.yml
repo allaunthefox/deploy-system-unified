@@ -1,0 +1,109 @@
+name: Wiki Publish Debug (clean)
+
+# Cleaner manual debug workflow to run publish steps in real mode with verbose logging.
+# This copy was added to avoid accidental formatting issues in the original file.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_mode:
+        description: 'dry-run or real (default dry-run)'
+        required: false
+        default: 'dry-run'
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git --version
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Debug info
+        run: |
+          echo "RUN MODE: ${{ github.event.inputs.run_mode }}"
+          echo "Repo: ${{ github.repository }}"
+          echo "BRANCH: ${{ github.ref }}"
+          echo "Secrets present: CI_ARTIFACT_PAT=${{ secrets.CI_ARTIFACT_PAT != '' }}"
+          env | sort
+
+      - name: Try API read of wiki repo refs
+        env:
+          PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_REPO_API: "https://api.github.com/repos/${{ github.repository }}.wiki"
+        run: |
+          set -x
+          if [ -z "$PAT" ]; then echo "CI_ARTIFACT_PAT not set"; exit 3; fi
+          echo "GET refs via API:"
+          curl -i -s -H "Authorization: token $PAT" "$WIKI_REPO_API/git/refs" | sed -n '1,80p'
+
+      - name: Clone wiki repo (verbose, SSH fallback)
+        env:
+          CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_SSH_KEY: ${{ secrets.WIKI_SSH_KEY }}
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+          WIKI_SSH_PASSPHRASE: ${{ secrets.WIKI_SSH_PASSPHRASE }}
+        run: |
+          set -x
+          # Prefer SSH deploy key when present, otherwise use CI_PAT for HTTPS
+          if [ -n "$WIKI_SSH_KEY" ] || [ -n "$SSH_DEPLOY_KEY" ]; then
+            echo "Using SSH deploy key for clone"
+            mkdir -p ~/.ssh
+            deploy_key_file=~/.ssh/wiki_deploy_key
+            if [ -n "$WIKI_SSH_KEY" ]; then
+              printf '%s\n' "$WIKI_SSH_KEY" > "$deploy_key_file"
+            else
+              printf '%s\n' "$SSH_DEPLOY_KEY" > "$deploy_key_file"
+            fi
+            chmod 600 "$deploy_key_file"
+            # If passphrase provided, decrypt encrypted PEM
+            if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
+              echo "Decrypting encrypted PEM"
+              openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
+              mv "${deploy_key_file}.dec" "$deploy_key_file"
+              chmod 600 "$deploy_key_file"
+            fi
+            eval "$(ssh-agent -s)"
+            ssh-add "$deploy_key_file"
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            git clone "git@github.com:${{ github.repository }}.wiki.git" wiki-repo || (echo 'ssh clone failed' && ls -la && git remote -v && exit 4)
+          else
+            if [ -z "$CI_PAT" ]; then echo 'CI_ARTIFACT_PAT not set and no SSH key found'; exit 3; fi
+            git clone "https://x-access-token:${CI_PAT}@github.com/${{ github.repository }}.wiki.git" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
+          fi
+          ls -la wiki-repo || true
+
+      - name: Rsync dry-run
+        run: |
+          set -x
+          rsync -av --delete --dry-run wiki_pages/ wiki-repo/ || true
+
+      - name: Conditional push (real when run_mode=real)
+        env:
+          WIKI_GIT_URL: "https://x-access-token:${{ secrets.CI_ARTIFACT_PAT }}@github.com/${{ github.repository }}.wiki.git"
+        run: |
+          set -x
+          if [ -d wiki-repo/.git ]; then
+            cd wiki-repo
+            git add -A || true
+            git commit -m "debug: test commit" || echo 'no commit'
+            if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
+              echo "Attempting real push to wiki repository..."
+              git push origin master || git push origin main || (echo 'real push failed' && exit 6)
+            else
+              echo "Dry-run mode: simulating push"
+              git push --dry-run origin master || echo 'master push dry-run failed or no master'
+              git push --dry-run origin main || echo 'main push dry-run failed or no main'
+            fi
+            cd ..
+          else
+            echo 'No wiki-repo git dir' && exit 5
+          fi
+
+      - name: Done
+        run: echo "Debug run completed (dry-run). Check logs above for details."
