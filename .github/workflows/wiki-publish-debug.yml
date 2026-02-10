@@ -136,13 +136,25 @@ jobs:
             cd wiki-repo
             git add -A || true
             git commit -m "debug: test commit" || echo 'no commit'
-            if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
-              echo "Attempting real push to wiki repository..."
-              git push "$WIKI_GIT_URL" HEAD:master || git push "$WIKI_GIT_URL" HEAD:main || (echo 'real push failed' && exit 6)
+            # If an SSH deploy key was used for clone, push via the existing 'origin' (SSH); otherwise push via HTTPS URL
+            if [ -n "${WIKI_SSH_KEY:-}" ] || [ -n "${SSH_DEPLOY_KEY:-}" ]; then
+              if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
+                echo "Attempting real push to wiki repository via SSH (origin)..."
+                git push origin master || git push origin main || (echo 'real push failed' && exit 6)
+              else
+                echo "Dry-run mode: simulating push via SSH (origin)"
+                git push --dry-run origin master || echo 'master push dry-run failed or no master'
+                git push --dry-run origin main || echo 'main push dry-run failed or no main'
+              fi
             else
-              echo "Dry-run mode: simulating push"
-              git push --dry-run "$WIKI_GIT_URL" HEAD:master || echo 'master push dry-run failed or no master'
-              git push --dry-run "$WIKI_GIT_URL" HEAD:main || echo 'main push dry-run failed or no main'
+              if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
+                echo "Attempting real push to wiki repository via HTTPS URL..."
+                git push "$WIKI_GIT_URL" HEAD:master || git push "$WIKI_GIT_URL" HEAD:main || (echo 'real push failed' && exit 6)
+              else
+                echo "Dry-run mode: simulating push via HTTPS URL"
+                git push --dry-run "$WIKI_GIT_URL" HEAD:master || echo 'master push dry-run failed or no master'
+                git push --dry-run "$WIKI_GIT_URL" HEAD:main || echo 'main push dry-run failed or no main'
+              fi
             fi
             cd ..
           else
