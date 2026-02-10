@@ -1,4 +1,4 @@
-# Continuous integration
+# ci
 
 Molecule output will use `ANSI` colors if stdout is an interactive TTY
 and `TERM` value seems to support it. You can define `PY_COLORS=1` to

@@ -1,4 +1,4 @@
-# Contributing to Deploy-System-Unified
+# CONTRIBUTING
 
 We welcome contributions to Deploy-System-Unified! This document outlines the process for contributing code, documentation, and other improvements.
 
@@ -38,6 +38,29 @@ By participating in this project, you agree to abide by our Code of Conduct.
 - Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
 - Limit the first line to 72 characters or less
 - Reference issues and pull requests liberally after the first line
+
+---
+
+## Updating the Wiki
+
+Before editing wiki content or sidebar files, run the wiki linter locally to catch regressions and style issues:
+
+```sh
+python3 .scripts/wiki_wiki_lint.py --json
+```
+
+- To auto-fix H1 mismatches and create placeholders for referenced YAMLs, use:
+
+```sh
+python3 .scripts/wiki_wiki_lint.py --fix-h1 --create-placeholders
+```
+
+- Open a PR with your changes and include the linter output (JSON or summary) in the PR description. The repository has a GitHub Action (`.github/workflows/wiki-lint.yml`) that enforces wiki hygiene on PRs and pushes.
+
+Guidelines:
+- Don't change H1s without reviewer consent if it's a content/title-sensitive page.
+- Use placeholder pages under `wiki_pages/` when linking to repo YAMLs or non-wiki resources.
+- Use `wiki_pages/UPDATING.md` for detailed wiki-specific guidance.
 
 ## Development Setup
 

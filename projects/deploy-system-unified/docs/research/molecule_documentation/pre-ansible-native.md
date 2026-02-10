@@ -1,4 +1,4 @@
-# Pre Ansible-Native Configuration
+# pre-ansible-native
 
 The pre ansible-native approach is maintained for compatibility with environments that still rely on third-party tools and pre ansible-native configurations. This document provides technical reference for the these configuration constructs: platforms, drivers, and provisioner sections.
 

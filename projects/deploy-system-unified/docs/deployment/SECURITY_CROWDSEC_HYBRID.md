@@ -1,4 +1,4 @@
-# CrowdSec Deployment Documentation (Hybrid Architecture)
+# SECURITY_CROWDSEC_HYBRID
 
 ## 1. Architecture Overview
 
@@ -10,7 +10,11 @@ We have adopted a **Hybrid Deployment Model** for the security stack to overcome
 
 ### Why Hybrid?
 
-Pure containerized bouncers require privileged access and complex volume/network capability mapping to manipulate the host's firewall tables. Running the bouncer as a native service simplifies the architecture, while keeping the main logic (Agent) containerized and portable.
+Pure containerized bouncers require privileged access and complex volume/network capability mapping to manipulate the host's firewall tables. Running the bouncer as a native service simplifies the architecture, while keeping the main logic (Agent) containerized and portable. **Note:** This requires the `ipset` package to be installed on the host OS (handled by the `containers/caddy` role).
+
+### Caddy & Porkbun Integration
+
+If utilizing the DNS-01 challenge for SSL certificates, this architecture assumes the use of a **custom Caddy build** containing the `caddy-dns/porkbun` module. Without this module, the `porkbun_api_key` configuration will have no effect.
 
 ---
 

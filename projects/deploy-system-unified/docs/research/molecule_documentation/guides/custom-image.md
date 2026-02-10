@@ -1,4 +1,4 @@
-## Customizing the Docker Image Used by a Scenario/Platform
+#custom-image
 
 The docker driver supports using pre-built images and `docker build`
 -ing local customizations for each scenario's platform. The Docker

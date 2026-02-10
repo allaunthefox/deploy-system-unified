@@ -1,4 +1,4 @@
-## Running Molecule processes in parallel mode
+#parallel
 
 !!! warning
 

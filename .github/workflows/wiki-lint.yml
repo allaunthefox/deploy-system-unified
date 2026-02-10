@@ -1,0 +1,43 @@
+name: Wiki Lint
+
+on:
+  pull_request:
+    paths:
+      - 'wiki_pages/**'
+      - 'wiki_audit/**'
+      - 'wiki_crowdsec_audit/**'
+      - 'wiki_clean_sync/**'
+      - 'projects/deploy-system-unified/docs/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'wiki_pages/**'
+      - 'wiki_audit/**'
+      - 'wiki_crowdsec_audit/**'
+      - 'wiki_clean_sync/**'
+      - 'projects/deploy-system-unified/docs/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install requirements (if any)
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Run wiki linter
+        run: |
+          python3 .scripts/wiki_wiki_lint.py --json > wiki-lint.json || true
+          jq '.errors | length as $e | .warnings | length as $w | {errors:$e, warnings:$w}' wiki-lint.json
+          if [ $(jq '.errors | length' wiki-lint.json) -ne 0 ]; then echo 'Errors detected'; exit 2; fi
+          if [ $(jq '.warnings | length' wiki-lint.json) -ne 0 ]; then echo 'Warnings detected'; exit 1; fi
+        shell: bash

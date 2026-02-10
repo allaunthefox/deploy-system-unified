@@ -1,4 +1,4 @@
-# Installation
+# installation
 
 This document assumes the developer has a basic understanding of Python
 packaging, and how to install and manage Python on the system executing

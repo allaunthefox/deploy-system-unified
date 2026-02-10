@@ -1,4 +1,4 @@
-# Podman inside Docker
+# podman-inside-docker
 
 Sometimes your CI system comes prepared to run with Docker but you want
 to test podman into it. This `prepare.yml` playbook would let podman run

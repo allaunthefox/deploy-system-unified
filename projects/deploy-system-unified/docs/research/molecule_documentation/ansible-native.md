@@ -1,4 +1,4 @@
-# Ansible-Native Configuration
+# ansible-native
 
 This document provides technical reference for the ansible-native configuration approach. The ansible-native approach leverages standard Ansible inventory, collections, and playbooks for testing resource management.
 

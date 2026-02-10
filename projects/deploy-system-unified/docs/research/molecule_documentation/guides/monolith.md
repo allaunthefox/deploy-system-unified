@@ -1,4 +1,4 @@
-## Monolith Repo
+#monolith
 
 Molecule is generally used to test playbooks or roles in isolation.
 However, it can also test them from a monolith repo.

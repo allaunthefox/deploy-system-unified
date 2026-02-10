@@ -1,4 +1,4 @@
-## Docker With Non-Privileged User
+#docker-rootless
 
 The Molecule Docker driver executes Ansible playbooks as the
 root user. If your workflow requires adding support for running as a

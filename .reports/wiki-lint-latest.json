@@ -1,0 +1,11 @@
+{
+  "files_scanned": 310,
+  "errors": [],
+  "warnings": [
+    [
+      "unreadable",
+      "projects/deploy-system-unified/docs/research/molecule_documentation/collection.md"
+    ]
+  ],
+  "fixed": []
+}
