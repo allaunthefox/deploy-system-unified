@@ -18,7 +18,7 @@ repos:
     hooks:
       - id: style-guide-enforcement
         name: Style Guide Enforcement
-        entry: bash dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+        entry: bash dev_tools/tools/style-guide-enforcement/run_and_fail_on_violations.sh --report
         language: system
         pass_filenames: false
         always_run: true
