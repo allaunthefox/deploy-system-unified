@@ -1,4 +1,4 @@
-# Project Ontology: Deployment Profiles & Infrastructure
+# ONTOLOGY
 
 This document defines the formal relationship between **Deployment Profiles**, **Infrastructure Types**, and **Architectural Settings**. Adhering to this ontology prevents "distinction drift" and ensures that security policies and hardware optimizations are applied correctly.
 

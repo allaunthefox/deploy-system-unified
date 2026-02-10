@@ -1,4 +1,4 @@
-# GPU Slicing Architecture for Deploy-System-Unified
+# GPU_SLICING
 
 ## Overview
 
