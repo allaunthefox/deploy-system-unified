@@ -26,6 +26,10 @@ jobs:
       - name: Run unit tests (ansible-lint rule tests)
         run: |
           pytest -q ansiblelint/tests || true
+      - name: Run style enforcement tools unit tests
+        run: |
+          # Ensure pytest is available and run the style tooling tests
+          pytest -q projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests || true
       - name: Ensure projects/deploy-system-unified/main.yml has no top-level roles
         run: |
           python projects/deploy-system-unified/scripts/check_no_roles_in_main.py projects/deploy-system-unified/main.yml

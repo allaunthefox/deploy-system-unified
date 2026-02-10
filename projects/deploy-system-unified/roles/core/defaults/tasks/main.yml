@@ -1,4 +1,0 @@
----
-- name: placeholder task (no-op)
-  ansible.builtin.debug:
-    msg: "Placeholder: no action"

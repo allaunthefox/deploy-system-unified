@@ -277,7 +277,7 @@ enforce_fqcn_standards() {
     if command -v rg >/dev/null 2>&1; then
         while IFS= read -r file; do
             short_form_matches+=("$file")
-        done < <(rg -P -l "$better_pattern" -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
+        done < <(rg -P -U --no-ignore -l "$better_pattern" -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
     else
         while IFS= read -r file; do
             short_form_matches+=("$file")
@@ -523,11 +523,11 @@ enforce_security_standards() {
     log "Enforcing security standards..."
     
     local secret_patterns=(
-        'password\s*[:=]'
-        'secret\s*[:=]'
-        'token\s*[:=]'
-        'api_key\s*[:=]'
-        'private_key\s*[:=]'
+        'password[[:space:]]*[:=]'
+        'secret[[:space:]]*[:=]'
+        'token[[:space:]]*[:=]'
+        'api_key[[:space:]]*[:=]'
+        'private_key[[:space:]]*[:=]'
     )
     
     local fd_cmd=""
@@ -806,5 +806,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Run main function
-main "$@"
+# Run main function if executed directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

@@ -7,8 +7,19 @@ def add_placeholders(group):
     if not base.exists():
         print(f"Group {group} not found")
         return
+    
+    # Standard Ansible directories to ignore if found at the group level
+    ignored_dirs = {
+        'defaults', 'files', 'handlers', 'meta', 
+        'tasks', 'templates', 'vars', 'molecule', 'tests'
+    }
+
     for r in base.iterdir():
         if r.is_dir():
+            # Skip hidden directories and standard Ansible subdirectories
+            if r.name.startswith('.') or r.name in ignored_dirs:
+                continue
+
             t = r/'tasks'/'main.yml'
             if not t.exists():
                 t.parent.mkdir(parents=True, exist_ok=True)

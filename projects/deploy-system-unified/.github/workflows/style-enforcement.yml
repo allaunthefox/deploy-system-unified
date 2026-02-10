@@ -44,6 +44,7 @@ jobs:
         with:
           name: style-compliance-report
           path: dev_tools/tools/style-guide-enforcement/compliance_report_*.md
+          retention-days: 30
       - name: Comment on PR with compliance report
         if: ${{ github.event_name == 'pull_request' }}
         env:

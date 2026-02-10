@@ -7,7 +7,7 @@ SCRIPT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'enf
 
 
 def run_cmd(cmd, env=None, cwd=None):
-    r = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env, cwd=cwd)
+    r = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env, cwd=cwd, executable='/bin/bash')
     return r
 
 
@@ -28,13 +28,13 @@ def test_is_ignored_basic(tmp_path):
     assert 'YES' in r.stdout.strip()
 
 
-def test_enforce_fqcn_respects_molecule_ignore(tmp_path):
-    # Create a tiny project tree with a molecule file that would match the FQCN pattern
+def test_enforce_fqcn_respects_styleignore(tmp_path):
+    # Create a tiny project tree with a task file that would match the FQCN pattern
     proj = tmp_path
-    mol = proj / 'roles' / 'containers' / 'caddy' / 'molecule' / 'negative'
+    mol = proj / 'roles' / 'containers' / 'caddy' / 'tasks'
     mol.mkdir(parents=True)
 
-    mol_file = mol / 'molecule.yml'
+    mol_file = mol / 'main.yml'
     mol_file.write_text(textwrap.dedent("""
         ---
         - hosts: localhost
@@ -55,9 +55,9 @@ def test_enforce_fqcn_respects_molecule_ignore(tmp_path):
     # Should warn about at least one file
     assert 'Found' in r_no.stdout or 'Found' in r_no.stderr
 
-    # With ignore pattern, it should not report that molecule file
+    # With ignore pattern, it should not report that file
     styleignore = proj / '.styleignore'
-    styleignore.write_text("*/molecule/*\n")
+    styleignore.write_text("roles/containers/caddy/tasks/*\n")
 
     cmd_with_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
@@ -162,7 +162,7 @@ def test_is_ignored_negation_and_regex(tmp_path):
     styleignore.write_text(textwrap.dedent('''
         */molecule/*
         !roles/containers/caddy/molecule/*
-        re:^roles/.*/molecule/negative/
+        re:^roles/special/molecule/negative/
     '''))
 
     # Path that should be ignored by glob
@@ -227,4 +227,31 @@ def test_ignores_workflows_and_artifacts(tmp_path):
     r = run_cmd(cmd, cwd=proj)
     out = r.stdout + r.stderr
     # No 'Found' lines should be present
+    assert 'Found' not in out
+
+
+def test_fqcn_ignores_group_param(tmp_path):
+    # Create a role file with a parameter named 'group' which should NOT be flagged as 'group' module
+    proj = tmp_path
+    role_dir = proj / 'roles' / 'test_role' / 'tasks'
+    role_dir.mkdir(parents=True)
+    task_file = role_dir / 'main.yml'
+    
+    # This content mimics a task where 'group' is a parameter key, not the module name
+    task_file.write_text(textwrap.dedent("""
+        - name: Create a user with a specific primary group
+          user:
+            name: testuser
+            group: testgroup
+            state: present
+    """))
+
+    # We expect FQCN check to PASS (no output) because 'group:' is indented and clearly a param
+    cmd = textwrap.dedent(f"""
+        source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
+        PROJECT_ROOT="{proj}"
+        enforce_fqcn_standards
+    """)
+    r = run_cmd(cmd, cwd=proj)
+    out = r.stdout + r.stderr
     assert 'Found' not in out
