@@ -1,7 +1,7 @@
-name: Wiki Publish Debug
+name: Wiki Publish Debug (clean)
 
-# Manual debug workflow to run publish steps in dry-run mode with verbose logging.
-# Only to be used temporarily and removed after debugging.
+# Cleaner manual debug workflow to run publish steps in real mode with verbose logging.
+# This copy was added to avoid accidental formatting issues in the original file.
 
 on:
   workflow_dispatch:
@@ -49,24 +49,6 @@ jobs:
           echo "GET refs via API:"
           curl -i -s -H "Authorization: token $PAT" "$WIKI_REPO_API/git/refs" | sed -n '1,80p'
 
-      - name: SSH auth debug
-        run: |
-          set -x
-          # Try adding any provided key to the agent and do a verbose auth test so we can see what GitHub accepts
-          if [ -n "${{ secrets.WIKI_SSH_KEY }}" ] || [ -n "${{ secrets.SSH_DEPLOY_KEY }}" ]; then
-            mkdir -p ~/.ssh
-            deploy_key_file=~/.ssh/wiki_deploy_key
-            if [ -n "${{ secrets.WIKI_SSH_KEY }}" ]; then
-              printf '%s\n' "${{ secrets.WIKI_SSH_KEY }}" > "$deploy_key_file" || true
-            else
-              printf '%s\n' "${{ secrets.SSH_DEPLOY_KEY }}" > "$deploy_key_file" || true
-            fi
-            chmod 600 "$deploy_key_file" || true
-            eval "$(ssh-agent -s)" || true
-            ssh-add "$deploy_key_file" || true
-          fi
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
-
       - name: Clone wiki repo (verbose, SSH fallback)
         env:
           CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
@@ -102,13 +84,8 @@ jobs:
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             git clone "git@github.com:${{ github.repository }}.wiki.git" wiki-repo || (echo 'ssh clone failed' && ls -la && git remote -v && exit 4)
           else
-            if [ -n "$SAFE_WIKI_PAT" ]; then
-              git clone "https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
-            elif [ -n "$SAFE_CI_PAT" ]; then
-              git clone "https://x-access-token:${SAFE_CI_PAT}@github.com/${{ github.repository }}.wiki.git" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
-            else
-              echo 'CI_ARTIFACT_PAT not set and no SSH key found'; exit 3;
-            fi
+            if [ -z "$SAFE_CI_PAT" ]; then echo 'CI_ARTIFACT_PAT not set and no SSH key found'; exit 3; fi
+            git clone "https://x-access-token:${SAFE_CI_PAT}@github.com/${{ github.repository }}.wiki.git" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
           fi
           ls -la wiki-repo || true
 
@@ -123,26 +100,19 @@ jobs:
           CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
         run: |
           set -x
-          # Strip newlines from tokens before building URL
           SAFE_WIKI_PAT="$(echo "${WIKI_PAT:-}" | tr -d '\r\n')"
           SAFE_CI_PAT="$(echo "${CI_PAT:-}" | tr -d '\r\n')"
-          # Prefer using WIKI_PAT if set, else CI_ARTIFACT_PAT
-          if [ -n "$SAFE_WIKI_PAT" ]; then
-            WIKI_GIT_URL="https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git"
-          else
-            WIKI_GIT_URL="https://x-access-token:${SAFE_CI_PAT}@github.com/${{ github.repository }}.wiki.git"
-          fi
           if [ -d wiki-repo/.git ]; then
             cd wiki-repo
             git add -A || true
             git commit -m "debug: test commit" || echo 'no commit'
             if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
               echo "Attempting real push to wiki repository..."
-              git push "$WIKI_GIT_URL" HEAD:master || git push "$WIKI_GIT_URL" HEAD:main || (echo 'real push failed' && exit 6)
+              git push "https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git" HEAD:master || git push "https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git" HEAD:main || (echo 'real push failed' && exit 6)
             else
               echo "Dry-run mode: simulating push"
-              git push --dry-run "$WIKI_GIT_URL" HEAD:master || echo 'master push dry-run failed or no master'
-              git push --dry-run "$WIKI_GIT_URL" HEAD:main || echo 'main push dry-run failed or no main'
+              git push --dry-run "https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git" HEAD:master || echo 'master push dry-run failed or no master'
+              git push --dry-run "https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git" HEAD:main || echo 'main push dry-run failed or no main'
             fi
             cd ..
           else
