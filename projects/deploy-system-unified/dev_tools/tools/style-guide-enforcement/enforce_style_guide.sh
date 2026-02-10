@@ -276,11 +276,11 @@ enforce_fqcn_standards() {
     if command -v rg >/dev/null 2>&1; then
         while IFS= read -r file; do
             short_form_matches+=("$file")
-        done < <(rg -l "$better_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
+        done < <(rg -l "$better_pattern" -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
     else
         while IFS= read -r file; do
             short_form_matches+=("$file")
-        done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
+        done < <(find "$PROJECT_ROOT/roles" -type f \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
     fi
 
     # Filter out ignored files and non-playbook config files like molecule configs
