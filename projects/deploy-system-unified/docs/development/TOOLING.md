@@ -18,21 +18,26 @@ This script is the primary gatekeeper for the project's standards. It utilizes *
 
 ### Advanced Audits
 
-- **Recursive Role Audit**: Unlike standard linters, this tool recursively searches for nested roles (e.g., `roles/core/time`) and enforces a full directory structure (`vars/`, `handlers/`, etc.).
-- **Embedded Shell Audit**: Uses **Shellcheck** to lint code inside `ansible.builtin.shell` blocks, preventing logic errors in embedded scripts.
-- **Security Audit**: Uses targeted regex to find world-writable modes (`777`, `666`) and hardcoded secret patterns.
+- **FQCN Compliance**: Uses multiline PCRE patterns via `rg -U` to ensure all Ansible tasks use Fully Qualified Collection Names (e.g., `ansible.builtin.copy`).
+- **Recursive Role Audit**: Recursively searches for nested roles and enforces a full standard directory structure (`vars/`, `handlers/`, etc.).
+- **Embedded Shell Audit**: Uses **Shellcheck** to lint code inside `ansible.builtin.shell` blocks.
+- **Security Audit**: Identifies unsafe permissions (`777`) and potential hardcoded secrets.
+
+### Unit Testing the Tool
+The enforcement logic is verified by a `pytest` suite located in `dev_tools/tools/style-guide-enforcement/tests/`. Run these before modifying the enforcement script:
+```bash
+python3 -m pytest dev_tools/tools/style-guide-enforcement/tests/
+```
+
+## 🛡️ Stability Gating Scripts
+
+Located in the `scripts/` directory, these tools are used for pre-deployment verification and CI gates.
+
+- **`verify_idempotence.sh`**: Runs a playbook twice and asserts that the second run produces `changed=0`.
+- **`smoke_test_production.sh`**: Performs a syntax check and a dry-run (`--check`) of the production deployment using the validation inventory.
 
 ## 🧪 Molecule
 
 Scenario-based testing for idempotency and multi-platform support.
 
 - Use `molecule test` to run the full sequence (Destroy -> Create -> Converge -> **Idempotence** -> Verify).
-
-## 🔍 Manual Syntax Checks
-
-To verify the playbooks and role paths without standard inventory warnings, use the validation inventory:
-
-```bash
-export ANSIBLE_ROLES_PATH=./roles
-ansible-playbook -i inventory/validation.ini --syntax-check branch_templates/*.yml
-```
