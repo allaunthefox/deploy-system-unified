@@ -42,6 +42,20 @@ This document defines the formal relationship between **Deployment Profiles**, *
 3.  **Naming Consistency**: All new branch templates MUST be named using the pattern `<profile>_<description>.yml`.
 4.  **No Manual Override**: Avoid setting security-critical flags (like `firewall_enabled`) manually in tasks; rely on the `deployment_profile` to toggle these via group variables.
 
+## 🛡️ Runtime Enforcement
+
+The ontological contract is strictly enforced at runtime via `playbooks/preflight_validate.yml`. This playbook:
+- **Ensures Uniqueness**: Asserts that every host belongs to exactly ONE ontological profile group.
+- **Verifies State**: Checks that the host's actual variable state (e.g., `firewall_enabled`, `ssh_randomize_port`) matches the requirements of its declared profile.
+- **Fail-Loudly**: Aborts the deployment immediately if a contract violation is detected, preventing inconsistent system states.
+
+## 🔄 Idempotency Contract
+
+Every profile in this project adheres to a strict **Idempotency Contract**:
+- **Baseline Assurance**: A second run of any playbook against a converged host MUST produce `changed=0`.
+- **State-Aware Tasks**: Custom shell/command tasks MUST implement state checks (e.g., checking `/sys/` or `/proc/`) rather than blindly executing.
+- **No False Positives**: Deployment tools (like `verify_idempotence.sh`) are used to benchmark and ensure that re-runs do not trigger redundant changes.
+
 ## 🤖 LLM & RAG Usage
 
 When assisting with this project, AI agents MUST refer to this ontology to determine the appropriate base role and security defaults. If a user requests a "secure" deployment, the agent should default to the `hardened` profile and `bare-metal` infrastructure unless otherwise specified.
