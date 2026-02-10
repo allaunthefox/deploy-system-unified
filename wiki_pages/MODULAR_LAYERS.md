@@ -6,13 +6,13 @@ Deploy-System-Unified utilizes a layered architecture to maintain a clear separa
 
 "The Base" defines the system's security personality and foundational environment. It is intended to be workload-agnostic.
 
-### [Base Hardened](base_hardened.yml)
+### [Base Hardened](base_hardened)
 The standard foundation for persistent systems (Bare Metal, VPS, VMs).
 - **Security**: Firewall (L3/L4), SSH hardening (L7), Kernel hardening.
 - **Consistency**: Time synchronization (Chrony), Repository initialization.
 - **Audit**: Log integrity and system auditing (auditd).
 
-### [Base Ephemeral](base_ephemeral.yml)
+### [Base Ephemeral](base_ephemeral)
 A specialized foundation for high-security, zero-footprint environments.
 - **Volatility**: RAM-disk backed structures.
 - **Security**: Aggressive shredding on cleanup, immutable audit trails.
@@ -23,7 +23,7 @@ A specialized foundation for high-security, zero-footprint environments.
 
 "The Stack" is the application layer that sits on top of a Base. Stacks are typically represented by branch templates or specific solution playbooks.
 
-### [Production Deploy](production_deploy.yml)
+### [Production Deploy](production_deploy)
 The canonical production stack.
 - **Foundation**: Imports `base_hardened.yml`.
 - **Workload**: Container runtimes (Podman), Orchestration (Quadlets), Reverse Proxy (Caddy).

@@ -17,7 +17,7 @@ On cleanup or decommissioning, the project utilizes aggressive shredding (multip
 
 ## 🛠️ Implementation
 
-In the **[Base Ephemeral](base_ephemeral.yml)** foundation:
+In the **[Base Ephemeral](base_ephemeral)** foundation:
 - `ephemeral_volatile_secrets: true` is set as a global flag.
 - Roles branch their logic to avoid writing to `/var/lib/` or other persistent paths.
 - Container runtimes are configured to use in-memory storage backends where possible.
