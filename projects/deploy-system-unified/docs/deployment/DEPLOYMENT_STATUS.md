@@ -1,38 +1,30 @@
-# Deployment Status Report: Media & Ops Stack V2
+# Deployment Status Report: Stability & Structural Integrity
 
-**Date:** February 3, 2026
-**Status:** **READY FOR DEPLOYMENT** (Phase 1: Resilience Complete)
+**Updated:** February 10, 2026
+**Status:** **READY FOR DEPLOYMENT** (Phase 1 Stability Gates Active)
 
 ## 1. Accomplished Objectives
 
-### A. Operational Resilience (Backups)
+### A. Structural Integrity (Cleanup)
+- **Status:** **Verified**
+- **Improvements:** 
+    - Purged 100+ invalid recursive role directories.
+    - Standardized all 9 role groups with clean, valid placeholders.
+    - Patched `add_placeholders.py` to prevent future corruption.
 
-- **Role:** `storage/backup/restic`
-- **Status:** **Implemented**
-- **Features:**
-    - Automated efficient snapshots (Systemd Timer: Daily).
-    - Secure password management (fails on default).
-    - Wrapper script for manual execution (`/usr/local/bin/restic_wrapper.sh`).
-    - Retention Policy: Keep 7 Daily, 4 Weekly, 6 Monthly.
-    - **Offsite Ready**: Integrated with `storage/backup/rclone` for cloud syncing.
+### B. Stability Gating
+- **Tooling:** `verify_idempotence.sh` and `smoke_test_production.sh` implemented.
+- **Enforcement:** Mandatory status checks active for the `main` branch.
+- **Validation:** Added 7 unit tests for style and ignore logic verification.
 
-### B. Security & Integrity
+### C. Operational Resilience (Backups)
+- **Role:** `storage/backup/restic` (Implemented)
+- **Role:** `storage/backup/rclone` (Implemented)
+- **Features:** Automated efficient snapshots (Daily), secure password management, and offsite cloud syncing ready.
 
-- **Role:** `security/scanning`
-- **Status:** **Refined**
-- **Improvements:**
-    - **Scoped Scans**: Optimized to scan `/srv` and `/etc` instead of root filesystem (prevents timeouts).
-    - **Robustness**: Handles missing tools gracefully; defines fallback default variables.
-- **Role:** `containers/runtime`
-- **Status:** **Hardened**
-- **Features:**
-    - **Rate-Limit Protection**: Implemented "Safe Retry" (5 retries, 30s delay) to prevent Docker Hub bans.
-
-### C. Secrets Management architecture
-
-- **Method**: Ansible Vault (active). SOPS is planned but not active.
-- **Injection**: `EnvironmentFile` via Systemd/Quadlet (Root-only access: `0600`).
-- **No plaintext secrets** in Unit files.
+### D. Security & Integrity
+- **Role:** `security/scanning` (Refined)
+- **Preflight:** `preflight_assertions.yml` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
 
 ## 2. Pre-Deployment Check List
 
