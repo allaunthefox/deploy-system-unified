@@ -40,22 +40,54 @@ jobs:
           if [ $(jq '.errors' wiki-lint.json) -ne 0 ]; then echo 'Errors detected'; exit 2; fi
           if [ $(jq '.warnings' wiki-lint.json) -ne 0 ]; then echo 'Warnings detected'; exit 1; fi
 
-      - name: Clone wiki repo and push
+      - name: Clone wiki repo and push (support SSH deploy key)
         env:
-          # Use the existing CI_ARTIFACT_PAT secret for wiki publishing (must have repo scope)
-          WIKI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
-          WIKI_GIT_URL: "https://x-access-token:${{ secrets.CI_ARTIFACT_PAT }}@github.com/${{ github.repository }}.wiki.git"
+          WIKI_PAT: ${{ secrets.WIKI_PAT }}
+          CI_PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_SSH_KEY: ${{ secrets.WIKI_SSH_KEY }}
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         run: |
-          if [ -z "${WIKI_PAT}" ]; then
-            echo "WIKI_PAT is not set; aborting publish"
-            exit 1
+          set -x
+          # Strip newlines from tokens
+          SAFE_WIKI_PAT="$(echo "${WIKI_PAT:-}" | tr -d '\r\n')"
+          SAFE_CI_PAT="$(echo "${CI_PAT:-}" | tr -d '\r\n')"
+          # Prefer SSH deploy key when present, else fall back to PAT-based HTTPS
+          if [ -n "$WIKI_SSH_KEY" ] || [ -n "$SSH_DEPLOY_KEY" ]; then
+            echo "Using SSH deploy key for wiki publish"
+            mkdir -p ~/.ssh
+            deploy_key_file=~/.ssh/wiki_deploy_key
+            if [ -n "$WIKI_SSH_KEY" ]; then
+              echo "$WIKI_SSH_KEY" > "$deploy_key_file"
+            else
+              echo "$SSH_DEPLOY_KEY" > "$deploy_key_file"
+            fi
+            chmod 600 "$deploy_key_file"
+            # If passphrase provided, decrypt encrypted PEM into a usable key
+            if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
+              echo "Decrypting encrypted PEM"
+              openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
+              mv "${deploy_key_file}.dec" "$deploy_key_file"
+              chmod 600 "$deploy_key_file"
+            fi
+            eval "$(ssh-agent -s)"
+            ssh-add "$deploy_key_file"
+            # Ensure GitHub is in known_hosts
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            git clone "git@github.com:${{ github.repository }}.wiki.git" wiki-repo || (echo 'ssh clone failed' && ls -la && git remote -v && exit 4)
+          else
+            if [ -n "$SAFE_WIKI_PAT" ]; then
+              WIKI_GIT_URL="https://x-access-token:${SAFE_WIKI_PAT}@github.com/${{ github.repository }}.wiki.git"
+            elif [ -n "$SAFE_CI_PAT" ]; then
+              WIKI_GIT_URL="https://x-access-token:${SAFE_CI_PAT}@github.com/${{ github.repository }}.wiki.git"
+            else
+              echo "WIKI_PAT is not set and no SSH key found; aborting publish"; exit 1
+            fi
+            git clone "$WIKI_GIT_URL" wiki-repo || (echo 'clone failed' && ls -la && git remote -v && exit 4)
           fi
-          git clone "${WIKI_GIT_URL}" wiki-repo
           rsync -av --delete wiki_pages/ wiki-repo/
           cd wiki-repo
           git add -A
           git commit -m "chore(wiki): publish wiki_pages from main (auto-run)" || echo "No changes to commit"
-          # Wiki repos often use 'master' as the default branch; try master then main
           git push origin master || git push origin main || (echo "Push failed" && exit 1)
 
       - name: Publish complete
