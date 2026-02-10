@@ -1,4 +1,4 @@
----
+--- 
 name: Style Guide Enforcement
 on:
   push:
@@ -44,52 +44,53 @@ jobs:
         with:
           name: style-compliance-report
           path: dev_tools/tools/style-guide-enforcement/compliance_report_*.md
+          retention-days: 30
       - name: Comment on PR with compliance report
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [ -f .enforce_status ]; then
-            report_file=$(ls -t dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
-            if [ -z "$report_file" ]; then
-              echo "No report found to post"
-              exit 0
-            fi
-            # sanitize backticks to avoid breaking code fence in comment
-            report=$(sed 's/```/` ` `/g' "$report_file")
-            body=$(jq -Rs -n \
-              --arg file "$report" \
-              '
-              {
-                body: (
-                  "### Style Guide Enforcement Report\n\n" +
-                  "See report below:\n\n" +
-                  "<details><summary>Click to expand</summary>\n\n" +
-                  "```\n" + $file + "\n```\n" +
-                  "</details>\n\n" +
-                  "Reply with `--fix` for auto-fix PR."
-                )
-              }
-              ')
-            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
-              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
-          else
-            echo "No style issues detected; no comment posted"
+          report_file=$(ls -t dev_tools/tools/style-guide-enforcement/compliance_report_*.md 2>/dev/null | head -n1)
+          if [ -z "$report_file" ]; then
+            echo "No report found to post"
+            exit 0
           fi
-      - name: Comment on PR on success
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
+
+          # Extract summary info
+          total_issues=$(grep -m1 "Total Issues:" "$report_file" | awk '{print $NF}' || echo "Unknown")
+          fixed_issues=$(grep -m1 "Fixed:" "$report_file" | awk '{print $NF}' || echo "0")
+          
+          # Sanitize backticks
+          report_content=$(sed 's/```/` ` `/g' "$report_file")
+          
+          status_icon="❌"
           if [ ! -f .enforce_status ]; then
-            body='{"body":"✅ Style enforcement passed. No issues detected. Good job!"}'
-            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
-              --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
-          else
-            echo "Issues were detected; not posting success message"
+            status_icon="✅"
           fi
+
+          body=$(jq -Rs -n \
+            --arg icon "$status_icon" \
+            --arg total "$total_issues" \
+            --arg fixed "$fixed_issues" \
+            --arg content "$report_content" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            '\
+            {
+              body: (
+                "### Style Guide Enforcement Summary " + $icon + "\n\n" + \
+                "- **Total Issues Detected:** " + $total + "\n" + \
+                "- **Automatically Fixed:** " + $fixed + "\n" + \
+                "- **Report Artifact:** [Download here](https://github.com/" + env.GITHUB_REPOSITORY + "/actions/runs/" + $run_id + ")\n\n" + \
+                "<details><summary>Click to expand full report</summary>\n\n" + \
+                "```\n" + $content + "\n```\n" + \
+                "</details>\n\n" + \
+                "Reply with `--fix` for auto-fix PR."
+              )
+            }
+            ')
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            --data "$body" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
       - name: Fail if enforcement found issues
         run: |
           if [ -f .enforce_status ]; then

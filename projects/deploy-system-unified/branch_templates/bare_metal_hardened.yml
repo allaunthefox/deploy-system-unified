@@ -1,4 +1,9 @@
 ---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+---
 # Bare Metal Hardened - Physical Infrastructure Solution Stack
 # Solution: Base Hardened Infrastructure + Hardware Support + Disk Tuning
 - ansible.builtin.import_playbook: base_hardened.yml

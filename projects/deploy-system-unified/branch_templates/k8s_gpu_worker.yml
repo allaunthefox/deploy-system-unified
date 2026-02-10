@@ -1,4 +1,9 @@
 ---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+---
 # Kubernetes GPU Worker Deployment Template
 # For Kubernetes worker nodes with GPU slicing support (AI/ML, data processing)
 # Features: GPU slicing configuration, Kubernetes device plugin deployment, node labeling

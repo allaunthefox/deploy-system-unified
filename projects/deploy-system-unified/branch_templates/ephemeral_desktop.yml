@@ -1,4 +1,9 @@
 ---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+---
 # Ephemeral Desktop - Volatile Workstation Environment
 # Solution: Base Ephemeral Infrastructure + Desktop/GUI Stack
 # Use Case: Live ISOs, Kiosks, Secure Temporary Workstations

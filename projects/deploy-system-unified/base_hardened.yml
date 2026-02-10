@@ -1,7 +1,11 @@
 ---
+# WARNING: This playbook is part of the solution stack. 
+# Use production_deploy.yml as the primary deployment entrypoint.
+
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
 
+- ansible.builtin.import_playbook: playbooks/preflight_assertions.yml
 - ansible.builtin.import_playbook: playbooks/bootstrap_ssh.yml
 
 - name: Apply Secure Infrastructure Base

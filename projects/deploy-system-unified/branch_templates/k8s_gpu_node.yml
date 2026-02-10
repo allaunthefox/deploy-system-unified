@@ -1,4 +1,9 @@
 ---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+---
 # Kubernetes GPU Node Deployment Template
 # For Kubernetes nodes with GPU device plugin support (AI/ML, data processing)
 # Features: GPU driver installation, Kubernetes device plugin deployment, node labeling

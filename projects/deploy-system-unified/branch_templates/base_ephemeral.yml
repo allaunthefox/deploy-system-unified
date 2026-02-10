@@ -1,4 +1,9 @@
 ---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+---
 # Base Ephemeral Infrastructure - The Volatile Foundation
 # This playbook handles zero-footprint infrastructure setup.
 

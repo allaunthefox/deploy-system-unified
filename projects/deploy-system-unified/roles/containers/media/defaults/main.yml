@@ -3,22 +3,21 @@
 
 # Multi-Tenancy / Instance Identification
 containers_media_instance_name: "{{ media_instance_name | default('default') }}"
-containers_media_port_offset: 0
-containers_media_network: "media_net"
+containers_media_port_offset: "{{ media_port_offset | default(0) }}"
+# Network name the role will create for media pods (can be overridden)
+containers_media_network: "{{ media_network | default('media_net') }}"
 
 # Hardware Acceleration
 # Enables passing /dev/dri to relevant containers (Jellyfin, Plex, potentially TDARR if added)
-containers_media_hw_accel: false
+containers_media_hw_accel: "{{ media_hw_accel | default(false) }}"
 # Require Host AVX support for MongoDB/Jellyfin images (Fail if missing)
-containers_media_require_avx: false
+containers_media_require_avx: "{{ media_require_avx | default(false) }}"
 
-containers_media_stack_enable: true
+containers_media_stack_enable: "{{ media_stack_enable | default(true) }}"
 containers_media_root_dir: "{{ media_root_dir | default('/srv/media/' ~ containers_media_instance_name) }}"
 containers_media_config_dir: "{{ media_config_dir | default('/srv/containers/media_config/' ~ containers_media_instance_name) }}"
 
 # User/Group for media permissions (Podman rootless or mapped)
-# We typically run containers as root (Quadlet default) mapping to host users if needed.
-# For simplicity with Podman Quadlets, we'll keep internal container users mapped.
 containers_media_puid: "{{ media_puid | default(1000) }}"
 containers_media_pgid: "{{ media_pgid | default(1000) }}"
 containers_media_timezone: "{{ media_timezone | default('UTC') }}"
@@ -79,17 +78,12 @@ containers_media_pod_enable: true
 containers_media_pod_name: "{{ media_pod_name | default('media_pod_' ~ containers_media_instance_name) }}"
 
 # Reverse Proxy Configuration (Gatekeeper Mode)
-# If true:
-# 1. Binds service ports to internal pod network (deploy-net) if possible or localhost
-# 2. Deploys Caddy configuration snippets for access
-# 3. Requires 'containers/caddy' role to be enabled
 containers_media_gatekeeper_mode: "{{ media_gatekeeper_mode | default(false) }}"
 containers_media_domain: "{{ media_domain | default('media.example.com') }}"
 # Network to attach the pod to (must match Caddy's network if separate)
-containers_media_pod_network: "{{ media_pod_network | default('media_net') }}"
+containers_media_pod_network: "{{ media_pod_network | default(containers_media_network) }}"
 
 # Authentication Integration
-# Options: none, authentik
 containers_media_auth_provider: "{{ media_auth_provider | default('none') }}"
 containers_media_auth_url: "{{ media_auth_url | default('https://auth.example.com') }}"
 

@@ -13,7 +13,7 @@ class NoGpuCapabilitiesRule(AnsibleLintRule):
     severity = 'HIGH'
     tags = ['capabilities', 'security', 'best-practice']
     version_added = '1.0.0'
-    version_changed = '1.0.0'
+    version_changed = '1.0.1'
 
     def _get_path(self, file):
         if hasattr(file, 'path'):
