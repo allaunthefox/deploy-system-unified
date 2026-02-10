@@ -16,6 +16,8 @@ class NoDirectPlaceholderCompareRule(AnsibleLintRule):
     severity = 'MEDIUM'
     tags = ['secrets', 'validation']
     version_added = '1.0.2'
+    # Semver indicating when the rule behavior last changed
+    version_changed = '0.1.0'
 
     def _get_path(self, file):
         if hasattr(file, 'path'):

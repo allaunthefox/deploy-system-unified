@@ -54,6 +54,7 @@ is_ignored() {
             fi
         else
             # Shell glob match using case (preserves glob semantics)
+            # shellcheck disable=SC2254
             case "$path" in
                 $pat)
                     if [ $neg -eq 1 ]; then
@@ -269,17 +270,18 @@ enforce_fqcn_standards() {
     log "Enforcing FQCN standards..."
 
     local short_form_matches=()
-    # Matches lines like '  apt:', '  - copy:', but NOT '    group:' or '    user:' under a module
-    local better_pattern='^\s+(- )?(apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):'
+    # Use a PCRE that matches module names only when used as top-level task entries,
+    # either directly under '-' or after '- name:', to avoid matching parameter keys like 'group:'
+    local better_pattern='(?s)(-\s+name:.*?\n\s{2,}(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)|(^-\s+(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)'
 
     if command -v rg >/dev/null 2>&1; then
         while IFS= read -r file; do
             short_form_matches+=("$file")
-        done < <(rg -l "$better_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
+        done < <(rg -P -l "$better_pattern" -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
     else
         while IFS= read -r file; do
             short_form_matches+=("$file")
-        done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
+        done < <(find "$PROJECT_ROOT/roles" -type f \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
     fi
 
     # Filter out ignored files and non-playbook config files like molecule configs
@@ -685,7 +687,7 @@ $yaml_issues issues found
 $ansible_issues issues found
 
 ### FQCN Compliance
-$(command -v rg >/dev/null 2>&1 && rg -l '^\s{2,}(apt|dnf|copy|template|service|systemd|shell|command|file|stat|user|group|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):' -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0") non-FQCN module calls found
+$(command -v rg >/dev/null 2>&1 && rg -P -l '(?s)(-\s+name:.*?\n\s{2,}(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)|(^-\s+(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)' -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0") non-FQCN module calls found
 
 ### Shell Scripting
 $(command -v shellcheck >/dev/null 2>&1 && find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec shellcheck {} + 2>/dev/null | grep -c "^In " || echo "0") issues found in standalone scripts
