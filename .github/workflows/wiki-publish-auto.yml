@@ -1,0 +1,44 @@
+name: Wiki Auto Publish
+
+# Automatic publish of `wiki_pages/` to the repository Wiki.
+# This workflow is intentionally gated and guarded:
+# - Requires repository secret `WIKI_PUBLISH_ENABLED` == "true" to actually run the publish step
+# - Requires `WIKI_PAT` repo secret (PAT with repo scope) or a configured deploy key
+# - Uses an `environment: wiki-publish` so you can require manual reviewers/approvals
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  publish:
+    if: ${{ secrets.WIKI_PUBLISH_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    environment: wiki-publish
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Clone wiki repo and push
+        env:
+          WIKI_PAT: ${{ secrets.WIKI_PAT }}
+          WIKI_GIT_URL: "https://x-access-token:${{ secrets.WIKI_PAT }}@github.com/${{ github.repository }}.wiki.git"
+        run: |
+          if [ -z "${WIKI_PAT}" ]; then
+            echo "WIKI_PAT is not set; aborting publish"
+            exit 1
+          fi
+          git clone "${WIKI_GIT_URL}" wiki-repo
+          rsync -av --delete wiki_pages/ wiki-repo/
+          cd wiki-repo
+          git add -A
+          git commit -m "chore(wiki): publish wiki_pages from main (auto-run)" || echo "No changes to commit"
+          git push origin main || (echo "Push failed" && exit 1)
+
+      - name: Publish complete
+        run: echo "Wiki publish attempted (see previous steps for result)."
