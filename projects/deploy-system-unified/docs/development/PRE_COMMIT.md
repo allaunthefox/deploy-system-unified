@@ -35,6 +35,12 @@ To run the enforcement manually (fast, single check):
 
 This will produce a report file under `dev_tools/tools/style-guide-enforcement/` named like `compliance_report_YYYYMMDD_HHMMSS.md`. The script exits non-zero if violations are found.
 
+### Run Style Tooling Unit Tests
+If you modify the enforcement script or patterns, verify the changes by running the unit test suite:
+```bash
+pytest -q dev_tools/tools/style-guide-enforcement/tests
+```
+
 To run all configured pre-commit hooks on all files (useful before pushing):
 
 - pre-commit run --all-files
