@@ -1,3 +1,7 @@
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
 ---
 # GPU Workstation Deployment Template
 # For GPU-accelerated environments (AI/ML, data processing, visualization)

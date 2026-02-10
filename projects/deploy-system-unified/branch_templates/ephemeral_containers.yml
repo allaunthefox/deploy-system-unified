@@ -1,3 +1,7 @@
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
 ---
 # Ephemeral Secure Container - Volatile Solution Stack
 # Solution: Base Ephemeral Infrastructure + Volatile Container Workload

@@ -1,3 +1,7 @@
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
 ---
 # LXC GPU Container Deployment Template
 # For LXC containers with GPU passthrough or slicing support (AI/ML, data processing)

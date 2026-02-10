@@ -1,0 +1,42 @@
+---
+- name: Preflight Assertions - Stability & Secrets Hygiene
+  hosts: all
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Verify secrets encryption (Ansible Vault)
+      ansible.builtin.shell:
+        cmd: "grep -q '\$ANSIBLE_VAULT;' {{ playbook_dir }}/inventory/group_vars/all/secrets.generated.yml"
+      delegate_to: localhost
+      register: vault_check
+      failed_when: false
+      changed_when: false
+      check_mode: false
+
+    - name: Assert secrets are encrypted
+      ansible.builtin.assert:
+        that:
+          - vault_check.rc == 0
+        fail_msg: "CRITICAL: inventory/group_vars/all/secrets.generated.yml is NOT encrypted or is missing. Deployment aborted for safety."
+      delegate_to: localhost
+
+    - name: Verify no placeholder SOPS configuration exists
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/.sops.yaml"
+      register: sops_stat
+      delegate_to: localhost
+
+    - name: Assert no placeholder SOPS config
+      ansible.builtin.assert:
+        that:
+          - not sops_stat.stat.exists
+        fail_msg: "CRITICAL: Placeholder .sops.yaml found at repository root. Remove it to avoid configuration confusion until SOPS is fully implemented."
+      delegate_to: localhost
+
+    - name: Validate inventory path
+      ansible.builtin.assert:
+        that:
+          - inventory_file is defined
+          - inventory_file | length > 0
+        fail_msg: "CRITICAL: No inventory file specified. Use -i <inventory_path>."
+      delegate_to: localhost
