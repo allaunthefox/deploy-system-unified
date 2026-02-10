@@ -58,6 +58,13 @@ jobs:
               echo "$SSH_DEPLOY_KEY" > "$deploy_key_file"
             fi
             chmod 600 "$deploy_key_file"
+            # If passphrase provided, decrypt encrypted PEM into a usable key
+            if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
+              echo "Decrypting encrypted PEM"
+              openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
+              mv "${deploy_key_file}.dec" "$deploy_key_file"
+              chmod 600 "$deploy_key_file"
+            fi
             eval "$(ssh-agent -s)"
             ssh-add "$deploy_key_file"
             # Ensure GitHub is in known_hosts
