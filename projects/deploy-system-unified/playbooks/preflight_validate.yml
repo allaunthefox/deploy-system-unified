@@ -1,0 +1,54 @@
+---
+- name: Preflight Validation - Ontological Contract Enforcement
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Assert deployment_profile is defined and typed correctly
+      ansible.builtin.assert:
+        that:
+          - deployment_profile is defined
+          - deployment_profile is string
+        fail_msg: "CRITICAL: 'deployment_profile' must be defined as a string for {{ inventory_hostname }}."
+
+    - name: Validate 'hardened' profile contract
+      ansible.builtin.assert:
+        that:
+          - core_security_fail_secure | default(false) | bool == true
+          - firewall_enabled | default(false) | bool == true
+          - ssh_randomize_port | default(false) | bool == true
+        fail_msg: >-
+          Host {{ inventory_hostname }} declares profile 'hardened' but violates its contract.
+          Expects: fail_secure=true, firewall=true, ssh_randomize=true.
+      when: deployment_profile == 'hardened'
+
+    - name: Validate 'ephemeral' profile contract
+      ansible.builtin.assert:
+        that:
+          - ephemeral_volatile_secrets | default(false) | bool == true
+          - core_security_fail_secure | default(false) | bool == true
+          - firewall_enabled | default(false) | bool == true
+        fail_msg: >-
+          Host {{ inventory_hostname }} declares profile 'ephemeral' but violates its contract.
+          Expects: volatile_secrets=true, fail_secure=true, firewall=true.
+      when: deployment_profile == 'ephemeral'
+
+    - name: Validate 'production' profile contract
+      ansible.builtin.assert:
+        that:
+          - core_security_fail_secure | default(false) | bool == true
+          - firewall_enabled | default(false) | bool == true
+          - monitoring_enabled | default(false) | bool == true
+        fail_msg: >-
+          Host {{ inventory_hostname }} declares profile 'production' but violates its contract.
+          Expects: fail_secure=true, firewall=true, monitoring=true.
+      when: deployment_profile == 'production'
+
+    - name: Validate 'dev' profile contract
+      ansible.builtin.assert:
+        that:
+          - core_security_fail_secure | default(true) | bool == false
+          - firewall_enabled | default(false) | bool == true
+        fail_msg: >-
+          Host {{ inventory_hostname }} declares profile 'dev' but violates its contract.
+          Expects: fail_secure=false, firewall=true.
+      when: deployment_profile == 'dev'
