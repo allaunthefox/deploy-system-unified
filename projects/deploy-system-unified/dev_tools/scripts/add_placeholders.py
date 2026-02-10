@@ -17,6 +17,7 @@ def add_placeholders(group):
             if not d.exists():
                 d.parent.mkdir(parents=True, exist_ok=True)
                 d.write_text('---\n# Placeholder defaults\n# Intentionally empty\n')
+<<<<<<< HEAD
             # Add handlers placeholder where missing
             h = r/'handlers'/'main.yml'
             if not h.exists():
@@ -32,6 +33,8 @@ def add_placeholders(group):
             if not tpls.exists():
                 tpls.mkdir(parents=True, exist_ok=True)
                 (tpls/'README.md').write_text('# Placeholder templates directory\nThis directory intentionally left empty (no templates required).')
+=======
+>>>>>>> chore/placeholders-security
             f = r/'files'
             if not f.exists():
                 f.mkdir(parents=True, exist_ok=True)
