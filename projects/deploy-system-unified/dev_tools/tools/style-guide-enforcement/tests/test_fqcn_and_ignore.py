@@ -21,7 +21,7 @@ def test_is_ignored_basic(tmp_path):
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
         STYLE_IGNORE="{styleignore}"
         is_ignored "roles/containers/media/molecule/negative/molecule.yml" && echo YES || echo NO
-    ")
+    """)
 
     r = run_cmd(cmd, cwd=tmp_path)
     assert r.returncode == 0
@@ -46,7 +46,7 @@ def test_enforce_fqcn_respects_styleignore(tmp_path):
     # Without ignore, enforce_fqcn_standards should report the file
     cmd_no_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
+        PROJECT_ROOT=\"{proj}\" 
         STYLE_IGNORE="/nonexistent"
         enforce_fqcn_standards 2>&1
     """)
@@ -60,8 +60,8 @@ def test_enforce_fqcn_respects_styleignore(tmp_path):
 
     cmd_with_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
-        STYLE_IGNORE="{styleignore}"
+        PROJECT_ROOT=\"{proj}\" 
+        STYLE_IGNORE=\"{styleignore}\" 
         enforce_fqcn_standards 2>&1
     """)
     r_yes = run_cmd(cmd_with_ignore, cwd=proj)
@@ -80,13 +80,13 @@ def test_security_ignore_respects_styleignore(tmp_path):
     sec_file.write_text(textwrap.dedent("""
         - name: set password
           set_fact:
-            my_password: "changeme"
+            my_password: \"changeme\"
     """).lstrip())
 
     # Run security check without ignore should report the file
     cmd_no_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
+        PROJECT_ROOT=\"{proj}\" 
         STYLE_IGNORE="/nonexistent"
         enforce_security_standards 2>&1
     """)
@@ -99,8 +99,8 @@ def test_security_ignore_respects_styleignore(tmp_path):
 
     cmd_with_ignore = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
-        STYLE_IGNORE="{styleignore}"
+        PROJECT_ROOT=\"{proj}\" 
+        STYLE_IGNORE=\"{styleignore}\" 
         enforce_security_standards 2>&1
     """)
     r_yes = run_cmd(cmd_with_ignore, cwd=proj)
@@ -122,15 +122,15 @@ def test_bulk_security_ignores(tmp_path):
     for p in candidates:
         f = proj / p
         f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(textwrap.dedent('''
+        f.write_text(textwrap.dedent("""
             ---
-            some_secret: "changeme_placeholder"
-        ''').lstrip())
+            some_secret: \"changeme_placeholder\"
+        """).lstrip())
 
     # Run security check without ignore should report matches
     cmd_no = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
+        PROJECT_ROOT=\"{proj}\" 
         STYLE_IGNORE="/nonexistent"
         enforce_security_standards 2>&1
     """)
@@ -143,8 +143,8 @@ def test_bulk_security_ignores(tmp_path):
 
     cmd_yes = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
-        STYLE_IGNORE="{styleignore}"
+        PROJECT_ROOT=\"{proj}\" 
+        STYLE_IGNORE=\"{styleignore}\" 
         enforce_security_standards 2>&1
     """)
     r_yes = run_cmd(cmd_yes, cwd=proj)
@@ -170,10 +170,10 @@ def test_is_ignored_negation_and_regex(tmp_path):
 
     cmd = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        STYLE_IGNORE="{styleignore}"
-        is_ignored "{p1}" && echo P1_IGNORED || echo P1_NOT
-        is_ignored "{p2}" && echo P2_IGNORED || echo P2_NOT
-        is_ignored "{p3}" && echo P3_IGNORED || echo P3_NOT
+        STYLE_IGNORE=\"{styleignore}\" 
+        is_ignored \"{p1}\" && echo P1_IGNORED || echo P1_NOT
+        is_ignored \"{p2}\" && echo P2_IGNORED || echo P2_NOT
+        is_ignored \"{p3}\" && echo P3_IGNORED || echo P3_NOT
     """)
 
     r = run_cmd(cmd, cwd=tmp_path)
@@ -213,8 +213,8 @@ def test_ignores_workflows_and_artifacts(tmp_path):
 
     cmd = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
-        STYLE_IGNORE="{styleignore}"
+        PROJECT_ROOT=\"{proj}\" 
+        STYLE_IGNORE=\"{styleignore}\" 
         # Ensure workflows are not reported by FQCN check
         enforce_fqcn_standards
         # Ensure artifacts are not reported by security check
@@ -245,7 +245,8 @@ def test_fqcn_ignores_group_param(tmp_path):
     # We expect FQCN check to PASS (no output) because 'group:' is indented and clearly a param
     cmd = textwrap.dedent(f"""
         source "{SCRIPT_PATH}" >/dev/null 2>&1 || true
-        PROJECT_ROOT="{proj}"
+        PROJECT_ROOT=\"{proj}\" 
+        STYLE_IGNORE="/nonexistent"
         enforce_fqcn_standards
     """)
     r = run_cmd(cmd, cwd=proj)
