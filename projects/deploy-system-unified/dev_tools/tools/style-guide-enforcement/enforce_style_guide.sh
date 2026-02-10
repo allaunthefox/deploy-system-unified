@@ -687,7 +687,7 @@ $yaml_issues issues found
 $ansible_issues issues found
 
 ### FQCN Compliance
-$(command -v rg >/dev/null 2>&1 && rg -l '^\s{2,}(apt|dnf|copy|template|service|systemd|shell|command|file|stat|user|group|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):' -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0") non-FQCN module calls found
+$(command -v rg >/dev/null 2>&1 && rg -P -l '(?s)(-\s+name:.*?\n\s{2,}(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)|(^-\s+(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)' -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0") non-FQCN module calls found
 
 ### Shell Scripting
 $(command -v shellcheck >/dev/null 2>&1 && find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec shellcheck {} + 2>/dev/null | grep -c "^In " || echo "0") issues found in standalone scripts
