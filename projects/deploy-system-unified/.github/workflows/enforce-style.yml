@@ -1,0 +1,34 @@
+name: Enforce style guide
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  enforce:
+    name: Enforce style guide
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep fd-find shellcheck
+          # fd is provided as 'fdfind' on Debian; provide a usable 'fd' binary
+          if ! command -v fd >/dev/null 2>&1; then
+            sudo ln -s "$(command -v fdfind)" /usr/local/bin/fd || true
+          fi
+
+      - name: Make enforcement scripts executable
+        run: |
+          chmod +x dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh || true
+          chmod +x dev_tools/tools/style-guide-enforcement/run_and_fail_on_violations.sh || true
+
+      - name: Run style enforcement and fail on violations
+        run: |
+          set -euo pipefail
+          ./dev_tools/tools/style-guide-enforcement/run_and_fail_on_violations.sh --report
