@@ -1,0 +1,38 @@
+name: Test Wiki PAT
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-pat:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Test CI_ARTIFACT_PAT write to wiki repo
+        env:
+          PAT: ${{ secrets.CI_ARTIFACT_PAT }}
+          WIKI_REPO_API: "https://api.github.com/repos/${{ github.repository }}.wiki"
+          TS: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          echo "Using repo api: $WIKI_REPO_API"
+          if [ -z "$PAT" ]; then echo "PAT is not set; fail"; exit 2; fi
+          # Get master sha
+          sha=$(curl -s -H "Authorization: token $PAT" "$WIKI_REPO_API/git/refs/heads/master" | jq -r '.object.sha // empty')
+          if [ -z "$sha" ]; then echo "Could not read master sha (no access?)"; exit 2; fi
+          echo "master sha: $sha"
+          branchref="refs/heads/test-wiki-pat-$TS"
+          echo "Creating ref $branchref"
+          create=$(curl -s -o /tmp/create.json -w "%{http_code}" -X POST -H "Authorization: token $PAT" -H "Content-Type: application/json" -d "{\"ref\": \"$branchref\", \"sha\": \"$sha\"}" "$WIKI_REPO_API/git/refs")
+          echo "Create response code: $create"; cat /tmp/create.json
+          if [ "$create" -ne 201 ]; then echo "Failed to create branch (code $create)"; exit 2; fi
+          echo "Created test branch. Now deleting it."
+          # Delete
+          delete_code=$(curl -s -o /tmp/delete.json -w "%{http_code}" -X DELETE -H "Authorization: token $PAT" "$WIKI_REPO_API/git/refs/heads/test-wiki-pat-$TS")
+          echo "Delete response code: $delete_code"; cat /tmp/delete.json || true
+          if [ "$delete_code" -ne 204 ]; then echo "Failed to delete test branch (code $delete_code)"; exit 2; fi
+          echo "Write test passed: created and deleted test branch successfully."
