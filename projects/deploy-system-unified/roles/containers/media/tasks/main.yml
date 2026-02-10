@@ -6,10 +6,10 @@
 
 - name: Create Media Network Quadlet
   ansible.builtin.copy:
-    dest: "{{ containers_systemd_dir }}/media_net.network"
+    dest: "{{ containers_systemd_dir }}/{{ media_network }}.network"
     content: |
       [Network]
-      NetworkName=media_net
+      NetworkName={{ media_network }}
       Driver=bridge
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"

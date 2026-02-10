@@ -42,34 +42,25 @@ Before applying new settings, the role proactively comments out unmanaged instan
 
 ## Operational Guidance
 
-### Changing SSH Configuration
+### 1. Single port source of truth
+`ssh_effective_port` is the only port used by SSHD, firewall rules, Fail2Ban, and connection info.
 
-**DO NOT** edit `/etc/ssh/sshd_config` manually.
+### 2. Randomization precedence
+When `ssh_randomize_port` is enabled, the randomized port always overrides `system_ssh_port`.
 
-**To change a setting (e.g., Port, Root Login):**
-1.  Update the relevant Ansible variable in your inventory or `group_vars`:
-    *   `system_ssh_port`: defaults to `22`
-    *   `sshd_permit_root_login`: defaults to `no`
-    *   `sshd_password_authentication`: defaults to `no`
-2.  Run the playbook:
-    ```bash
-    ansible-playbook site.yml --tags ssh
-    ```
+### 3. Endlessh gating
+Port 22 is only opened automatically when `system_enable_endlessh` is enabled.
 
-### Handling Exceptions (Forwarding)
-If a group of users requires TCP or Agent forwarding (which is disabled by default), **do not** add a manual `Match` block.
-Instead, add the group name to the `sshd_trusted_groups` list variable:
+### 4. Changing SSH Configuration
+**DO NOT** edit `/etc/ssh/sshd_config` manually. Use the `system_ssh_port`, `sshd_permit_root_login`, etc., variables instead.
 
-```yaml
-sshd_enable_trusted_group_exceptions: true
-sshd_trusted_groups:
-  - "admins"
-  - "developers"
-```
-This generates a compliant `Match Group` block automatically.
-
-### Recovery
+### 5. Recovery
 The role automatically creates a backup of the original configuration before the first run (`sshd_config.backup`).
 If you are locked out and have console access:
 1.  Restore the backup: `cp /etc/ssh/sshd_config.backup /etc/ssh/sshd_config`
 2.  Restart SSH: `systemctl restart sshd`
+
+## Related Docs
+
+- `docs/deployment/OS_CONFIGURATION.md`
+- `docs/deployment/SSH_INCIDENT_POSTMORTEM.md`

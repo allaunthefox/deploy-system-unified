@@ -68,7 +68,6 @@ jobs:
           - placeholder_values
           - wrong_owner
         include:
-          # Additional test cases for specific roles
           - role: containers/caddy
             test_case: missing_ssl_dir
           - role: containers/caddy
@@ -100,8 +99,47 @@ jobs:
 
       - name: Run negative tests
         run: |
-          cd roles/${{ matrix.role }}
+          cd projects/deploy-system-unified/roles/${{ matrix.role }}
           echo "Running negative test: ${{ matrix.test_case }} for role ${{ matrix.role }}"
           MOLECULE_DISTRO=ubuntu-latest molecule test --scenario-name negative
         env:
           test_case: ${{ matrix.test_case }}
+
+  molecule:
+    name: Molecule tests (Docker)
+    runs-on: ubuntu-latest
+    needs: lint-and-scan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start Docker
+        uses: docker/setup-docker@v4
+        with:
+          version: '24.0.0'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libffi-dev libssl-dev python3-dev
+
+      - name: Install molecule & drivers
+        run: |
+          python -m pip install --upgrade pip
+          pip install molecule docker molecule-docker ansible
+
+      - name: Run molecule tests (default, ephemeral, production, gpu_slicing, gpu_slicing_arm64, ephemeral_desktop)
+        env:
+          MOLECULE_DEBUG: 'true'
+        run: |
+          set -euo pipefail
+          cd projects/deploy-system-unified
+          for scenario in default ephemeral production gpu_slicing gpu_slicing_arm64 ephemeral_desktop; do
+            echo "=== Running molecule scenario: ${scenario} ==="
+            molecule test -s "${scenario}"
+          done

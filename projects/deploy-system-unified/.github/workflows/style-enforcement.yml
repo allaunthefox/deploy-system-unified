@@ -1,4 +1,4 @@
----
+--- 
 name: Style Guide Enforcement
 on:
   push:
@@ -75,16 +75,16 @@ jobs:
             --arg fixed "$fixed_issues" \
             --arg content "$report_content" \
             --arg run_id "$GITHUB_RUN_ID" \
-            '
+            '\
             {
               body: (
-                "### Style Guide Enforcement Summary " + $icon + "\n\n" +
-                "- **Total Issues Detected:** " + $total + "\n" +
-                "- **Automatically Fixed:** " + $fixed + "\n" +
-                "- **Report Artifact:** [Download here](https://github.com/\(env.GITHUB_REPOSITORY)/actions/runs/\($run_id))\n\n" +
-                "<details><summary>Click to expand full report</summary>\n\n" +
-                "```\n" + $content + "\n```\n" +
-                "</details>\n\n" +
+                "### Style Guide Enforcement Summary " + $icon + "\n\n" + \
+                "- **Total Issues Detected:** " + $total + "\n" + \
+                "- **Automatically Fixed:** " + $fixed + "\n" + \
+                "- **Report Artifact:** [Download here](https://github.com/" + env.GITHUB_REPOSITORY + "/actions/runs/" + $run_id + ")\n\n" + \
+                "<details><summary>Click to expand full report</summary>\n\n" + \
+                "```\n" + $content + "\n```\n" + \
+                "</details>\n\n" + \
                 "Reply with `--fix` for auto-fix PR."
               )
             }
