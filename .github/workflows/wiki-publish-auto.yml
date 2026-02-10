@@ -39,7 +39,8 @@ jobs:
           cd wiki-repo
           git add -A
           git commit -m "chore(wiki): publish wiki_pages from main (auto-run)" || echo "No changes to commit"
-          git push origin main || (echo "Push failed" && exit 1)
+          # Wiki repos often use 'master' as the default branch; try master then main
+          git push origin master || git push origin main || (echo "Push failed" && exit 1)
 
       - name: Publish complete
         run: echo "Wiki publish attempted (see previous steps for result)."
