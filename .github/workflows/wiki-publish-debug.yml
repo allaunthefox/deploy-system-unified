@@ -55,15 +55,23 @@ jobs:
           set -x
           rsync -av --delete --dry-run wiki_pages/ wiki-repo/ || true
 
-      - name: Simulate push (dry-run)
+      - name: Conditional push (real when run_mode=real)
+        env:
+          WIKI_GIT_URL: "https://x-access-token:${{ secrets.CI_ARTIFACT_PAT }}@github.com/${{ github.repository }}.wiki.git"
         run: |
           set -x
           if [ -d wiki-repo/.git ]; then
             cd wiki-repo
             git add -A || true
             git commit -m "debug: test commit" || echo 'no commit'
-            git push --dry-run origin master || echo 'master push dry-run failed or no master'
-            git push --dry-run origin main || echo 'main push dry-run failed or no main'
+            if [ "${{ github.event.inputs.run_mode }}" = "real" ]; then
+              echo "Attempting real push to wiki repository..."
+              git push origin master || git push origin main || (echo 'real push failed' && exit 6)
+            else
+              echo "Dry-run mode: simulating push"
+              git push --dry-run origin master || echo 'master push dry-run failed or no master'
+              git push --dry-run origin main || echo 'main push dry-run failed or no main'
+            fi
             cd ..
           else
             echo 'No wiki-repo git dir' && exit 5
