@@ -118,6 +118,20 @@ jobs:
           # Exclude .git so we don't accidentally remove git metadata during sync
           rsync -av --exclude '.git' --delete --dry-run wiki_pages/ wiki-repo/ || true
 
+      - name: Load deploy key into ssh-agent (if present) 🔑
+        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.WIKI_SSH_KEY }}
+
+      - name: SSH debug before push
+        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
+        run: |
+          set -x
+          # List identities the agent has and do a verbose auth test so we verify the key is usable for git operations
+          ssh-add -l || true
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
+
       - name: Conditional push (real when run_mode=real)
         env:
           WIKI_PAT: ${{ secrets.WIKI_PAT }}
