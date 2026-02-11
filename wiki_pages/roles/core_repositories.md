@@ -7,9 +7,19 @@ Ensures secure repository configuration and management of third-party sources (R
 
 ## Variables
 
-- <a id="rpmfusion_free_url"></a>`rpmfusion_free_url`
-- <a id="rpmfusion_nonfree_url"></a>`rpmfusion_nonfree_url`
-- <a id="rpmfusion_free_sha256"></a>`rpmfusion_free_sha256`
-- <a id="rpmfusion_nonfree_sha256"></a>`rpmfusion_nonfree_sha256`
-- <a id="rpmfusion_verify_checksum"></a>`rpmfusion_verify_checksum`
+### rpmfusion_free_url
+- `rpmfusion_free_url`
+
+### rpmfusion_nonfree_url
+- `rpmfusion_nonfree_url`
+
+### rpmfusion_free_sha256
+- `rpmfusion_free_sha256`
+
+### rpmfusion_nonfree_sha256
+- `rpmfusion_nonfree_sha256`
+
+### rpmfusion_verify_checksum
+- `rpmfusion_verify_checksum`
+
 

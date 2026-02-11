@@ -80,10 +80,15 @@ for role, body in role_blocks.items():
         content_lines.append('## Variables')
         content_lines.append('')
         for varname, comment in vars_list:
-            line = f'- <a id="{varname}"></a>`{varname}`'
+            # Create a heading that will slugify to the variable name with underscores removed
+            # Since the linter removes underscores during slugification, we need to make sure
+            # the links also use the underscore-removed version
+            content_lines.append(f'### {varname}')
+            line = f'- `{varname}`'
             if comment:
                 line += f' — {comment}'
             content_lines.append(line)
+            content_lines.append('')
         content_lines.append('')
     elif not body:
         content_lines.append('TODO: Add role description and examples.')

@@ -7,8 +7,16 @@ Manages microcode, firmware updates, and low-level system attributes for physica
 
 ## Variables
 
-- <a id="cpu_tier"></a>`cpu_tier`
-- <a id="is_server_cpu"></a>`is_server_cpu`
-- <a id="hardware_monitor_temp"></a>`hardware_monitor_temp`
-- <a id="hardware_enable_watchdog"></a>`hardware_enable_watchdog`
+### cpu_tier
+- `cpu_tier`
+
+### is_server_cpu
+- `is_server_cpu`
+
+### hardware_monitor_temp
+- `hardware_monitor_temp`
+
+### hardware_enable_watchdog
+- `hardware_enable_watchdog`
+
 

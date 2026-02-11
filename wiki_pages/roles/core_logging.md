@@ -7,5 +7,7 @@ Ensures mandatory forensic readiness by configuring systemd-journal-remote and l
 
 ## Variables
 
-- <a id="logging_journal_remote_packages"></a>`logging_journal_remote_packages`
+### logging_journal_remote_packages
+- `logging_journal_remote_packages`
+
 

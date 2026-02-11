@@ -7,11 +7,25 @@ Unified interface for managing rules via UFW (Debian/Arch) or Firewalld (RHEL/Fe
 
 ## Variables
 
-- <a id="firewall_enabled"></a>`firewall_enabled`
-- <a id="firewall_allowed_tcp_ports"></a>`firewall_allowed_tcp_ports`
-- <a id="firewall_allow_endlessh"></a>`firewall_allow_endlessh`
-- <a id="firewall_endlessh_port"></a>`firewall_endlessh_port`
-- <a id="firewall_allowed_udp_ports"></a>`firewall_allowed_udp_ports`
-- <a id="firewall_additional_rules"></a>`firewall_additional_rules`
-- <a id="firewall_forward_policy"></a>`firewall_forward_policy`
+### firewall_enabled
+- `firewall_enabled`
+
+### firewall_allowed_tcp_ports
+- `firewall_allowed_tcp_ports`
+
+### firewall_allow_endlessh
+- `firewall_allow_endlessh`
+
+### firewall_endlessh_port
+- `firewall_endlessh_port`
+
+### firewall_allowed_udp_ports
+- `firewall_allowed_udp_ports`
+
+### firewall_additional_rules
+- `firewall_additional_rules`
+
+### firewall_forward_policy
+- `firewall_forward_policy`
+
 

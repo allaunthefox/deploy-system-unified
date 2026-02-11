@@ -7,9 +7,19 @@ Manages SSH match rules, administrative users, and password policy enforcement.
 
 ## Variables
 
-- <a id="ssh_match_rules"></a>`ssh_match_rules`
-- <a id="access_admin_user"></a>`access_admin_user`
-- <a id="access_admin_password_hash"></a>`access_admin_password_hash`
-- <a id="access_admin_password_enforce"></a>`access_admin_password_enforce`
-- <a id="access_admin_password_placeholders"></a>`access_admin_password_placeholders`
+### ssh_match_rules
+- `ssh_match_rules`
+
+### access_admin_user
+- `access_admin_user`
+
+### access_admin_password_hash
+- `access_admin_password_hash`
+
+### access_admin_password_enforce
+- `access_admin_password_enforce`
+
+### access_admin_password_placeholders
+- `access_admin_password_placeholders`
+
 

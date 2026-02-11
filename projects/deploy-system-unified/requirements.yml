@@ -1,0 +1,30 @@
+---
+# Ansible Collections Requirements
+# Defines the collections required for the Deploy-System-Unified project
+
+collections:
+  # Core Ansible collections
+  - name: ansible.posix
+    version: ">=1.0.0"
+  - name: ansible.utils
+    version: ">=2.0.0"
+  - name: community.general
+    version: ">=6.0.0"
+  - name: community.crypto
+    version: ">=2.0.0"
+  - name: community.docker
+    version: ">=3.0.0"
+  
+  # Security-focused collections
+  - name: ansible.lockdown
+    version: ">=1.0.0"
+  
+  # Container and cloud collections
+  - name: community.docker
+    version: ">=3.0.0"
+  - name: containers.podman
+    version: ">=1.0.0"
+  
+  # SOPS encryption collection
+  - name: community.sops
+    version: ">=1.0.0"

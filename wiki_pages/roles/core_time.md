@@ -7,5 +7,7 @@ Ensures accurate system time via idempotent installation and configuration of ti
 
 ## Variables
 
-- <a id="time_service_mapping"></a>`time_service_mapping`
+### time_service_mapping
+- `time_service_mapping`
+
 

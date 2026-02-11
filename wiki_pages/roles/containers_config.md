@@ -7,5 +7,7 @@ Manages storage directories and general environment configuration for container 
 
 ## Variables
 
-- <a id="container_linger_users"></a>`container_linger_users`
+### container_linger_users
+- `container_linger_users`
+
 

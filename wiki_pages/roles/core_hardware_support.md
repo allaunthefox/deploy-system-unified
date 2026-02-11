@@ -7,10 +7,22 @@ Discovers CPU features (AVX, AES-NI) and handles hardware acceleration requireme
 
 ## Variables
 
-- <a id="enable_hardware_discovery"></a>`enable_hardware_discovery`
-- <a id="require_avx"></a>`require_avx`
-- <a id="require_aes_ni"></a>`require_aes_ni`
-- <a id="require_crypto_extensions"></a>`require_crypto_extensions`
-- <a id="warn_on_missing_avx"></a>`warn_on_missing_avx`
-- <a id="warn_on_missing_crypto"></a>`warn_on_missing_crypto`
+### enable_hardware_discovery
+- `enable_hardware_discovery`
+
+### require_avx
+- `require_avx`
+
+### require_aes_ni
+- `require_aes_ni`
+
+### require_crypto_extensions
+- `require_crypto_extensions`
+
+### warn_on_missing_avx
+- `warn_on_missing_avx`
+
+### warn_on_missing_crypto
+- `warn_on_missing_crypto`
+
 

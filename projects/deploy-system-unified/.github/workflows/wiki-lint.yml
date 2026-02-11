@@ -1,0 +1,33 @@
+name: Wiki Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyyaml
+        
+    - name: Run wiki lint
+      run: |
+        python .scripts/wiki_wiki_lint.py --json
+      continue-on-error: true  # Allow PRs to pass while we fix existing issues
+      
+    - name: Run wiki lint with fixes
+      run: |
+        python .scripts/wiki_wiki_lint.py --fix-h1 --create-placeholders
+        git diff --exit-code || echo "Documentation changes made, please review and commit"

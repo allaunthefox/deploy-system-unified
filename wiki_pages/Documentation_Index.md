@@ -60,3 +60,29 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 * **[CI/CD Workflows](CI_CD_WORKFLOWS)**: Overview of GitHub Actions and automated enforcement.
 * **[Negative Testing Implementation](NEGATIVE_TESTING_IMPLEMENTATION)**: How we verify security failure modes.
+
+### 📋 Planning & Improvement
+
+* **[Wiki Improvement Plan](../projects/deploy-system-unified/docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
+* **[Community Enhancement Plan](../projects/deploy-system-unified/docs/planning/COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
+
+### 📊 Variable References
+
+* **[Variable Reference Overview](Variable_Reference)**: High-level overview of project variables
+* **[Variable Reference: Containers](Variable_Reference_Containers)**: Variables for container-related roles
+* **[Variable Reference: Core](Variable_Reference_Core)**: Variables for core system roles
+* **[Variable Reference: Security](Variable_Reference_Security)**: Variables for security-related roles
+* **[Variable Reference: Networking](Variable_Reference_Networking)**: Variables for networking roles
+* **[Variable Reference: Storage](Variable_Reference_Storage)**: Variables for storage roles
+
+### 📝 Style Guides
+
+* **[Style Guide Overview](STYLE_GUIDE)**: High-level overview of project style requirements
+* **[YAML Style Guide](YAML_Style_Guide)**: Standards for YAML files
+* **[Ansible Style Guide](Ansible_Style_Guide)**: Best practices for Ansible content
+* **[Shell Style Guide](Shell_Style_Guide)**: Requirements for shell scripts
+* **[Documentation Style Guide](Documentation_Style_Guide)**: Guidelines for documentation
+
+### 📚 Documentation Integration
+
+For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](../projects/deploy-system-unified/docs/DOCUMENTATION_BRIDGE.md)**.

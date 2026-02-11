@@ -2,7 +2,7 @@
 import re, sys
 from pathlib import Path
 root = Path("wiki_pages")
-mds = sorted([p for p in root.glob("*.md") if p.name != "_Sidebar.md"])
+mds = sorted([p for p in root.rglob("*.md") if p.name != "_Sidebar.md"])
 slug_re = re.compile(r'[^a-z0-9 -]')
 
 def slugify(s):
@@ -19,9 +19,11 @@ modified = []
 # Preload headers for each file
 file_headers = {}
 for p in mds:
+    # Store the relative path from root as the key (like other parts of the code expect)
+    relative_path = p.relative_to(root)
     txt = p.read_text(encoding='utf-8')
     headers = re.findall(r'^(#+)\s*(.+)$', txt, flags=re.M)
-    file_headers[p.name] = [ (h,l.strip()) for h,l in headers ]
+    file_headers[str(relative_path)] = [ (h,l.strip()) for h,l in headers ]
 
 for p in mds:
     name = p.stem

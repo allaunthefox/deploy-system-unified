@@ -7,14 +7,34 @@ Configures kernel prerequisites and network definitions for isolated container t
 
 ## Variables
 
-- <a id="container_networks_enable"></a>`container_networks_enable`
-- <a id="podman_rootless_enabled"></a>`podman_rootless_enabled`
-- <a id="podman_rootless_user"></a>`podman_rootless_user`
-- <a id="podman_rootless_user_home"></a>`podman_rootless_user_home`
-- <a id="containers_systemd_dir"></a>`containers_systemd_dir`
-- <a id="containers_systemd_scope"></a>`containers_systemd_scope`
-- <a id="containers_systemd_owner"></a>`containers_systemd_owner`
-- <a id="containers_systemd_group"></a>`containers_systemd_group`
-- <a id="containers_systemd_env"></a>`containers_systemd_env`
-- <a id="container_networks_list"></a>`container_networks_list`
+### container_networks_enable
+- `container_networks_enable`
+
+### podman_rootless_enabled
+- `podman_rootless_enabled`
+
+### podman_rootless_user
+- `podman_rootless_user`
+
+### podman_rootless_user_home
+- `podman_rootless_user_home`
+
+### containers_systemd_dir
+- `containers_systemd_dir`
+
+### containers_systemd_scope
+- `containers_systemd_scope`
+
+### containers_systemd_owner
+- `containers_systemd_owner`
+
+### containers_systemd_group
+- `containers_systemd_group`
+
+### containers_systemd_env
+- `containers_systemd_env`
+
+### container_networks_list
+- `container_networks_list`
+
 

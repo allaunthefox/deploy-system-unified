@@ -7,7 +7,13 @@ Ensures systemd components (journald, resolved) are configured and hardened acco
 
 ## Variables
 
-- <a id="systemd_configure_journald"></a>`systemd_configure_journald`
-- <a id="systemd_configure_resolved"></a>`systemd_configure_resolved`
-- <a id="systemd_persistent_journal"></a>`systemd_persistent_journal`
+### systemd_configure_journald
+- `systemd_configure_journald`
+
+### systemd_configure_resolved
+- `systemd_configure_resolved`
+
+### systemd_persistent_journal
+- `systemd_persistent_journal`
+
 

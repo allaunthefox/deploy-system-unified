@@ -65,14 +65,21 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 * **[Security Audit Report](./security/SECURITY_AUDIT_REPORT.md)**: Comprehensive security assessment and role analysis.
 
-### [6. Planning](./planning/MIGRATION_STRATEGY.md)
+### [6. Planning](./planning/SUMMARY.md)
 
+* **[Planning Summary](./planning/SUMMARY.md)**: Overview of all planning documents.
 * **[Migration Strategy](./planning/MIGRATION_STRATEGY.md)**: Strategy for legacy data migration and credential rotation.
-* **[Restructuring Plan 2026](./planning/RESTRUCTURING_PLAN_2026.md)**: Strategic plan for project restructuring.
+* **[Restructuring Plan 2026](./planning/RESTRUCTURING_PLAN_2026.md)**: Strategic plan for project restructuring including community enhancements.
+* **[Community Enhancement Plan](./planning/COMMUNITY_ENHANCEMENT_PLAN.md)**: Plan to address community engagement deficits identified through analysis.
+* **[Wiki Improvement Plan](./planning/WIKI_IMPROVEMENT_PLAN.md)**: Plan to address wiki content deficits, particularly overly long pages.
 * **[GPU Plan](./planning/GPU_ENHANCED_PLAN.md)**: Planning document for GPU enhancements.
 * **[Data Mapping](./planning/DATA_MAPPING.md)**: Detailed file lifecycle mapping for the migration process.
 
 ---
+
+## 📚 Documentation Integration
+
+For guidance on navigating between the main project documentation and the GitHub wiki, see the **[Documentation Bridge](DOCUMENTATION_BRIDGE.md)**.
 
 ## 🤖 LLM & RAG Support
 
