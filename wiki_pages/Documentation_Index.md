@@ -50,24 +50,13 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Intel Video Guide](INTEL_VIDEO_GUIDE)**: Hardware acceleration guide for Intel QuickSync.
 * **[EXAMPLES](EXAMPLES)**: Solution stack examples.
 
-### 📋 Review & Troubleshooting
+#### 🛠 Auxiliary Playbooks
+* **`bootstrap_ssh.yml`**: Initial SSH setup for fresh hosts.
+* **`fix_ssh.yml`**: Emergency repair for broken SSH configurations.
+* **`restore_data.yml`**: Orchestrates data restoration from Restic/Rclone backups.
+* **`preflight_diagnose.yml`**: Deep diagnostic suite for system readiness issues.
 
-* **[Implementation Review](IMPLEMENTATION_REVIEW)**: Post-deployment verification and audit log analysis.
-* **[Potential Problems](POTENTIAL_PROBLEMS)**: Troubleshooting common failure modes and edge cases.
-* **[Idempotency Blockers](IDEMPOTENCY_BLOCKERS)**: Identifying tasks that break zero-drift requirements.
-* **[SSH Incident Postmortem](SSH_INCIDENT_POSTMORTEM)**: Lessons learned from connectivity failures.
+### 🤖 CI/CD & Automation
 
-### 📅 Planning
-
-* **[Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)**: Phase 1 accomplishments and Phase 2 objectives.
-* **[Restructuring Plan 2026](RESTRUCTURING_PLAN_2026)**: Strategic plan for architecture-based reorganization.
-* **[GPU Enhanced Plan](GPU_ENHANCED_PLAN)**: Detailed roadmap for next-gen GPU features.
-* **[Migration Plan](MIGRATION_PLAN)**: Legacy data migration and credential rotation.
-* **[Architecture Migration Guide](ARCHITECTURE_MIGRATION_GUIDE)**: Steps for moving to the new 2026 structure.
-
-### 🔒 Security
-
-* **[Security Audit Report](SECURITY_AUDIT_REPORT)**: Comprehensive security assessment and role analysis.
-* **[Secrets Management](SECRETS_MANAGEMENT)**: Best practices for SOPS and Vault integration.
-* **[Data Mapping](DATA_MAPPING)**: Tracking data flow and sensitive information across roles.
+* **[CI/CD Workflows](CI_CD_WORKFLOWS)**: Overview of GitHub Actions and automated enforcement.
 * **[Negative Testing Implementation](NEGATIVE_TESTING_IMPLEMENTATION)**: How we verify security failure modes.

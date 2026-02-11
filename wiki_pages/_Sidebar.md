@@ -41,6 +41,12 @@
 
 ---
 
+### 🤖 Automation
+- [CI/CD Workflows](CI_CD_WORKFLOWS)
+- [Negative Testing](NEGATIVE_TESTING_IMPLEMENTATION)
+
+---
+
 ### 📋 Troubleshooting
 - [Potential Problems](POTENTIAL_PROBLEMS)
 - [Idempotency Blockers](IDEMPOTENCY_BLOCKERS)
