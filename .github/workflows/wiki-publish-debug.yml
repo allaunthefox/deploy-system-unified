@@ -119,18 +119,28 @@ jobs:
           rsync -av --exclude '.git' --delete --dry-run wiki_pages/ wiki-repo/ || true
 
       - name: Load deploy key into ssh-agent (if present) 🔑
-        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
-        uses: webfactory/ssh-agent@v0.8.1
-        with:
-          ssh-private-key: ${{ secrets.WIKI_SSH_KEY }}
-
-      - name: SSH debug before push
-        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
         run: |
           set -x
-          # List identities the agent has and do a verbose auth test so we verify the key is usable for git operations
-          ssh-add -l || true
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
+          if [ -n "${{ secrets.WIKI_SSH_KEY }}" ] || [ -n "${{ secrets.SSH_DEPLOY_KEY }}" ]; then
+            mkdir -p ~/.ssh
+            deploy_key_file=~/.ssh/wiki_deploy_key
+            if [ -n "${{ secrets.WIKI_SSH_KEY }}" ]; then
+              printf '%s
+' "${{ secrets.WIKI_SSH_KEY }}" > "$deploy_key_file"
+            else
+              printf '%s
+' "${{ secrets.SSH_DEPLOY_KEY }}" > "$deploy_key_file"
+            fi
+            chmod 600 "$deploy_key_file"
+            eval "$(ssh-agent -s)"
+            ssh-add "$deploy_key_file"
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            # List identities the agent has and do a verbose auth test so we verify the key is usable for git operations
+            ssh-add -l || true
+            ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
+          else
+            echo "No deploy key present; skipping ssh-agent setup"
+          fi
 
       - name: Conditional push (real when run_mode=real)
         env:
