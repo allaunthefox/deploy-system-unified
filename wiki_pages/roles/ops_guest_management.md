@@ -1,5 +1,9 @@
-# ops_guest_management
+# ops/guest_management
 
-**role**: `ops/guest_management`
+**Role Path**: `roles/ops/guest_management`
 
-**guest_management**
+## Description
+*No description provided.*
+
+---
+*This page was automatically generated from role source code.*

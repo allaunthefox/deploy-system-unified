@@ -1,9 +1,12 @@
-# storage_filesystems
+# storage/filesystems
 
-**role**: `storage/filesystems`
+**Role Path**: `roles/storage/filesystems`
 
-**filesystems**
+## Description
+*No description provided.*
 
+## Key Tasks
+- placeholder task (no-op)
 
-
-## Virtualization Roles
+---
+*This page was automatically generated from role source code.*

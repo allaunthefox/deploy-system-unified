@@ -1,5 +1,24 @@
-# security_file_integrity
+# security/file_integrity
 
-**role**: `security/file_integrity`
+**Role Path**: `roles/security/file_integrity`
 
-**file_integrity**
+## Description
+Tasks for security/file_integrity role - AIDE Initialization and Monitoring
+
+## Key Tasks
+- Install AIDE
+- Check if AIDE database already exists
+- Initialize AIDE database (Baseline - Debian/Ubuntu)
+- Initialize AIDE database (Baseline - RedHat/Arch)
+- Ensure AIDE database is in place (Debian/Ubuntu)
+- Ensure AIDE database is in place (RedHat/Arch)
+- Skip AIDE database initialization in check mode
+- Configure AIDE cron job for daily checks
+- Create AIDE log directory
+- Configure AIDE to check for changes on boot
+- Enable AIDE boot check service
+- Skip AIDE boot check service enablement in check mode
+- Set file integrity monitoring completion flag
+
+---
+*This page was automatically generated from role source code.*

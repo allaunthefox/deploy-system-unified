@@ -1,9 +1,14 @@
-# core_updates
+# core/updates
 
-**role**: `core/updates`
+**Role Path**: `roles/core/updates`
 
-**updates**
+## Description
+Tasks for core/updates - Automatic Security Patching
 
+## Key Tasks
+- Configure Unattended-Upgrades (Debian/Ubuntu)
+- Configure DNF-Automatic (RedHat/Fedora)
+- Configure Updates (Arch Linux)
 
-
-## Hardware Roles
+---
+*This page was automatically generated from role source code.*
