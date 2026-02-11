@@ -1,20 +1,13 @@
 # security_resource_protection
 
-**Role Path**: `roles/security/resource_protection`
+**role**: `security/resource_protection`
 
-## Description
 **DoS Mitigation**
 Implements resource limits (tasks, memory, descriptors) to mitigate denial-of-service and resource exhaustion.
 
-## Key Tasks
-- Validate minimum resource requirements
-- Configure system-wide ulimits for process isolation
-- Enforce Systemd global resource limits
+## Variables
 
-## Default Variables
-- `resource_min_ram_mb`
-- `resource_default_tasks_max`
-- `resource_default_memory_max`
+- <a id="resource_min_ram_mb"></a>`resource_min_ram_mb`
+- <a id="resource_default_tasks_max"></a>`resource_default_tasks_max`
+- <a id="resource_default_memory_max"></a>`resource_default_memory_max` — Prevent a single leak from killing the host
 
----
-*This page was automatically generated from role source code.*

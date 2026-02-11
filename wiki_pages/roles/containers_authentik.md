@@ -1,43 +1,31 @@
 # containers_authentik
 
-**Role Path**: `roles/containers/authentik`
+**role**: `containers/authentik`
 
-## Description
 **Identity Provider (Authentik)**
 Deploys Authentik for identity management, featuring comprehensive secret validation and negative testing.
 
-## Key Tasks
-- Verify Authentik secrets when fail-secure is enabled
-- Create Authentik Directories
-- Create Authentik secrets file
-- Create Authentik Postgres Quadlet
-- Create Authentik Redis Quadlet
-- Create Authentik Server Quadlet
-- Create Authentik Worker Quadlet
-- Deploy Caddy Authentik Configuration
+## Variables
 
-## Default Variables
-- `authentik_enable`
-- `authentik_image`
-- `authentik_redis_image`
-- `authentik_postgres_image`
-- `authentik_base_dir`
-- `authentik_data_dir`
-- `authentik_config_dir`
-- `authentik_port_http`
-- `authentik_port_https`
-- `authentik_pg_user`
-- `authentik_pg_db`
-- `authentik_pg_pass`
-- `authentik_secret_key`
-- `containers_authentik_fail_secure`
-- `authentik_email_host`
-- `authentik_email_port`
-- `authentik_email_username`
-- `authentik_email_password`
-- `authentik_email_from`
-- `authentik_email_use_tls`
-- `authentik_network_name`
+- <a id="authentik_enable"></a>`authentik_enable`
+- <a id="authentik_image"></a>`authentik_image`
+- <a id="authentik_redis_image"></a>`authentik_redis_image`
+- <a id="authentik_postgres_image"></a>`authentik_postgres_image`
+- <a id="authentik_base_dir"></a>`authentik_base_dir`
+- <a id="authentik_data_dir"></a>`authentik_data_dir`
+- <a id="authentik_config_dir"></a>`authentik_config_dir`
+- <a id="authentik_port_http"></a>`authentik_port_http`
+- <a id="authentik_port_https"></a>`authentik_port_https`
+- <a id="authentik_pg_user"></a>`authentik_pg_user`
+- <a id="authentik_pg_db"></a>`authentik_pg_db`
+- <a id="authentik_pg_pass"></a>`authentik_pg_pass`
+- <a id="authentik_secret_key"></a>`authentik_secret_key`
+- <a id="containers_authentik_fail_secure"></a>`containers_authentik_fail_secure`
+- <a id="authentik_email_host"></a>`authentik_email_host`
+- <a id="authentik_email_port"></a>`authentik_email_port`
+- <a id="authentik_email_username"></a>`authentik_email_username`
+- <a id="authentik_email_password"></a>`authentik_email_password`
+- <a id="authentik_email_from"></a>`authentik_email_from`
+- <a id="authentik_email_use_tls"></a>`authentik_email_use_tls`
+- <a id="authentik_network_name"></a>`authentik_network_name`
 
----
-*This page was automatically generated from role source code.*

@@ -1,30 +1,20 @@
 # networking_container_networks
 
-**Role Path**: `roles/networking/container_networks`
+**role**: `networking/container_networks`
 
-## Description
 **Container Isolation**
 Configures kernel prerequisites and network definitions for isolated container traffic.
 
-## Key Tasks
-- Apply Kernel Networking Prerequisites
-- Ensure {{ containers_systemd_dir }} exists
-- Deploy Container Networks
-- Remove legacy frontend network definitions
-- Create Backend Network Segment (Application Layer)
-- Create Management Network Segment (Logging/Forensics)
+## Variables
 
-## Default Variables
-- `container_networks_enable`
-- `podman_rootless_enabled`
-- `podman_rootless_user`
-- `podman_rootless_user_home`
-- `containers_systemd_dir`
-- `containers_systemd_scope`
-- `containers_systemd_owner`
-- `containers_systemd_group`
-- `containers_systemd_env`
-- `container_networks_list`
+- <a id="container_networks_enable"></a>`container_networks_enable`
+- <a id="podman_rootless_enabled"></a>`podman_rootless_enabled`
+- <a id="podman_rootless_user"></a>`podman_rootless_user`
+- <a id="podman_rootless_user_home"></a>`podman_rootless_user_home`
+- <a id="containers_systemd_dir"></a>`containers_systemd_dir`
+- <a id="containers_systemd_scope"></a>`containers_systemd_scope`
+- <a id="containers_systemd_owner"></a>`containers_systemd_owner`
+- <a id="containers_systemd_group"></a>`containers_systemd_group`
+- <a id="containers_systemd_env"></a>`containers_systemd_env`
+- <a id="container_networks_list"></a>`container_networks_list`
 
----
-*This page was automatically generated from role source code.*

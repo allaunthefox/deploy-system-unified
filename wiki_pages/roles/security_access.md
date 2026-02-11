@@ -1,30 +1,15 @@
 # security_access
 
-**Role Path**: `roles/security/access`
+**role**: `security/access`
 
-## Description
 **SSH & User Access**
 Manages SSH match rules, administrative users, and password policy enforcement.
 
-## Key Tasks
-- Ensure OpenSSH Server is installed
-- Determine SSH service name
-- Ensure SSH privilege separation directory exists
-- Check for systemctl presence
-- Ensure SSH service is running
-- Create wheel group if not exists
-- Configure sudo for wheel group
-- Validate admin password hash (if enforcement enabled)
-- Set admin account password hash (idempotent)
-- Configure SSH Match blocks (User-level IP restrictions)
-- Set access configuration completion flag
+## Variables
 
-## Default Variables
-- `ssh_match_rules`
-- `access_admin_user`
-- `access_admin_password_hash`
-- `access_admin_password_enforce`
-- `access_admin_password_placeholders`
+- <a id="ssh_match_rules"></a>`ssh_match_rules`
+- <a id="access_admin_user"></a>`access_admin_user`
+- <a id="access_admin_password_hash"></a>`access_admin_password_hash`
+- <a id="access_admin_password_enforce"></a>`access_admin_password_enforce`
+- <a id="access_admin_password_placeholders"></a>`access_admin_password_placeholders`
 
----
-*This page was automatically generated from role source code.*

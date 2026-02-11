@@ -1,19 +1,11 @@
 # core_entropy
 
-**Role Path**: `roles/core/entropy`
+**role**: `core/entropy`
 
-## Description
 **Entropy Enhancement**
 Ensures high-quality random number generation by installing and configuring entropy enhancement services.
 
-## Key Tasks
-- Install entropy enhancement services (idempotent)
-- Enable and start entropy enhancement services (idempotent)
-- Validate entropy services are running (idempotent)
-- Verify entropy services status
+## Variables
 
-## Default Variables
-- `entropy_service_mapping`
+- <a id="entropy_service_mapping"></a>`entropy_service_mapping`
 
----
-*This page was automatically generated from role source code.*

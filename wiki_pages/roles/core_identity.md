@@ -1,19 +1,12 @@
 # core_identity
 
-**Role Path**: `roles/core/identity`
+**role**: `core/identity`
 
-## Description
 **Identity & UUID Generation**
 Handles system identity, hostname configuration, and entropy-backed UUID generation for virtualization objects.
 
-## Key Tasks
-- Generate high-entropy UUID for virtualization object
-- Set object identity fact
-- Report generated identity
+## Variables
 
-## Default Variables
-- `identity_set_hostname`
-- `identity_domain`
+- <a id="identity_set_hostname"></a>`identity_set_hostname`
+- <a id="identity_domain"></a>`identity_domain`
 
----
-*This page was automatically generated from role source code.*

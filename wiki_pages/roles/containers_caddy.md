@@ -1,50 +1,28 @@
 # containers_caddy
 
-**Role Path**: `roles/containers/caddy`
+**role**: `containers/caddy`
 
-## Description
 **Reverse Proxy (Caddy)**
 Handles Caddy reverse proxy configuration with Red Team hardening for secrets.
 
-## Key Tasks
-- Validate Caddy Secrets (Red Team Hardening)
-- Verify Caddy secret files when fail-secure is enabled
-- Validate Porkbun API keys are set
-- Create Caddy secrets file
-- Create Proxy Network Quadlet
-- Create Caddy directories
-- Create Caddyfile
-- Validate Quadlet GPU capabilities (Linux CAP_* only)
-- Create Caddy container quadlet
-- Set containers caddy completion flag
-- Create Crowdsec Directories
-- Create Crowdsec Container Quadlet
-- Install Crowdsec Bouncer Dependencies
-- Create Crowdsec Bouncer Directory (Host)
-- Create Firewall Bouncer Config (Host)
-- Check if Bouncer is installed
-- Install Firewall Bouncer (Host)
-- Enable and Start Firewall Bouncer
+## Variables
 
-## Default Variables
-- `containers_caddy_generate_config`
-- `containers_caddy_acme_email`
-- `containers_caddy_http_port`
-- `containers_caddy_https_port`
-- `containers_caddy_https_port_udp`
-- `containers_porkbun_api_key`
-- `containers_porkbun_secret_api_key`
-- `containers_caddy_network`
-- `containers_caddy_extra_networks`
-- `containers_crowdsec_enable`
-- `containers_crowdsec_image`
-- `containers_crowdsec_firewall_bouncer_key`
-- `containers_caddy_fail_secure`
-- `containers_crowdsec_firewall_bouncer_version`
-- `containers_crowdsec_firewall_bouncer_sha256`
-- `containers_crowdsec_secrets_dir`
-- `containers_crowdsec_collections`
-- `containers_quadlet_enable_gpu_support`
+- <a id="containers_caddy_generate_config"></a>`containers_caddy_generate_config`
+- <a id="containers_caddy_acme_email"></a>`containers_caddy_acme_email`
+- <a id="containers_caddy_http_port"></a>`containers_caddy_http_port`
+- <a id="containers_caddy_https_port"></a>`containers_caddy_https_port`
+- <a id="containers_caddy_https_port_udp"></a>`containers_caddy_https_port_udp`
+- <a id="containers_porkbun_api_key"></a>`containers_porkbun_api_key`
+- <a id="containers_porkbun_secret_api_key"></a>`containers_porkbun_secret_api_key`
+- <a id="containers_caddy_network"></a>`containers_caddy_network`
+- <a id="containers_caddy_extra_networks"></a>`containers_caddy_extra_networks`
+- <a id="containers_crowdsec_enable"></a>`containers_crowdsec_enable`
+- <a id="containers_crowdsec_image"></a>`containers_crowdsec_image`
+- <a id="containers_crowdsec_firewall_bouncer_key"></a>`containers_crowdsec_firewall_bouncer_key`
+- <a id="containers_caddy_fail_secure"></a>`containers_caddy_fail_secure`
+- <a id="containers_crowdsec_firewall_bouncer_version"></a>`containers_crowdsec_firewall_bouncer_version`
+- <a id="containers_crowdsec_firewall_bouncer_sha256"></a>`containers_crowdsec_firewall_bouncer_sha256`
+- <a id="containers_crowdsec_secrets_dir"></a>`containers_crowdsec_secrets_dir`
+- <a id="containers_crowdsec_collections"></a>`containers_crowdsec_collections`
+- <a id="containers_quadlet_enable_gpu_support"></a>`containers_quadlet_enable_gpu_support`
 
----
-*This page was automatically generated from role source code.*

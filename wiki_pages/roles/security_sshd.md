@@ -1,40 +1,23 @@
 # security_sshd
 
-**Role Path**: `roles/security/sshd`
+**role**: `security/sshd`
 
-## Description
 **SSH Daemon Hardening**
 Enhanced SSH daemon configuration focusing on strong ciphers, key exchange, and authentication policies.
 
-## Key Tasks
-- Check if sshd_config backup exists
-- Backup original sshd_config (only if missing)
-- Determine SSH service name
-- Ensure SSH privilege separation directory exists (for validation in containers)
-- Configure SSH port
-- Configure SSH protocol and algorithms
-- Disable weak SSH host keys
-- Generate strong Ed25519 host key if missing
-- Generate strong RSA host key if missing
-- Set correct permissions on SSH host keys
-- Comment out unmanaged SSH authentication settings
-- Configure enhanced SSH security settings
-- Verify sshd_config has single-instance directives
-- Add trusted-group Match blocks for allowed forwarding (conditional)
-- Set SSHD configuration completion flag
+## Storage Roles
 
-## Default Variables
-- `sshd_backup_config`
-- `sshd_disable_weak_keys`
-- `sshd_use_strong_ciphers`
-- `sshd_allow_tcp_forwarding`
-- `sshd_allow_agent_forwarding`
-- `sshd_allow_x11_forwarding`
-- `sshd_permit_root_login`
-- `sshd_password_authentication`
-- `sshd_config_path`
-- `sshd_enable_trusted_group_exceptions`
-- `sshd_trusted_groups`
+## Variables
 
----
-*This page was automatically generated from role source code.*
+- <a id="sshd_backup_config"></a>`sshd_backup_config`
+- <a id="sshd_disable_weak_keys"></a>`sshd_disable_weak_keys`
+- <a id="sshd_use_strong_ciphers"></a>`sshd_use_strong_ciphers`
+- <a id="sshd_allow_tcp_forwarding"></a>`sshd_allow_tcp_forwarding`
+- <a id="sshd_allow_agent_forwarding"></a>`sshd_allow_agent_forwarding`
+- <a id="sshd_allow_x11_forwarding"></a>`sshd_allow_x11_forwarding`
+- <a id="sshd_permit_root_login"></a>`sshd_permit_root_login`
+- <a id="sshd_password_authentication"></a>`sshd_password_authentication`
+- <a id="sshd_config_path"></a>`sshd_config_path`
+- <a id="sshd_enable_trusted_group_exceptions"></a>`sshd_enable_trusted_group_exceptions`
+- <a id="sshd_trusted_groups"></a>`sshd_trusted_groups`
+

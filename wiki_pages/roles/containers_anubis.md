@@ -1,26 +1,18 @@
 # containers_anubis
 
-**Role Path**: `roles/containers/anubis`
+**role**: `containers/anubis`
 
-## Description
 **Web AI Firewall**
 Deploys the Anubis Web AI Firewall to protect ingress traffic.
 
-## Key Tasks
-- Create Anubis Network Quadlet
-- Validate Quadlet GPU capabilities (Linux CAP_* only)
-- Create Anubis container quadlet
-- Enable and start Anubis service (if systemd is available and running)
+## Variables
 
-## Default Variables
-- `anubis_enabled`
-- `anubis_port`
-- `anubis_difficulty`
-- `anubis_target_url`
-- `anubis_image`
-- `anubis_container_name`
-- `quadlet_enable_gpu_support`
-- `quadlet_gpu_capabilities`
+- <a id="anubis_enabled"></a>`anubis_enabled`
+- <a id="anubis_port"></a>`anubis_port`
+- <a id="anubis_difficulty"></a>`anubis_difficulty`
+- <a id="anubis_target_url"></a>`anubis_target_url` — The application to protect
+- <a id="anubis_image"></a>`anubis_image`
+- <a id="anubis_container_name"></a>`anubis_container_name`
+- <a id="quadlet_enable_gpu_support"></a>`quadlet_enable_gpu_support`
+- <a id="quadlet_gpu_capabilities"></a>`quadlet_gpu_capabilities` — Linux capabilities only (CAP_*). Leave empty unless required.
 
----
-*This page was automatically generated from role source code.*

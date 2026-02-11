@@ -1,21 +1,15 @@
 # containers_memcached
 
-**Role Path**: `roles/containers/memcached`
+**role**: `containers/memcached`
 
-## Description
 **Caching (Memcached)**
 Deploys Memcached using Podman Quadlets for distributed memory caching.
 
-## Key Tasks
-- Create Memcached directories
-- Create Memcached Quadlet
+## Variables
 
-## Default Variables
-- `memcached_enable`
-- `memcached_image`
-- `memcached_port`
-- `memcached_memory_mb`
-- `memcached_status_check`
+- <a id="memcached_enable"></a>`memcached_enable`
+- <a id="memcached_image"></a>`memcached_image`
+- <a id="memcached_port"></a>`memcached_port`
+- <a id="memcached_memory_mb"></a>`memcached_memory_mb`
+- <a id="memcached_status_check"></a>`memcached_status_check`
 
----
-*This page was automatically generated from role source code.*

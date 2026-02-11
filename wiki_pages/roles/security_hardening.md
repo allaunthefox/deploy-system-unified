@@ -1,27 +1,15 @@
 # security_hardening
 
-**Role Path**: `roles/security/hardening`
+**role**: `security/hardening`
 
-## Description
 **Core Hardening**
 Enhanced core security configurations, including shell hardening and system-wide security policies.
 
-## Key Tasks
-- Ensure security-related packages are installed (Debian/Ubuntu)
-- Ensure security-related packages are installed (RedHat/CentOS)
-- Ensure security-related packages are installed (Arch Linux)
-- Configure auditd service
-- Harden file system permissions
-- Harden user accounts
-- Harden PAM configuration (Debian)
-- Set security hardening completion flag
+## Variables
 
-## Default Variables
-- `security_hardening_enabled`
-- `security_enable_ufw`
-- `security_enable_fail2ban`
-- `security_enable_auto_updates`
-- `security_kernel_hardening`
+- <a id="security_hardening_enabled"></a>`security_hardening_enabled`
+- <a id="security_enable_ufw"></a>`security_enable_ufw`
+- <a id="security_enable_fail2ban"></a>`security_enable_fail2ban`
+- <a id="security_enable_auto_updates"></a>`security_enable_auto_updates`
+- <a id="security_kernel_hardening"></a>`security_kernel_hardening`
 
----
-*This page was automatically generated from role source code.*

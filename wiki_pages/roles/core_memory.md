@@ -1,38 +1,24 @@
 # core_memory
 
-**Role Path**: `roles/core/memory`
+**role**: `core/memory`
 
-## Description
 **Memory Compression & Swap Optimization**
 Handles intelligent memory compression (zRAM/zswap) and swap management based on workload profiles.
 
-## Key Tasks
-- Detect Physical Swap
-- Detect Shared Video Memory (UMA)
-- Determine Memory Strategy (Auto-Selection)
-- Report Selected Strategy
-- Resolve Configuration Conflicts (Intelligent Resolution)
-- Validate Final Configuration
-- Configure ZRAM (zram-generator)
-- Configure ZSwap (Kernel Modules)
-- Tune Virtual Memory for Compression
-- Configure Transparent Huge Pages (THP)
+## Variables
 
-## Default Variables
-- `core_memory_compression_strategy`
-- `core_memory_shared_vram`
-- `core_memory_workload_profile`
-- `core_memory_thp_state`
-- `core_memory_zram_size_percent`
-- `core_memory_zram_algorithm`
-- `core_memory_zram_priority`
-- `core_memory_zswap_compressor`
-- `core_memory_zswap_zpool`
-- `core_memory_zswap_max_pool_percent`
-- `core_memory_swappiness`
-- `core_memory_cache_pressure`
-- `core_memory_dirty_bytes`
-- `core_memory_dirty_background_bytes`
+- <a id="core_memory_compression_strategy"></a>`core_memory_compression_strategy`
+- <a id="core_memory_shared_vram"></a>`core_memory_shared_vram`
+- <a id="core_memory_workload_profile"></a>`core_memory_workload_profile`
+- <a id="core_memory_thp_state"></a>`core_memory_thp_state`
+- <a id="core_memory_zram_size_percent"></a>`core_memory_zram_size_percent`
+- <a id="core_memory_zram_algorithm"></a>`core_memory_zram_algorithm`
+- <a id="core_memory_zram_priority"></a>`core_memory_zram_priority`
+- <a id="core_memory_zswap_compressor"></a>`core_memory_zswap_compressor`
+- <a id="core_memory_zswap_zpool"></a>`core_memory_zswap_zpool`
+- <a id="core_memory_zswap_max_pool_percent"></a>`core_memory_zswap_max_pool_percent`
+- <a id="core_memory_swappiness"></a>`core_memory_swappiness`
+- <a id="core_memory_cache_pressure"></a>`core_memory_cache_pressure`
+- <a id="core_memory_dirty_bytes"></a>`core_memory_dirty_bytes` — 512MB
+- <a id="core_memory_dirty_background_bytes"></a>`core_memory_dirty_background_bytes` — 256MB
 
----
-*This page was automatically generated from role source code.*

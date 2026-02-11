@@ -1,22 +1,14 @@
 # security_kernel
 
-**Role Path**: `roles/security/kernel`
+**role**: `security/kernel`
 
-## Description
 **Sysctl Hardening**
 Mandatory sysctl-based kernel hardening (network stack, process memory, and ASLR settings).
 
-## Key Tasks
-- Detect Virtualization Environment (Internal)
-- Apply kernel hardening parameters
-- Configure Kernel to zero memory on free (GRUB)
-- Apply Bare Metal OS-Layer Hardening
+## Variables
 
-## Default Variables
-- `kernel_profile`
-- `kernel_enable_iommu`
-- `kernel_restrict_dma`
-- `kernel_hugepages_enabled`
+- <a id="kernel_profile"></a>`kernel_profile` — generic or bare_metal
+- <a id="kernel_enable_iommu"></a>`kernel_enable_iommu`
+- <a id="kernel_restrict_dma"></a>`kernel_restrict_dma`
+- <a id="kernel_hugepages_enabled"></a>`kernel_hugepages_enabled`
 
----
-*This page was automatically generated from role source code.*

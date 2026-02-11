@@ -1,33 +1,14 @@
 # hardware_firmware
 
-**Role Path**: `roles/hardware/firmware`
+**role**: `hardware/firmware`
 
-## Description
 **Bare Metal Foundation**
 Manages microcode, firmware updates, and low-level system attributes for physical hardware.
 
-## Key Tasks
-- Detect Virtualization Environment (Internal)
-- Detect CPU Tier (Server vs Consumer)
-- Report CPU Profile
-- Install Hardware Security Tools
-- Detect Hardware TPM support
-- Set TPM fact
-- Report TPM Status
-- Configure Hardware Clock (RTC) to UTC
-- Enable NTP-based RTC synchronization
-- Report Hardware Clock status
-- Set distribution-specific hardware package names
-- Install CPU microcode updates (Intel/AMD)
-- Install hardware monitoring and watchdog tools
-- Configure hardware watchdog
-- Enable and start hardware services
+## Variables
 
-## Default Variables
-- `cpu_tier`
-- `is_server_cpu`
-- `hardware_monitor_temp`
-- `hardware_enable_watchdog`
+- <a id="cpu_tier"></a>`cpu_tier`
+- <a id="is_server_cpu"></a>`is_server_cpu`
+- <a id="hardware_monitor_temp"></a>`hardware_monitor_temp`
+- <a id="hardware_enable_watchdog"></a>`hardware_enable_watchdog`
 
----
-*This page was automatically generated from role source code.*
