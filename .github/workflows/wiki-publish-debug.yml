@@ -67,33 +67,32 @@ jobs:
           fi
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
 
-      - name: Load deploy key into ssh-agent (if present) 🔑
-        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
-        uses: webfactory/ssh-agent@v0.8.1
-        with:
-          ssh-private-key: ${{ secrets.WIKI_SSH_KEY }}
-
-      - name: Prepare deploy key file & set GIT_SSH_COMMAND
-        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
+      - name: Prepare deploy key and SSH debug
         run: |
           set -x
-          mkdir -p ~/.ssh
-          deploy_key_file=~/.ssh/wiki_deploy_key
-          if [ -n "${{ secrets.WIKI_SSH_KEY }}" ]; then
-            printf '%s\n' "${{ secrets.WIKI_SSH_KEY }}" > "$deploy_key_file"
-          else
-            printf '%s\n' "${{ secrets.SSH_DEPLOY_KEY }}" > "$deploy_key_file"
-          fi
-          chmod 600 "$deploy_key_file"
-          # If passphrase provided, decrypt encrypted PEM
-          if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
-            echo "Decrypting encrypted PEM"
-            openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
-            mv "${deploy_key_file}.dec" "$deploy_key_file"
+          if [ -n "${{ secrets.WIKI_SSH_KEY }}" ] || [ -n "${{ secrets.SSH_DEPLOY_KEY }}" ]; then
+            mkdir -p ~/.ssh
+            deploy_key_file=~/.ssh/wiki_deploy_key
+            if [ -n "${{ secrets.WIKI_SSH_KEY }}" ]; then
+              printf '%s\n' "${{ secrets.WIKI_SSH_KEY }}" > "$deploy_key_file"
+            else
+              printf '%s\n' "${{ secrets.SSH_DEPLOY_KEY }}" > "$deploy_key_file"
+            fi
             chmod 600 "$deploy_key_file"
+            if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
+              echo "Decrypting encrypted PEM"
+              openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
+              mv "${deploy_key_file}.dec" "$deploy_key_file"
+              chmod 600 "$deploy_key_file"
+            fi
+            # Ensure host key known and make git use the specific key
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            echo "GIT_SSH_COMMAND=ssh -i $deploy_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" >> $GITHUB_ENV
+            # Quick auth test using the key file
+            ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i "$deploy_key_file" -vT git@github.com || true
+          else
+            echo "No deploy key configured; skipping SSH prepare"
           fi
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-          echo "GIT_SSH_COMMAND=ssh -i $deploy_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" >> $GITHUB_ENV
 
       - name: Clone wiki repo (verbose, SSH fallback)
         env:
