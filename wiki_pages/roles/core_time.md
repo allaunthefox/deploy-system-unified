@@ -1,4 +1,4 @@
-# core/time
+# core_time
 
 **Role Path**: `roles/core/time`
 

@@ -1,4 +1,4 @@
-# storage/filesystems
+# storage_filesystems
 
 **Role Path**: `roles/storage/filesystems`
 

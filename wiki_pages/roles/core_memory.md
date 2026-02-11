@@ -1,4 +1,4 @@
-# core/memory
+# core_memory
 
 **Role Path**: `roles/core/memory`
 

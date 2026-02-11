@@ -1,4 +1,4 @@
-# security/hardware_isolation
+# security_hardware_isolation
 
 **Role Path**: `roles/security/hardware_isolation`
 

@@ -1,4 +1,4 @@
-# containers/lxc
+# containers_lxc
 
 **Role Path**: `roles/containers/lxc`
 

@@ -1,4 +1,4 @@
-# ops/guest_management
+# ops_guest_management
 
 **Role Path**: `roles/ops/guest_management`
 

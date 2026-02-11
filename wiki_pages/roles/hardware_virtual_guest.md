@@ -1,4 +1,4 @@
-# hardware/virtual_guest
+# hardware_virtual_guest
 
 **Role Path**: `roles/hardware/virtual_guest`
 

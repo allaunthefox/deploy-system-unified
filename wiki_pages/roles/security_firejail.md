@@ -1,4 +1,4 @@
-# security/firejail
+# security_firejail
 
 **Role Path**: `roles/security/firejail`
 

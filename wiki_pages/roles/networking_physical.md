@@ -1,4 +1,4 @@
-# networking/physical
+# networking_physical
 
 **Role Path**: `roles/networking/physical`
 

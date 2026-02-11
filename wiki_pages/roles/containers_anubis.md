@@ -1,4 +1,4 @@
-# containers/anubis
+# containers_anubis
 
 **Role Path**: `roles/containers/anubis`
 

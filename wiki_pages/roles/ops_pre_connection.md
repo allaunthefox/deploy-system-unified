@@ -1,4 +1,4 @@
-# ops/pre_connection
+# ops_pre_connection
 
 **Role Path**: `roles/ops/pre_connection`
 

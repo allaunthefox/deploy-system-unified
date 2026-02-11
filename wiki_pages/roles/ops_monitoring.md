@@ -1,4 +1,4 @@
-# ops/monitoring
+# ops_monitoring
 
 **Role Path**: `roles/ops/monitoring`
 

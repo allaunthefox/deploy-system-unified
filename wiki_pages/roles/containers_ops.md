@@ -1,4 +1,4 @@
-# containers/ops
+# containers_ops
 
 **Role Path**: `roles/containers/ops`
 

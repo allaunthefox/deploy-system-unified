@@ -1,4 +1,4 @@
-# security/advanced
+# security_advanced
 
 **Role Path**: `roles/security/advanced`
 

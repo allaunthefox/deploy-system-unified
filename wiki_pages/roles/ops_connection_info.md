@@ -1,4 +1,4 @@
-# ops/connection_info
+# ops_connection_info
 
 **Role Path**: `roles/ops/connection_info`
 

@@ -1,4 +1,4 @@
-# security/ips
+# security_ips
 
 **Role Path**: `roles/security/ips`
 

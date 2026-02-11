@@ -1,4 +1,4 @@
-# security/audit_integrity
+# security_audit_integrity
 
 **Role Path**: `roles/security/audit_integrity`
 

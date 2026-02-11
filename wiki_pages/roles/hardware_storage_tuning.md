@@ -1,4 +1,4 @@
-# hardware/storage_tuning
+# hardware_storage_tuning
 
 **Role Path**: `roles/hardware/storage_tuning`
 

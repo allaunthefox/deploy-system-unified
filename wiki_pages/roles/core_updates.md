@@ -1,4 +1,4 @@
-# core/updates
+# core_updates
 
 **Role Path**: `roles/core/updates`
 

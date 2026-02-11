@@ -1,4 +1,4 @@
-# hardware/gpu
+# hardware_gpu
 
 **Role Path**: `roles/hardware/gpu`
 

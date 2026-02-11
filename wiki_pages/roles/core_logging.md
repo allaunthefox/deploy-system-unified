@@ -1,4 +1,4 @@
-# core/logging
+# core_logging
 
 **Role Path**: `roles/core/logging`
 

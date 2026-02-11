@@ -1,4 +1,4 @@
-# core/systemd
+# core_systemd
 
 **Role Path**: `roles/core/systemd`
 

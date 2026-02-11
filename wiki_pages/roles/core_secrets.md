@@ -1,4 +1,4 @@
-# core/secrets
+# core_secrets
 
 **Role Path**: `roles/core/secrets`
 

@@ -1,4 +1,4 @@
-# containers/memcached
+# containers_memcached
 
 **Role Path**: `roles/containers/memcached`
 

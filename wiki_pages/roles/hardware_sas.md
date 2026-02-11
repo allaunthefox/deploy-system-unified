@@ -1,4 +1,4 @@
-# hardware/sas
+# hardware_sas
 
 **Role Path**: `roles/hardware/sas`
 

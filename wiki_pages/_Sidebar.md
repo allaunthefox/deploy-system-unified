@@ -56,6 +56,7 @@
 ---
 
 ### 📅 Planning
+- [Versioning Policy](VERSIONING_POLICY)
 - [Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)
 - [Migration Plan](MIGRATION_PLAN)
 - [Restructuring Plan](RESTRUCTURING_PLAN_2026)

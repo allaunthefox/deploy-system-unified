@@ -1,4 +1,4 @@
-# containers/caddy
+# containers_caddy
 
 **Role Path**: `roles/containers/caddy`
 

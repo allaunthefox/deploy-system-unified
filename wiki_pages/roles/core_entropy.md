@@ -1,4 +1,4 @@
-# core/entropy
+# core_entropy
 
 **Role Path**: `roles/core/entropy`
 

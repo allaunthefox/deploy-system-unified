@@ -1,4 +1,4 @@
-# security/mac_apparmor
+# security_mac_apparmor
 
 **Role Path**: `roles/security/mac_apparmor`
 

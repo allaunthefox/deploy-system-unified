@@ -1,4 +1,4 @@
-# networking/vpn_mesh
+# networking_vpn_mesh
 
 **Role Path**: `roles/networking/vpn_mesh`
 

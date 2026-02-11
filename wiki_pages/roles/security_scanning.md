@@ -1,4 +1,4 @@
-# security/scanning
+# security_scanning
 
 **Role Path**: `roles/security/scanning`
 

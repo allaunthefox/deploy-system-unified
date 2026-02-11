@@ -1,4 +1,4 @@
-# core/identity
+# core_identity
 
 **Role Path**: `roles/core/identity`
 

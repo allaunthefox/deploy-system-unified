@@ -1,4 +1,4 @@
-# ops/preflight
+# ops_preflight
 
 **Role Path**: `roles/ops/preflight`
 

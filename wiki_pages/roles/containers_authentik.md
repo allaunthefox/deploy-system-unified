@@ -1,4 +1,4 @@
-# containers/authentik
+# containers_authentik
 
 **Role Path**: `roles/containers/authentik`
 

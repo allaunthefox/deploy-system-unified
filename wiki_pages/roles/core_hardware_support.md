@@ -1,4 +1,4 @@
-# core/hardware_support
+# core_hardware_support
 
 **Role Path**: `roles/core/hardware_support`
 

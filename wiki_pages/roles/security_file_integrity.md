@@ -1,4 +1,4 @@
-# security/file_integrity
+# security_file_integrity
 
 **Role Path**: `roles/security/file_integrity`
 

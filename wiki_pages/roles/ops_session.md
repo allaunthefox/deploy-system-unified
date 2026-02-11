@@ -1,4 +1,4 @@
-# ops/session
+# ops_session
 
 **Role Path**: `roles/ops/session`
 

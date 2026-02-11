@@ -1,4 +1,4 @@
-# security/access
+# security_access
 
 **Role Path**: `roles/security/access`
 

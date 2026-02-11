@@ -1,4 +1,4 @@
-# storage/backup
+# storage_backup
 
 **Role Path**: `roles/storage/backup`
 

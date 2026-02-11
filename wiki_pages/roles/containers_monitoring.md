@@ -1,4 +1,4 @@
-# containers/monitoring
+# containers_monitoring
 
 **Role Path**: `roles/containers/monitoring`
 

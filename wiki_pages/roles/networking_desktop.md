@@ -1,4 +1,4 @@
-# networking/desktop
+# networking_desktop
 
 **Role Path**: `roles/networking/desktop`
 

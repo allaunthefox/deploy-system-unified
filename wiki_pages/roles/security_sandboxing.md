@@ -1,4 +1,4 @@
-# security/sandboxing
+# security_sandboxing
 
 **Role Path**: `roles/security/sandboxing`
 

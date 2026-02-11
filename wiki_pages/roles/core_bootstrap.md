@@ -1,4 +1,4 @@
-# core/bootstrap
+# core_bootstrap
 
 **Role Path**: `roles/core/bootstrap`
 

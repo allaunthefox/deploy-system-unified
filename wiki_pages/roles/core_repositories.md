@@ -1,4 +1,4 @@
-# core/repositories
+# core_repositories
 
 **Role Path**: `roles/core/repositories`
 

@@ -1,4 +1,4 @@
-# security/sshd
+# security_sshd
 
 **Role Path**: `roles/security/sshd`
 

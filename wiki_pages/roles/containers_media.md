@@ -1,4 +1,4 @@
-# containers/media
+# containers_media
 
 **Role Path**: `roles/containers/media`
 

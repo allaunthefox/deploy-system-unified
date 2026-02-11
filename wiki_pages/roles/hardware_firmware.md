@@ -1,4 +1,4 @@
-# hardware/firmware
+# hardware_firmware
 
 **Role Path**: `roles/hardware/firmware`
 

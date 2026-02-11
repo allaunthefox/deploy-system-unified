@@ -1,4 +1,4 @@
-# security/kernel
+# security_kernel
 
 **Role Path**: `roles/security/kernel`
 

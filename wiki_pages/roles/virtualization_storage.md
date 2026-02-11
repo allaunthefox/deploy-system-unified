@@ -1,4 +1,4 @@
-# virtualization/storage
+# virtualization_storage
 
 **Role Path**: `roles/virtualization/storage`
 

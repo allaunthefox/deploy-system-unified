@@ -1,4 +1,4 @@
-# containers/config
+# containers_config
 
 **Role Path**: `roles/containers/config`
 

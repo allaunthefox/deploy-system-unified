@@ -1,4 +1,4 @@
-# security/resource_protection
+# security_resource_protection
 
 **Role Path**: `roles/security/resource_protection`
 

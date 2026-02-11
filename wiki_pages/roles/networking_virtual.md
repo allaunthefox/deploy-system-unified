@@ -1,4 +1,4 @@
-# networking/virtual
+# networking_virtual
 
 **Role Path**: `roles/networking/virtual`
 

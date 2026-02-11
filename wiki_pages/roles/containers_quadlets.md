@@ -1,4 +1,4 @@
-# containers/quadlets
+# containers_quadlets
 
 **Role Path**: `roles/containers/quadlets`
 

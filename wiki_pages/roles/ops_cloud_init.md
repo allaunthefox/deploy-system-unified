@@ -1,4 +1,4 @@
-# ops/cloud_init
+# ops_cloud_init
 
 **Role Path**: `roles/ops/cloud_init`
 

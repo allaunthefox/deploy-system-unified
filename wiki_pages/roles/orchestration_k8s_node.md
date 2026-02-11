@@ -1,4 +1,4 @@
-# orchestration/k8s_node
+# orchestration_k8s_node
 
 **Role Path**: `roles/orchestration/k8s_node`
 

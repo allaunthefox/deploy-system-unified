@@ -1,4 +1,4 @@
-# networking/firewall
+# networking_firewall
 
 **Role Path**: `roles/networking/firewall`
 

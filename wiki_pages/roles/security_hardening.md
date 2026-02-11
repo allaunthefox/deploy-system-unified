@@ -1,4 +1,4 @@
-# security/hardening
+# security_hardening
 
 **Role Path**: `roles/security/hardening`
 
