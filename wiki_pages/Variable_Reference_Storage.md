@@ -3,50 +3,8 @@
 ## Storage Variables
 
 ### `storage/backup`
-- `[backup_restic_enabled](roles/storage_backup.md#backupresticenabled)`
-- `[backup_restic_repository](roles/storage_backup.md#backupresticrepository)`
-- `[backup_restic_password](roles/storage_backup.md#backupresticpassword)`
-- `[backup_restic_encryption](roles/storage_backup.md#backupresticencryption)`
-- `[backup_restic_prune_policy](roles/storage_backup.md#backupresticprunepolicy)`
-- `[backup_restic_retention_days](roles/storage_backup.md#backupresticretentiondays)`
-- `[backup_restic_retention_weeks](roles/storage_backup.md#backupresticretentionweeks)`
-- `[backup_restic_retention_months](roles/storage_backup.md#backupresticretentionmonths)`
-- `[backup_restic_retention_years](roles/storage_backup.md#backupresticretentionyears)`
-- `[backup_rclone_enabled](roles/storage_backup.md#backuprcloneenabled)`
-- `[backup_rclone_config](roles/storage_backup.md#backuprcloneconfig)`
-- `[backup_rclone_remote](roles/storage_backup.md#backuprcloneremote)`
-- `[backup_rclone_sync_mode](roles/storage_backup.md#backuprclonesyncmode)`
-- `[backup_rclone_excludes](roles/storage_backup.md#backuprcloneexcludes)`
-- `[backup_rclone_bandwidth](roles/storage_backup.md#backuprclonebandwidth)`
-- `[backup_rclone_retry_count](roles/storage_backup.md#backuprcloneretrycount)`
-- `[backup_timeshift_enabled](roles/storage_backup.md#backuptimeshiftenabled)`
-- `[backup_timeshift_target](roles/storage_backup.md#backuptimeshifttarget)`
-- `[backup_timeshift_snapshot_device](roles/storage_backup.md#backuptimeshiftsnapshotdevice)`
-- `[backup_timeshift_run_daily](roles/storage_backup.md#backuptimeshiftrundaily)`
-- `[backup_timeshift_run_weekly](roles/storage_backup.md#backuptimeshiftrunweekly)`
-- `[backup_timeshift_run_monthly](roles/storage_backup.md#backuptimeshiftrunmonthly)`
-- `[backup_timeshift_count_daily](roles/storage_backup.md#backuptimeshiftcountdaily)`
-- `[backup_timeshift_count_weekly](roles/storage_backup.md#backuptimeshiftcountweekly)`
-- `[backup_timeshift_count_monthly](roles/storage_backup.md#backuptimeshiftcountmonthly)`
+- *No variables defined in defaults/main.yml*
 
 ### `storage/filesystems`
-- `[filesystems_btrfs_enabled](roles/storage_filesystems.md#filesystemsbtrfsenabled)`
-- `[filesystems_btrfs_subvolumes](roles/storage_filesystems.md#filesystemsbtrfssubvolumes)`
-- `[filesystems_btrfs_compression](roles/storage_filesystems.md#filesystemsbtrfscompression)`
-- `[filesystems_btrfs_quota](roles/storage_filesystems.md#filesystemsbtrfsquota)`
-- `[filesystems_btrfs_raid_level](roles/storage_filesystems.md#filesystemsbtrfsraidlevel)`
-- `[filesystems_btrfs_scrub_enabled](roles/storage_filesystems.md#filesystemsbtrfsscrubenabled)`
-- `[filesystems_btrfs_scrub_schedule](roles/storage_filesystems.md#filesystemsbtrfsscrubschedule)`
-- `[filesystems_btrfs_balance_enabled](roles/storage_filesystems.md#filesystemsbtrfsbalanceenabled)`
-- `[filesystems_btrfs_balance_schedule](roles/storage_filesystems.md#filesystemsbtrfsbalanceschedule)`
-- `[filesystems_ext4_reserved_blocks](roles/storage_filesystems.md#filesystemsext4reservedblocks)`
-- `[filesystems_xfs_enabled](roles/storage_filesystems.md#filesystemsxfsenabled)`
-- `[filesystems_xfs_inode64](roles/storage_filesystems.md#filesystemsxfsinode64)`
-- `[filesystems_swap_enabled](roles/storage_filesystems.md#filesystemsswapenabled)`
-- `[filesystems_swap_size](roles/storage_filesystems.md#filesystemsswapsize)`
-- `[filesystems_swap_file_location](roles/storage_filesystems.md#filesystemsswapfilelocation)`
-- `[filesystems_encryption_enabled](roles/storage_filesystems.md#filesystemsencryptionenabled)`
-- `[filesystems_luks_cipher](roles/storage_filesystems.md#filesystemslukscipher)`
-- `[filesystems_luks_hash](roles/storage_filesystems.md#filesystemslukshash)`
-- `[filesystems_luks_key_size](roles/storage_filesystems.md#filesystemslukskeysize)`
-- `[filesystems_luks_pbkdf](roles/storage_filesystems.md#filesystemslukspbkdf)`
+- *No variables defined in defaults/main.yml*
+

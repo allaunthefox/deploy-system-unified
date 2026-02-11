@@ -49,14 +49,7 @@
 - `[rpmfusion_verify_checksum](roles/core_repositories.md#rpmfusionverifychecksum)`
 
 ### `core/secrets`
-- `[secrets_validation_enabled](roles/core_secrets.md#secretsvalidationenabled)`
-- `[secrets_validation_mode](roles/core_secrets.md#secretsvalidationmode)`
-- `[secrets_validation_strict](roles/core_secrets.md#secretsvalidationstrict)`
-- `[secrets_validation_negative_test](roles/core_secrets.md#secretsvalidationnegativetest)`
-- `[secrets_validation_positive_test](roles/core_secrets.md#secretsvalidationpositivetest)`
-- `[secrets_validation_timeout](roles/core_secrets.md#secretsvalidationtimeout)`
-- `[secrets_validation_retries](roles/core_secrets.md#secretsvalidationretries)`
-- `[secrets_validation_delay](roles/core_secrets.md#secretsvalidationdelay)`
+- *No variables defined in defaults/main.yml*
 
 ### `core/systemd`
 - `[systemd_configure_journald](roles/core_systemd.md#systemdconfigurejournald)`
@@ -67,10 +60,5 @@
 - `[time_service_mapping](roles/core_time.md#timeservicemapping)`
 
 ### `core/updates`
-- `[automatic_updates_enabled](roles/core_updates.md#automaticupdatesenabled)`
-- `[automatic_updates_type](roles/core_updates.md#automaticupdatestype)`
-- `[automatic_updates_download](roles/core_updates.md#automaticupdatesdownload)`
-- `[automatic_updates_apply](roles/core_updates.md#automaticupdatesapply)`
-- `[automatic_updates_notify](roles/core_updates.md#automaticupdatesnotify)`
-- `[automatic_updates_reboot](roles/core_updates.md#automaticupdatesreboot)`
-- `[automatic_updates_reboot_time](roles/core_updates.md#automaticupdatesreboottime)`
+- *No variables defined in defaults/main.yml*
+
