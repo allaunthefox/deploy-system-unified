@@ -30,6 +30,12 @@ By participating in this project, you agree to abide by our Code of Conduct.
 - Remember that the main repository serves as a base layer with roles and base functionality
 - **Policy:** `projects/deploy-system-unified/main.yml` must remain a pristine base and **must not** include a top-level `roles:` list. Use `branch_templates/` for role-based deployments; CI will enforce this policy.
 
+### Wiki Contributions
+
+- **Separation of Concerns:** The `wiki_pages/` directory is maintained separately from the core project code.
+- **Impact:** Changes to the wiki do not affect the deployment system's functionality.
+- **Publishing:** Merges to `main` involving `wiki_pages/` trigger an automated workflow to update the GitHub Wiki.
+
 ## Style Guides
 
 ### Git Commit Messages
