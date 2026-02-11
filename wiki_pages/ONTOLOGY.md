@@ -44,7 +44,7 @@ This document defines the formal relationship between **Deployment Profiles**, *
 
 ## 🛡️ Runtime Enforcement
 
-The ontological contract is strictly enforced at runtime via `playbooks/preflight_gate.yml`. This playbook:
+The ontological contract is strictly enforced at runtime via `playbooks/preflight_assertions.yml` and `playbooks/preflight_validate.yml`. These playbooks:
 - **Ensures Uniqueness**: Asserts that every host belongs to exactly ONE ontological profile group.
 - **Verifies State**: Checks that the host's actual variable state (e.g., `firewall_enabled`, `ssh_randomize_port`) matches the requirements of its declared profile.
 - **Fail-Loudly**: Aborts the deployment immediately if a contract violation is detected, preventing inconsistent system states.

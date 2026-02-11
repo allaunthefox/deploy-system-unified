@@ -14,6 +14,9 @@
 - [Virtual Networking](VIRTUAL_NETWORKING)
 - [Backup Strategy](BACKUP_STRATEGY)
 - [GPU Slicing](GPU_SLICING)
+- [x86 Guide](ARCH_GUIDE_X86)
+- [ARM64 Guide](ARCH_GUIDE_ARM64)
+- [RISC-V Guide](ARCH_GUIDE_RISCV64)
 
 ---
 
@@ -23,6 +26,7 @@
 - [Pre-commit Hooks](PRE_COMMIT)
 - [Tooling](TOOLING)
 - [LLM Context Map](LLM_MAP)
+- [Research Guidelines](RESEARCH_GUIDELINES)
 
 ---
 
@@ -33,6 +37,15 @@
 - [OS Configuration](OS_CONFIGURATION)
 - [SSH Idempotence](SSH_IDEMPOTENCE_GUARDRAILS)
 - [Security Hybrid Setup](SECURITY_CROWDSEC_HYBRID)
+- [Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)
+
+---
+
+### 📋 Troubleshooting
+- [Potential Problems](POTENTIAL_PROBLEMS)
+- [Idempotency Blockers](IDEMPOTENCY_BLOCKERS)
+- [SSH Incident Postmortem](SSH_INCIDENT_POSTMORTEM)
+- [Implementation Review](IMPLEMENTATION_REVIEW)
 
 ---
 
@@ -41,3 +54,4 @@
 - [Migration Plan](MIGRATION_PLAN)
 - [Restructuring Plan](RESTRUCTURING_PLAN_2026)
 - [GPU Enhanced Plan](GPU_ENHANCED_PLAN)
+- [Architecture Migration](ARCHITECTURE_MIGRATION_GUIDE)

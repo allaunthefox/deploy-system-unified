@@ -24,7 +24,7 @@
 
 ### D. Security & Integrity
 - **Role:** `security/scanning` (Refined)
-- **Preflight:** `preflight_gate.yml` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
+- **Preflight:** `playbooks/preflight_assertions.yml` and `playbooks/preflight_validate.yml` strictly enforce Vault encryption and SOPS hygiene before any deployment tasks run.
 
 ## 2. Pre-Deployment Check List
 

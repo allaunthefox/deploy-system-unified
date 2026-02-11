@@ -21,6 +21,9 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Backup Strategy](BACKUP_STRATEGY)**: rclone, restic, and system snapshots.
 * **[GPU Slicing Architecture](GPU_SLICING)**: Architectural overview of GPU slicing implementation.
 * **[Ephemeral Design](EPHEMERAL_DESIGN)**: Logic behind zero-footprint deployments.
+* **[x86 Architecture Guide](ARCH_GUIDE_X86)**: Specific considerations for x86_64 deployments.
+* **[ARM64 Architecture Guide](ARCH_GUIDE_ARM64)**: Optimizing for ARM64 (SBCs, Cloud, etc.).
+* **[RISC-V Architecture Guide](ARCH_GUIDE_RISCV64)**: Emerging support for RISC-V platforms.
 
 ### 💻 Development
 
@@ -29,6 +32,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Pre-commit Hooks](PRE_COMMIT)**: Installing and using local enforcement.
 * **[LLM Context Map](LLM_MAP)**: High-density context for AI assistants.
 * **[Contributing](CONTRIBUTING)**: Guidelines for contributing to the project.
+* **[Research Guidelines](RESEARCH_GUIDELINES)**: Standards for technical research and documentation.
 
 ### 🚀 Deployment
 
@@ -42,15 +46,28 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Architecture & Vendor Profiles](ARCH_VENDOR_PROFILES)**: Explicit arch/vendor selection to avoid x86-only assumptions.
 * **[Hybrid Security Setup](SECURITY_CROWDSEC_HYBRID)**: Implementation details for the Container+Host CrowdSec architecture.
 * **[Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)**: Configuration guide for strict GPG/Checksum verification.
+* **[Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE)**: Specific setup for modern Intel GPUs.
+* **[Intel Video Guide](INTEL_VIDEO_GUIDE)**: Hardware acceleration guide for Intel QuickSync.
 * **[EXAMPLES](EXAMPLES)**: Solution stack examples.
+
+### 📋 Review & Troubleshooting
+
+* **[Implementation Review](IMPLEMENTATION_REVIEW)**: Post-deployment verification and audit log analysis.
+* **[Potential Problems](POTENTIAL_PROBLEMS)**: Troubleshooting common failure modes and edge cases.
+* **[Idempotency Blockers](IDEMPOTENCY_BLOCKERS)**: Identifying tasks that break zero-drift requirements.
+* **[SSH Incident Postmortem](SSH_INCIDENT_POSTMORTEM)**: Lessons learned from connectivity failures.
 
 ### 📅 Planning
 
 * **[Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)**: Phase 1 accomplishments and Phase 2 objectives.
+* **[Restructuring Plan 2026](RESTRUCTURING_PLAN_2026)**: Strategic plan for architecture-based reorganization.
+* **[GPU Enhanced Plan](GPU_ENHANCED_PLAN)**: Detailed roadmap for next-gen GPU features.
 * **[Migration Plan](MIGRATION_PLAN)**: Legacy data migration and credential rotation.
-* **[Restructuring Plan](RESTRUCTURING_PLAN_2026)**: Strategic plan for project restructuring.
-* **[GPU Enhanced Plan](GPU_ENHANCED_PLAN)**: Detailed planning for GPU enhancements.
+* **[Architecture Migration Guide](ARCHITECTURE_MIGRATION_GUIDE)**: Steps for moving to the new 2026 structure.
 
 ### 🔒 Security
 
 * **[Security Audit Report](SECURITY_AUDIT_REPORT)**: Comprehensive security assessment and role analysis.
+* **[Secrets Management](SECRETS_MANAGEMENT)**: Best practices for SOPS and Vault integration.
+* **[Data Mapping](DATA_MAPPING)**: Tracking data flow and sensitive information across roles.
+* **[Negative Testing Implementation](NEGATIVE_TESTING_IMPLEMENTATION)**: How we verify security failure modes.

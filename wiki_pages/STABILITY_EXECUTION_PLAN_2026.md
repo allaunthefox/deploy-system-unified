@@ -19,7 +19,7 @@
 - ✅ **Stability Gates**: 
     - Implemented `verify_idempotence.sh` for zero-change verification.
     - Implemented `smoke_test_production.sh` for production dry-runs.
-    - Added `preflight_gate.yml` to strictly enforce Vault encryption and SOPS hygiene.
+    - Added `playbooks/preflight_assertions.yml` and `playbooks/preflight_validate.yml` to strictly enforce Vault encryption and SOPS hygiene.
 - ✅ **CI/CD Integration**: Added unit tests for style tools to CI; established mandatory status checks for `main`.
 - ✅ **Entrypoint Hygiene**: Labeled all `branch_templates/` and `site.yml` as "REFERENCE ONLY" to protect `production_deploy.yml`.
 
