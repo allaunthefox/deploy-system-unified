@@ -14,17 +14,11 @@ collections:
     version: ">=2.0.0"
   - name: community.docker
     version: ">=3.0.0"
-  
-  # Security-focused collections
-  - name: ansible.lockdown
-    version: ">=1.0.0"
-  
+
   # Container and cloud collections
-  - name: community.docker
-    version: ">=3.0.0"
   - name: containers.podman
     version: ">=1.0.0"
-  
+
   # SOPS encryption collection
   - name: community.sops
     version: ">=1.0.0"
