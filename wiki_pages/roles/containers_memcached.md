@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/memcached`
 
 ## Description
-Memcached Container Role using Podman Quadlets
+**Caching (Memcached)**
+Deploys Memcached using Podman Quadlets for distributed memory caching.
 
 ## Key Tasks
 - Create Memcached directories

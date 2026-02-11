@@ -3,7 +3,8 @@
 **Role Path**: `roles/storage/filesystems`
 
 ## Description
-*No description provided.*
+**Filesystem Management**
+Handles BTRFS subvolumes, maintenance (scrubbing), and physical storage optimizations.
 
 ## Key Tasks
 - placeholder task (no-op)

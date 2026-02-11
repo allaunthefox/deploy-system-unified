@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/authentik`
 
 ## Description
-Tasks for containers/authentik
+**Identity Provider (Authentik)**
+Deploys Authentik for identity management, featuring comprehensive secret validation and negative testing.
 
 ## Key Tasks
 - Verify Authentik secrets when fail-secure is enabled

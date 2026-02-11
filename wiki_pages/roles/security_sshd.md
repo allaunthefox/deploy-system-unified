@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/sshd`
 
 ## Description
-SSHD configuration role - Enhanced SSH daemon configuration
+**SSH Daemon Hardening**
+Enhanced SSH daemon configuration focusing on strong ciphers, key exchange, and authentication policies.
 
 ## Key Tasks
 - Check if sshd_config backup exists

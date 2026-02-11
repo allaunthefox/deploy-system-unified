@@ -3,7 +3,8 @@
 **Role Path**: `roles/hardware/firmware`
 
 ## Description
-Tasks for hardware/firmware - Bare Metal Foundation
+**Bare Metal Foundation**
+Manages microcode, firmware updates, and low-level system attributes for physical hardware.
 
 ## Key Tasks
 - Detect Virtualization Environment (Internal)

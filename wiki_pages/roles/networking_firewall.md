@@ -3,7 +3,8 @@
 **Role Path**: `roles/networking/firewall`
 
 ## Description
-Tasks for networking/firewall role
+**Multi-Distro Firewall**
+Unified interface for managing rules via UFW (Debian/Arch) or Firewalld (RHEL/Fedora).
 
 ## Key Tasks
 - Install UFW (Debian/Ubuntu/Arch)

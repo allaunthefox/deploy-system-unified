@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/caddy`
 
 ## Description
-Container Caddy role - Caddy reverse proxy configuration
+**Reverse Proxy (Caddy)**
+Handles Caddy reverse proxy configuration with Red Team hardening for secrets.
 
 ## Key Tasks
 - Validate Caddy Secrets (Red Team Hardening)

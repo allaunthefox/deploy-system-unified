@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/time`
 
 ## Description
-Tasks for core/time role
+**Time Synchronization**
+Ensures accurate system time via idempotent installation and configuration of time synchronization services (Chrony).
 
 ## Key Tasks
 - Install time synchronization service (idempotent)

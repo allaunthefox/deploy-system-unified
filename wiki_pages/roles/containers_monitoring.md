@@ -3,7 +3,9 @@
 **Role Path**: `roles/containers/monitoring`
 
 ## Description
-*No description provided.*
+**Container Monitoring Role**
+
+This role uses Podman Quadlets to deploy a monitoring stack consisting of Prometheus and Grafana.
 
 ## Key Tasks
 - Check Monitoring Enable

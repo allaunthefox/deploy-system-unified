@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/firejail`
 
 ## Description
-Tasks for security/firejail - Application Sandboxing
+**Application Sandboxing**
+Configures Firejail profiles for isolating vulnerable applications in restricted environments.
 
 ## Key Tasks
 - Install Firejail

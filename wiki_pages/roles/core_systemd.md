@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/systemd`
 
 ## Description
-Core systemd role - Systemd configuration and hardening
+**Systemd Configuration & Hardening**
+Ensures systemd components (journald, resolved) are configured and hardened according to project standards.
 
 ## Key Tasks
 - Ensure systemd is available

@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/common`
 
 ## Description
-*No description provided.*
+**Shared Container Logic**
+Common tasks and placeholders shared across container roles.
 
 ## Key Tasks
 - placeholder task (no-op)

@@ -1,9 +1,10 @@
 # base_ephemeral
 
-**Placeholder page.** This profile is an Ansible deployment profile used by Deploy-System-Unified.
+The **base_ephemeral** profile is designed for non-persistent, high-security deployments. It ensures a zero-footprint architecture where the system state is not preserved across reboots, making it ideal for transient workloads and security-critical environments.
 
-Find the canonical YAML in the repository at:
-
+### Canonical Reference
+The source YAML for this profile is located at:
 - `projects/deploy-system-unified/branch_templates/base_ephemeral.yml`
 
-(You can run this profile by referencing the YAML directly in the repo.)
+### Usage
+This profile can be executed by referencing its YAML configuration directly within the deployment playbooks.

@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/hardware_support`
 
 ## Description
-Tasks for core/hardware_support
+**Hardware Discovery & Requirements**
+Discovers CPU features (AVX, AES-NI) and handles hardware acceleration requirements.
 
 ## Key Tasks
 - Retrieve CPU flags

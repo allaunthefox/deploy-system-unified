@@ -3,7 +3,8 @@
 **Role Path**: `roles/hardware/gpu`
 
 ## Description
-Main entry point for hardware/gpu
+**Unified GPU Stack**
+Automatic discovery and driver installation for AMD, Intel, and NVIDIA GPUs across architectures.
 
 ## Key Tasks
 - Check if GPU Stack is enabled

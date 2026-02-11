@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/bootstrap`
 
 ## Description
-Core bootstrap role - System initialization and base configuration
+**Core bootstrap role**
+System initialization and base configuration.
 
 ## Key Tasks
 - Gather system facts

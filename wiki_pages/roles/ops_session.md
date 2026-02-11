@@ -3,7 +3,8 @@
 **Role Path**: `roles/ops/session`
 
 ## Description
-Tasks for ops/session role
+**Deployment Session**
+Ensures deployments run within persistent sessions (Tmux) to prevent interruption.
 
 ## Key Tasks
 - Ensure TMUX session is available for deployment (idempotent)

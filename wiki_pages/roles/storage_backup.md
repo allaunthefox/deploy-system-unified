@@ -3,7 +3,8 @@
 **Role Path**: `roles/storage/backup`
 
 ## Description
-*No description provided.*
+**System Backup (restic/rclone)**
+Comprehensive system backup strategy using restic for encrypted snapshots and rclone for cloud synchronization.
 
 ## Key Tasks
 - placeholder task (no-op)

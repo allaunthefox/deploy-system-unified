@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/identity`
 
 ## Description
-Tasks for core/identity - Entropy-Backed UUID Generation
+**Identity & UUID Generation**
+Handles system identity, hostname configuration, and entropy-backed UUID generation for virtualization objects.
 
 ## Key Tasks
 - Generate high-entropy UUID for virtualization object

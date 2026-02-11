@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/media`
 
 ## Description
-Tasks for containers/media
+**Media Container Role**
+This role deploys a comprehensive media stack using Podman Quadlets with multi-tenancy support.
 
 ## Key Tasks
 - Pull Media Images

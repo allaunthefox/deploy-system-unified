@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/memory`
 
 ## Description
-Tasks for core/memory - Intelligent Memory Compression
+**Memory Compression & Swap Optimization**
+Handles intelligent memory compression (zRAM/zswap) and swap management based on workload profiles.
 
 ## Key Tasks
 - Detect Physical Swap

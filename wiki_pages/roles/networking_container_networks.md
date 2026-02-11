@@ -3,7 +3,8 @@
 **Role Path**: `roles/networking/container_networks`
 
 ## Description
-Tasks for networking/container_networks - Container Isolation
+**Container Isolation**
+Configures kernel prerequisites and network definitions for isolated container traffic.
 
 ## Key Tasks
 - Apply Kernel Networking Prerequisites

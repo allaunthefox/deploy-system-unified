@@ -3,7 +3,8 @@
 **Role Path**: `roles/networking/virtual`
 
 ## Description
-Main tasks for virt_networking - Separated concerns
+**Virtual Networking**
+Manages VLANs, VXLANs, and software-defined network overlays.
 
 ## Key Tasks
 - Assign Network UUID

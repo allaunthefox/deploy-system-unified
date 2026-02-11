@@ -3,7 +3,9 @@
 **Role Path**: `roles/containers/runtime`
 
 ## Description
-Tasks for containers/runtime role
+**Container Runtime Role**
+
+This role handles the installation and configuration of the container runtime environment (Podman/Docker) and associated hardware support (GPU).
 
 ## Key Tasks
 - Apply rootless Podman prerequisites

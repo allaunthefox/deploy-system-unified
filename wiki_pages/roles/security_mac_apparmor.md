@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/mac_apparmor`
 
 ## Description
-Tasks for security/mac_apparmor - Mandatory Access Control
+**Mandatory Access Control**
+Configures and enforces AppArmor profiles for critical system services and containers.
 
 ## Key Tasks
 - Install AppArmor packages (Debian/Ubuntu)

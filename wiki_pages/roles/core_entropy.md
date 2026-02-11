@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/entropy`
 
 ## Description
-Tasks for core/entropy role
+**Entropy Enhancement**
+Ensures high-quality random number generation by installing and configuring entropy enhancement services.
 
 ## Key Tasks
 - Install entropy enhancement services (idempotent)

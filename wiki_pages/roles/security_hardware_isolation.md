@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/hardware_isolation`
 
 ## Description
-Tasks for security/hardware_isolation - PCIe and DMA Protection
+**Hardware Level Protection**
+Manages PCIe passthrough isolation and DMA protection (IOMMU) to prevent side-channel attacks.
 
 ## Key Tasks
 - Enable IOMMU for PCIe Isolation (Intel/AMD)

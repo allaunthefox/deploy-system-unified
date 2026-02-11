@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/repositories`
 
 ## Description
-Tasks for core/repositories role
+**Repository Management**
+Ensures secure repository configuration and management of third-party sources (RPMFusion, etc.).
 
 ## Key Tasks
 - Ensure repository management tools (Debian/Ubuntu)

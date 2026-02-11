@@ -3,7 +3,8 @@
 **Role Path**: `roles/ops/preflight`
 
 ## Description
-Preflight role - Validation and readiness checks ONLY
+**System Preflight**
+Mandatory system validation (memory, network, binaries) to ensure environment readiness.
 
 ## Key Tasks
 - Gather minimum facts for preflight checks

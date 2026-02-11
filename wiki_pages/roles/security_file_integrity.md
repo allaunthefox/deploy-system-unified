@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/file_integrity`
 
 ## Description
-Tasks for security/file_integrity role - AIDE Initialization and Monitoring
+**File Integrity Monitoring**
+Initializes and manages AIDE (Advanced Intrusion Detection Environment) for file integrity monitoring.
 
 ## Key Tasks
 - Install AIDE

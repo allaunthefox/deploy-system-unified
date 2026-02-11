@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/kernel`
 
 ## Description
-Tasks for security/kernel role - Mandatory Sysctl Hardening
+**Sysctl Hardening**
+Mandatory sysctl-based kernel hardening (network stack, process memory, and ASLR settings).
 
 ## Key Tasks
 - Detect Virtualization Environment (Internal)

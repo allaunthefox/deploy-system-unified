@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/audit_integrity`
 
 ## Description
-Tasks for security/audit_integrity role - Cryptographic Log Immutability
+**Cryptographic Log Immutability**
+Ensures the integrity and immutability of system audit logs using cryptographic signatures.
 
 ## Key Tasks
 - Check if journal FSS keys are already initialized

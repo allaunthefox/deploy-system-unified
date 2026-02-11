@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/hardening`
 
 ## Description
-Security hardening role - Enhanced core security configurations
+**Core Hardening**
+Enhanced core security configurations, including shell hardening and system-wide security policies.
 
 ## Key Tasks
 - Ensure security-related packages are installed (Debian/Ubuntu)

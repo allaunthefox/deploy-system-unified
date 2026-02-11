@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/config`
 
 ## Description
-Container configuration role - General container configuration
+**General Container Config**
+Manages storage directories and general environment configuration for container workloads.
 
 ## Key Tasks
 - Create container storage directories

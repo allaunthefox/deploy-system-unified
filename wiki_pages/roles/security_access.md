@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/access`
 
 ## Description
-Security access role - SSH and user access configuration
+**SSH & User Access**
+Manages SSH match rules, administrative users, and password policy enforcement.
 
 ## Key Tasks
 - Ensure OpenSSH Server is installed

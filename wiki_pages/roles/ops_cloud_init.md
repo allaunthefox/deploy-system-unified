@@ -3,7 +3,8 @@
 **Role Path**: `roles/ops/cloud_init`
 
 ## Description
-Tasks for ops/cloud_init - Cloud Provider Sync
+**Cloud Provider Sync**
+Handles cloud-init configuration and synchronization for cloud-based deployments.
 
 ## Key Tasks
 - Wait for cloud-init to complete

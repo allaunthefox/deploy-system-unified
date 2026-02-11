@@ -3,7 +3,8 @@
 **Role Path**: `roles/networking/vpn_mesh`
 
 ## Description
-Tasks for networking/vpn_mesh - Kernel Readiness for Encrypted Traffic
+**Encrypted VPN Mesh**
+Ensures kernel readiness and configuration for encrypted traffic mesh (Wireguard/Tailscale).
 
 ## Key Tasks
 - Detect Virtualization Environment (Internal)

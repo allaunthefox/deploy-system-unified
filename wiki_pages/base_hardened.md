@@ -1,7 +1,14 @@
 # base_hardened
 
-**Placeholder page.** This profile is a hardened base deployment profile (security baseline).
+The **base_hardened** profile serves as the primary security baseline for all production hosts within the project. it implements a rigorous set of security configurations, including kernel hardening, strict access controls, and forensic logging readiness.
 
-Find the canonical YAML in the repository at:
+### Canonical Reference
+The source YAML for this profile is located at:
+- `projects/deploy-system-unified/base_hardened.yml`
+- `projects/deploy-system-unified/branch_templates/base_hardened.yml`
 
-- `projects/deploy-system-unified/base_hardened.yml` (or `projects/deploy-system-unified/branch_templates/base_hardened.yml`)
+### Core Features
+- Mandatory kernel sysctl hardening.
+- Automated security patching and repository management.
+- Enhanced SSH daemon security.
+- Forensic-ready log aggregation.

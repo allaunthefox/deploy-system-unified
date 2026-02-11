@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/logging`
 
 ## Description
-Tasks for core/logging role - Mandatory Forensic Readiness
+**Forensic Logging Readiness**
+Ensures mandatory forensic readiness by configuring systemd-journal-remote and log aggregation tools.
 
 ## Key Tasks
 - Install systemd-journal-remote for log aggregation readiness

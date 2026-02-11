@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/ips`
 
 ## Description
-Tasks for security/ips - Intrusion Prevention System (Fail2Ban)
+**Intrusion Prevention (Fail2Ban)**
+Deploys and configures Fail2Ban with custom filters for SSHD and Caddy to mitigate brute-force attacks.
 
 ## Key Tasks
 - Install Fail2Ban

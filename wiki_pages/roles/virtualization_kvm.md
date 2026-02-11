@@ -3,7 +3,8 @@
 **Role Path**: `roles/virtualization/kvm`
 
 ## Description
-Tasks for virtualization/kvm - Virtualization Layer
+**Virtualization Layer**
+Configures the KVM hypervisor layer, including CPU features and kernel modules for virtualization.
 
 ## Key Tasks
 - Assign Hypervisor Instance UUID

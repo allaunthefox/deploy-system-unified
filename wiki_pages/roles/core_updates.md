@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/updates`
 
 ## Description
-Tasks for core/updates - Automatic Security Patching
+**Automated Security Patching**
+Configures automated security updates and unattended patching to maintain a secure fleet.
 
 ## Key Tasks
 - Configure Unattended-Upgrades (Debian/Ubuntu)

@@ -3,7 +3,8 @@
 **Role Path**: `roles/ops/monitoring`
 
 ## Description
-Tasks for ops/monitoring
+**Monitoring Role (`ops/monitoring`)**
+This role deploys standard system monitoring agents and tools. It focuses on OS-level observability, providing metrics and health checks.
 
 ## Key Tasks
 - Load platform-specific variables

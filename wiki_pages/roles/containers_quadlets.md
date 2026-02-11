@@ -3,7 +3,9 @@
 **Role Path**: `roles/containers/quadlets`
 
 ## Description
-Container quadlets role - Systemd quadlet management
+**Quadlets Role**
+
+This role manages **Podman Quadlets**, which are Systemd generator files for containers. It ensures that container networks and services are managed natively by Systemd, providing robustness and auto-start capabilities.
 
 ## Key Tasks
 - Ensure checkpoint directory exists

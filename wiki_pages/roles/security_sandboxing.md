@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/sandboxing`
 
 ## Description
-Tasks for security/sandboxing - User-space Isolation
+**User-space Isolation**
+Provides user-space isolation and additional sandboxing layers for untrusted workloads.
 
 ## Key Tasks
 - Install Bubblewrap

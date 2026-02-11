@@ -3,7 +3,8 @@
 **Role Path**: `roles/orchestration/k8s_node`
 
 ## Description
-Tasks for orchestration/k8s_node - Kubernetes Node Readiness
+**Kubernetes Node Setup**
+Configures host requirements and plugins (GPU) for Kubernetes worker nodes.
 
 ## Key Tasks
 - Disable SWAP (Mandatory for K8s)

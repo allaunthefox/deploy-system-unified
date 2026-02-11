@@ -3,7 +3,8 @@
 **Role Path**: `roles/hardware/storage_tuning`
 
 ## Description
-Tasks for hardware/storage_tuning - Physical Storage Optimization
+**Physical Storage Optimization**
+Optimizes I/O schedulers, disk parameters, and filesystem-specific mount options.
 
 ## Key Tasks
 - Enable SSD TRIM timer (FSTRIM)

@@ -3,7 +3,8 @@
 **Role Path**: `roles/networking/desktop`
 
 ## Description
-Tasks for networking/desktop
+**Desktop Networking**
+Configures Wi-Fi backends and NetworkManager settings for workstation profiles.
 
 ## Key Tasks
 - Define Desktop Networking Packages

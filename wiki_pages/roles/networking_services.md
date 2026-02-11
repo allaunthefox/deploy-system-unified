@@ -3,7 +3,8 @@
 **Role Path**: `roles/networking/services`
 
 ## Description
-*No description provided.*
+**Network Services**
+Deploys specialized network services such as Endlessh tarpits.
 
 ## Key Tasks
 - placeholder task (no-op)

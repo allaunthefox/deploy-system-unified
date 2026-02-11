@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/resource_protection`
 
 ## Description
-Tasks for security/resource_protection - DoS and Resource Exhaustion Mitigation
+**DoS Mitigation**
+Implements resource limits (tasks, memory, descriptors) to mitigate denial-of-service and resource exhaustion.
 
 ## Key Tasks
 - Validate minimum resource requirements

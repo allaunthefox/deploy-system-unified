@@ -3,7 +3,8 @@
 **Role Path**: `roles/hardware/virtual_guest`
 
 ## Description
-Tasks for hardware/virtual_guest - Cloud Instance Tuning
+**Cloud Instance Tuning**
+Optimizes the operating system when running inside a virtualized environment (Contabo, Hetzner, Generic Cloud).
 
 ## Key Tasks
 - Detect Virtualization Environment (Internal)

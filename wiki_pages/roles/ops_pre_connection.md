@@ -3,7 +3,8 @@
 **Role Path**: `roles/ops/pre_connection`
 
 ## Description
-Tasks for ops/pre_connection role
+**Pre-connection Verification**
+Initial connectivity and environment checks before the main deployment run.
 
 ## Key Tasks
 - Check for existing custom SSH port on target (idempotent)

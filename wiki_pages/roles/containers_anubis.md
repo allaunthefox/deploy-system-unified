@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/anubis`
 
 ## Description
-Tasks for containers/anubis - Web AI Firewall
+**Web AI Firewall**
+Deploys the Anubis Web AI Firewall to protect ingress traffic.
 
 ## Key Tasks
 - Create Anubis Network Quadlet

@@ -3,7 +3,8 @@
 **Role Path**: `roles/containers/lxc`
 
 ## Description
-LXC GPU configuration tasks
+**LXC GPU Passthrough**
+Handles GPU slicing and passthrough configuration specifically for LXC containers.
 
 ## Key Tasks
 - Determine LXC GPU slicing strategy based on virtualization type (auto strategy)

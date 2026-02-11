@@ -3,7 +3,9 @@
 **Role Path**: `roles/containers/ops`
 
 ## Description
-Tasks for containers/ops
+**Ops Container Role**
+
+This role deploys operational dashboard and utility tools alongside the media stack.
 
 ## Key Tasks
 - Run ops secret verifications

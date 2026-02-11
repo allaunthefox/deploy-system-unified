@@ -3,7 +3,8 @@
 **Role Path**: `roles/security/scanning`
 
 ## Description
-Security/Scanning role - Focused on system validation and vulnerability scanning
+**Vulnerability Scanning**
+Comprehensive system validation and vulnerability scanning (Lyinis, Trivy, Checkov).
 
 ## Key Tasks
 - Validate preflight requirements (idempotent)

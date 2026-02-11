@@ -3,7 +3,8 @@
 **Role Path**: `roles/core/secrets`
 
 ## Description
-Tasks for core/secrets role
+**Secrets Management & Integrity**
+Handles secure secret deployment with built-in integrity verification and validation tasks.
 
 ## Key Tasks
 - Verify Core Secrets
