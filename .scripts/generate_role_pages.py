@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+"""Script to generate role pages from Role_Reference.md."""
+
 import re
 from pathlib import Path
+
 
 ROOT = Path(__file__).resolve().parents[1]
 RR = ROOT / 'wiki_pages' / 'Role_Reference.md'
@@ -34,11 +37,13 @@ for idx, role in roles:
         block_lines.pop()
     role_blocks[role] = '\n'.join(block_lines)
 
+
 def extract_variables(role_path):
+    """Extract variables from defaults/main.yml of a role."""
     defaults_file = PROJECT_ROLES / role_path / 'defaults' / 'main.yml'
     if not defaults_file.exists():
         return []
-    
+
     vars_found = []
     content = defaults_file.read_text()
     # Simple parser for top-level keys and comments
@@ -57,17 +62,18 @@ def extract_variables(role_path):
             vars_found.append((varname, comment))
     return vars_found
 
+
 for role, body in role_blocks.items():
     filename = role.replace('/', '_') + '.md'
     filepath = OUT_DIR / filename
     h1 = filename[:-3]
-    
+
     content_lines = [f'# {h1}', '', f'**role**: `{role}`', '']
-    
+
     if body:
         content_lines.append(body)
         content_lines.append('')
-    
+
     # Always try to append Variables section
     vars_list = extract_variables(role)
     if vars_list:

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Script to link Variable_Reference.md to role pages."""
+
 import re
 from pathlib import Path
 
@@ -19,7 +21,7 @@ for line in lines:
         current_role_file = f"roles/{role_name.replace('/', '_')}.md"
         new_lines.append(line)
         continue
-    
+
     # Match variable line
     m_var = re.match(r'^(\s*-\s+`)([a-zA-Z0-9_]+)(`.*)$', line)
     if m_var and current_role_file:
