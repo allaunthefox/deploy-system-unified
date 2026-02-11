@@ -64,27 +64,38 @@ jobs:
           echo "Token validated (HTTP $code)"
 
       - name: Load deploy key into ssh-agent (if present) 🔑
+        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.WIKI_SSH_KEY }}
+
+      - name: SSH debug before publish
+        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
         run: |
           set -x
-          if [ -n "${{ secrets.WIKI_SSH_KEY }}" ] || [ -n "${{ secrets.SSH_DEPLOY_KEY }}" ]; then
-            mkdir -p ~/.ssh
-            deploy_key_file=~/.ssh/wiki_deploy_key
-            if [ -n "${{ secrets.WIKI_SSH_KEY }}" ]; then
-              printf '%s
-' "${{ secrets.WIKI_SSH_KEY }}" > "$deploy_key_file"
-            else
-              printf '%s
-' "${{ secrets.SSH_DEPLOY_KEY }}" > "$deploy_key_file"
-            fi
-            chmod 600 "$deploy_key_file"
-            eval "$(ssh-agent -s)"
-            ssh-add "$deploy_key_file"
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            ssh-add -l || true
-            ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
+          ssh-add -l || true
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vT git@github.com || true
+
+      - name: Prepare deploy key file & set GIT_SSH_COMMAND
+        if: ${{ secrets.WIKI_SSH_KEY != '' || secrets.SSH_DEPLOY_KEY != '' }}
+        run: |
+          set -x
+          mkdir -p ~/.ssh
+          deploy_key_file=~/.ssh/wiki_deploy_key
+          if [ -n "${{ secrets.WIKI_SSH_KEY }}" ]; then
+            printf '%s\n' "${{ secrets.WIKI_SSH_KEY }}" > "$deploy_key_file"
           else
-            echo "No deploy key present; skipping ssh-agent setup"
+            printf '%s\n' "${{ secrets.SSH_DEPLOY_KEY }}" > "$deploy_key_file"
           fi
+          chmod 600 "$deploy_key_file"
+          if [ -n "${WIKI_SSH_PASSPHRASE:-}" ]; then
+            echo "Decrypting encrypted PEM"
+            openssl pkey -in "$deploy_key_file" -passin pass:"$WIKI_SSH_PASSPHRASE" -out "${deploy_key_file}.dec"
+            mv "${deploy_key_file}.dec" "$deploy_key_file"
+            chmod 600 "$deploy_key_file"
+          fi
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          echo "GIT_SSH_COMMAND=ssh -i $deploy_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" >> $GITHUB_ENV
 
       - name: Clone wiki repo and push (support SSH deploy key)
         env:
