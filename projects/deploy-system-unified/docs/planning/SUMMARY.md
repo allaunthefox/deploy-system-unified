@@ -10,7 +10,7 @@ This file is the planning index and the single place to see what is actively tar
 ### Active Targets
 
 1. ✅ Execute idempotence benchmark across all `roles/core/*` roles (`12/12` idempotent in run `20260212T204126Z`).
-2. Draft SOPS migration guide and key rotation SOP (documentation + runbook quality).
+2. ✅ Draft SOPS migration guide and key rotation SOP (pending operator approval): `docs/deployment/SOPS_MIGRATION_GUIDE.md`, `docs/deployment/SOPS_KEY_ROTATION_SOP.md`.
 3. Implement `roles/ops/health_check` and wire post-deploy health summary into production flow.
 
 ## Planning Document Map

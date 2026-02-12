@@ -50,6 +50,8 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[SSH Idempotence Guardrails](./deployment/SSH_IDEMPOTENCE_GUARDRAILS.md)**: Deterministic SSH configuration and anti-drift rules.
 * **[Hybrid Security Setup](./deployment/SECURITY_CROWDSEC_HYBRID.md)**: Implementation details for the Container+Host CrowdSec architecture.
 * **[Supply-Chain Hardening](./deployment/SUPPLY_CHAIN_HARDENING.md)**: Configuration guide for strict GPG/Checksum verification of third-party repositories.
+* **[SOPS Migration Guide](./deployment/SOPS_MIGRATION_GUIDE.md)**: Staged migration workflow from Vault to SOPS + Age with rollback gates.
+* **[SOPS Key Rotation SOP](./deployment/SOPS_KEY_ROTATION_SOP.md)**: Operational key and secrets rotation cadence, emergency procedure, and audit checklist.
 * **[Deployment Status](./deployment/DEPLOYMENT_STATUS.md)**: Current system readiness and implementation status.
 * **[Architecture Migration](./deployment/ARCHITECTURE_MIGRATION_GUIDE.md)**: Guide for upgrading to the multi-arch standard.
 * **Potential Problems**: [Issues to consider when deploying profile combinations](./deployment/POTENTIAL_PROBLEMS.md).

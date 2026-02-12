@@ -40,6 +40,11 @@ Move these variables first:
 - Draft key rotation SOP.
 - Define rollback to Vault-only operation.
 
+Current draft artifacts:
+
+- `docs/deployment/SOPS_MIGRATION_GUIDE.md`
+- `docs/deployment/SOPS_KEY_ROTATION_SOP.md`
+
 ### Phase 2: Tooling and Gate Update
 
 - Add validated `.sops.yaml` template with real recipients.

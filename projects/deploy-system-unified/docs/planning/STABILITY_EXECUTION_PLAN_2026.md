@@ -15,7 +15,7 @@ This document is the execution board for current work. It defines what is in sco
 | ID | Target | Status | Required Output | Evidence Path |
 | :--- | :--- | :--- | :--- | :--- |
 | T1 | Core role idempotence benchmark | Complete (12/12 idempotent) | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/` |
-| T2 | SOPS migration guide + key rotation SOP | Not Started | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/` |
+| T2 | SOPS migration guide + key rotation SOP | In Review (Draft Complete) | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/SOPS_MIGRATION_GUIDE.md` + `docs/deployment/SOPS_KEY_ROTATION_SOP.md` |
 | T3 | Post-deploy health check role | Not Started | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + playbook output artifact |
 
 ## In Scope (This Window)
@@ -67,6 +67,12 @@ This document is the execution board for current work. It defines what is in sco
 - Draft key rotation SOP (frequency, custodianship, emergency rotation procedure).
 - Define explicit cutover criteria before enabling SOPS as active provider.
 
+#### Documentation Evidence (February 12, 2026)
+
+- ✅ `docs/deployment/SOPS_MIGRATION_GUIDE.md` drafted with phased cutover, rollback, and provider-gating notes.
+- ✅ `docs/deployment/SOPS_KEY_ROTATION_SOP.md` drafted with cadence, custodianship, and emergency rotation process.
+- Remaining step for T2: operator approval/signoff.
+
 ### Track C: Observability & Health
 
 - Implement `roles/ops/health_check` with checks for systemd units, container runtime health, disk thresholds, and critical service reachability.
@@ -77,14 +83,14 @@ This document is the execution board for current work. It defines what is in sco
 
 - [x] Execute idempotence benchmark across all `core/` roles.
 - [x] Remediate failures from baseline benchmark and rerun until all `core/` roles pass second-run idempotence.
-- [ ] Draft SOPS migration guide and key rotation SOP.
+- [x] Draft SOPS migration guide and key rotation SOP (pending operator approval).
 - [ ] Implement `ops/health_check` role for post-deploy verification.
 
 ## Success Criteria (Phase 2)
 
 1. ✅ 100% of `core` roles pass idempotence gate on second run (`20260212T204126Z`).
 2. Production deployments emit a machine-readable health summary artifact.
-3. SOPS migration guide and rotation SOP are approved and usable by operators.
+3. SOPS migration guide and rotation SOP are approved and usable by operators (drafts complete, approval pending).
 
 ## Dependencies and Risks
 
