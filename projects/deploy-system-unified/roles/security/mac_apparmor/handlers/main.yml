@@ -1,6 +1,13 @@
 ---
 # Handlers for security/mac_apparmor
-- name: update grub
+
+- name: update-grub
   ansible.builtin.command: update-grub
   become: true
-  listen: "update grub"
+  when: ansible_os_family == 'Debian'
+
+- name: update-grub-redhat
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  become: true
+  when: ansible_os_family == 'RedHat'
+  listen: update-grub

@@ -1,0 +1,30 @@
+{
+  "agent": {
+    "name": "research_agent",
+    "type": "specialized",
+    "description": "Handles research and information gathering tasks",
+    "primary_model": "qwen-plus",
+    "fallback_models": ["qwen-max"],
+    "max_tokens": 4096,
+    "temperature": 0.5,
+    "capabilities": [
+      "web_search",
+      "document_analysis",
+      "data_extraction",
+      "summarization",
+      "fact_verification"
+    ],
+    "tools": [
+      "web_search",
+      "web_fetch",
+      "read_file",
+      "grep_search"
+    ],
+    "personality": "curious, thorough, detail-oriented",
+    "constraints": [
+      "cite sources when possible",
+      "verify information before providing answers",
+      "acknowledge limitations when uncertain"
+    ]
+  }
+}

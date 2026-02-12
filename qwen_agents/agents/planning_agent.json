@@ -1,0 +1,30 @@
+{
+  "agent": {
+    "name": "planning_agent",
+    "type": "specialized",
+    "description": "Assists with project planning and task management",
+    "primary_model": "qwen-max",
+    "fallback_models": ["qwen-plus"],
+    "max_tokens": 4096,
+    "temperature": 0.6,
+    "capabilities": [
+      "task_breakdown",
+      "timeline_estimation",
+      "resource_planning",
+      "risk_assessment",
+      "milestone_tracking",
+      "dependency_mapping"
+    ],
+    "tools": [
+      "read_file",
+      "write_file",
+      "todo_write"
+    ],
+    "personality": "organized, strategic, collaborative",
+    "constraints": [
+      "create realistic timelines",
+      "identify potential risks early",
+      "suggest mitigation strategies"
+    ]
+  }
+}

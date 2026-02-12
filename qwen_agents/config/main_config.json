@@ -1,0 +1,34 @@
+{
+  "qwen_agents": {
+    "version": "1.0",
+    "default_model": "qwen-max",
+    "max_tokens": 8192,
+    "temperature": 0.7,
+    "sub_agents": [
+      {
+        "name": "research_agent",
+        "description": "Handles research and information gathering tasks",
+        "model": "qwen-plus",
+        "capabilities": ["web_search", "document_analysis", "data_extraction"]
+      },
+      {
+        "name": "coding_agent",
+        "description": "Specialized in code generation and debugging",
+        "model": "qwen-coding",
+        "capabilities": ["code_generation", "debugging", "refactoring", "testing"]
+      },
+      {
+        "name": "analysis_agent",
+        "description": "Performs data analysis and generates insights",
+        "model": "qwen-max",
+        "capabilities": ["data_analysis", "visualization", "reporting", "statistical_analysis"]
+      },
+      {
+        "name": "planning_agent",
+        "description": "Assists with project planning and task management",
+        "model": "qwen-max",
+        "capabilities": ["task_breakdown", "timeline_estimation", "resource_planning", "risk_assessment"]
+      }
+    ]
+  }
+}
