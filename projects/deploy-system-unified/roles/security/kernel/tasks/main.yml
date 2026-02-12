@@ -36,14 +36,12 @@
   when: not _sec_is_container
   tags: [security, kernel]
 
-- name: Configure Kernel to zero memory on free (GRUB)
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    # Regex negative lookahead: Only match if 'init_on_free' is NOT present
-    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*init_on_free=1).*)"$'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 init_on_free=1 page_poison=1 slab_nomerge"'
-    backrefs: true
-  become: true
+- name: Register Kernel Security Parameters for GRUB
+  ansible.builtin.set_fact:
+    core_grub_security_params: >-
+      {{
+        core_grub_security_params | default([]) +
+        ['init_on_free=1', 'page_poison=1', 'slab_nomerge']
+      }}
   when: not _sec_is_container
-  notify: update-grub
   tags: [security, kernel]

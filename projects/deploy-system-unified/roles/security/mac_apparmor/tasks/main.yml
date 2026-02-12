@@ -20,16 +20,13 @@
     - not (is_virtualized | default(false))
   become: true
 
-- name: Enforce AppArmor at boot via GRUB
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    # Regex negative lookahead to ensure parameters are added only if not present
-    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*apparmor=1 security=apparmor).*)"$'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 apparmor=1 security=apparmor"'
-    backrefs: true
-  register: apparmor_grub
+- name: Register AppArmor Security Parameters for GRUB
+  ansible.builtin.set_fact:
+    core_grub_security_params: >-
+      {{
+        core_grub_security_params | default([]) +
+        ['apparmor=1', 'security=apparmor']
+      }}
   when:
     - ansible_os_family == 'Debian'
     - not (is_virtualized | default(false))
-  become: true
-  notify: update-grub

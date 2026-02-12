@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path('.').resolve()
 WIKI_DIR = ROOT / 'wiki_pages'
 PROJECT_ROLES = ROOT / 'projects' / 'deploy-system-unified' / 'roles'
+ROLE_REF = WIKI_DIR / 'Role_Reference.md'
 
 def slugify(s):
     # Using the same slugify as the linter
@@ -29,29 +30,55 @@ def extract_variables(role_path):
             vars_found.append(m.group(1))
     return vars_found
 
-def process_file(file_path):
-    print(f"Processing {file_path.name}...")
-    content = file_path.read_text()
-    lines = content.splitlines()
-    new_lines = []
+def get_roles_by_category():
+    """Build a map of category => [roles] from Role_Reference.md."""
+    if not ROLE_REF.exists():
+        return {}
     
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        new_lines.append(line)
+    content = ROLE_REF.read_text()
+    categories = {}
+    current_category = None
+    
+    for line in content.splitlines():
+        # Match ## Category Roles
+        m_cat = re.match(r'^##\s+(.+)\s+Roles', line)
+        if m_cat:
+            current_category = m_cat.group(1).strip()
+            categories[current_category] = []
+            continue
+            
+        # Match ### `subsystem/role`
+        m_role = re.match(r'^###\s+`([^`]+)`', line)
+        if m_role and current_category:
+            categories[current_category].append(m_role.group(1).strip())
+            
+    return categories
+
+def process_categories():
+    roles_map = get_roles_by_category()
+    
+    categories_to_files = {
+        'Containers': 'Variable_Reference_Containers.md',
+        'Core': 'Variable_Reference_Core.md',
+        'Security': 'Variable_Reference_Security.md',
+        'Networking': 'Variable_Reference_Networking.md',
+        'Storage': 'Variable_Reference_Storage.md'
+    }
+    
+    for cat_name, filename in categories_to_files.items():
+        print(f"Processing {filename} ({cat_name})...")
+        file_path = WIKI_DIR / filename
+        roles = roles_map.get(cat_name, [])
         
-        # Match role header: ### `subsystem/role`
-        m_role = re.match(r'^### `([^`]+)`', line)
-        if m_role:
-            role_name = m_role.group(1)
+        if not roles:
+            print(f"  WARNING: No roles found for category {cat_name}")
+        
+        new_lines = [f"# {filename[:-3]}", "", f"## {cat_name} Variables", ""]
+        
+        for role_name in sorted(roles):
+            new_lines.append(f"### `{role_name}`")
             role_vars = extract_variables(role_name)
             
-            # Skip existing variable list
-            i += 1
-            while i < len(lines) and (lines[i].startswith('- `[') or not lines[i].strip() or lines[i].startswith('- *No variables')):
-                i += 1
-            
-            # Add new variable list
             if role_vars:
                 role_md_file = role_name.replace('/', '_') + '.md'
                 for v in role_vars:
@@ -61,25 +88,8 @@ def process_file(file_path):
             else:
                 new_lines.append('- *No variables defined in defaults/main.yml*')
                 new_lines.append('')
-            
-            # Since we incremented i, we need to continue without adding the line again
-            continue
-        
-        i += 1
-        
-    file_path.write_text('\n'.join(new_lines) + '\n')
+                
+        file_path.write_text('\n'.join(new_lines) + '\n')
 
-vr_files = [
-    'Variable_Reference_Containers.md',
-    'Variable_Reference_Core.md',
-    'Variable_Reference_Security.md',
-    'Variable_Reference_Networking.md',
-    'Variable_Reference_Storage.md'
-]
-
-for filename in vr_files:
-    p = WIKI_DIR / filename
-    if p.exists():
-        process_file(p)
-
+process_categories()
 print("Synchronization complete.")

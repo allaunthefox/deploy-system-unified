@@ -92,13 +92,16 @@
     - virt_type == 'bare-metal' or virt_type == 'virtual'
   block:
     - name: Enable ZSwap Kernel Parameters
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!zswap\.enabled=1).)*"$'
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 zswap.enabled=1 zswap.compressor={{ core_memory_zswap_compressor }} zswap.max_pool_percent={{ core_memory_zswap_max_pool_percent }}"'
-        backrefs: true
-      become: true
-      notify: update-grub
+      ansible.builtin.set_fact:
+        core_grub_performance_params: >-
+          {{
+            core_grub_performance_params | default([]) +
+            [
+              'zswap.enabled=1',
+              'zswap.compressor=' ~ core_memory_zswap_compressor,
+              'zswap.max_pool_percent=' ~ core_memory_zswap_max_pool_percent
+            ]
+          }}
 
     - name: Disable ZRAM (Conflict Avoidance)
       ansible.builtin.systemd:

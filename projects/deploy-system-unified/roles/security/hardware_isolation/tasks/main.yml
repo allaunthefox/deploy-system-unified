@@ -16,18 +16,23 @@
     _hardware_isolation_vendor: "{{ hardware_isolation_iommu_vendor }}"
   when: hardware_isolation_iommu_vendor != "auto"
 
-- name: Configure IOMMU in GRUB
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!{{ _hardware_isolation_vendor }}_iommu=on).)*"$'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 {{ _hardware_isolation_vendor }}_iommu=on{% if hardware_isolation_iommu_pt %} iommu=pt{% endif %}{% if hardware_isolation_acs_override %} pcie_acs_override=downstream,multifunction{% endif %}"'
-    backrefs: true
-  become: true
+- name: Register IOMMU Isolation Parameters for GRUB
+  ansible.builtin.set_fact:
+    core_grub_isolation_params: >-
+      {{
+        core_grub_isolation_params | default([]) +
+        [
+          _hardware_isolation_vendor ~ '_iommu=on'
+        ] + (
+          ['iommu=pt'] if hardware_isolation_iommu_pt else []
+        ) + (
+          ['pcie_acs_override=downstream,multifunction'] if hardware_isolation_acs_override else []
+        )
+      }}
   when:
     - not (is_virtualized | default(false))
     - hardware_isolation_iommu_enabled
     - _hardware_isolation_vendor in ['intel', 'amd']
-  notify: update-grub
 
 - name: Blacklist dangerous DMA-capable modules
   ansible.builtin.template:
