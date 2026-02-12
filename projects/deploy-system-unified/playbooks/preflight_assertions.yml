@@ -6,11 +6,12 @@
   tasks:
     - name: Define vault secrets file path
       ansible.builtin.set_fact:
-        preflight_vault_secrets_file: "{{ playbook_dir }}/inventory/group_vars/all/secrets.generated.yml"
+        preflight_repo_root: "{{ playbook_dir | dirname }}"
+        preflight_vault_secrets_file: "{{ (playbook_dir | dirname) }}/inventory/group_vars/all/secrets.generated.yml"
         preflight_vault_password_file: >-
           {{
             lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')
-            | default(playbook_dir ~ '/.vault_pass', true)
+            | default((playbook_dir | dirname) ~ '/.vault_pass', true)
           }}
       changed_when: false
       delegate_to: localhost
@@ -66,7 +67,7 @@
 
     - name: Verify no placeholder SOPS configuration exists
       ansible.builtin.stat:
-        path: "{{ playbook_dir }}/.sops.yaml"
+        path: "{{ preflight_repo_root }}/.sops.yaml"
       register: sops_stat
       delegate_to: localhost
 

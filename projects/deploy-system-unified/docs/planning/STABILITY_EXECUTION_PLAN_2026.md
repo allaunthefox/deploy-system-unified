@@ -16,7 +16,7 @@ This document is the execution board for current work. It defines what is in sco
 | :--- | :--- | :--- | :--- | :--- |
 | T1 | Core role idempotence benchmark | Complete (12/12 idempotent) | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/` |
 | T2 | SOPS migration guide + key rotation SOP | In Review (Draft Complete) | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/SOPS_MIGRATION_GUIDE.md` + `docs/deployment/SOPS_KEY_ROTATION_SOP.md` |
-| T3 | Post-deploy health check role | In Review (Implemented + Gate Validated for `inventory/local.ini`) | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + `ci-artifacts/health/20260212T213423Z/` |
+| T3 | Post-deploy health check role | In Review (Implemented + Gate Validated in production entrypoint flow) | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + `ci-artifacts/health/20260212T214150Z/` |
 
 ## In Scope (This Window)
 
@@ -94,7 +94,10 @@ This document is the execution board for current work. It defines what is in sco
 - ✅ `inventory/local.ini` parse/load blocker cleared (vault secrets header corrected locally; inventory and syntax checks now pass).
 - ✅ Preflight guardrail hardened to catch malformed Vault file structure and decryptability failures earlier:
   - `playbooks/preflight_assertions.yml`
-- Remaining step for T3 completion: full end-to-end production deployment run with health summary artifact collected from real target context.
+- ✅ Production entrypoint flow (`production_deploy.yml`) validated with health gate active and artifact emission:
+  - `ci-artifacts/health/20260212T214150Z/localhost.json`
+  - `ci-artifacts/health/20260212T214150Z/production_flow_summary.md`
+- Remaining step for T3 completion: full non-skipped production deployment on the intended real target host(s).
 
 ## Near-Term Actions
 
@@ -107,7 +110,7 @@ This document is the execution board for current work. It defines what is in sco
 ## Success Criteria (Phase 2)
 
 1. ✅ 100% of `core` roles pass idempotence gate on second run (`20260212T204126Z`).
-2. In Progress: production deployments emit a machine-readable health summary artifact (role implementation + `inventory/local.ini` gate validation complete; full real-target production run pending).
+2. In Progress: production deployments emit a machine-readable health summary artifact (role implementation + production entrypoint integration validation complete; full non-skipped real-target run pending).
 3. SOPS migration guide and rotation SOP are approved and usable by operators (drafts complete, approval pending).
 
 ## Dependencies and Risks
