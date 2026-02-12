@@ -29,7 +29,12 @@
 - name: Generate new Network UUID (if no checkpoint)
   ansible.builtin.import_role:
     name: core/identity
-  when: not quadlet_checkpoint_stat.stat.exists
+  when: not containers_quadlet_checkpoint_stat.stat.exists
+
+- name: Determine quadlet object UUID
+  ansible.builtin.set_fact:
+    containers_quadlet_object_uuid: "{{ containers_object_uuid | default(object_uuid | default('')) }}"
+  changed_when: false
 
 - name: Ensure quadlet directory exists
   ansible.builtin.file:
@@ -41,23 +46,20 @@
   become: true
 - name: Create quadlet network configuration
   ansible.builtin.copy:
-    dest: "{{ containers_systemd_dir }}/{{ quadlet_network_name }}.network"
+    dest: "{{ containers_systemd_dir }}/{{ containers_quadlet_network_name }}.network"
     content: |
       [Network]
-      Label=org.deploy-system.uuid={{ object_uuid }}
-      NetworkName={{ quadlet_network_name }}
+      Label=org.deploy-system.uuid={{ containers_quadlet_object_uuid }}
+      NetworkName={{ containers_quadlet_network_name }}
       Driver=bridge
-      Subnet={{ quadlet_network_subnet | default('10.89.0.0/24') }}
-      Gateway={{ quadlet_network_gateway | default('10.89.0.1') }}
-      IPRange={{ quadlet_network_iprange | default('10.89.0.0/24') }}
+      Subnet={{ containers_quadlet_network_subnet }}
+      Gateway={{ containers_quadlet_network_gateway }}
+      IPRange={{ containers_quadlet_network_iprange }}
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  when: quadlet_create_network | default(true)
-  # Ensure object_uuid compatibility with legacy variable name
-  vars:
-    object_uuid: "{{ containers_object_uuid | default(object_uuid | default('')) }}"
+  when: containers_quadlet_create_network | bool
 - name: Deploy custom quadlet files
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -65,9 +67,9 @@
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
-  loop: "{{ quadlet_custom_files | default([]) }}"
+  loop: "{{ containers_quadlet_custom_files }}"
   become: true
-  when: quadlet_custom_files is defined and quadlet_custom_files | length > 0
+  when: containers_quadlet_custom_files | length > 0
   notify: reload systemd
 - name: Reload systemd to pick up quadlets
   ansible.builtin.systemd:
@@ -81,7 +83,7 @@
 - name: List generated quadlet services
   ansible.builtin.shell:
     cmd: >-
-      {{ (containers_podman_rootless_enabled | bool)
+      {{ (podman_rootless_enabled | default(false) | bool)
          | ternary("bash -o pipefail -c 'systemctl --user list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'",
                    "bash -o pipefail -c 'systemctl list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'") }}
   register: containers_quadlet_services
@@ -104,14 +106,12 @@
     dest: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
     content: |
       {
-        "uuid": "{{ object_uuid }}",
-        "last_updated": "{{ ansible_date_time.iso8601 }}",
+        "uuid": "{{ containers_quadlet_object_uuid }}",
         "role": "containers/quadlets",
         "deployment_variables": {
-          "network_name": "{{ quadlet_network_name }}",
-          "subnet": "{{ quadlet_network_subnet | default('10.89.0.0/24') }}"
+          "network_name": "{{ containers_quadlet_network_name }}",
+          "subnet": "{{ containers_quadlet_network_subnet }}"
         }
       }
     mode: '0600'
-  changed_when: false
   become: true

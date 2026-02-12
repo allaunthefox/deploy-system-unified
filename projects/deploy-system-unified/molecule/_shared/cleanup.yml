@@ -1,0 +1,5 @@
+---
+- name: Cleanup (No-op)
+  hosts: all
+  gather_facts: false
+  tasks: []

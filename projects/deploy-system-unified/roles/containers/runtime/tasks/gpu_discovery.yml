@@ -47,7 +47,11 @@
     - name: Set GPU count fact
       ansible.builtin.set_fact:
         containers_gpu_count_detected: >-
-          {{ (nvidia_gpu_info.stdout_lines | length) + (amd_gpu_info.stdout_lines | length) + (intel_gpu_info.stdout_lines | length) }}
+          {{
+            (containers_nvidia_gpu_info.stdout_lines | length) +
+            (containers_amd_gpu_info.stdout_lines | length) +
+            (containers_intel_gpu_info.stdout_lines | length)
+          }}
     - name: Set GPU device information fact
       ansible.builtin.set_fact:
         containers_gpu_device_info: >-
@@ -63,7 +67,7 @@
     - name: Set NVIDIA GPU model fact
       ansible.builtin.set_fact:
         containers_gpu_nvidia_model: "{{ containers_nvidia_gpu_model.stdout_lines }}"
-      when: containers_gpu_vendor_detected == "nvidia" and nvidia_gpu_model.stdout | length > 0
+      when: containers_gpu_vendor_detected == "nvidia" and containers_nvidia_gpu_model.stdout | length > 0
     - name: Detect NVIDIA MIG support
       ansible.builtin.shell:
         cmd: >-
@@ -75,8 +79,8 @@
       when: containers_gpu_vendor_detected == "nvidia"
     - name: Set NVIDIA MIG support fact
       ansible.builtin.set_fact:
-        containers_gpu_nvidia_mig_supported: "{{ 'Multi-Instance GPU' in nvidia_mig_support.stdout }}"
-      when: containers_gpu_vendor_detected == "nvidia" and nvidia_mig_support.stdout | length > 0
+        containers_gpu_nvidia_mig_supported: "{{ 'Multi-Instance GPU' in containers_nvidia_mig_support.stdout }}"
+      when: containers_gpu_vendor_detected == "nvidia" and containers_nvidia_mig_support.stdout | length > 0
     - name: Detect AMD GPU model
       ansible.builtin.shell:
         cmd: >-
@@ -89,7 +93,7 @@
     - name: Set AMD GPU model fact
       ansible.builtin.set_fact:
         containers_gpu_amd_model: "{{ containers_amd_gpu_model.stdout.strip() }}"
-      when: containers_gpu_vendor_detected == "amd" and amd_gpu_model.stdout | length > 0
+      when: containers_gpu_vendor_detected == "amd" and containers_amd_gpu_model.stdout | length > 0
     - name: Detect Intel GPU model
       ansible.builtin.shell:
         cmd: >-
@@ -102,7 +106,7 @@
     - name: Set Intel GPU model fact
       ansible.builtin.set_fact:
         containers_gpu_intel_model: "{{ containers_intel_gpu_model.stdout.strip() }}"
-      when: containers_gpu_vendor_detected == "intel" and intel_gpu_model.stdout | length > 0
+      when: containers_gpu_vendor_detected == "intel" and containers_intel_gpu_model.stdout | length > 0
     - name: Debug GPU discovery results
       ansible.builtin.debug:
         msg: |
