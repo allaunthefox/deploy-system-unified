@@ -28,10 +28,10 @@
     - { regexp: '^#?Compress=', line: 'Compress=yes' }
     - { regexp: '^#?Seal=', line: 'Seal=yes' }
     - { regexp: '^#?ForwardToSyslog=', line: 'ForwardToSyslog=yes' }
-    - { regexp: '^#?RateLimitIntervalSec=', line: 'RateLimitIntervalSec=30s' }
-    - { regexp: '^#?RateLimitBurst=', line: 'RateLimitBurst=1000' }
-    - { regexp: '^#?MaxFileSec=', line: 'MaxFileSec=1day' }
-    - { regexp: '^#?MaxRetentionSec=', line: 'MaxRetentionSec=30day' }
+    - { regexp: '^#?RateLimitIntervalSec=', line: 'RateLimitIntervalSec={{ logging_rate_limit_interval }}' }
+    - { regexp: '^#?RateLimitBurst=', line: 'RateLimitBurst={{ logging_rate_limit_burst }}' }
+    - { regexp: '^#?MaxFileSec=', line: 'MaxFileSec={{ logging_max_file_sec }}' }
+    - { regexp: '^#?MaxRetentionSec=', line: 'MaxRetentionSec={{ logging_max_retention_sec }}' }
   become: true
   notify: restart journald
   when: ansible_facts['service_mgr'] == 'systemd'
