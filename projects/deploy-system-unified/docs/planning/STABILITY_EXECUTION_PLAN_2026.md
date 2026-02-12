@@ -16,7 +16,7 @@ This document is the execution board for current work. It defines what is in sco
 | :--- | :--- | :--- | :--- | :--- |
 | T1 | Core role idempotence benchmark | Complete (12/12 idempotent) | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/` |
 | T2 | SOPS migration guide + key rotation SOP | In Review (Draft Complete) | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/SOPS_MIGRATION_GUIDE.md` + `docs/deployment/SOPS_KEY_ROTATION_SOP.md` |
-| T3 | Post-deploy health check role | In Review (Implemented) | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + `ci-artifacts/health/20260212T211810Z/` |
+| T3 | Post-deploy health check role | In Review (Implemented + Gate Validated Locally) | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + `ci-artifacts/health/20260212T212157Z/` |
 
 ## In Scope (This Window)
 
@@ -83,24 +83,30 @@ This document is the execution board for current work. It defines what is in sco
 
 - ✅ New role implemented: `roles/ops/health_check/` (defaults, tasks, handlers, vars, files/templates placeholders).
 - ✅ Production flow wiring added: `production_deploy.yml` post-task includes `ops/health_check`.
-- ✅ Local machine-readable artifact captured:
+- ✅ Local machine-readable artifacts captured:
   - `ci-artifacts/health/20260212T211810Z/localhost.json`
   - `ci-artifacts/health/20260212T211810Z/summary.md`
-  - `ci-artifacts/health/LATEST_RUN.txt`
 - ✅ Mandatory-failure gate implemented via final assert in role task flow.
-- Remaining step for T3 completion: run/validate health checks in production deployment context with gate enabled.
+- ✅ Mandatory-failure gate execution validated (`health_check_fail_on_mandatory=true`):
+  - `ci-artifacts/health/20260212T212157Z/localhost.json`
+  - `ci-artifacts/health/20260212T212157Z/gate_enabled_summary.md`
+  - `ci-artifacts/health/LATEST_RUN.txt`
+- ⚠️ `inventory/local.ini` production-playbook-context run is currently blocked pre-role by variable merge issue:
+  - `ci-artifacts/health/20260212T212157Z/inventory_local_blocker.md`
+- Remaining step for T3 completion: resolve inventory merge blocker and rerun gate validation through the full production playbook path.
 
 ## Near-Term Actions
 
 - [x] Execute idempotence benchmark across all `core/` roles.
 - [x] Remediate failures from baseline benchmark and rerun until all `core/` roles pass second-run idempotence.
 - [x] Draft SOPS migration guide and key rotation SOP (pending operator approval).
-- [x] Implement `ops/health_check` role for post-deploy verification (pending production-context validation).
+- [x] Implement `ops/health_check` role for post-deploy verification.
+- [ ] Resolve `inventory/local.ini` variable merge blocker for production-path gate validation.
 
 ## Success Criteria (Phase 2)
 
 1. ✅ 100% of `core` roles pass idempotence gate on second run (`20260212T204126Z`).
-2. In Progress: production deployments emit a machine-readable health summary artifact (role and local smoke evidence complete; production-context validation pending).
+2. In Progress: production deployments emit a machine-readable health summary artifact (role implementation and local gate validation complete; production-playbook path blocked by inventory variable merge issue).
 3. SOPS migration guide and rotation SOP are approved and usable by operators (drafts complete, approval pending).
 
 ## Dependencies and Risks
