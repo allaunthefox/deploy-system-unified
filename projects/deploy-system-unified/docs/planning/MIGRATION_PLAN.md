@@ -1,5 +1,8 @@
 # MIGRATION_PLAN
 
+**Status:** Active domain support (execute when migration window is scheduled)  
+**Relationship to Current Window:** Not a default near-term target unless explicitly promoted in the execution board.
+
 ## Overview
 
 This document outlines the strategy to migrate legacy backups from `SystemBackups` into the new `deploy-system-unified` architecture. The key objective is to restore data while **rotating all sensitive credentials** to match the new strengthened security posture.

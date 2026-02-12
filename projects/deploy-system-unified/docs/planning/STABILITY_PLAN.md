@@ -1,5 +1,8 @@
 # STABILITY_PLAN
 
+**Status:** Strategic reference (active)  
+**Execution Source of Truth:** `STABILITY_EXECUTION_PLAN_2026.md`
+
 **Date:** February 7, 2026  
 **Scope:** Production and development playbooks, base hardening, container stack, secrets handling, backups, and observability.
 
@@ -84,7 +87,10 @@
 - SOPS migration dependencies (real Age keys and updated `.sops.yaml`).
 - GPU vendor variability in test coverage and runtime behavior.
 
-## Immediate Next Actions
+## Historical Immediate Actions (Phase 1 Snapshot)
+
+This section is retained for historical context from the original stability planning pass.
+Current execution priorities are tracked in `STABILITY_EXECUTION_PLAN_2026.md`.
 
 - Create `collections.yml` and `requirements.yml` with pinned versions.
 - Add a CI job for `--check --diff` against the production template.

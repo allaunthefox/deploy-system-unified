@@ -1,5 +1,6 @@
 # MIGRATION_STRATEGY
 
-**Placeholder.** Canonical migration plan lives in `wiki_pages/MIGRATION_PLAN`.
+**Status:** Alias document (for backward compatibility).  
+**Canonical plan:** `docs/planning/MIGRATION_PLAN.md`
 
-See: `wiki_pages/MIGRATION_PLAN`
+See: `docs/planning/MIGRATION_PLAN.md`

@@ -1,4 +1,7 @@
-#GPU_ENHANCED_PLAN
+# GPU_ENHANCED_PLAN
+
+**Status:** Backlog (Long-horizon work; not in current 2-4 week target window)  
+**Activation Rule:** Promote specific GPU tasks into `STABILITY_EXECUTION_PLAN_2026.md` before execution.
 
 ### **Battlemage Definition**
 
