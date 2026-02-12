@@ -1,0 +1,90 @@
+---
+# Security access role - SSH and user access configuration
+
+- name: Ensure OpenSSH Server is installed
+  ansible.builtin.package:
+    name: "{{ 'openssh' if ansible_os_family == 'Archlinux' else 'openssh-server' }}"
+    state: present
+  become: true
+
+- name: Determine SSH service name
+  ansible.builtin.set_fact:
+    ssh_service_name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
+
+- name: Ensure SSH privilege separation directory exists
+  ansible.builtin.file:
+    path: /run/sshd
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Check for systemctl presence
+  ansible.builtin.stat:
+    path: /bin/systemctl
+  register: systemctl_check
+  changed_when: false
+  become: true
+
+- name: Ensure SSH service is running
+  ansible.builtin.systemd:
+    name: "{{ ssh_service_name }}"
+    enabled: true
+    state: started
+    no_block: true
+  become: true
+  when:
+    - ansible_facts['service_mgr'] == 'systemd'
+    - systemctl_check.stat.exists
+- name: Create wheel group if not exists
+  ansible.builtin.group:
+    name: wheel
+    state: present
+  become: true
+- name: Configure sudo for wheel group
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  become: true
+
+- name: Validate admin password hash (if enforcement enabled)
+  ansible.builtin.assert:
+    that:
+      - access_admin_password_hash | default('') | length > 0
+      - access_admin_password_hash not in access_admin_password_placeholders
+      - access_admin_password_hash is match('^\\$')
+    fail_msg: >-
+      Admin password hash is missing, placeholder, or not hashed. Store a valid
+      hash in encrypted secrets (SOPS/Vault) and set access_admin_password_enforce: true.
+  when: access_admin_password_enforce | bool
+
+- name: Set admin account password hash (idempotent)
+  ansible.builtin.user:
+    name: "{{ access_admin_user }}"
+    password: "{{ access_admin_password_hash }}"
+    update_password: always
+  become: true
+  when:
+    - access_admin_password_hash | default('') | length > 0
+    - access_admin_password_hash not in access_admin_password_placeholders
+    - access_admin_password_hash is match('^\\$')
+- name: Configure SSH Match blocks (User-level IP restrictions)
+  ansible.builtin.blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED SSH MATCH RULES"
+    insertafter: EOF
+    block: |
+      {% for rule in ssh_match_rules %}
+      Match {{ rule.type | default('User') }} {{ rule.name }}{% if rule.address is defined %} Address {{ rule.address }}{% endif %}
+      {% for option in rule.options | default([]) %}
+          {{ option }}
+      {% endfor %}
+      {% endfor %}
+    validate: '/usr/sbin/sshd -t -f %s'
+  become: true
+  notify: restart sshd
+  when: ssh_match_rules is defined and ssh_match_rules | length > 0
+- name: Set access configuration completion flag
+  ansible.builtin.set_fact:
+    security_access_complete: true
