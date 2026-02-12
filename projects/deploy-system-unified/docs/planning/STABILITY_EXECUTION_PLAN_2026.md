@@ -16,7 +16,7 @@ This document is the execution board for current work. It defines what is in sco
 | :--- | :--- | :--- | :--- | :--- |
 | T1 | Core role idempotence benchmark | Complete (12/12 idempotent) | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/` |
 | T2 | SOPS migration guide + key rotation SOP | In Review (Draft Complete) | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/SOPS_MIGRATION_GUIDE.md` + `docs/deployment/SOPS_KEY_ROTATION_SOP.md` |
-| T3 | Post-deploy health check role | Not Started | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + playbook output artifact |
+| T3 | Post-deploy health check role | In Review (Implemented) | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + `ci-artifacts/health/20260212T211810Z/` |
 
 ## In Scope (This Window)
 
@@ -79,17 +79,28 @@ This document is the execution board for current work. It defines what is in sco
 - Emit a final deployment health summary in machine-readable format.
 - Fail deploy when mandatory health checks fail.
 
+#### Implementation Evidence (February 12, 2026)
+
+- ✅ New role implemented: `roles/ops/health_check/` (defaults, tasks, handlers, vars, files/templates placeholders).
+- ✅ Production flow wiring added: `production_deploy.yml` post-task includes `ops/health_check`.
+- ✅ Local machine-readable artifact captured:
+  - `ci-artifacts/health/20260212T211810Z/localhost.json`
+  - `ci-artifacts/health/20260212T211810Z/summary.md`
+  - `ci-artifacts/health/LATEST_RUN.txt`
+- ✅ Mandatory-failure gate implemented via final assert in role task flow.
+- Remaining step for T3 completion: run/validate health checks in production deployment context with gate enabled.
+
 ## Near-Term Actions
 
 - [x] Execute idempotence benchmark across all `core/` roles.
 - [x] Remediate failures from baseline benchmark and rerun until all `core/` roles pass second-run idempotence.
 - [x] Draft SOPS migration guide and key rotation SOP (pending operator approval).
-- [ ] Implement `ops/health_check` role for post-deploy verification.
+- [x] Implement `ops/health_check` role for post-deploy verification (pending production-context validation).
 
 ## Success Criteria (Phase 2)
 
 1. ✅ 100% of `core` roles pass idempotence gate on second run (`20260212T204126Z`).
-2. Production deployments emit a machine-readable health summary artifact.
+2. In Progress: production deployments emit a machine-readable health summary artifact (role and local smoke evidence complete; production-context validation pending).
 3. SOPS migration guide and rotation SOP are approved and usable by operators (drafts complete, approval pending).
 
 ## Dependencies and Risks
