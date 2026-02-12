@@ -1,0 +1,26 @@
+---
+# Defaults for security/hardware_isolation
+
+# Enable IOMMU for PCIe Isolation
+hardware_isolation_iommu_enabled: true
+
+# IOMMU Mode (intel_iommu=on or amd_iommu=on)
+# Values: 'auto', 'intel', 'amd'
+hardware_isolation_iommu_vendor: "auto"
+
+# Pass-through mode for IOMMU (iommu=pt)
+# pt prevents the IOMMU from being used for devices that don't need it,
+# providing better performance for devices not in use.
+hardware_isolation_iommu_pt: true
+
+# DMA Protection - Blacklist dangerous DMA-capable modules
+hardware_isolation_dma_protection_enabled: true
+
+# Modules to blacklist for DMA isolation
+hardware_isolation_blacklist_modules:
+  - firewire-ohci
+  - thunderbolt
+
+# PCIe Access Control Services (ACS) override
+# Use with caution: helps with GPU passthrough when hardware lacks ACS support
+hardware_isolation_acs_override: false
