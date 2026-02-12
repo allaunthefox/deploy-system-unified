@@ -24,12 +24,22 @@
     path: "{{ core_grub_config_path }}"
   register: grub_stat
 
+- name: Warn when GRUB config is missing
+  ansible.builtin.debug:
+    msg: >-
+      core/grub: GRUB config file {{ core_grub_config_path }} not found;
+      skipping GRUB_CMDLINE_LINUX_DEFAULT update.
+    warn: true
+  when:
+    - core_grub_enabled
+    - not grub_stat.stat.exists
+
 - name: Update GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub
   ansible.builtin.lineinfile:
     path: "{{ core_grub_config_path }}"
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ _core_grub_cmdline }}"'
-    validate: '/usr/bin/grep -q "GRUB_CMDLINE_LINUX_DEFAULT" %s'
+    validate: '/bin/grep -q "GRUB_CMDLINE_LINUX_DEFAULT" %s'
   become: true
   when:
     - core_grub_enabled
