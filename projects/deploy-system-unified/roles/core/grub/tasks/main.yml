@@ -12,7 +12,7 @@
           (core_grub_isolation_params | default([])) +
           (core_grub_performance_params | default([])) +
           (core_grub_extra_params | default([]))
-        ) | unique | sort | select('string') | list
+        ) | select('string') | reject('equalto', '') | unique | list
       }}
 
 - name: Construct GRUB_CMDLINE_LINUX_DEFAULT
@@ -31,7 +31,7 @@
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ _core_grub_cmdline }}"'
     validate: '/usr/bin/grep -q "GRUB_CMDLINE_LINUX_DEFAULT" %s'
   become: true
-  when: 
+  when:
     - core_grub_enabled
     - grub_stat.stat.exists
   register: grub_config_update
@@ -42,7 +42,7 @@
     msg: "Triggering GRUB update due to force flag"
   changed_when: true
   notify: update-grub
-  when: 
+  when:
     - core_grub_enabled
     - core_grub_force_update
     - grub_stat.stat.exists

@@ -9,7 +9,7 @@
   failed_when: false
 - name: Check if Btrfs subvolume exists
   ansible.builtin.shell: |
-    if [-d "{{ item.item.path }}"] && btrfs subvolume list "{{ item.item.path | dirname }}" | grep -q "{{ item.item.path | basename }}"; then
+    if [ -d "{{ item.item.path }}" ] && btrfs subvolume list "{{ item.item.path | dirname }}" | grep -q "{{ item.item.path | basename }}"; then
       echo "exists"
     else
       echo "absent"
@@ -18,6 +18,8 @@
   loop: "{{ fs_type_check.results }}"
   changed_when: false
   failed_when: false
+  args:
+    pipefail: true
   become: true
   when: item.stdout == "btrfs"
 

@@ -34,8 +34,10 @@
 - name: Check if Panfrost module is loaded (Kernel 5.2+)
   ansible.builtin.shell: lsmod | grep panfrost
   register: panfrost_check
-  ignore_errors: true
   changed_when: false
+  args:
+    pipefail: true
+  failed_when: false
 - name: Report Panfrost status
   ansible.builtin.debug:
     msg: "Panfrost driver is {{ 'active' if panfrost_check.rc == 0 else 'not loaded (check kernel support)' }}"

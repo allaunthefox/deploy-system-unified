@@ -41,7 +41,7 @@
     - kvm_intel # Assumes Intel, role logic could branch for AMD
     - vhost_net
   become: true
-  ignore_errors: true
+  failed_when: false
 - name: Enable and start libvirtd service
   ansible.builtin.systemd:
     name: libvirtd

@@ -6,7 +6,7 @@
     name: bubblewrap
     state: present
   become: true
-  when: 
+  when:
     - sandboxing_enabled
     - sandboxing_install_bubblewrap
 
@@ -25,14 +25,14 @@
   failed_when: false
   changed_when: false
   become: true
-  when: 
+  when:
     - sandboxing_enabled
     - sandboxing_use_landlock
 
 - name: Report Landlock status
   ansible.builtin.debug:
     msg: "Landlock Kernel support detected and available for application sandboxing"
-  when: 
+  when:
     - sandboxing_enabled
     - sandboxing_use_landlock
     - landlock_check.rc == 0
@@ -56,6 +56,6 @@
     group: root
   loop: "{{ sandboxing_profiles }}"
   become: true
-  when: 
+  when:
     - sandboxing_enabled
     - sandboxing_profiles | length > 0

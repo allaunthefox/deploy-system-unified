@@ -28,6 +28,42 @@
         "description": "Assists with project planning and task management",
         "model": "qwen-max",
         "capabilities": ["task_breakdown", "timeline_estimation", "resource_planning", "risk_assessment"]
+      },
+      {
+        "name": "negative_test_lead",
+        "description": "Designs Phase 1 negative testing, failure modes, and idempotency verification",
+        "model": "qwen-max",
+        "capabilities": ["negative_testing", "test_design", "idempotency_testing", "molecule_scenarios"]
+      },
+      {
+        "name": "role_auditor",
+        "description": "Audits roles for non-comingling, idempotency risks, and param registration drift",
+        "model": "qwen-max",
+        "capabilities": ["role_audit", "idempotency_audit", "non_comingling_check", "drift_detection"]
+      },
+      {
+        "name": "pattern_auditor",
+        "description": "Audits code for repeated patterns, anti-patterns, and systemic consistency issues",
+        "model": "qwen-max",
+        "capabilities": ["code_pattern_audit", "anti_pattern_detection", "consistency_checks", "refactor_recommendations"]
+      },
+      {
+        "name": "ontology_guardian",
+        "description": "Validates ontology mappings and profile/virt_type consistency",
+        "model": "qwen-max",
+        "capabilities": ["ontology_validation", "profile_alignment", "preflight_audit", "inventory_consistency"]
+      },
+      {
+        "name": "doc_sync_guardian",
+        "description": "Validates documentation synchronization and category mappings",
+        "model": "qwen-plus",
+        "capabilities": ["documentation_validation", "doc_sync", "category_mapping_review", "deduplication_audit"]
+      },
+      {
+        "name": "grub_integrator",
+        "description": "Validates core/grub aggregation and kernel param composition",
+        "model": "qwen-max",
+        "capabilities": ["grub_integration", "kernel_param_management", "bootloader_validation", "virt_constraints_review"]
       }
     ]
   }

@@ -19,6 +19,15 @@ YAML_LINT_CONFIG="$PROJECT_ROOT/.yamllint.yml"
 ANSIBLE_LINT_CONFIG="$PROJECT_ROOT/.ansible-lint.yml"
 STYLE_GUIDE="$PROJECT_ROOT/LLM_RESEARCH/Style_Guide.md"
 STYLE_IGNORE="$PROJECT_ROOT/dev_tools/tools/style-guide-enforcement/.styleignore"
+VENV_DIR="$PROJECT_ROOT/.venv"
+
+# Prefer project-local virtualenv if available (stability + consistent collections)
+if [ -x "$VENV_DIR/bin/ansible-lint" ]; then
+    export PATH="$VENV_DIR/bin:$PATH"
+    unset ANSIBLE_COLLECTIONS_PATHS
+    export ANSIBLE_COLLECTIONS_PATH="$PROJECT_ROOT/.collections"
+    export ANSIBLE_CONFIG="$PROJECT_ROOT/ansible.cfg"
+fi
 
 # Check style ignore patterns (supports glob patterns, negation with '!pattern', and regex using 're:pattern')
 # Behavior: patterns are applied in file order. A match sets ignored=true; a
@@ -184,7 +193,8 @@ enforce_yaml_standards() {
         else
             warning "YAML linting found issues"
             local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt || echo 0)
+            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt || true)
+            issue_count=${issue_count:-0}
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
             
             # Auto-fix or Low-Risk Repair
@@ -211,7 +221,8 @@ enforce_yaml_standards() {
         else
             warning "YAML linting found issues"
             local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt || echo 0)
+            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt || true)
+            issue_count=${issue_count:-0}
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
@@ -248,7 +259,8 @@ enforce_ansible_standards() {
         else
             warning "Ansible linting found issues"
             local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt || echo 0)
+            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt || true)
+            issue_count=${issue_count:-0}
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     else
@@ -258,7 +270,8 @@ enforce_ansible_standards() {
         else
             warning "Ansible linting found issues"
             local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt || echo 0)
+            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt || true)
+            issue_count=${issue_count:-0}
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
@@ -628,8 +641,10 @@ generate_report() {
         yaml_issues=$(rg -c -e "error|warning" /tmp/yamllint_output.txt 2>/dev/null || echo "0")
         ansible_issues=$(rg -c -e "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || echo "0")
     else
-        yaml_issues=$(grep -E -c "error|warning" /tmp/yamllint_output.txt 2>/dev/null || echo "0")
-        ansible_issues=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || echo "0")
+        yaml_issues=$(grep -E -c "error|warning" /tmp/yamllint_output.txt 2>/dev/null || true)
+        yaml_issues=${yaml_issues:-0}
+        ansible_issues=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || true)
+        ansible_issues=${ansible_issues:-0}
     fi
 
     local space_files=0

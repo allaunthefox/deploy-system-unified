@@ -31,6 +31,8 @@
   register: comprehensive_scan
   changed_when: false
   no_log: true
+  args:
+    pipefail: true
 - name: Parse security scan results (idempotent)
   ansible.builtin.set_fact:
     trivy_critical_vulns: >-

@@ -5,20 +5,20 @@
 collections:
   # Core Ansible collections
   - name: ansible.posix
-    version: ">=1.0.0"
+    version: "1.5.4"
   - name: ansible.utils
-    version: ">=2.0.0"
+    version: "6.0.1"
   - name: community.general
-    version: ">=6.0.0"
+    version: "12.3.0"
   - name: community.crypto
-    version: ">=2.0.0"
+    version: "2.17.0"
   - name: community.docker
-    version: ">=3.0.0"
+    version: "5.0.5"
 
   # Container and cloud collections
   - name: containers.podman
-    version: ">=1.0.0"
+    version: "1.18.1"
 
   # SOPS encryption collection
   - name: community.sops
-    version: ">=1.0.0"
+    version: "1.6.0"

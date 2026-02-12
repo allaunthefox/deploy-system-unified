@@ -5,8 +5,7 @@
   vars:
     containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
     containers_secrets_owner: "{{ lookup('env','USER') }}"
-    caddy_enable: true
-    caddy_secrets_fail_secure: true
+    containers_caddy_fail_secure: true
     test_case: "{{ lookup('env','test_case') | default('missing_file') }}"
   tasks:
     - name: Ensure molecule_shared exists
@@ -15,30 +14,67 @@
         state: directory
         mode: '0700'
 
-    # Test Case 1: Missing Caddyfile (should fail)
-    - name: Create missing Caddyfile for test
+    # Test Case 1: Missing caddy.env (should fail)
+    - name: Create missing caddy.env for test
       ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/Caddyfile"
+        path: "{{ containers_secrets_dir }}/caddy.env"
         state: absent
       when: test_case == 'missing_file'
 
-    # Test Case 2: Wrong permissions on Caddyfile (should fail)
-    - name: Create Caddyfile with wrong permissions for test
+    # Test Case 2: Wrong permissions on caddy.env (should fail)
+    - name: Create caddy.env with wrong permissions for test
       ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/Caddyfile"
+        dest: "{{ containers_secrets_dir }}/caddy.env"
         content: |
-          {
-              email admin@example.com
-          }
-
-          example.com {
-              reverse_proxy localhost:8080
-          }
+          PORKBUN_API_KEY=real_key
+          PORKBUN_SECRET_API_KEY=real_secret
         mode: '0644'  # Wrong permissions
         owner: "{{ containers_secrets_owner }}"
       when: test_case == 'wrong_permissions'
 
-    # Test Case 3: Placeholder values in Caddyfile (should fail)
+    # Test Case 3: Placeholder values in caddy.env (should fail)
+    - name: Create caddy.env with placeholder values for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/caddy.env"
+        content: |
+          PORKBUN_API_KEY=CHANGE_ME_IN_VAULT_TO_HASH
+          PORKBUN_SECRET_API_KEY=real_secret
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'placeholder_values'
+
+    # Test Case 4: Wrong owner on caddy.env (should fail)
+    - name: Create caddy.env with wrong owner for test
+      become: true
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/caddy.env"
+        content: |
+          PORKBUN_API_KEY=real_key
+          PORKBUN_SECRET_API_KEY=real_secret
+        mode: '0600'
+        owner: "root"  # Wrong owner
+      when: test_case == 'wrong_owner'
+
+    # Test Case 5: Empty caddy.env (should fail)
+    - name: Create empty caddy.env for test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/caddy.env"
+        content: ""
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'empty_file'
+
+    # Test Case 6: Placeholder values in Caddyfile (should fail)
+    - name: Create valid caddy.env for Caddyfile placeholder test
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir }}/caddy.env"
+        content: |
+          PORKBUN_API_KEY=real_key
+          PORKBUN_SECRET_API_KEY=real_secret
+        mode: '0600'
+        owner: "{{ containers_secrets_owner }}"
+      when: test_case == 'placeholder_caddyfile'
+
     - name: Create Caddyfile with placeholder values for test
       ansible.builtin.copy:
         dest: "{{ containers_secrets_dir }}/Caddyfile"
@@ -52,37 +88,4 @@
           }
         mode: '0600'
         owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'placeholder_values'
-
-    # Test Case 4: Wrong owner on Caddyfile (should fail)
-    - name: Create Caddyfile with wrong owner for test
-      become: true
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/Caddyfile"
-        content: |
-          {
-              email admin@example.com
-          }
-
-          example.com {
-              reverse_proxy localhost:8080
-          }
-        mode: '0600'
-        owner: "root"  # Wrong owner
-      when: test_case == 'wrong_owner'
-
-    # Test Case 5: Missing SSL certificate directory (should fail)
-    - name: Create missing SSL directory for test
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/ssl"
-        state: absent
-      when: test_case == 'missing_ssl_dir'
-
-    # Test Case 6: Wrong permissions on SSL directory (should fail)
-    - name: Create SSL directory with wrong permissions for test
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/ssl"
-        state: directory
-        mode: '0755'  # Wrong permissions
-        owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'wrong_ssl_permissions'
+      when: test_case == 'placeholder_caddyfile'

@@ -54,7 +54,7 @@
     capability: cap_net_bind_service+ep
     state: present
   become: true
-  ignore_errors: true
+  failed_when: false
   when: not (is_virtualized | default(false))
 - name: Ensure Endlessh systemd override directory exists
   ansible.builtin.file:

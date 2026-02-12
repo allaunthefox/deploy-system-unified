@@ -8,13 +8,15 @@
       - firmware-img-gpu # Hypothetical package name, varies by distro
     state: present
   become: true
-  ignore_errors: true # Package availability on RISC-V works is volatile
+  failed_when: false # Package availability on RISC-V works is volatile
 
 - name: Check for PVR kernel module
   ansible.builtin.shell: lsmod | grep -E "j721e_rogue|pvr"
   register: pvr_module
-  ignore_errors: true
   changed_when: false
+  failed_when: false
+  args:
+    pipefail: true
 
 - name: Warning for IMG GPU support
   ansible.builtin.debug:

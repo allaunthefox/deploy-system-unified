@@ -46,7 +46,7 @@
   register: timedate_status
   changed_when: false
   become: true
-  ignore_errors: true
+  failed_when: false
   when: not _hw_is_container
 
 - name: Set distribution-specific hardware package names
@@ -63,7 +63,7 @@
     state: present
   loop: "{{ microcode_packages }}"
   become: true
-  ignore_errors: true
+  failed_when: false
   when:
     - ansible_architecture == 'x86_64'
     - not _hw_is_container
@@ -95,4 +95,4 @@
   loop: "{{ ['smartmontools'] + watchdog_service }}"
   become: true
   when: not _hw_is_container
-  ignore_errors: true
+  failed_when: false

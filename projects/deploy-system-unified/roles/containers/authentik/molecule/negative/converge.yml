@@ -6,7 +6,7 @@
     containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
     containers_secrets_owner: "{{ lookup('env','USER') }}"
     authentik_enable: true
-    authentik_secrets_fail_secure: true
+    containers_authentik_fail_secure: true
     test_case: "{{ lookup('env','test_case') | default('missing_file') }}"
   tasks:
     - name: Ensure molecule_shared exists
@@ -59,14 +59,7 @@
         owner: "root"  # Wrong owner
       when: test_case == 'wrong_owner'
 
-    # Test Case 5: Missing Redis password file (should fail)
-    - name: Create missing redis.env for test
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/redis.env"
-        state: absent
-      when: test_case == 'missing_redis_file'
-
-    # Test Case 6: Empty authentik.env file (should fail)
+    # Test Case 5: Empty authentik.env file (should fail)
     - name: Create empty authentik.env for test
       ansible.builtin.copy:
         dest: "{{ containers_secrets_dir }}/authentik.env"

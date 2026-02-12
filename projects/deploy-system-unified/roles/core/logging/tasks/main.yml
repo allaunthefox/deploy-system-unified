@@ -5,7 +5,7 @@
     name: "{{ logging_journal_remote_packages[ansible_facts['distribution'] | lower] | default('systemd-journal-remote') }}"
     state: present
   become: true
-  ignore_errors: true # Some minimal distros might not have this package
+  failed_when: false # Some minimal distros might not have this package
   when: ansible_facts['service_mgr'] == 'systemd'
   changed_when: (ansible_facts['virtualization_role'] | default('host') == 'guest') and false
 

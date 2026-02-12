@@ -38,7 +38,7 @@
         enabled: true
         state: started
       become: true
-      ignore_errors: true
+      failed_when: false
 
     - name: Authorize Thunderbolt devices (Optional - All)
       ansible.builtin.shell: |
@@ -49,6 +49,8 @@
         fi
       become: true
       changed_when: false
+      args:
+        pipefail: true
       when: gpu_stack_egpu_auto_enroll | default(false)
 
 # --- OCuLink Config ---
@@ -78,4 +80,4 @@
         name: pciehp
         state: present
       become: true
-      ignore_errors: true # Often built-in, might fail if not compiled as module
+      failed_when: false # Often built-in, might fail if not compiled as module

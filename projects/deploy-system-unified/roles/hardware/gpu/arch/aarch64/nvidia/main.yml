@@ -47,12 +47,12 @@
     - name: Ensure Jetson Power Mode is set (Max Power)
       ansible.builtin.command: nvpmodel -m 0
       become: true
-      ignore_errors: true
+      failed_when: false
 
     - name: Start Jetson clocks
       ansible.builtin.command: jetson_clocks
       become: true
-      ignore_errors: true
+      failed_when: false
   when:
     - tegra_release.stat.exists
     - not _gpu_is_container | default(false)
