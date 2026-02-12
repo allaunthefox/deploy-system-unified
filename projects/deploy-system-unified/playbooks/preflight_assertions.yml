@@ -4,20 +4,64 @@
   gather_facts: false
   run_once: true
   tasks:
-    - name: Verify secrets encryption (Ansible Vault)
-      ansible.builtin.shell:
-        cmd: "grep -q '\\$ANSIBLE_VAULT;' {{ playbook_dir }}/inventory/group_vars/all/secrets.generated.yml"
+    - name: Define vault secrets file path
+      ansible.builtin.set_fact:
+        preflight_vault_secrets_file: "{{ playbook_dir }}/inventory/group_vars/all/secrets.generated.yml"
+        preflight_vault_password_file: >-
+          {{
+            lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')
+            | default(playbook_dir ~ '/.vault_pass', true)
+          }}
+      changed_when: false
       delegate_to: localhost
-      register: vault_check
+
+    - name: Verify secrets file starts with Vault header
+      ansible.builtin.command:
+        argv:
+          - head
+          - -n
+          - "1"
+          - "{{ preflight_vault_secrets_file }}"
+      delegate_to: localhost
+      register: vault_header_check
       failed_when: false
       changed_when: false
       check_mode: false
 
-    - name: Assert secrets are encrypted
+    - name: Assert vault header is first line
       ansible.builtin.assert:
         that:
-          - vault_check.rc == 0
-        fail_msg: "CRITICAL: inventory/group_vars/all/secrets.generated.yml is NOT encrypted or is missing. Deployment aborted for safety."
+          - vault_header_check.rc == 0
+          - vault_header_check.stdout is match('^\\$ANSIBLE_VAULT;')
+        fail_msg: >-
+          CRITICAL: inventory/group_vars/all/secrets.generated.yml is missing
+          or malformed. The first line must start with '$ANSIBLE_VAULT;'
+          (no YAML document header before the vault marker).
+      delegate_to: localhost
+
+    - name: Verify secrets decryptability (Ansible Vault)
+      ansible.builtin.command:
+        argv:
+          - ansible-vault
+          - view
+          - --vault-password-file
+          - "{{ preflight_vault_password_file }}"
+          - "{{ preflight_vault_secrets_file }}"
+      delegate_to: localhost
+      register: vault_decrypt_check
+      failed_when: false
+      changed_when: false
+      check_mode: false
+      no_log: true
+
+    - name: Assert secrets can be decrypted
+      ansible.builtin.assert:
+        that:
+          - vault_decrypt_check.rc == 0
+        fail_msg: >-
+          CRITICAL: inventory/group_vars/all/secrets.generated.yml could not be
+          decrypted using vault password file '{{ preflight_vault_password_file }}'.
+          Deployment aborted for safety.
       delegate_to: localhost
 
     - name: Verify no placeholder SOPS configuration exists

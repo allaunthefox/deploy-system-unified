@@ -11,7 +11,7 @@ This file is the planning index and the single place to see what is actively tar
 
 1. ✅ Execute idempotence benchmark across all `roles/core/*` roles (`12/12` idempotent in run `20260212T204126Z`).
 2. ✅ Draft SOPS migration guide and key rotation SOP (pending operator approval): `docs/deployment/SOPS_MIGRATION_GUIDE.md`, `docs/deployment/SOPS_KEY_ROTATION_SOP.md`.
-3. ✅ Implement `roles/ops/health_check` and wire post-deploy health summary into production flow; mandatory gate behavior validated locally (`ci-artifacts/health/20260212T212157Z/`). Full `inventory/local.ini` production-path validation is blocked by a variable-merge issue (`ci-artifacts/health/20260212T212157Z/inventory_local_blocker.md`).
+3. ✅ Implement `roles/ops/health_check` and wire post-deploy health summary into production flow; mandatory gate behavior validated for `inventory/local.ini` (`ci-artifacts/health/20260212T213423Z/`). Next step is full real-target production deployment validation.
 
 ## Planning Document Map
 
