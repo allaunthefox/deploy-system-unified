@@ -1,5 +1,8 @@
 # COMMUNITY_ENHANCEMENT_PLAN
 
+**Status:** Backlog (Not in current 2-4 week target window)  
+**Activation Rule:** Promote items into `STABILITY_EXECUTION_PLAN_2026.md` before execution.
+
 ## Overview
 
 This plan addresses the deficits identified in the deploy-system-unified project to improve community engagement, project maintainability, and overall accessibility. The plan focuses on enhancing documentation, establishing proper governance, and improving dependency management.

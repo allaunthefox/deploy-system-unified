@@ -1,5 +1,8 @@
 # RESTRUCTURING_PLAN_2026
 
+**Status:** Backlog (Not in current 2-4 week target window)  
+**Activation Rule:** Break into scoped execution tasks and add to `STABILITY_EXECUTION_PLAN_2026.md` before implementation.
+
 ## Overview
 
 Restructure the entire Deploy-System-Unified project to use an architecture-based approach (x86, ARM, RISC-V) with vendor-specific subprofiles. This will make the project more maintainable and future-proof for non-x86 deployments (like Milk-V, Spacemit, etc.). Additionally, address community engagement deficits identified through analysis to improve project accessibility and sustainability.

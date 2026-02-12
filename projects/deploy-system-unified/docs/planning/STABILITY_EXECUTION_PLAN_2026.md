@@ -1,46 +1,63 @@
 # STABILITY_EXECUTION_PLAN_2026
 
-**Updated:** February 10, 2026  
-**Status:** **PHASE 1 COMPLETE**  
-**Scope:** Production playbooks, secrets hygiene, linting and style compliance, idempotence gates, and deployment entrypoint clarity.
+**Updated:** February 12, 2026  
+**Status:** Phase 2 Active (Operational Maturity)  
+**Scope:** Production playbooks, secrets hygiene, idempotence maturity, and post-deploy health verification.
 
-## Guiding Principles
+## Purpose
 
-- Assume nothing: explicit configuration, explicit validation, and fail-fast checks.
-- Security-first defaults in every role and playbook.
-- Deterministic, idempotent runs with minimal drift.
-- Single source of truth for production deployments.
+This document is the execution board for current work. It defines what is in scope now and what evidence is required to call it complete.
 
-## Accomplishments (Phase 1: Foundation & Gates)
+## Current Target Window (Next 2-4 Weeks)
 
-- ✅ **PR Consolidation**: Closed 35+ scattered/invalid PRs; merged all valid feature work and formatting into a single verified state.
-- ✅ **Repository Cleanup**: Purged 100+ invalid recursive directories (garbage paths) from tracked files.
-- ✅ **Robust Tooling**: Updated `enforce_style_guide.sh` with multiline ripgrep support and corrected ignore logic.
-- ✅ **Stability Gates**: 
-    - Implemented `verify_idempotence.sh` for zero-change verification.
-    - Implemented `smoke_test_production.sh` for production dry-runs.
-    - Added `preflight_assertions.yml` to strictly enforce Vault encryption and SOPS hygiene.
-- ✅ **CI/CD Integration**: Added unit tests for style tools to CI; established mandatory status checks for `main`.
-- ✅ **Entrypoint Hygiene**: Labeled all `branch_templates/` and `site.yml` as "REFERENCE ONLY" to protect `production_deploy.yml`.
+### Target Board
 
-## Execution Tracks - Phase 2: Operational Maturity
+| ID | Target | Status | Required Output | Evidence Path |
+| :--- | :--- | :--- | :--- | :--- |
+| T1 | Core role idempotence benchmark | Not Started | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `ci-artifacts/idempotence/` |
+| T2 | SOPS migration guide + key rotation SOP | Not Started | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/` |
+| T3 | Post-deploy health check role | Not Started | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + playbook output artifact |
 
-### 1. Secrets Maturity (SOPS Transition)
-- Prepare SOPS keys and validate age-encryption workflow.
-- Update `add_placeholders.py` to support SOPS-encrypted placeholders.
-- Transition `secrets.generated.yml` from Vault to SOPS once keys are verified.
+## In Scope (This Window)
 
-### 2. Idempotence Hardening
-- Run `verify_idempotence.sh` against every role in the `core` and `security` namespaces.
-- Resolve any "changed" status on repeat runs (focus on `lineinfile` and `template` tasks).
-- Archive baseline idempotence logs for audit compliance.
+1. Idempotence hardening and measurable repeat-run stability for core roles.
+2. Secrets process maturity through documentation and safe migration procedure design.
+3. Operational observability through standardized post-deploy checks.
 
-### 3. Observability & Health
-- Implement post-run health checks for systemd units and containers.
-- Add disk usage and log retention threshold assertions.
-- Emit a standard "Deployment Health Summary" at the end of every playbook run.
+## Out of Scope (This Window)
 
-## Near-Term Actions (Next 2-4 Weeks)
+1. Full architecture restructuring work from `RESTRUCTURING_PLAN_2026.md`.
+2. Long-horizon GPU expansion phases from `GPU_ENHANCED_PLAN.md`.
+3. Broad community/process expansion beyond docs required for the active targets.
+
+## Accomplishments (Phase 1 Complete)
+
+- ✅ PR consolidation and repository cleanup completed.
+- ✅ Stability gates added (`verify_idempotence.sh`, `smoke_test_production.sh`, `preflight_assertions.yml`).
+- ✅ CI status checks hardened for `main`.
+- ✅ Deployment entrypoint hygiene enforced (`production_deploy.yml` as canonical deploy path).
+
+## Execution Tracks (Phase 2)
+
+### Track A: Idempotence Hardening
+
+- Run `scripts/verify_idempotence.sh` per core role play path.
+- Record each non-idempotent task and remediation commit.
+- Publish baseline and post-fix benchmark logs.
+
+### Track B: Secrets Maturity (Design-to-Execution)
+
+- Draft SOPS migration guide with gate checks and fallback to Vault.
+- Draft key rotation SOP (frequency, custodianship, emergency rotation procedure).
+- Define explicit cutover criteria before enabling SOPS as active provider.
+
+### Track C: Observability & Health
+
+- Implement `roles/ops/health_check` with checks for systemd units, container runtime health, disk thresholds, and critical service reachability.
+- Emit a final deployment health summary in machine-readable format.
+- Fail deploy when mandatory health checks fail.
+
+## Near-Term Actions
 
 - [ ] Execute idempotence benchmark across all `core/` roles.
 - [ ] Draft SOPS migration guide and key rotation SOP.
@@ -48,6 +65,12 @@
 
 ## Success Criteria (Phase 2)
 
-- 100% of `core` roles pass the idempotence gate.
-- Production deployments emit a machine-readable health summary.
-- SOPS encryption is active and verified in CI.
+1. 100% of `core` roles pass idempotence gate on second run.
+2. Production deployments emit a machine-readable health summary artifact.
+3. SOPS migration guide and rotation SOP are approved and usable by operators.
+
+## Dependencies and Risks
+
+1. Secrets tooling transition must not conflict with active Vault gate enforcement.
+2. GPU variability may introduce environment-specific idempotence noise.
+3. CI runtime limits may require batching idempotence benchmark jobs.

@@ -1,5 +1,8 @@
 # WIKI_IMPROVEMENT_PLAN
 
+**Status:** Completed (Historical reference)  
+**Note:** Keep for provenance; new wiki tasks should be tracked in the active execution board.
+
 ## Overview
 
 This plan addresses the deficits identified in the GitHub wiki content for the deploy-system-unified project. The primary issue identified is that several wiki pages are overly long, which impacts readability and maintainability.
