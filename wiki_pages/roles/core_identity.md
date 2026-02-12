@@ -7,10 +7,10 @@ Handles system identity, hostname configuration, and entropy-backed UUID generat
 
 ## Variables
 
-### identity_set_hostname
+### `identity_set_hostname`
 - `identity_set_hostname`
 
-### identity_domain
+### `identity_domain`
 - `identity_domain`
 
 
