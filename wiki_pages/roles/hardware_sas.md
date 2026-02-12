@@ -7,28 +7,28 @@ This role provides support for Serial Attached SCSI (SAS) infrastructure, spanni
 
 ## Variables
 
-### hardware_sas_install_tools
+### `hardware_sas_install_tools`
 - `hardware_sas_install_tools`
 
-### hardware_sas_enable_monitoring
+### `hardware_sas_enable_monitoring`
 - `hardware_sas_enable_monitoring`
 
-### hardware_sas_configure_smartd
+### `hardware_sas_configure_smartd`
 - `hardware_sas_configure_smartd`
 
-### hardware_sas_load_drivers
+### `hardware_sas_load_drivers`
 - `hardware_sas_load_drivers`
 
-### hardware_sas_drivers
+### `hardware_sas_drivers`
 - `hardware_sas_drivers`
 
-### hardware_sas_packages
+### `hardware_sas_packages`
 - `hardware_sas_packages`
 
-### hardware_sas_queue_depth
+### `hardware_sas_queue_depth`
 - `hardware_sas_queue_depth`
 
-### hardware_sas_smartd_opts
+### `hardware_sas_smartd_opts`
 - `hardware_sas_smartd_opts` — Often SAS drives behind HBAs need this, or specific passthrough
 
 

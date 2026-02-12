@@ -1,4 +1,4 @@
-# Documentation Bridge: Project ↔ Wiki
+# DOCUMENTATION_BRIDGE
 
 ## Overview
 
