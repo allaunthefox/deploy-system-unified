@@ -15,13 +15,44 @@
       - service_mgr
       - virtual
 
-- name: Determine virtualization profile (preflight)
+- name: Detect virtualization facts (preflight)
+  ansible.builtin.set_fact:
+    detected_virtualization_role: "{{ ansible_facts['virtualization_role'] | default('host') | lower }}"
+    detected_virtualization_type: "{{ ansible_facts['virtualization_type'] | default('none') | lower }}"
+    is_virtualized: "{{ (ansible_facts['virtualization_role'] | default('host') | lower) == 'guest' }}"
+  changed_when: false
+
+- name: Determine virt_type (ontology default)
   ansible.builtin.set_fact:
     virt_type: >-
-      {{ 'bare-metal'
-         if (ansible_facts['virtualization_role'] | default('host') | lower) != 'guest'
-         else (ansible_facts['virtualization_type'] | default('kvm') | lower) }}
+      {{
+        'bare-metal'
+        if not (is_virtualized | bool)
+        else (
+          'container'
+          if detected_virtualization_type in ['docker', 'podman', 'container', 'lxc']
+          else (
+            'vps'
+            if (deployment_profile | default('') == 'vps')
+            else 'virtual'
+          )
+        )
+      }}
   when: virt_type is not defined
+  changed_when: false
+
+- name: Assert virt_type is a valid ontology value
+  ansible.builtin.assert:
+    that:
+      - virt_type is defined
+      - virt_type is string
+      - virt_type in ['bare-metal', 'virtual', 'vps', 'container']
+    fail_msg: >-
+      Invalid virt_type '{{ virt_type | default('UNDEFINED') }}'. Expected one of:
+      bare-metal, virtual, vps, container.
+      Detected: virtualization_role={{ detected_virtualization_role | default('unknown') }},
+      virtualization_type={{ detected_virtualization_type | default('unknown') }}.
+
 - name: Validate distribution is supported
   ansible.builtin.assert:
     that:

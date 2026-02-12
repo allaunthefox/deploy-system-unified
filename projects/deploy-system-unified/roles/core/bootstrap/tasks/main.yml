@@ -8,6 +8,7 @@
       - distribution
       - os_family
       - pkg_mgr
+      - virtual
 - name: Set distribution-specific variables
   ansible.builtin.set_fact:
     core_pkg_manager: "{{ ansible_facts['pkg_mgr'] }}"
@@ -61,16 +62,55 @@
     mode: '0755'
   loop: "{{ system_standard_directories }}"
   become: true
+
 - name: Detect Virtualization Environment
   ansible.builtin.set_fact:
-    virt_type: "{{ ansible_facts['virtualization_type'] | default('bare-metal') | lower }}"
-    is_virtualized: "{{ true if (ansible_facts['virtualization_role'] | default('host') == 'guest') else false }}"
+    detected_virtualization_role: "{{ ansible_facts['virtualization_role'] | default('host') | lower }}"
+    detected_virtualization_type: "{{ ansible_facts['virtualization_type'] | default('none') | lower }}"
+    is_virtualized: "{{ (ansible_facts['virtualization_role'] | default('host') | lower) == 'guest' }}"
+  changed_when: false
+
+- name: Determine virt_type (bootstrap fallback)
+  ansible.builtin.set_fact:
+    virt_type: >-
+      {{
+        'bare-metal'
+        if not (is_virtualized | bool)
+        else (
+          'container'
+          if detected_virtualization_type in ['docker', 'podman', 'container', 'lxc']
+          else (
+            'vps'
+            if (deployment_profile | default('') == 'vps')
+            else 'virtual'
+          )
+        )
+      }}
+  when: virt_type is not defined
+  changed_when: false
+
+- name: Assert virt_type is a valid ontology value
+  ansible.builtin.assert:
+    that:
+      - virt_type is defined
+      - virt_type is string
+      - virt_type in ['bare-metal', 'virtual', 'vps', 'container']
+    fail_msg: >-
+      Invalid virt_type '{{ virt_type | default('UNDEFINED') }}'. Expected one of:
+      bare-metal, virtual, vps, container.
+      Detected: virtualization_role={{ detected_virtualization_role | default('unknown') }},
+      virtualization_type={{ detected_virtualization_type | default('unknown') }}.
+
 - name: Report Virtualization Profile
   ansible.builtin.debug:
-    msg: "Environment detected as {{ virt_type | upper }} (Guest: {{ is_virtualized }})."
+    msg: >-
+      Environment detected as {{ virt_type | upper }}
+      (Guest: {{ is_virtualized }}, Detected: {{ detected_virtualization_type | default('unknown') }}).
+
 - name: Generate high-entropy Deployment ID (Forensic Primary Key)
   ansible.builtin.set_fact:
     deployment_id: "{{ ansible_facts['date_time'].iso8601_micro | hash('sha256') | truncate(16, True, '') }}"
+
 - name: Set bootstrap completion flag
   ansible.builtin.set_fact:
     core_bootstrap_complete: true
