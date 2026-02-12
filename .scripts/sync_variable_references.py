@@ -56,7 +56,7 @@ def process_file(file_path):
                 role_md_file = role_name.replace('/', '_') + '.md'
                 for v in role_vars:
                     anchor = slugify(v)
-                    new_lines.append(f'- `[{v}](roles/{role_md_file}#{anchor})`')
+                    new_lines.append(f'- [`{v}`](roles/{role_md_file}#{anchor})')
                 new_lines.append('')
             else:
                 new_lines.append('- *No variables defined in defaults/main.yml*')
