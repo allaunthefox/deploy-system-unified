@@ -44,6 +44,10 @@
         - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
         - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
+
+    - name: Run post-deploy health checks
+      ansible.builtin.include_role:
+        name: ops/health_check
   handlers:
     - name: Restart caddy
       ansible.builtin.systemd:

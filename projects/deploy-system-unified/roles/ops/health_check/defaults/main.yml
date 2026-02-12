@@ -1,0 +1,67 @@
+---
+# Defaults for ops/health_check
+
+health_check_enabled: true
+
+# Remote artifact output
+health_check_output_dir_remote: "/var/lib/deploy-system/health"
+health_check_summary_file_remote: "{{ health_check_output_dir_remote }}/{{ inventory_hostname }}.json"
+
+# Controller artifact output (for CI and audit evidence)
+health_check_write_local_artifact: true
+health_check_artifact_dir_local: "{{ playbook_dir | default('.') }}/ci-artifacts/health"
+health_check_summary_file_local: "{{ health_check_artifact_dir_local }}/{{ inventory_hostname }}.json"
+
+# Deployment gate behavior
+health_check_fail_on_mandatory: true
+
+# 1) systemd service checks
+health_check_systemd_mandatory_units:
+  - podman
+  - caddy
+health_check_systemd_optional_units:
+  - prometheus-node-exporter
+  - smartd
+
+# 2) container runtime command checks
+health_check_container_runtime_checks:
+  - name: podman-info
+    command:
+      - podman
+      - info
+    mandatory: true
+    enabled: true
+  - name: docker-info
+    command:
+      - docker
+      - info
+    mandatory: false
+    enabled: false
+
+# 3) disk usage threshold checks
+health_check_disk_checks:
+  - mountpoint: /
+    warn_percent: 80
+    critical_percent: 90
+    mandatory: true
+  - mountpoint: /srv
+    warn_percent: 85
+    critical_percent: 95
+    mandatory: false
+
+# 4) service endpoint checks
+health_check_endpoint_checks:
+  - name: caddy-http-local
+    url: http://127.0.0.1
+    method: GET
+    expected_status: [200, 301, 302, 307, 308, 401, 403, 404]
+    timeout: 5
+    validate_certs: false
+    mandatory: true
+  - name: node-exporter-local
+    url: http://127.0.0.1:9100/metrics
+    method: GET
+    expected_status: [200]
+    timeout: 5
+    validate_certs: false
+    mandatory: false

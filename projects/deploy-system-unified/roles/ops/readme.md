@@ -10,6 +10,7 @@ This role contains operational tools and maintenance tasks.
 * **monitoring**: System monitoring tools.
 * **cloud_init**: Cloud-init status checks and integration.
 * **guest_management**: Management helpers for virtual guests.
+* **health_check**: Post-deploy health verification and summary artifact generation.
 
 ## Usage
 
