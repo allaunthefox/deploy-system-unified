@@ -1,6 +1,10 @@
 ---
 dependency:
   name: galaxy
+  options:
+    role-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/roles.yml
+    requirements-file: ${MOLECULE_PROJECT_DIRECTORY}/requirements.yml
+    p: ${MOLECULE_PROJECT_DIRECTORY}/.collections
 driver:
   name: podman
 platforms:
@@ -17,11 +21,18 @@ platforms:
     cgroupns_mode: host
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      deprecation_warnings: false
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+    ANSIBLE_COLLECTIONS_PATHS: ${MOLECULE_PROJECT_DIRECTORY}/.collections
   lint:
     name: ansible-lint
   playbooks:
     converge: converge.yml
+    destroy: ${MOLECULE_PROJECT_DIRECTORY}/molecule/_shared/podman_destroy.yml
+    cleanup: ${MOLECULE_PROJECT_DIRECTORY}/molecule/_shared/cleanup.yml
+    side_effect: ${MOLECULE_PROJECT_DIRECTORY}/molecule/_shared/side_effect.yml
 verifier:
   name: ansible

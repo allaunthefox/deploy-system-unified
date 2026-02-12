@@ -3,10 +3,10 @@
   ansible.builtin.set_fact:
     _runtime_norm_arch: >-
       {{
-        'x86_64' if ansible_architecture in ['amd64', 'x86_64'] else
-        'aarch64' if ansible_architecture in ['arm64', 'aarch64', 'armv8b', 'armv8l'] else
-        'riscv64' if ansible_architecture in ['riscv64', 'risc64', 'riscv'] else
-        ansible_architecture
+        'x86_64' if ansible_facts['architecture'] | default('unknown') in ['amd64', 'x86_64'] else
+        'aarch64' if ansible_facts['architecture'] | default('unknown') in ['arm64', 'aarch64', 'armv8b', 'armv8l'] else
+        'riscv64' if ansible_facts['architecture'] | default('unknown') in ['riscv64', 'risc64', 'riscv'] else
+        (ansible_facts['architecture'] | default('unknown'))
       }}
 
 - name: Normalize Vendor

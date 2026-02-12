@@ -2,10 +2,12 @@
 - name: Converge GPU Slicing
   hosts: all
   become: true
+  vars:
+    quadlet_enable_gpu_support: true
   pre_tasks:
-    - name: Set virtualization type for test environment
+    - name: Set virt_type for test environment
       ansible.builtin.set_fact:
-        virt_type: "virtual-guest"
+        virt_type: "virtual"
 
     - name: Precreate essential directories (idempotent)
       ansible.builtin.file:
@@ -38,6 +40,8 @@
         name: ops/preflight
       vars:
         preflight_require_systemd: false
+        preflight_allow_default_secrets: true
+        preflight_allow_test_key: true
       when: not preflight_flag.stat.exists
       tags: [preflight]
     - name: Create preflight completion flag (idempotent)
