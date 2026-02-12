@@ -5,8 +5,6 @@
   ansible.builtin.shell: swapon --show=NAME --noheadings | wc -l
   register: physical_swap_count
   changed_when: false
-  args:
-    pipefail: true
   become: true
 
 - name: Detect Shared Video Memory (UMA)
@@ -16,8 +14,6 @@
     else echo "false"; fi
   register: uma_detection
   changed_when: false
-  args:
-    pipefail: true
   when: core_memory_shared_vram == 'auto'
 
 - name: Determine Memory Strategy (Auto-Selection)
@@ -25,15 +21,15 @@
     active_memory_strategy: >-
       {{
         'zram' if (
-           core_memory_compression_strategy == 'force_zram'  or
-           (memory_compression_strategy == 'auto' and core_memory_shared_vram == true ) or
-           (memory_compression_strategy == 'auto' and memory_shared_vram == 'auto' and uma_detection.stdout == 'true') or
-           (memory_compression_strategy == 'auto' and ansible_memtotal_mb < 8192) or
-           (memory_compression_strategy == 'auto' and physical_swap_count.stdout | int == 0)
+           core_memory_compression_strategy == 'zram'  or
+           (core_memory_compression_strategy == 'auto' and core_memory_shared_vram == true) or
+           (core_memory_compression_strategy == 'auto' and core_memory_shared_vram == 'auto' and uma_detection.stdout == 'true') or
+           (core_memory_compression_strategy == 'auto' and ansible_memtotal_mb < 8192) or
+           (core_memory_compression_strategy == 'auto' and physical_swap_count.stdout | int == 0)
         ) else
         'zswap' if (
-           core_memory_compression_strategy == 'force_zswap'  or
-           (memory_compression_strategy == 'auto' and ansible_memtotal_mb >= 8192 and physical_swap_count.stdout | int > 0)
+           core_memory_compression_strategy == 'zswap'  or
+           (core_memory_compression_strategy == 'auto' and ansible_memtotal_mb >= 8192 and physical_swap_count.stdout | int > 0)
         ) else
         'none'
       }}
@@ -47,29 +43,29 @@
     # Danger: ZRAM requires high swappiness to actually compress. If using database profile (swappiness=10),
     # ZRAM becomes useless unless we bump it up. However, if physical swap exists, 10 is fine.
     # Resolution: If ZRAM is sole swap, FORCE moderate swappiness (60) even for databases to prevent OOM.
-    memory_swappiness: >-
+    core_memory_swappiness: >-
       {{
-        60 if (active_memory_strategy == 'zram' and physical_swap_count.stdout | int == 0 and memory_swappiness | int < 60)
-        else memory_swappiness
+        60 if (active_memory_strategy == 'zram' and physical_swap_count.stdout | int == 0 and core_memory_swappiness | int < 60)
+        else core_memory_swappiness
       }}
     # Danger: THP 'always' kills Redis latency.
-    memory_thp_state: >-
+    core_memory_thp_state: >-
       {{
-        'madvise' if (memory_workload_profile == 'database' and memory_thp_state == 'always')
-        else memory_thp_state
+        'madvise' if (core_memory_workload_profile == 'database' and core_memory_thp_state == 'always')
+        else core_memory_thp_state
       }}
 
 - name: Validate Final Configuration
   ansible.builtin.debug:
     msg: >-
       Conflict Resolution Applied:
-      Swappiness set to {{ memory_swappiness }} (Reason: {{ 'ZRAM-OOM-Protection' if active_memory_strategy == 'zram' and physical_swap_count.stdout|int == 0 else 'Profile-Default' }}).
-      THP set to {{ memory_thp_state }} (Reason: {{ 'Database-Latency-Protection' if memory_workload_profile == 'database' else 'User-Configured' }}).
+      Swappiness set to {{ core_memory_swappiness }} (Reason: {{ 'ZRAM-OOM-Protection' if active_memory_strategy == 'zram' and physical_swap_count.stdout|int == 0 else 'Profile-Default' }}).
+      THP set to {{ core_memory_thp_state }} (Reason: {{ 'Database-Latency-Protection' if core_memory_workload_profile == 'database' else 'User-Configured' }}).
 
 - name: Configure ZRAM (zram-generator)
   when:
     - active_memory_strategy == 'zram'
-    - virt_type in ['bare-metal', 'virtual', 'vps']
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
   block:
     - name: Install zram-generator
       ansible.builtin.package:
@@ -93,7 +89,7 @@
 - name: Configure ZSwap (Kernel Modules)
   when:
     - active_memory_strategy == 'zswap'
-    - virt_type in ['bare-metal', 'virtual', 'vps']
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
   block:
     - name: Enable ZSwap Kernel Parameters
       ansible.builtin.set_fact:
@@ -123,24 +119,26 @@
     reload: true
     sysctl_file: /etc/sysctl.d/99-memory-tuning.conf
   loop:
-    - { key: 'vm.swappiness', value: '{{ memory_swappiness }}' }
+    - { key: 'vm.swappiness', value: '{{ core_memory_swappiness }}' }
     - { key: 'vm.vfs_cache_pressure', value: '{{ core_memory_cache_pressure }}' }
     - { key: 'vm.page-cluster', value: '0' } # Essential for ZRAM/ZSwap effectiveness
-    - { key: 'vm.dirty_bytes', value: '{{ memory_dirty_bytes }}', condition: "{{ memory_dirty_bytes | int > 0 }}" }
-    - { key: 'vm.dirty_background_bytes', value: '{{ memory_dirty_background_bytes }}', condition: "{{ memory_dirty_background_bytes | int > 0 }}" }
-  when: active_memory_strategy != 'none' or memory_workload_profile == 'database'
+    - { key: 'vm.dirty_bytes', value: '{{ core_memory_dirty_bytes }}', condition: "{{ core_memory_dirty_bytes | int > 0 }}" }
+    - { key: 'vm.dirty_background_bytes', value: '{{ core_memory_dirty_background_bytes }}', condition: "{{ core_memory_dirty_background_bytes | int > 0 }}" }
+  when:
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
+    - active_memory_strategy != 'none' or core_memory_workload_profile == 'database'
   become: true
 
 - name: Configure Transparent Huge Pages (THP)
   ansible.builtin.shell: |
-    if ! grep -q '\[{{ memory_thp_state }}\]' /sys/kernel/mm/transparent_hugepage/enabled; then
-      echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
-      echo {{ memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/defrag
+    if ! grep -q '\[{{ core_memory_thp_state }}\]' /sys/kernel/mm/transparent_hugepage/enabled; then
+      echo {{ core_memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
+      echo {{ core_memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/defrag
       echo "changed"
     fi
   register: thp_result
   changed_when: "'changed' in thp_result.stdout"
   become: true
   when:
-    - memory_workload_profile != 'standard'
-    - virt_type in ['bare-metal', 'virtual', 'vps']
+    - core_memory_workload_profile != 'standard'
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']

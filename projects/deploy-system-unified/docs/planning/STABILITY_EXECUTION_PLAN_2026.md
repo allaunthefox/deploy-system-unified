@@ -14,7 +14,7 @@ This document is the execution board for current work. It defines what is in sco
 
 | ID | Target | Status | Required Output | Evidence Path |
 | :--- | :--- | :--- | :--- | :--- |
-| T1 | Core role idempotence benchmark | Not Started | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `ci-artifacts/idempotence/` |
+| T1 | Core role idempotence benchmark | Complete (12/12 idempotent) | Repeat-run benchmark across all `roles/core/*` roles with failures tracked | `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/` |
 | T2 | SOPS migration guide + key rotation SOP | Not Started | Operator guide covering migration sequence, rollback, and rotation cadence | `docs/deployment/` |
 | T3 | Post-deploy health check role | Not Started | New `ops/health_check` role + machine-readable health summary in deployment flow | `roles/ops/health_check/` + playbook output artifact |
 
@@ -45,6 +45,22 @@ This document is the execution board for current work. It defines what is in sco
 - Record each non-idempotent task and remediation commit.
 - Publish baseline and post-fix benchmark logs.
 
+#### Baseline Evidence (February 12, 2026)
+
+- ✅ Baseline benchmark executed across all `roles/core/*` roles using `scripts/benchmark_core_idempotence.py`.
+- ✅ Machine-readable and Markdown artifacts published:
+  - `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/summary.json`
+  - `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/summary.md`
+- Baseline result snapshot: **4/12 idempotent, 8/12 failed**.
+- Immediate remediation clusters:
+  1. Unsupported module args (`debug.warn`, `command.pipefail`).
+  2. Environment/package assumptions (`chrony`, `haveged`, `software-properties-common` in container baseline).
+  3. Role-specific failure in `core/secrets` and `core/systemd` requiring focused fix pass.
+- ✅ Post-remediation benchmark rerun completed:
+  - `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/summary.json`
+  - `projects/deploy-system-unified/ci-artifacts/idempotence/20260212T204126Z/summary.md`
+- Post-remediation result snapshot: **12/12 idempotent, 0 failed**.
+
 ### Track B: Secrets Maturity (Design-to-Execution)
 
 - Draft SOPS migration guide with gate checks and fallback to Vault.
@@ -59,13 +75,14 @@ This document is the execution board for current work. It defines what is in sco
 
 ## Near-Term Actions
 
-- [ ] Execute idempotence benchmark across all `core/` roles.
+- [x] Execute idempotence benchmark across all `core/` roles.
+- [x] Remediate failures from baseline benchmark and rerun until all `core/` roles pass second-run idempotence.
 - [ ] Draft SOPS migration guide and key rotation SOP.
 - [ ] Implement `ops/health_check` role for post-deploy verification.
 
 ## Success Criteria (Phase 2)
 
-1. 100% of `core` roles pass idempotence gate on second run.
+1. ✅ 100% of `core` roles pass idempotence gate on second run (`20260212T204126Z`).
 2. Production deployments emit a machine-readable health summary artifact.
 3. SOPS migration guide and rotation SOP are approved and usable by operators.
 

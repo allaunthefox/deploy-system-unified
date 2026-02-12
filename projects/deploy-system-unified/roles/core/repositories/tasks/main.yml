@@ -1,16 +1,22 @@
 ---
 # Tasks for core/repositories role
 
+- name: Refresh package cache before repository tooling installation (Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when: ansible_os_family == 'Debian'
+
 - name: Ensure repository management tools (Debian/Ubuntu)
   ansible.builtin.package:
-    name: software-properties-common
+    name:
+      - software-properties-common
+      - gnupg
+      - ca-certificates
     state: present
   become: true
   when: ansible_os_family == 'Debian'
-  register: repo_tools_result
-  until: repo_tools_result is success
-  retries: 5
-  delay: 10
 
 - name: Check for legacy sources.list
   ansible.builtin.stat:
@@ -30,8 +36,9 @@
 
 - name: Enable Ubuntu Universe/Multiverse
   ansible.builtin.apt_repository:
-    repo: "{{ item }}"
+    repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} {{ item }}"
     state: present
+    filename: "ubuntu-{{ item }}"
   loop:
     - universe
     - multiverse

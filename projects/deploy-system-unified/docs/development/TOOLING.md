@@ -48,7 +48,13 @@ python3 -m pytest dev_tools/tools/style-guide-enforcement/tests/
 Located in the `scripts/` directory, these tools are used for pre-deployment verification and CI gates.
 
 - **`verify_idempotence.sh`**: Runs a playbook twice and asserts that the second run produces `changed=0`.
+- **`benchmark_core_idempotence.py`**: Runs repeat-run idempotence benchmarks for every `roles/core/*` role in isolated containers and writes artifacts to `ci-artifacts/idempotence/<run_id>/`.
 - **`smoke_test_production.sh`**: Performs a syntax check and a dry-run (`--check`) of the production deployment using the validation inventory.
+
+Example:
+```bash
+python3 projects/deploy-system-unified/scripts/benchmark_core_idempotence.py
+```
 
 ## 🧪 Molecule
 

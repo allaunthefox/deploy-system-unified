@@ -29,7 +29,6 @@
     msg: >-
       core/grub: GRUB config file {{ core_grub_config_path }} not found;
       skipping GRUB_CMDLINE_LINUX_DEFAULT update.
-    warn: true
   when:
     - core_grub_enabled
     - not grub_stat.stat.exists
