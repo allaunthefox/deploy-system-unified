@@ -1,30 +1,58 @@
-# SUMMARY
+# PLANNING_SUMMARY
 
-This document provides an overview of the planning documents available in the deploy-system-unified project.
+This file is the planning index and the single place to see what is actively targeted now.
 
-## Active Planning Documents
+## Current Target Window
 
-1. **RESTRUCTURING_PLAN_2026.md** - Comprehensive plan for restructuring the project to support multiple architectures and addressing community deficits
+**Window:** February 2026 (next 2-4 weeks)  
+**Canonical execution board:** `docs/planning/STABILITY_EXECUTION_PLAN_2026.md`
 
-2. **COMMUNITY_ENHANCEMENT_PLAN.md** - Specific plan to address community engagement deficits identified through analysis
+### Active Targets
 
-3. **WIKI_IMPROVEMENT_PLAN.md** - Plan to address wiki content deficits, particularly overly long pages
+1. Execute idempotence benchmark across all `roles/core/*` roles.
+2. Draft SOPS migration guide and key rotation SOP (documentation + runbook quality).
+3. Implement `roles/ops/health_check` and wire post-deploy health summary into production flow.
 
-4. **MIGRATION_STRATEGY.md** - Strategy for legacy data migration and credential rotation
+## Planning Document Map
 
-5. **STABILITY_PLAN.md** - Plan for maintaining system stability during updates
+### Active (Execution)
 
-6. **GPU_ENHANCED_PLAN.md** - Planning document for GPU enhancements
+- `docs/planning/STABILITY_EXECUTION_PLAN_2026.md`
+  - Operational target board, near-term tasks, and success criteria.
 
-## Document Relationships
+### Active (Strategy)
 
-The COMMUNITY_ENHANCEMENT_PLAN.md was created specifically to address deficits identified in the project analysis, and is referenced as part of the broader RESTRUCTURING_PLAN_2026.md. This ensures that community engagement improvements are integrated into the overall project evolution strategy. The WIKI_IMPROVEMENT_PLAN.md addresses content quality issues identified in the GitHub wiki.
+- `docs/planning/STABILITY_PLAN.md`
+  - Strategic workstreams and milestone framing for stability.
 
-## Next Steps
+### Active (Domain Support)
 
-- Review and approve COMMUNITY_ENHANCEMENT_PLAN.md
-- Review and approve WIKI_IMPROVEMENT_PLAN.md
-- Begin implementation of community enhancement initiatives
-- Begin implementation of wiki improvement initiatives
-- Update project README to reference new documentation
-- Communicate changes to the community
+- `docs/planning/SECRETS_MANAGEMENT.md`
+  - SOPS transition design and migration checklist.
+- `docs/planning/MIGRATION_PLAN.md`
+  - Legacy data migration and credential rotation strategy.
+- `docs/planning/DATA_MAPPING.md`
+  - Migration source/staging/destination mapping details.
+
+### Backlog / Later-Phase Plans
+
+- `docs/planning/GPU_ENHANCED_PLAN.md`
+- `docs/planning/RESTRUCTURING_PLAN_2026.md`
+- `docs/planning/COMMUNITY_ENHANCEMENT_PLAN.md`
+
+### Completed / Historical Reference
+
+- `docs/planning/WIKI_IMPROVEMENT_PLAN.md`
+- `docs/planning/IMPLEMENTATION_REVIEW.md`
+- `docs/planning/MEDIA_STACK_V2.md`
+
+### Alias / Redirect
+
+- `docs/planning/MIGRATION_STRATEGY.md`
+  - Redirects to canonical migration plan location.
+
+## Operating Rules
+
+1. If a task is not listed in `STABILITY_EXECUTION_PLAN_2026.md` near-term actions, it is not considered current sprint scope.
+2. Strategy docs define direction; execution docs define what gets done now.
+3. Backlog docs can be promoted only by adding concrete near-term tasks to the execution board.
