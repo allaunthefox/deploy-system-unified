@@ -1,4 +1,4 @@
-# PLANNING_SUMMARY
+# SUMMARY
 
 This file is the planning index and the single place to see what is actively targeted now.
 
