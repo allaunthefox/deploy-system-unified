@@ -64,6 +64,10 @@ System initialization and base configuration.
 **Entropy Enhancement**
 Ensures high-quality random number generation by installing and configuring entropy enhancement services.
 
+### `core/grub` — [Read details](roles/core_grub.md)
+**Centralized Bootloader Management**
+Aggregates and applies kernel parameters from various roles into a single GRUB configuration.
+
 ### `core/hardware_support` — [Read details](roles/core_hardware_support.md)
 **Hardware Discovery & Requirements**
 Discovers CPU features (AVX, AES-NI) and handles hardware acceleration requirements.

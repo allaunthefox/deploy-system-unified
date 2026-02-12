@@ -35,6 +35,7 @@
       - security/access
       - security/sshd
       - security/file_integrity
+      - core/grub
       # Advanced Security & Isolation Measures
       - security/sandboxing
       - security/firejail

@@ -1,0 +1,14 @@
+---
+# GRUB Centralized Configuration
+# Values here populate the core/grub role
+
+core_grub_base_params:
+  - "quiet"
+  - "splash"
+
+# These lists are intended to be appended to by other roles or group_vars
+core_grub_security_params: []
+core_grub_hardware_params: []
+core_grub_isolation_params: []
+core_grub_performance_params: []
+core_grub_extra_params: []
