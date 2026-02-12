@@ -29,7 +29,7 @@ provisioner:
       allow_broken_conditionals: true
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
-    ANSIBLE_COLLECTIONS_PATHS: ${MOLECULE_PROJECT_DIRECTORY}/.collections
+    ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/.collections
   lint:
     name: ansible-lint
   playbooks:
