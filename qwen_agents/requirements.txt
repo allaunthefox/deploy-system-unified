@@ -1,0 +1,10 @@
+# Requirements for Qwen Sub-Agent System
+
+# Core dependencies
+openai>=1.0.0
+tiktoken>=0.3.0
+
+# Additional utilities
+requests>=2.28.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0

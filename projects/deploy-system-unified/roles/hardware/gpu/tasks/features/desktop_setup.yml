@@ -20,7 +20,7 @@
         - "'nvidia' in _gpu_vendor_list"
         - grub_config_file.stat.exists
       # classes: [redhat, debian, archlinux]
-      notify: update_grub
+      notify: update-grub
 
 - name: "[Desktop] Configure Power Profile (AMD)"
   when:

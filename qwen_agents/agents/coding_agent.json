@@ -1,0 +1,32 @@
+{
+  "agent": {
+    "name": "coding_agent",
+    "type": "specialized",
+    "description": "Specialized in code generation and debugging",
+    "primary_model": "qwen-coding",
+    "fallback_models": ["qwen-max"],
+    "max_tokens": 8192,
+    "temperature": 0.3,
+    "capabilities": [
+      "code_generation",
+      "debugging",
+      "refactoring",
+      "testing",
+      "code_review",
+      "architecture_design"
+    ],
+    "tools": [
+      "read_file",
+      "edit",
+      "write_file",
+      "run_shell_command",
+      "grep_search"
+    ],
+    "personality": "precise, logical, follows best practices",
+    "constraints": [
+      "follow language-specific conventions",
+      "ensure code quality and security",
+      "provide explanations for complex implementations"
+    ]
+  }
+}

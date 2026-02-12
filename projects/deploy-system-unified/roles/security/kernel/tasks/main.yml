@@ -35,6 +35,7 @@
   become: true
   when: not _sec_is_container
   tags: [security, kernel]
+
 - name: Configure Kernel to zero memory on free (GRUB)
   ansible.builtin.lineinfile:
     path: /etc/default/grub
@@ -44,42 +45,5 @@
     backrefs: true
   become: true
   when: not _sec_is_container
-  notify: update grub
-  tags: [security, kernel]
-
-- name: Apply Bare Metal OS-Layer Hardening
-  block:
-    - name: Check CPU Vendor for IOMMU
-      ansible.builtin.command: grep -q 'GenuineIntel' /proc/cpuinfo
-      register: cpu_is_intel
-      failed_when: false
-      changed_when: false
-
-    - name: Enable IOMMU (Intel)
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*intel_iommu=on).*)"$'
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 intel_iommu=on iommu=pt"'
-        backrefs: true
-      notify: update grub
-      when: cpu_is_intel.rc == 0
-
-    - name: Enable IOMMU (AMD)
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*amd_iommu=on).*)"$'
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 amd_iommu=on iommu=pt"'
-        backrefs: true
-      notify: update grub
-      when: cpu_is_intel.rc != 0
-
-    - name: Blacklist dangerous DMA-capable modules (Hardware Isolation)
-      ansible.builtin.copy:
-        content: |
-          blacklist firewire-ohci
-          blacklist thunderbolt
-        dest: /etc/modprobe.d/99-dma-isolation.conf
-        mode: '0644'
-  when: kernel_profile == "bare_metal"
-  become: true
+  notify: update-grub
   tags: [security, kernel]
