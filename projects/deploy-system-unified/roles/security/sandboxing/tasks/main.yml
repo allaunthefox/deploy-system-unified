@@ -1,29 +1,61 @@
 ---
 # Tasks for security/sandboxing - User-space Isolation
+
 - name: Install Bubblewrap
   ansible.builtin.package:
     name: bubblewrap
     state: present
   become: true
+  when: 
+    - sandboxing_enabled
+    - sandboxing_install_bubblewrap
+
 - name: Verify Landlock support in Kernel
   ansible.builtin.shell: |
     set -o pipefail
-    dmesg | grep -i landlock || [-c /dev/landlock]
+    # Check if landlock is enabled in the kernel
+    if dmesg | grep -i landlock > /dev/null 2>&1 || [ -c /dev/landlock ]; then
+      exit 0
+    else
+      exit 1
+    fi
   args:
     executable: /bin/bash
   register: landlock_check
   failed_when: false
   changed_when: false
   become: true
+  when: 
+    - sandboxing_enabled
+    - sandboxing_use_landlock
+
 - name: Report Landlock status
   ansible.builtin.debug:
     msg: "Landlock Kernel support detected and available for application sandboxing"
-  when: landlock_check.rc == 0
+  when: 
+    - sandboxing_enabled
+    - sandboxing_use_landlock
+    - landlock_check.rc == 0
+
 - name: Create standard Landlock/Bwrap policy directory
   ansible.builtin.file:
-    path: /etc/sandboxing/policies
+    path: "{{ sandboxing_policy_dir }}"
     state: directory
     mode: '0755'
     owner: root
     group: root
   become: true
+  when: sandboxing_enabled
+
+- name: Deploy Sandbox Profiles
+  ansible.builtin.template:
+    src: "{{ item.config_template }}"
+    dest: "{{ sandboxing_policy_dir }}/{{ item.name }}.conf"
+    mode: '0644'
+    owner: root
+    group: root
+  loop: "{{ sandboxing_profiles }}"
+  become: true
+  when: 
+    - sandboxing_enabled
+    - sandboxing_profiles | length > 0

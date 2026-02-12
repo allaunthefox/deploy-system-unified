@@ -1,0 +1,25 @@
+---
+# Defaults for security/sandboxing
+
+# General enablement of sandboxing features
+sandboxing_enabled: true
+
+# Install Bubblewrap (bwrap) for user-space sandboxing
+sandboxing_install_bubblewrap: true
+
+# Directory to store Landlock/Bwrap policies
+sandboxing_policy_dir: "/etc/sandboxing/policies"
+
+# Enforce seccomp filters where available
+sandboxing_use_seccomp: true
+
+# Verify and utilize Landlock security module
+sandboxing_use_landlock: true
+
+# Collection of sandbox profiles to deploy
+# Example:
+# sandboxing_profiles:
+#   - name: "app_restricted"
+#     type: "bwrap"
+#     config_template: "templates/bwrap_app.j2"
+sandboxing_profiles: []
