@@ -7,6 +7,8 @@
   register: hetzner_32_check
   failed_when: false
   changed_when: false
+  args:
+    pipefail: true
 - name: Report Hetzner Routing Status
   ansible.builtin.debug:
     msg: "Hetzner /32 networking detected. Ensuring routing table persistence."

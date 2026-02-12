@@ -4,17 +4,23 @@
 
 - name: Define Generic Graphics packages (Debian/Ubuntu)
   ansible.builtin.set_fact:
-    generic_graphics_packages:
-      - linux-firmware          # Required for Kernel Display Handover
-      - mesa-utils
-      - vulkan-drivers          # Includes Lavapipe (Vulkan SW Rasterizer)
-      - libgl1-mesa-dri         # Includes LLVMpipe (OpenGL SW Rasterizer)
-      - libglx-mesa0
-      # Legacy / Minimal Video Drivers
-      - xserver-xorg-video-vesa
-      - xserver-xorg-video-fbdev
-      - xserver-xorg-video-mga
-      - xserver-xorg-video-ast
+    generic_graphics_packages: >-
+      {{
+        [
+          'linux-firmware',
+          'mesa-utils',
+          'mesa-vulkan-drivers',
+          'libgl1-mesa-dri',
+          'libglx-mesa0'
+        ] + (
+          [] if _gpu_is_container | default(false) else [
+            'xserver-xorg-video-vesa',
+            'xserver-xorg-video-fbdev',
+            'xserver-xorg-video-mga',
+            'xserver-xorg-video-ast'
+          ]
+        )
+      }}
   when: ansible_facts['os_family'] == 'Debian'
 
 - name: Define Generic Graphics packages (RedHat/Fedora)
@@ -66,15 +72,9 @@
     - ansible_os_family in ['Debian', 'RedHat']
     - not _gpu_is_container | default(false)
 
-- name: Configure Safe Resolution for ASPEED BMC (GRUB)
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    # Match the line ONLY if it does NOT already contain 'video=1024x768@60'
-    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!.*video=1024x768@60).*)"$'
-    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 video=1024x768@60"'
-    backrefs: true
-  become: true
-  notify: Update Grub (Placeholder)
+- name: Register Safe Resolution for ASPEED BMC (GRUB)
+  ansible.builtin.set_fact:
+    core_grub_hardware_params: "{{ core_grub_hardware_params | default([]) + ['video=1024x768@60'] }}"
   when:
     - _gpu_override_aspeed_drm | default(false)
     - ansible_os_family == 'Debian'

@@ -2,26 +2,7 @@
 # Hardware Detection Logic
 # Detects Installed GPU Vendors to override generic defaults
 
-- name: Retrieve PCI Device Facts
-  community.general.pci_device:
-    device: all
-  register: pci_facts
-  ignore_errors: true
-
-- name: Parse PCI Facts for Display Controllers
-  ansible.builtin.set_fact:
-    _detected_pci_vendors: "{{ pci_facts.results | default([]) | selectattr('device_class', 'defined') | selectattr('device_class', 'match', '^03') | map(attribute='vendor') | map('regex_replace', '^0x', '') | list | unique }}"
-  # Class 03xx is Display Controller (VGA/3D), strip 0x prefix if present
-
-- name: Detect ASPEED AST2600/AST2400 (SP5/Server BMC) for DRM Mode
-  ansible.builtin.set_fact:
-    _gpu_override_aspeed_drm: true
-  loop: "{{ pci_facts.results | default([]) }}"
-  when:
-    - (item.vendor | default('') | regex_replace('^0x', '')) == '1a03'
-    - (item.device | default('') | regex_replace('^0x', '')) in ['2000', '2600']
-
-- name: Fallback to lspci if pci_device fails (Manual Parsing)
+- name: Detect GPU vendors via lspci (Manual Parsing)
   block:
     - name: Run lspci to find VGA devices (Class 03xx)
       # Output format: "00:02.0 0300: 1a03:2000 (rev 41)"
@@ -30,17 +11,18 @@
       register: lspci_raw_ids
       changed_when: false
       failed_when: false
+      args:
+        pipefail: true
 
     - name: Parse detected vendors from lspci
       ansible.builtin.set_fact:
-        _detected_pci_vendors: "{{ lspci_raw_ids.stdout_lines | map('split', ':') | map('first') | unique }}"
+        _detected_pci_vendors: "{{ (lspci_raw_ids.stdout_lines | default([])) | map('split', ':') | map('first') | unique }}"
 
     - name: Detect ASPEED AST2600/AST2400 (SP5) via lspci
       ansible.builtin.set_fact:
         _gpu_override_aspeed_drm: true
       # Check if any line in stdout matches 1a03:2000 or 1a03:2600
-      when: lspci_raw_ids.stdout_lines | select('match', '^1a03:(2000|2600)') | list | length > 0
-  when: pci_facts.results is not defined or pci_facts.results | length == 0
+      when: (lspci_raw_ids.stdout_lines | default([])) | select('match', '^1a03:(2000|2600)') | list | length > 0
 
 - name: Detect Generic/Minimal Vendors (VIA, SiS, Matrox, Aspeed)
   ansible.builtin.set_fact:

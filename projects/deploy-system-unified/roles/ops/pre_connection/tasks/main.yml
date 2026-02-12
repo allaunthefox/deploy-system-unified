@@ -6,13 +6,15 @@
     # Find the configured port and ensure it is not the default 22
     # Use sshd -T to respect included configs and overrides
     CURRENT_PORT=$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')
-    if ["$CURRENT_PORT" != "22"] && [-n "$CURRENT_PORT"]; then
+    if [ "$CURRENT_PORT" != "22" ] && [ -n "$CURRENT_PORT" ]; then
       echo "$CURRENT_PORT"
     else
       echo ""
     fi
   register: existing_ssh_port
   changed_when: false
+  args:
+    pipefail: true
   when: ssh_randomize_port | default(false) | bool
   become: true
 - name: Compute SSH port range bounds (idempotent)
@@ -66,7 +68,7 @@
     state: started
   delegate_to: localhost
   register: ssh_port_check
-  ignore_errors: true
+  failed_when: false
 - name: Inform operator if SSH port is closed (Anticipating Knocking)
   ansible.builtin.debug:
     msg: "SSH port appears closed. If Port Knocking is enabled, ensure you have knocked before running this playbook."

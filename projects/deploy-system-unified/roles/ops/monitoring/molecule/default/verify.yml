@@ -30,7 +30,8 @@
         enabled: true
       check_mode: true
       register: service_status_debian
-      ignore_errors: true
+      failed_when: false
+      changed_when: false
 
     - name: Check node_exporter service status (Generic)
       ansible.builtin.systemd:

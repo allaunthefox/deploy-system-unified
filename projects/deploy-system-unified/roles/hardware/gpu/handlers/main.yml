@@ -16,17 +16,6 @@
     msg: "Would restart Display Manager (gdm/lightdm/sddm) if present."
   listen: "Restart Display Manager (Placeholder)"
 
-- name: update-grub
-  ansible.builtin.command: update-grub
-  become: true
-  when: ansible_os_family == 'Debian'
-
-- name: update-grub-redhat
-  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
-  become: true
-  when: ansible_os_family == 'RedHat'
-  listen: update-grub
-
 - name: Update Initramfs Debian
   ansible.builtin.command: update-initramfs -u
   become: true

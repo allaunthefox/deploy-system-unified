@@ -57,6 +57,7 @@ htmlcov/
 
 # Virtualenvs / environment dirs
 .venv/
+.collections/
 venv/
 .env/
 molecule_venv/

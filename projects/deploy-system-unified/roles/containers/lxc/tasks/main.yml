@@ -50,6 +50,7 @@
       when: lxc_container_gpu_config | length > 0
       args:
         executable: /bin/bash
+        pipefail: true
 
     - name: Restart LXC containers to apply GPU configuration
       ansible.builtin.command:

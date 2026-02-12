@@ -46,7 +46,6 @@
 - name: Auto-Detect Video Hardware (If Vendor is Auto/Generic)
   ansible.builtin.include_tasks: detect_video.yml
   when: gpu_stack_vendor in ['auto', 'generic']
-  ignore_errors: true
 
 - name: Normalize Vendor List (Re-eval after detection)
   ansible.builtin.set_fact:

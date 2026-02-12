@@ -7,13 +7,17 @@
     - name: Check generic package installation (Mesa)
       ansible.builtin.shell: dpkg -l | grep mesa-utils
       register: mesa_check
-      ignore_errors: true
+      failed_when: false
+      args:
+        pipefail: true
       when: ansible_facts['os_family'] == 'Debian'
 
     - name: Check generic package installation (Vulkan)
-      ansible.builtin.shell: dpkg -l | grep vulkan-tools
+      ansible.builtin.shell: dpkg -l | grep mesa-vulkan-drivers
       register: vulkan_check
-      ignore_errors: true
+      failed_when: false
+      args:
+        pipefail: true
       when: ansible_facts['os_family'] == 'Debian'
 
     - name: Assert mesa-utils is installed (Generic Profile)
@@ -26,8 +30,14 @@
       ansible.builtin.stat:
         path: /usr/local/bin/gpu-rescan
       register: rescan_script
+      when:
+        - gpu_stack_enable_egpu | default(false)
+        - gpu_stack_egpu_interface | default('') == 'oculink'
 
     - name: Assert OCuLink script exists
       ansible.builtin.assert:
         that: rescan_script.stat.exists
         fail_msg: "OCuLink gpu-rescan script was not created."
+      when:
+        - gpu_stack_enable_egpu | default(false)
+        - gpu_stack_egpu_interface | default('') == 'oculink'

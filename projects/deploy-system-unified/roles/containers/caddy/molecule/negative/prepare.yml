@@ -8,7 +8,8 @@
     - name: Check podman access
       ansible.builtin.command: podman info
       register: podman_info
-      ignore_errors: true
+      failed_when: false
+      changed_when: false
 
     - name: Add user to podman socket group if podman access denied
       ansible.builtin.user:

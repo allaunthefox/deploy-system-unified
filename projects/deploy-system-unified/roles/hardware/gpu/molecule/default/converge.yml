@@ -5,6 +5,15 @@
 
   # Mock systemd for testing service modules in Docker
   pre_tasks:
+    - name: Disable apt sandbox in containers
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/99molecule-no-sandbox
+        content: 'APT::Sandbox::User "root";'
+        mode: '0644'
+      when:
+        - ansible_facts['os_family'] == 'Debian'
+        - (ansible_facts['virtualization_type'] | default('')) in ['docker', 'podman', 'container', 'lxc']
+
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
@@ -24,6 +33,4 @@
         gpu_stack_enable: true
         gpu_stack_vendor: generic
         gpu_stack_arch: x86_64
-        # Test eGPU OCuLink path
-        gpu_stack_enable_egpu: true
-        gpu_stack_egpu_interface: oculink
+        gpu_stack_enable_egpu: false

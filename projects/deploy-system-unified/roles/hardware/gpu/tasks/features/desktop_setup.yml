@@ -5,17 +5,11 @@
 - name: "[Desktop] Configure Kernel Mode Setting (Wayland Support)"
   when: gpu_desktop_enable_wayland_support | bool
   block:
-    - name: "[Desktop] Check for GRUB configuration"
-      ansible.builtin.stat:
-        path: /etc/default/grub
-      register: grub_config_file
-
     - name: "[Desktop] Enable NVIDIA DRM KMS (Kernel Parameter)"
       ansible.builtin.set_fact:
         core_grub_hardware_params: "{{ core_grub_hardware_params | default([]) + ['nvidia-drm.modeset=1'] }}"
       when:
         - "'nvidia' in _gpu_vendor_list"
-        - grub_config_file.stat.exists
 
 - name: "[Desktop] Configure Power Profile (AMD)"
   when:
@@ -68,4 +62,4 @@
       ansible.builtin.package:
         name: "{{ _input_packages }}"
         state: present
-      ignore_errors: true
+      failed_when: false

@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: No-op side effect placeholder
+      ansible.builtin.debug:
+        msg: "No side effects for core/grub Molecule scenario."

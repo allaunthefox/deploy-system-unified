@@ -6,6 +6,8 @@
   register: cpu_flags_output
   changed_when: false
   check_mode: false
+  args:
+    pipefail: true
 
 - name: Set Hardware Facts
   ansible.builtin.set_fact:
@@ -22,7 +24,8 @@
   changed_when: false
   failed_when: false
   # Only run if lspci is available (part of pciutils)
-  ignore_errors: true
+  args:
+    pipefail: true
 
 - name: Set Crypto Accelerator Facts
   ansible.builtin.set_fact:
@@ -59,12 +62,12 @@
 - name: Configure Hardware Clock (RTC) to UTC
   ansible.builtin.command: timedatectl set-local-rtc 0
   become: true
-  when: "'LocalRTC=no' not in timedatectl_show.stdout_lines"
+  when: "'LocalRTC=yes' in timedatectl_show.stdout_lines"
 
 - name: Enable NTP-based RTC synchronization
   ansible.builtin.command: timedatectl set-ntp true
   become: true
-  when: "'NTP=yes' not in timedatectl_show.stdout_lines"
+  when: "'NTP=no' in timedatectl_show.stdout_lines"
 
 - name: Validate Crypto Acceleration (Secure Nodes)
   ansible.builtin.fail:

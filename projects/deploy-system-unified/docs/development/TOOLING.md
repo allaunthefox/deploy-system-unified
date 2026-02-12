@@ -2,6 +2,20 @@
 
 The project uses a high-performance enforcement engine to maintain architectural integrity.
 
+## ✅ Stable Local Tooling (Recommended)
+
+To avoid collection version drift and lint warnings, run tooling from the project venv and use the project-local collections cache:
+
+```bash
+python -m venv .venv
+./.venv/bin/pip install ansible-core==2.20.2 ansible-lint==26.1.1
+./.venv/bin/ansible-galaxy collection install -r requirements.yml -p .collections
+```
+
+Notes:
+- `ansible.cfg` pins `collections_path` to `.collections`, so no extra env vars are needed.
+- `dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh` automatically prefers `.venv` when present.
+
 ## 🛠 `enforce_style_guide.sh`
 
 This script is the primary gatekeeper for the project's standards. It utilizes **ripgrep (rg)** and **fd** for near-instant auditing of the codebase.

@@ -5,8 +5,8 @@
   vars:
     containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
     containers_secrets_owner: "{{ lookup('env','USER') }}"
-    media_enable: true
-    media_secrets_fail_secure: true
+    containers_media_fail_secure: true
+    containers_transmission_enable: true
     test_case: "{{ lookup('env','test_case') | default('missing_file') }}"
   tasks:
     - name: Ensure molecule_shared exists
@@ -15,59 +15,45 @@
         state: directory
         mode: '0700'
 
-    # Test Case 1: Missing jellyfin.env file (should fail)
-    - name: Create missing jellyfin.env for test
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/jellyfin.env"
-        state: absent
-      when: test_case == 'missing_jellyfin_file'
+    # Test Case 1: Missing transmission user (should fail)
+    - name: Set transmission pass only for missing user test
+      ansible.builtin.set_fact:
+        containers_transmission_pass: "real_pass"
+      when: test_case in ['missing_transmission_user', 'missing_file']
 
-    # Test Case 2: Wrong permissions on jellyfin.env (should fail)
-    - name: Create jellyfin.env with wrong permissions for test
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/jellyfin.env"
-        content: |
-          JELLYFIN_PWD_HASH=real_password_hash_here
-          JELLYFIN_API_KEY=real_api_key_here
-        mode: '0644'  # Wrong permissions
-        owner: "{{ containers_secrets_owner }}"
-      when: test_case in ['wrong_jellyfin_permissions', 'wrong_permissions']
+    # Test Case 2: Missing transmission pass (should fail)
+    - name: Set transmission user only for missing pass test
+      ansible.builtin.set_fact:
+        containers_transmission_user: "real_user"
+      when: test_case in ['missing_transmission_pass', 'wrong_permissions']
 
-    # Test Case 3: Placeholder values in jellyfin.env (should fail)
-    - name: Create jellyfin.env with placeholder values for test
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/jellyfin.env"
-        content: |
-          JELLYFIN_PWD_HASH=CHANGE_ME_IN_VAULT_TO_HASH
-          JELLYFIN_API_KEY=CHANGE_ME_IN_VAULT_TO_HASH
-        mode: '0600'
-        owner: "{{ containers_secrets_owner }}"
-      when: test_case in ['placeholder_jellyfin_values', 'placeholder_values']
+    # Test Case 3: Empty transmission user (should fail)
+    - name: Set empty transmission user for test
+      ansible.builtin.set_fact:
+        containers_transmission_user: ""
+        containers_transmission_pass: "real_pass"
+      when: test_case in ['empty_transmission_user', 'placeholder_values']
 
-    # Test Case 4: Missing radarr.env file (should fail)
-    - name: Create missing radarr.env for test
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/radarr.env"
-        state: absent
-      when: test_case in ['missing_radarr_file', 'missing_file']
+    # Test Case 4: Empty transmission pass (should fail)
+    - name: Set empty transmission pass for test
+      ansible.builtin.set_fact:
+        containers_transmission_user: "real_user"
+        containers_transmission_pass: ""
+      when: test_case in ['empty_transmission_pass', 'wrong_owner']
 
-    # Test Case 5: Wrong owner on media secrets (should fail)
-    - name: Create media secrets with wrong owner for test
-      become: true
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/jellyfin.env"
-        content: |
-          JELLYFIN_PWD_HASH=real_password_hash_here
-          JELLYFIN_API_KEY=real_api_key_here
-        mode: '0600'
-        owner: "root"  # Wrong owner
-      when: test_case in ['wrong_media_owner', 'wrong_owner']
-
-    # Test Case 6: Empty media secrets file (should fail)
-    - name: Create empty media secrets for test
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/jellyfin.env"
-        content: ""
-        mode: '0600'
-        owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'empty_media_file'
+    # Default: valid transmission credentials for any other test cases
+    - name: Set valid transmission credentials for baseline
+      ansible.builtin.set_fact:
+        containers_transmission_user: "real_user"
+        containers_transmission_pass: "real_pass"
+      when: >-
+        test_case not in [
+          'missing_transmission_user',
+          'missing_transmission_pass',
+          'empty_transmission_user',
+          'empty_transmission_pass',
+          'missing_file',
+          'wrong_permissions',
+          'placeholder_values',
+          'wrong_owner'
+        ]

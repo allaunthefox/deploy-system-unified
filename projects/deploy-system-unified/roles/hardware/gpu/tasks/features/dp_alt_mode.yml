@@ -27,7 +27,7 @@
     name: typec_displayport
     state: present
   become: true
-  ignore_errors: true
+  failed_when: false
   when:
     - typec_sysfs.stat.exists
     - not _gpu_is_container | default(false)

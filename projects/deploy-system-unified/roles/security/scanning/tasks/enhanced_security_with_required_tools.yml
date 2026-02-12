@@ -7,7 +7,6 @@
   loop: ["trivy", "bwrap", "firejail", "endlessh", "chronyd"]
   failed_when: false
   changed_when: false
-  ignore_errors: true
 
 - name: Install standard security packages (Distro-Specific)
   ansible.builtin.package:
@@ -72,6 +71,7 @@
     echo "$scan_results"
   args:
     executable: /bin/bash
+    pipefail: true
   register: security_framework_comprehensive_scan
   changed_when: false
   no_log: true

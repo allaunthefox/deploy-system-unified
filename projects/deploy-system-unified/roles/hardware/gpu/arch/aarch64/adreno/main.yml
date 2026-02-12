@@ -36,8 +36,10 @@
 - name: Check for MSM/Adreno kernel module
   ansible.builtin.shell: lsmod | grep -E "msm|adreno"
   register: adreno_module
-  ignore_errors: true
   changed_when: false
+  args:
+    pipefail: true
+  failed_when: false
 
 - name: Report Adreno Status
   ansible.builtin.debug:

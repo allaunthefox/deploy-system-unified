@@ -19,19 +19,16 @@ Run `make molecule-precheck` before `molecule test` to preflight Podman access.
 ### 1. Current State Analysis
 
 **Verified permissive roles:**
-- `containers/ops` - ✅ Has `verify_secrets.yml` task file
-- `containers/caddy` - ❌ No `verify_secrets.yml` task file
-- `containers/authentik` - ❌ No `verify_secrets.yml` task file
-- `containers/media` - ❌ No `verify_secrets.yml` task file
+- `containers/ops` - ✅ `verify_secrets.yml` + `molecule/negative` scenario (Vaultwarden file checks)
+- `containers/caddy` - ✅ `verify_secrets.yml` + `molecule/negative` scenario (caddy.env + Caddyfile placeholder checks)
+- `containers/authentik` - ✅ `verify_secrets.yml` + `molecule/negative` scenario (authentik.env file checks + default variable checks)
+- `containers/media` - ✅ `verify_secrets.yml` + `molecule/negative` scenario (Transmission credential asserts)
 
-**Current verify_secrets.yml implementation:**
-- Located at `projects/deploy-system-unified/roles/containers/ops/tasks/verify_secrets.yml`
-- Uses `ansible.builtin.stat` to check file existence
-- Validates file permissions (mode 0600)
-- Checks file owner (matches `containers_secrets_owner`)
-- Validates content (no placeholder values)
-- Uses `fail` module for error reporting
-- Includes `tags: [security]` for selective execution
+**Current verify_secrets.yml implementations (role-specific):**
+- `roles/containers/ops/tasks/verify_secrets.yml`: asserts `vaultwarden.env` exists, mode `0600`, owner matches `containers_secrets_owner`, and no placeholder tokens.
+- `roles/containers/caddy/tasks/verify_secrets.yml`: asserts `caddy.env` exists, mode `0600`, owner matches `containers_secrets_owner`, no placeholder tokens, and validates Caddyfile placeholder email.
+- `roles/containers/authentik/tasks/verify_secrets.yml`: asserts `authentik.env` exists, mode `0600`, owner matches, no placeholder tokens, file is non-empty, and default weak vars are not used.
+- `roles/containers/media/tasks/verify_secrets.yml`: asserts Transmission credentials are defined and non-empty when fail-secure is enabled.
 
 ### 2. Negative Testing Framework
 
@@ -48,306 +45,72 @@ roles/{role_name}/molecule/negative/
 
 #### Test Scenarios
 
-Each negative test covers these failure conditions:
+Base matrix cases used across roles:
+- `missing_file` (file-based roles) or missing credential (media)
+- `wrong_permissions` (file-based roles)
+- `placeholder_values` (file-based roles)
+- `wrong_owner` (file-based roles)
 
-1. **Missing Secret File**
-   - File doesn't exist
-   - Expected: `verify_secrets` should fail
+Role-specific additions:
+- `containers/caddy`: `empty_file`, `placeholder_caddyfile`
+- `containers/authentik`: `empty_file`
+- `containers/media`: `missing_transmission_user`, `missing_transmission_pass`, `empty_transmission_user`, `empty_transmission_pass`
 
-2. **Wrong File Permissions**
-   - File exists but has incorrect permissions (e.g., 0644)
-   - Expected: `verify_secrets` should fail
-
-3. **Placeholder Values**
-   - File contains placeholder content (e.g., "CHANGE_ME_IN_VAULT_TO_HASH")
-   - Expected: `verify_secrets` should fail
-
-4. **Wrong File Owner**
-   - File exists but owned by wrong user (e.g., root instead of expected owner)
-   - Expected: `verify_secrets` should fail
+Note: For `containers/media`, the base matrix cases are mapped to Transmission credential failure modes to keep the shared CI matrix consistent.
 
 ### 3. Implementation Details
 
-#### containers/ops Role (Complete Implementation)
+Each permissive role implements a `molecule/negative` scenario driven by the `test_case` environment variable and an Ansible verifier that asserts `verify_secrets.yml` fails when expected.
 
-**Molecule Configuration (`molecule/negative/molecule.yml`):**
-```yaml
-dependency:
-  name: galaxy
-driver:
-  name: docker
-platforms:
-  - name: instance
-    image: quay.io/ansible/ansible-runner:latest
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
-provisioner:
-  name: ansible
-  config_options:
-    defaults:
-      stdout_callback: yaml
-      callback_whitelist: profile_tasks
-      deprecation_warnings: false
-      command_warnings: false
-      system_warnings: false
-  env:
-    ANSIBLE_FORCE_COLOR: 1
-    ANSIBLE_HOST_KEY_CHECKING: false
-    ANSIBLE_RETRY_FILES_ENABLED: false
-    ANSIBLE_ROLES_PATH: ../../../../
-verifier:
-  name: testinfra
-  options:
-    verbose: true
-lint: |
-  set -e
-  yamllint .
-  ansible-lint
-```
+Reference implementations:
+- `roles/containers/ops/molecule/negative/molecule.yml`
+- `roles/containers/ops/molecule/negative/converge.yml`
+- `roles/containers/ops/molecule/negative/verify.yml`
+- `roles/containers/caddy/molecule/negative/molecule.yml`
+- `roles/containers/caddy/molecule/negative/converge.yml`
+- `roles/containers/caddy/molecule/negative/verify.yml`
+- `roles/containers/authentik/molecule/negative/molecule.yml`
+- `roles/containers/authentik/molecule/negative/converge.yml`
+- `roles/containers/authentik/molecule/negative/verify.yml`
+- `roles/containers/media/molecule/negative/molecule.yml`
+- `roles/containers/media/molecule/negative/converge.yml`
+- `roles/containers/media/molecule/negative/verify.yml`
 
-**Test Scenarios (`molecule/negative/converge.yml`):**
-```yaml
----
-- hosts: instance
-  connection: local
-  gather_facts: false
-  vars:
-    containers_secrets_dir: "{{ playbook_dir }}/molecule_shared"
-    containers_secrets_owner: "{{ lookup('env','USER') }}"
-    vaultwarden_enable: true
-    containers_vaultwarden_fail_secure: true
-  tasks:
-    - name: Ensure molecule_shared exists
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}"
-        state: directory
-        mode: '0700'
-    
-    # Test Case 1: Missing secret file (should fail)
-    - name: Create missing vaultwarden.env for test
-      ansible.builtin.file:
-        path: "{{ containers_secrets_dir }}/vaultwarden.env"
-        state: absent
-      when: test_case == 'missing_file'
-    
-    # Test Case 2: Wrong permissions (should fail)
-    - name: Create vaultwarden.env with wrong permissions for test
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/vaultwarden.env"
-        content: "ADMIN_TOKEN=real_token"
-        mode: '0644'  # Wrong permissions
-        owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'wrong_permissions'
-    
-    # Test Case 3: Placeholder values (should fail)
-    - name: Create vaultwarden.env with placeholder values for test
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/vaultwarden.env"
-        content: "ADMIN_TOKEN=CHANGE_ME_IN_VAULT_TO_HASH"
-        mode: '0600'
-        owner: "{{ containers_secrets_owner }}"
-      when: test_case == 'placeholder_values'
-    
-    # Test Case 4: Wrong owner (should fail)
-    - name: Create vaultwarden.env with wrong owner for test
-      ansible.builtin.copy:
-        dest: "{{ containers_secrets_dir }}/vaultwarden.env"
-        content: "ADMIN_TOKEN=real_token"
-        mode: '0600'
-        owner: "root"  # Wrong owner
-      when: test_case == 'wrong_owner'
-    
-    - name: Run verify_secrets directly (expecting failure)
-      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
-      ignore_errors: true  # We expect this to fail in negative tests
-```
-
-**Test Assertions (`molecule/negative/verify.yml`):**
-```yaml
----
-- hosts: instance
-  connection: local
-  gather_facts: false
-  tasks:
-    - name: Verify that verify_secrets failed as expected
-      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
-      ignore_errors: true
-      register: verify_result
-    
-    - name: Assert that verify_secrets failed
-      ansible.builtin.assert:
-        that:
-          - verify_result is failed
-        fail_msg: "Expected verify_secrets to fail, but it succeeded"
-        success_msg: "verify_secrets correctly failed as expected"
-```
+Driver: `podman` (consistent with repository defaults).
 
 ### 4. GitHub Actions CI Integration
 
-**New CI Job (`docs/development/NEGATIVE_TESTING_IMPLEMENTATION.md`):**
-```yaml
-# Add to .github/workflows/ansible-tests.yml
+Workflow: `.github/workflows/negative-tests.yml`
 
-  negative-tests:
-    name: Negative Testing for Permissive Roles
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        role:
-          - containers/ops
-          - containers/caddy
-          - containers/authentik
-          - containers/media
-        test_case:
-          - missing_file
-          - wrong_permissions
-          - placeholder_values
-          - wrong_owner
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-          
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ansible molecule[docker] docker yamllint ansible-lint
-          
-      - name: Run negative tests
-        run: |
-          cd roles/${{ matrix.role }}
-          MOLECULE_DISTRO=${{ matrix.distro }} molecule test --scenario-name negative
-        env:
-          test_case: ${{ matrix.test_case }}
-```
+Matrix:
+- Roles: `containers/ops`, `containers/caddy`, `containers/authentik`, `containers/media`
+- Base test cases: `missing_file`, `wrong_permissions`, `placeholder_values`, `wrong_owner`
+- Additional includes:
+  - `containers/caddy`: `empty_file`, `placeholder_caddyfile`
+  - `containers/authentik`: `empty_file`
+  - `containers/media`: `missing_transmission_user`, `missing_transmission_pass`, `empty_transmission_user`, `empty_transmission_pass`
 
-### 5. Expansion to Remaining Roles
+Execution:
+- Uses Podman (`molecule[podman]`)
+- Runs `molecule test --scenario-name negative` per matrix entry
+- Uploads Molecule artifacts per role/test case
 
-#### Required Implementation for Each Role
+### 5. Expansion to Additional Roles
 
-For each remaining permissive role (`containers/caddy`, `containers/authentik`, `containers/media`):
+Status: Complete for current permissive roles. For any new permissive role, add:
+- `tasks/verify_secrets.yml` aligned to the role's secret model
+- `molecule/negative` scenario with `test_case` gating
+- CI matrix entry in `.github/workflows/negative-tests.yml`
 
-1. **Create verify_secrets.yml task file** following the established pattern
-2. **Create Molecule negative test structure** with the same files as `containers/ops`
-3. **Update role documentation** to reference the negative testing
-4. **Add CI job entries** for the new roles
+Avoid copying a generic template across roles; align checks to the role’s actual secret inputs.
 
-#### Standard verify_secrets.yml Template
+### 6. Verifier Implementation (Ansible)
 
-```yaml
----
-# Verify secrets file integrity and security
-# This task ensures that secrets files meet security requirements
-# before containers are deployed
-
-- name: Verify secrets directory exists
-  ansible.builtin.stat:
-    path: "{{ containers_secrets_dir }}"
-  register: secrets_dir_stat
-  
-- name: Fail if secrets directory does not exist
-  ansible.builtin.fail:
-    msg: "Secrets directory {{ containers_secrets_dir }} does not exist"
-  when: not secrets_dir_stat.stat.exists
-
-- name: Check if {{ item }} secret file exists
-  ansible.builtin.stat:
-    path: "{{ containers_secrets_dir }}/{{ item }}"
-  register: secret_file_stat
-  loop: "{{ containers_secret_files | default([]) }}"
-  when: item is defined and item | length > 0
-
-- name: Fail if secret file does not exist
-  ansible.builtin.fail:
-    msg: "Secret file {{ item.item }} does not exist in {{ containers_secrets_dir }}"
-  when: not item.stat.exists
-  loop: "{{ secret_file_stat.results }}"
-
-- name: Verify secret file permissions (should be 0600)
-  ansible.builtin.fail:
-    msg: "Secret file {{ item.item }} has incorrect permissions: {{ item.stat.mode }}. Expected 0600"
-  when: item.stat.mode != '0600'
-  loop: "{{ secret_file_stat.results }}"
-  ignore_errors: true
-
-- name: Verify secret file owner
-  ansible.builtin.fail:
-    msg: "Secret file {{ item.item }} is owned by {{ item.stat.pw_name }}. Expected {{ containers_secrets_owner }}"
-  when: item.stat.pw_name != containers_secrets_owner
-  loop: "{{ secret_file_stat.results }}"
-  ignore_errors: true
-
-- name: Check for placeholder values in secret files
-  ansible.builtin.shell: |
-    grep -q "CHANGE_ME_IN_VAULT_TO_HASH" "{{ item.item }}" && echo "placeholder_found" || echo "ok"
-  register: placeholder_check
-  loop: "{{ secret_file_stat.results }}"
-  ignore_errors: true
-
-- name: Fail if placeholder values found
-  ansible.builtin.fail:
-    msg: "Secret file {{ item.item }} contains placeholder values. Please replace with actual secrets."
-  when: placeholder_check.results[0].stdout == "placeholder_found"
-  loop: "{{ secret_file_stat.results }}"
-
-- name: Verify secret file content is not empty
-  ansible.builtin.fail:
-    msg: "Secret file {{ item.item }} is empty"
-  when: item.stat.size == 0
-  loop: "{{ secret_file_stat.results }}"
-
-- name: Display success message
-  ansible.builtin.debug:
-    msg: "Secret file {{ item.item }} passed all security checks"
-  loop: "{{ secret_file_stat.results }}"
-  when: item.stat.exists and item.stat.mode == '0600' and item.stat.pw_name == containers_secrets_owner
-
-tags: [security]
-```
-
-### 6. Idempotent Testinfra Implementation
-
-#### Enhanced verify.yml with Testinfra
-
-```yaml
----
-- hosts: instance
-  connection: local
-  gather_facts: false
-  tasks:
-    - name: Run verify_secrets and capture result
-      ansible.builtin.include_tasks: "../../tasks/verify_secrets.yml"
-      ignore_errors: true
-      register: verify_result
-    
-    - name: Assert that verify_secrets failed as expected
-      ansible.builtin.assert:
-        that:
-          - verify_result is failed
-        fail_msg: "Expected verify_secrets to fail, but it succeeded"
-        success_msg: "verify_secrets correctly failed as expected"
-    
-    - name: Verify specific failure conditions
-      ansible.builtin.assert:
-        that:
-          - verify_result is failed
-          - verify_result.msg is defined
-        fail_msg: "verify_secrets failed but no error message provided"
-        success_msg: "verify_secrets failed with proper error message"
-    
-    - name: Log test case and result
-      ansible.builtin.debug:
-        msg: "Test case '{{ test_case }}' - verify_secrets {{ 'PASSED' if verify_result is failed else 'FAILED' }}"
-```
+Negative scenarios use the Ansible verifier with a `block`/`rescue` pattern to capture expected failures and assert that `verify_secrets.yml` fails. See:
+- `roles/containers/ops/molecule/negative/verify.yml`
+- `roles/containers/caddy/molecule/negative/verify.yml`
+- `roles/containers/authentik/molecule/negative/verify.yml`
+- `roles/containers/media/molecule/negative/verify.yml`
 
 ### 7. Project Philosophy Alignment
 
@@ -361,10 +124,9 @@ This implementation follows the project's established patterns:
 
 ### 8. Next Steps
 
-1. **Implement for remaining roles**: Apply the same pattern to `containers/caddy`, `containers/authentik`, and `containers/media`
-2. **Add CI integration**: Update GitHub Actions workflows to include negative testing
-3. **Documentation updates**: Update role documentation to reference the new testing
-4. **Validation**: Test the implementation across different environments and scenarios
+1. **Keep matrices aligned**: Update `.github/workflows/negative-tests.yml` when secret models change.
+2. **Expand role-specific cases**: Add new negative cases as additional secrets are introduced.
+3. **Validation**: Use `make molecule-precheck` and `molecule test --scenario-name negative`, or rely on CI runs.
 
 ### 9. Benefits
 

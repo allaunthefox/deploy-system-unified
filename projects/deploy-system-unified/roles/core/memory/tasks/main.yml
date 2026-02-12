@@ -5,15 +5,19 @@
   ansible.builtin.shell: swapon --show=NAME --noheadings | wc -l
   register: physical_swap_count
   changed_when: false
+  args:
+    pipefail: true
   become: true
 
 - name: Detect Shared Video Memory (UMA)
   ansible.builtin.shell: |
     if lspci -v 2>/dev/null | grep -i "VGA" | grep -i "Intel"; then echo "true";
-    elif ["$(lspci 2>/dev/null | grep -c "VGA")" -eq 1] && lspci 2>/dev/null | grep -i "VGA" | grep -E "Renoir|Cezanne|Raven|Picasso|VanGogh|Rembrandt|Phoenix|Stoney|Carrizo|Kaveri|Temash|Kabini|Mullins"; then echo "true";
+    elif [ "$(lspci 2>/dev/null | grep -c "VGA")" -eq 1 ] && lspci 2>/dev/null | grep -i "VGA" | grep -E "Renoir|Cezanne|Raven|Picasso|VanGogh|Rembrandt|Phoenix|Stoney|Carrizo|Kaveri|Temash|Kabini|Mullins"; then echo "true";
     else echo "false"; fi
   register: uma_detection
   changed_when: false
+  args:
+    pipefail: true
   when: core_memory_shared_vram == 'auto'
 
 - name: Determine Memory Strategy (Auto-Selection)

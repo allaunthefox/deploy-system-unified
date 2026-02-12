@@ -27,6 +27,7 @@
 - Expand idempotence guardrails to other critical configs (sudoers, sysctl, firewall, container runtime).
 - Add a simple drift report task that summarizes changed files across a run.
 - Ensure all "write" tasks are atomic and have explicit ownership/permissions.
+- Centralize GRUB management: remove direct `/etc/default/grub` edits in role tasks, route all kernel params through `core/grub`, and consolidate `update-grub` handlers to a single source of truth.
 
 ### 2. Dependency Pinning and Reproducibility
 
@@ -88,3 +89,4 @@
 - Create `collections.yml` and `requirements.yml` with pinned versions.
 - Add a CI job for `--check --diff` against the production template.
 - Draft the restore runbook and include a first verification checklist.
+- Audit GRUB parameter writers and eliminate direct file edits outside `core/grub`.

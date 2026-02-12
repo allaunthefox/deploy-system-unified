@@ -38,19 +38,19 @@ jobs:
         include:
           # Additional test cases for specific roles
           - role: containers/caddy
-            test_case: missing_ssl_dir
+            test_case: empty_file
           - role: containers/caddy
-            test_case: wrong_ssl_permissions
-          - role: containers/authentik
-            test_case: missing_redis_file
+            test_case: placeholder_caddyfile
           - role: containers/authentik
             test_case: empty_file
           - role: containers/media
-            test_case: missing_jellyfin_file
+            test_case: missing_transmission_user
           - role: containers/media
-            test_case: missing_radarr_file
+            test_case: missing_transmission_pass
           - role: containers/media
-            test_case: empty_media_file
+            test_case: empty_transmission_user
+          - role: containers/media
+            test_case: empty_transmission_pass
 
     steps:
       - name: Checkout repository

@@ -61,14 +61,14 @@
     name: "{{ intel_driver_packages | default(['intel-media-driver']) }}"
     state: present
   become: true
-  ignore_errors: true # Ignore if package name mismatch on unknown distros
+  failed_when: false # Ignore if package name mismatch on unknown distros
 
 - name: Install Legacy and Minimal Video Providers (i8xx/Matrox/Aspeed)
   ansible.builtin.package:
     name: "{{ intel_legacy_packages | default([]) }}"
     state: present
   become: true
-  ignore_errors: true
+  failed_when: false
   when: ansible_os_family in ['Debian', 'RedHat']
 
 - name: Configure HuC/GuC firmware loading (i915)

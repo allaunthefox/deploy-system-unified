@@ -64,6 +64,8 @@
       register: sticky_result
       changed_when: sticky_result.stdout | int > 0
       failed_when: false
+      args:
+        pipefail: true
 - name: Harden user accounts
   block:
     - name: Lock system accounts that should not login

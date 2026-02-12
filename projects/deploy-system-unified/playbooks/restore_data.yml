@@ -105,7 +105,7 @@
       retries: 30
       delay: 2
       until: db_check.rc == 0
-      ignore_errors: true
+      failed_when: false
 
     - name: Drop & Create Authentik DB (Fresh Install State)
       ansible.builtin.command: |

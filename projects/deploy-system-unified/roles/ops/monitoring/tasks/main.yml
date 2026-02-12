@@ -74,7 +74,7 @@
     state: started
     enabled: true
   when: monitoring_enable_node_exporter
-  ignore_errors: true
+  failed_when: false
 
 - name: Configure Smartd (Basic)
   ansible.builtin.lineinfile:

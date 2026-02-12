@@ -10,6 +10,8 @@
       register: amd_sriov_devices
       changed_when: false
       failed_when: false
+      args:
+        pipefail: true
       become: true
     - name: Parse AMD SR-IOV devices
       ansible.builtin.set_fact:

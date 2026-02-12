@@ -7,7 +7,7 @@
       ansible.builtin.stat:
         path: /sbin/ethtool
       register: ethtool_bin
-      ignore_errors: true
+      failed_when: false
 
     - name: Check /usr/sbin/ethtool if /sbin failed
       ansible.builtin.stat:
