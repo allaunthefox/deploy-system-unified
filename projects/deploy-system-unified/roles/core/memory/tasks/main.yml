@@ -69,7 +69,7 @@
 - name: Configure ZRAM (zram-generator)
   when:
     - active_memory_strategy == 'zram'
-    - virt_type == 'bare-metal' or virt_type == 'virtual'
+    - virt_type in ['bare-metal', 'virtual', 'vps']
   block:
     - name: Install zram-generator
       ansible.builtin.package:
@@ -93,7 +93,7 @@
 - name: Configure ZSwap (Kernel Modules)
   when:
     - active_memory_strategy == 'zswap'
-    - virt_type == 'bare-metal' or virt_type == 'virtual'
+    - virt_type in ['bare-metal', 'virtual', 'vps']
   block:
     - name: Enable ZSwap Kernel Parameters
       ansible.builtin.set_fact:
@@ -143,4 +143,4 @@
   become: true
   when:
     - memory_workload_profile != 'standard'
-    - virt_type == 'bare-metal' or virt_type == 'virtual'
+    - virt_type in ['bare-metal', 'virtual', 'vps']

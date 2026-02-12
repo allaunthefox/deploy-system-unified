@@ -25,7 +25,7 @@
     path = "/etc/containers/containers.conf"
     with open(path, "r", encoding="utf-8") as f:
       content = f.read()
-    m = re.search(r'^default_capabilities\\s*=\\s*\\[(.*?)\\]$', content, re.MULTILINE)
+    m = re.search(r'^\s*default_capabilities\s*=\s*\[(.*?)\]\s*$', content, re.MULTILINE)
     if not m:
       raise SystemExit("default_capabilities not found in containers.conf")
     items = [i.strip().strip('"').strip("'") for i in m.group(1).split(",") if i.strip()]

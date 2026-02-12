@@ -9,7 +9,7 @@
   ansible.builtin.include_tasks: install_podman.yml
 
 - name: Warn on weak/default credentials (container policy)
-  ansible.builtin.include_tasks: "{{ role_path }}/../tasks/policy_default_passwords.yml"
+  ansible.builtin.include_tasks: policy_default_passwords.yml
 
 - name: Setup GPU Container Support
   ansible.builtin.include_tasks: gpu_setup_dispatcher.yml
