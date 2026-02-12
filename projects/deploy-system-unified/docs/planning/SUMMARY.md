@@ -1,4 +1,4 @@
-# Planning Documents Summary
+# SUMMARY
 
 This document provides an overview of the planning documents available in the deploy-system-unified project.
 
