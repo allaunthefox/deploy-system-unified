@@ -5,6 +5,7 @@
     gather_subset:
       - '!all'
       - '!min'
+      - date_time
       - distribution
       - os_family
       - pkg_mgr

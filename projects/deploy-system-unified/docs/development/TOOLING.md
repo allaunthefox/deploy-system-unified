@@ -54,4 +54,6 @@ Located in the `scripts/` directory, these tools are used for pre-deployment ver
 
 Scenario-based testing for idempotency and multi-platform support.
 
+- Always run Molecule from the project venv (or with the venv on `PATH`) so it uses the pinned `ansible-core` and the project `.collections`:
+  `source .venv/bin/activate && molecule test -s <scenario>`
 - Use `molecule test` to run the full sequence (Destroy -> Create -> Converge -> **Idempotence** -> Verify).

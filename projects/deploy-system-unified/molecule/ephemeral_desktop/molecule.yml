@@ -24,6 +24,10 @@ provisioner:
   config_options:
     defaults:
       deprecation_warnings: false
+      # molecule_podman create.yml uses `when: lookup('env','HOME')`, which Ansible 2.20
+      # rejects as a non-boolean conditional. This keeps the scenario runnable while the
+      # upstream plugin updates.
+      allow_broken_conditionals: true
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
     ANSIBLE_COLLECTIONS_PATHS: ${MOLECULE_PROJECT_DIRECTORY}/.collections
