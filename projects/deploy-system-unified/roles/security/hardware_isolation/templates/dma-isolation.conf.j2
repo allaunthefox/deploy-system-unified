@@ -1,0 +1,4 @@
+# Managed by Ansible - security/hardware_isolation
+{% for module in hardware_isolation_blacklist_modules %}
+blacklist {{ module }}
+{% endfor %}

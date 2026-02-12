@@ -1,21 +1,42 @@
 ---
 # Tasks for security/hardware_isolation - PCIe and DMA Protection
-- name: Enable IOMMU for PCIe Isolation (Intel/AMD)
+
+- name: Detect CPU Vendor for IOMMU
+  ansible.builtin.set_fact:
+    _hardware_isolation_vendor: >-
+      {{
+        'intel' if 'Intel' in (ansible_facts['processor'] | join(' ')) else
+        'amd' if 'AMD' in (ansible_facts['processor'] | join(' ')) else
+        'unknown'
+      }}
+  when: hardware_isolation_iommu_vendor == "auto"
+
+- name: Set IOMMU Vendor Fact
+  ansible.builtin.set_fact:
+    _hardware_isolation_vendor: "{{ hardware_isolation_iommu_vendor }}"
+  when: hardware_isolation_iommu_vendor != "auto"
+
+- name: Configure IOMMU in GRUB
   ansible.builtin.lineinfile:
     path: /etc/default/grub
-    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=".*)(intel_iommu=on|amd_iommu=on) iommu=pt(.*")$'
-    line: '\1intel_iommu=on iommu=pt\2' # Defaulting to Intel, common for servers
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?!{{ _hardware_isolation_vendor }}_iommu=on).)*"$'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 {{ _hardware_isolation_vendor }}_iommu=on{% if hardware_isolation_iommu_pt %} iommu=pt{% endif %}{% if hardware_isolation_acs_override %} pcie_acs_override=downstream,multifunction{% endif %}"'
     backrefs: true
-  register: iommu_grub
   become: true
-  when: not (is_virtualized | default(false))
-  notify: update grub
+  when:
+    - not (is_virtualized | default(false))
+    - hardware_isolation_iommu_enabled
+    - _hardware_isolation_vendor in ['intel', 'amd']
+  notify: update-grub
+
 - name: Blacklist dangerous DMA-capable modules
-  ansible.builtin.copy:
-    content: |
-      blacklist firewire-ohci
-      blacklist thunderbolt
+  ansible.builtin.template:
+    src: dma-isolation.conf.j2
     dest: /etc/modprobe.d/99-dma-isolation.conf
     mode: '0644'
+    owner: root
+    group: root
   become: true
-  when: not (is_virtualized | default(false))
+  when:
+    - not (is_virtualized | default(false))
+    - hardware_isolation_dma_protection_enabled
