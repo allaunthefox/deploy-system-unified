@@ -35,6 +35,7 @@
   become: true
   changed_when: false
   register: _dsu_checkpoint_file
+  when: lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''  # skip checkpoint write during molecule tests
 
 - name: Encrypt Checkpoint (Optional - Secure Mode)
   ansible.builtin.command:
