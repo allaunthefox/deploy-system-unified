@@ -32,6 +32,10 @@ helm install monitoring-stack ./charts/monitoring-stack
 | media-stack | Jellyfin, Radarr, Sonarr | 8096, 7878, 8989 |
 | ops-stack | Homarr, Vaultwarden | 7575, 8081 |
 | monitoring-stack | Prometheus, Grafana | 9090, 3000 |
+| network-stack | Pi-hole, WireGuard | 53, 80, 51820 |
+| database-stack | PostgreSQL, Redis | 5432, 6379 |
+| logging-stack | Loki, Promtail | 3100 |
+| auth-stack | Authentik | 9000 |
 
 ## Ingress Configuration
 

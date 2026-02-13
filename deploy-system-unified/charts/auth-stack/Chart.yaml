@@ -1,0 +1,12 @@
+apiVersion: v2
+name: auth-stack
+description: Authentik for SSO authentication
+type: application
+version: 0.1.0
+appVersion: "1.0"
+keywords:
+  - authentik
+  - sso
+  - authentication
+maintainers:
+  - name: deploy-system-unified

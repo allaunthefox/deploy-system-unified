@@ -1,0 +1,48 @@
+# Network Stack Values
+
+ingress:
+  enabled: true
+  className: caddy
+  host: local
+
+# Pi-hole
+pihole:
+  enabled: true
+  image:
+    repository: pihole/pihole
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    dnsPort: 53
+    httpPort: 80
+  adminPassword: admin  # Change in production
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 256Mi
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# WireGuard
+wireguard:
+  enabled: true
+  image:
+    repository: linuxserver/wireguard
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 51820
+    protocol: UDP
+  peerEndpoints: ""  # Add peer endpoints here
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      memory: 128Mi
+  persistence:
+    enabled: true
+    size: 1Gi
