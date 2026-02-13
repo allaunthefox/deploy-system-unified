@@ -41,7 +41,7 @@ secrets/
 credentials/
 *.gpg
 *.asc
-.sops.yaml
+# .sops.yaml (Un-ignored for migration)
 config/keys/
 *.pem
 *.key

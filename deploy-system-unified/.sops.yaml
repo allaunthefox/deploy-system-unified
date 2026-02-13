@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: inventory/group_vars/all/secrets\.sops\.yml$
+    age: "age1dhg47fvgv9u9zevz282737k5a238znaprgnc2scq5rz5kpnvzsasw454xe"

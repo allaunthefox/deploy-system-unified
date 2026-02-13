@@ -16,6 +16,11 @@
       changed_when: false
       delegate_to: localhost
 
+    - name: Set secret provider facts
+      ansible.builtin.set_fact:
+        preflight_provider_mode: "{{ secrets_provider_mode | default('vault') }}"
+      delegate_to: localhost
+
     - name: Verify secrets file starts with Vault header
       ansible.builtin.command:
         argv:
@@ -28,6 +33,7 @@
       failed_when: false
       changed_when: false
       check_mode: false
+      when: preflight_provider_mode in ['vault', 'dual']
 
     - name: Assert vault header is first line
       ansible.builtin.assert:
@@ -37,8 +43,8 @@
         fail_msg: >-
           CRITICAL: inventory/group_vars/all/secrets.generated.yml is missing
           or malformed. The first line must start with '$ANSIBLE_VAULT;'
-          (no YAML document header before the vault marker).
       delegate_to: localhost
+      when: preflight_provider_mode in ['vault', 'dual']
 
     - name: Verify secrets decryptability (Ansible Vault)
       ansible.builtin.command:
@@ -54,29 +60,68 @@
       changed_when: false
       check_mode: false
       no_log: true
+      when: preflight_provider_mode in ['vault', 'dual']
 
     - name: Assert secrets can be decrypted
       ansible.builtin.assert:
         that:
           - vault_decrypt_check.rc == 0
-        fail_msg: >-
-          CRITICAL: inventory/group_vars/all/secrets.generated.yml could not be
-          decrypted using vault password file '{{ preflight_vault_password_file }}'.
-          Deployment aborted for safety.
+        fail_msg: "CRITICAL: inventory/group_vars/all/secrets.generated.yml could not be decrypted."
       delegate_to: localhost
+      when: preflight_provider_mode in ['vault', 'dual']
 
-    - name: Verify no placeholder SOPS configuration exists
+    - name: Verify SOPS configuration
       ansible.builtin.stat:
         path: "{{ preflight_repo_root }}/.sops.yaml"
       register: sops_stat
       delegate_to: localhost
+      when: preflight_provider_mode in ['sops', 'dual']
 
-    - name: Assert no placeholder SOPS config
+    - name: Validate SOPS config if present
+      ansible.builtin.command:
+        argv:
+          - grep
+          - -q
+          - "creation_rules:"
+          - "{{ preflight_repo_root }}/.sops.yaml"
+      delegate_to: localhost
+      register: sops_config_check
+      when: 
+        - preflight_provider_mode in ['sops', 'dual']
+        - sops_stat.stat.exists
+      failed_when: false
+      changed_when: false
+
+    - name: Assert SOPS config is valid
       ansible.builtin.assert:
         that:
-          - (not sops_stat.stat.exists) or (secrets_allow_transition_state | default(false) | bool)
-        fail_msg: "CRITICAL: Placeholder .sops.yaml found at repository root. Remove it or set secrets_allow_transition_state=true to proceed with SOPS migration."
+          - sops_config_check.rc | default(1) == 0
+        fail_msg: "CRITICAL: .sops.yaml is missing or malformed."
       delegate_to: localhost
+      when: preflight_provider_mode in ['sops', 'dual']
+
+    - name: Verify SOPS secrets decryptability
+      ansible.builtin.command:
+        argv:
+          - sops
+          - -d
+          - "{{ preflight_repo_root }}/inventory/group_vars/all/secrets.sops.yml"
+      delegate_to: localhost
+      register: sops_decrypt_check
+      when: preflight_provider_mode in ['sops', 'dual']
+      failed_when: false
+      changed_when: false
+      environment:
+        SOPS_AGE_KEY_FILE: "{{ lookup('env', 'SOPS_AGE_KEY_FILE') | default('/home/prod/.config/sops/age/keys.txt', true) }}"
+      no_log: true
+
+    - name: Assert SOPS secrets can be decrypted
+      ansible.builtin.assert:
+        that:
+          - sops_decrypt_check.rc == 0
+        fail_msg: "CRITICAL: inventory/group_vars/all/secrets.sops.yml could not be decrypted."
+      delegate_to: localhost
+      when: preflight_provider_mode in ['sops', 'dual']
 
     - name: Validate inventory path
       ansible.builtin.assert:
