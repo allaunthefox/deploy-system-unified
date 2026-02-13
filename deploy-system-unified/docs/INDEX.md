@@ -56,6 +56,15 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Architecture Migration](./deployment/ARCHITECTURE_MIGRATION_GUIDE.md)**: Guide for upgrading to the multi-arch standard.
 * **Potential Problems**: [Issues to consider when deploying profile combinations](./deployment/POTENTIAL_PROBLEMS.md).
 
+### [3a. Kubernetes & Helm](./deployment/KUBERNETES.md)
+
+* **[Ingress Controller Setup](./deployment/INGRESS_CONTROLLER_SETUP.md)**: Caddy, Traefik, and Nginx ingress configuration.
+* **[Helm Charts](./charts/)**: Deployable Helm charts for:
+  * **media-stack**: Jellyfin, Radarr, Sonarr
+  * **ops-stack**: Homarr, Vaultwarden
+  * **monitoring-stack**: Prometheus, Grafana
+* **Benchmark**: [K8s vs Podman methodology](./benchmarks/k8s_vs_podman_methodology.md) for resource comparison.
+
 ### [4. GPU Slicing](./deployment/GPU_SLICING.md)
 
 * **GPU Support**: NVIDIA, AMD, and Intel GPU configuration
