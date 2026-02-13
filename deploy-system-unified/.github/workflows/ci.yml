@@ -29,10 +29,10 @@ jobs:
       - name: Run style enforcement tools unit tests
         run: |
           # Ensure pytest is available and run the style tooling tests
-          pytest -q projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests || true
-      - name: Ensure projects/deploy-system-unified/main.yml has no top-level roles
+          pytest -q dev_tools/tools/style-guide-enforcement/tests || true
+      - name: Ensure site playbook has no top-level roles
         run: |
-          python projects/deploy-system-unified/scripts/check_no_roles_in_main.py projects/deploy-system-unified/main.yml
+          python dev_tools/scripts/check_no_roles_in_main.py site.yml
       - name: Run yamllint
         run: yamllint -c .yamllint.yml .
 
@@ -42,13 +42,13 @@ jobs:
           ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules .
       - name: Run ansible-lint specifically on main.yml to enforce DSU001
         run: |
-          ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules projects/deploy-system-unified/main.yml
+          ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules site.yml
       - name: Run ansible-lint on ansiblelint shim to enforce DSU004
         run: |
           # Ensure the repository shim (`ansiblelint/__init__.py`) follows DSU004
           ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules ansiblelint/__init__.py
       - name: Ansible syntax check
-        run: ansible-playbook --syntax-check projects/deploy-system-unified/main.yml -i localhost, -c local
+        run: ansible-playbook --syntax-check site.yml -i localhost, -c local
       - name: Run gitleaks (secret scanning)
         uses: zricethezav/gitleaks-action@v2
         with:
@@ -103,7 +103,7 @@ jobs:
 
       - name: Run negative tests
         run: |
-          cd projects/deploy-system-unified/roles/${{ matrix.role }}
+          cd roles/${{ matrix.role }}
           echo "Running negative test: ${{ matrix.test_case }} for role ${{ matrix.role }}"
           MOLECULE_DISTRO=ubuntu-latest molecule test --scenario-name negative
         env:
@@ -142,7 +142,7 @@ jobs:
           MOLECULE_DEBUG: 'true'
         run: |
           set -euo pipefail
-          cd projects/deploy-system-unified
+          cd .
           for scenario in default ephemeral production gpu_slicing gpu_slicing_arm64 ephemeral_desktop; do
             echo "=== Running molecule scenario: ${scenario} ==="
             molecule test -s "${scenario}"
