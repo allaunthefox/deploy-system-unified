@@ -594,11 +594,11 @@
 
       # Hardware Acceleration
       {% if media_hw_accel %}
-      {% set target_name = 'jellyfin-' ~ media_instance_name %}
-      {% if containers_gpu_allocation_flags is defined and (target_name in containers_gpu_allocation_flags or 'jellyfin' in containers_gpu_allocation_flags) %}
+      {% set target_name = 'plex-' ~ media_instance_name %}
+      {% if containers_gpu_allocation_flags is defined and (target_name in containers_gpu_allocation_flags or 'plex' in containers_gpu_allocation_flags) %}
       # Granular GPU Allocation
       Annotation=run.oci.keep_original_groups=true
-      {% set flags = containers_gpu_allocation_flags[target_name] if target_name in containers_gpu_allocation_flags else containers_gpu_allocation_flags['jellyfin'] %}
+      {% set flags = containers_gpu_allocation_flags[target_name] if target_name in containers_gpu_allocation_flags else containers_gpu_allocation_flags['plex'] %}
       {% for flag in flags.split(' ') %}
       AddDevice={{ flag.split('=')[1] }}
       {% endfor %}
