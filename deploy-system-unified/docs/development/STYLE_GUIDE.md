@@ -399,6 +399,21 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 
     Also add the file to `dev_tools/tools/style-guide-enforcement/.styleignore` when the style enforcement tool should ignore it entirely.
 
+* **DSU004 (shim_least_privilege)**: Enforces safety and auditability of in-repo test-only "shim" modules (for example `ansiblelint/__init__.py`). This rule requires:
+
+    - **Explicit gating**: shim activation must be intentionally gated (repository origin check, `pytest`/CI detection, or an explicit env var like `DSU_ALLOW_ANSIBLELINT_SHIM`).
+    - **Audit marker**: shim-provided fallback modules must set `__dsu_shim__ = True` so their origin is unambiguous.
+    - **Structured audit log**: the shim must emit a non-sensitive, tagged log entry (`tag=DSU-SHIM`) via logger `dsu.ansiblelint_shim` when activated.
+    - **Least-privilege at import time**: the shim must not perform network calls, spawn subprocesses, or write files during import.
+    - **Explicit exports**: `__all__` must enumerate safe public symbols (no wildcard or internal markers).
+
+    If you must change the shim, follow these steps:
+    1. Add/modify the shim in `ansiblelint/__init__.py`.
+    2. Ensure `DSU-SHIM` audit logging is present and non-sensitive.
+    3. Run `pytest` and `ansible-lint` to validate `DSU004` before pushing.
+
+    Example: `# noqa DSU004` is NOT allowed — fix the shim to comply instead of suppressing the rule.
+
 ### Error Handling & Block Patterns
 
 * **Block Error Handling**: Always include `rescue` and `always` sections when using `block` for critical operations:

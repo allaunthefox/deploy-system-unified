@@ -43,6 +43,10 @@ jobs:
       - name: Run ansible-lint specifically on main.yml to enforce DSU001
         run: |
           ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules projects/deploy-system-unified/main.yml
+      - name: Run ansible-lint on ansiblelint shim to enforce DSU004
+        run: |
+          # Ensure the repository shim (`ansiblelint/__init__.py`) follows DSU004
+          ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules ansiblelint/__init__.py
       - name: Ansible syntax check
         run: ansible-playbook --syntax-check projects/deploy-system-unified/main.yml -i localhost, -c local
       - name: Run gitleaks (secret scanning)

@@ -115,3 +115,7 @@ inventory/.ssh_port_cache/
 *.key
 age.key
 
+
+# local test artifacts
+.molecule-full-run.log
+.molecule-full-run.pid
