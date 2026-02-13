@@ -1,6 +1,7 @@
 # SOPS_KEY_ROTATION_SOP
 
-**Status:** Draft complete, approval pending  
+**Status:** Active  
+**Effective Date:** 2026-02-13  
 **Applies To:** SOPS Age keys and high-impact service/application secrets used by Deploy-System-Unified
 
 ## Purpose

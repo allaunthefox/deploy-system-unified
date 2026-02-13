@@ -4,8 +4,9 @@ Our detailed planning and execution documents are maintained in the `docs/planni
 
 ## Active Plans (Q1 2026)
 
-- **[Stability Execution Plan](docs/planning/STABILITY_EXECUTION_PLAN_2026.md)**: Current focus on idempotence, secrets, and observability.
-- **[Phased Execution Plan](docs/planning/PHASED_EXECUTION_PLAN.md)**: Detailed breakdown of current sprint tasks.
+- **[Phase 3: Secrets & K8s Plan](docs/planning/PHASE3_SECRETS_K8S_PLAN.md)**: *Active*. Focus on SOPS migration and Kubernetes scaling.
+- **[Stability Execution Plan](docs/planning/STABILITY_EXECUTION_PLAN_2026.md)**: *Complete* (Phase 2). Reference for Idempotence and GPU Orchestration.
+- **[Phased Execution Plan](docs/planning/PHASED_EXECUTION_PLAN.md)**: Detailed breakdown of tasks.
 
 ## Future Plans
 

@@ -1,6 +1,7 @@
 # SOPS_MIGRATION_GUIDE
 
-**Status:** Draft complete, approval pending  
+**Status:** Active  
+**Effective Date:** 2026-02-13  
 **Current Provider of Record:** Ansible Vault (`inventory/group_vars/all/secrets.generated.yml`)  
 **Target Provider:** SOPS + Age (`inventory/group_vars/all/secrets.sops.yml`)
 
