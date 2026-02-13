@@ -17,7 +17,7 @@ This document outlines the execution plan for Phase 3 of the 2026 Stability and 
 | T1 | SOPS Migration Execution | In Progress (Phase 4-5: Dual Mode) | Preflight supports vault/sops/dual; secrets_config.yml = "dual" | `inventory/group_vars/all/secrets.sops.yml` + `playbooks/preflight_assertions.yml` |
 | T2 | Kubernetes Prototype Cluster | Complete | Functional K3s/K8s cluster deployed via Ansible; Nodes joined and ready | `roles/kubernetes/master` + `roles/kubernetes/node` |
 | T3 | Helm Chart Standardization | Complete | 10 Helm charts covering Media/Ops/Network/Database/Logging/Auth/Security/Proxy/Backup | `charts/*/` |
-| T4 | Scalability Benchmark | In Progress (Ready to Run) | Resource utilization metrics for K8s vs. Podman on identical hardware | `docs/benchmarks/k8s_vs_podman_methodology.md` + `scripts/benchmark/benchmark_metrics.sh` |
+| T4 | Scalability Benchmark | Pending (Blocked: K3s needs proper hardware) | Resource utilization metrics for K8s vs. Podman on identical hardware | `docs/benchmarks/k8s_vs_podman_methodology.md` + `scripts/benchmark/benchmark_metrics.sh` + `docs/benchmarks/k8s_vs_podman_resource_usage.md` |
 
 ## In Scope (This Window)
 
