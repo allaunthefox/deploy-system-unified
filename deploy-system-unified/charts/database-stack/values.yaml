@@ -5,7 +5,7 @@ postgresql:
   enabled: true
   image:
     repository: postgres
-    tag: "15"
+    tag: "17"
   service:
     port: 5432
   database: app
