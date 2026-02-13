@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "media-stack.fullname" . }}-jellyfin
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+        - name: jellyfin
+          image: "{{ .Values.jellyfin.image.repository }}:{{ .Values.jellyfin.image.tag }}"
+          ports:
+            - containerPort: 8096
+          env:
+            - name: TZ
+              value: {{ .Values.global.timezone }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /data
+          {{- if .Values.hardware.gpu.enabled }}
+          resources:
+            limits:
+              gpu.intel.com/i915: 1 # Standard K8s Device Plugin syntax
+          {{- end }}
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "media-stack.fullname" . }}-jellyfin-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "media-stack.fullname" . }}-media-pvc
