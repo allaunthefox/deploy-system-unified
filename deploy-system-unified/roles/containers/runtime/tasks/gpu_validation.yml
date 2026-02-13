@@ -12,7 +12,7 @@
 - name: Verify Multi-GPU Configuration Consistency
   ansible.builtin.assert:
     that:
-      - not (_gpu_is_multi_vendor | default(false)) or (gpu_stack_vendor == 'generic' or gpu_stack_vendor is list)
+      - not (_gpu_is_multi_vendor | default(false)) or (gpu_stack_vendor == 'generic' or gpu_stack_vendor is sequence)
     fail_msg: "Multi-vendor hardware detected but single vendor requested without force. Detected: {{ _gpu_detected_vendor_list }}"
   when:
     - containers_enable_gpu_support
