@@ -5,7 +5,7 @@
 
 - name: Update completed phases fact
   ansible.builtin.set_fact:
-    completed_phases: "{{ (lookup('vars', 'completed_phases') | default([])) | union(lookup('vars', 'additional_phases') | default([])) | unique }}"
+    completed_phases: "{{ ((completed_phases | default([])) | union(additional_phases | default([])) | unique) if completed_phases is defined else (additional_phases | default([])) }}"
 
 - name: Check Chrony Status (Integration)
   ansible.builtin.shell: |
