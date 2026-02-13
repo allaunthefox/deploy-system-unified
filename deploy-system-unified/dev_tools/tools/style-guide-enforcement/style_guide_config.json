@@ -49,6 +49,25 @@
         "required_main_files",
         "consistent_directory_names"
       ]
+    },
+    "helm_versions": {
+      "enabled": true,
+      "auto_fix": false,
+      "min_versions": {
+        "prometheus": "v2.53.0",
+        "grafana": "11.0.0",
+        "alertmanager": "v0.27.0",
+        "loki": "3.0.0",
+        "promtail": "3.0.0",
+        "authentik": "2025.0.0",
+        "postgresql": "16",
+        "redis": "7.4"
+      },
+      "rules": [
+        "no_outdated_images",
+        "use_specific_tags",
+        "check_security_advisories"
+      ]
     }
   },
   "exclusions": {
