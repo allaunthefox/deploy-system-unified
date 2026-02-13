@@ -22,9 +22,9 @@ jobs:
           # Ensure sshd_config exists
           docker exec sshd-test bash -lc "test -f /etc/ssh/sshd_config || dpkg-reconfigure -f noninteractive openssh-server"
           # Provide convenience symlink so the role can be referenced by short name
-          docker exec sshd-test bash -lc "ln -s /workspace/projects/deploy-system-unified/roles/security/sshd /workspace/projects/deploy-system-unified/roles/sshd || true"
+          docker exec sshd-test bash -lc "ln -s /workspace/roles/security/sshd /workspace/roles/sshd || true"
           # Run the idempotence test playbook inside the container
-          docker exec sshd-test bash -lc "ANSIBLE_ROLES_PATH=/workspace/projects/deploy-system-unified/roles:/workspace/projects/deploy-system-unified ansible-playbook projects/deploy-system-unified/roles/security/sshd/tests/idempotence.yml"
+          docker exec sshd-test bash -lc "ANSIBLE_ROLES_PATH=/workspace/roles:/workspace ansible-playbook roles/security/sshd/tests/idempotence.yml"
 
       - name: Collect container logs (if any)
         if: failure()
