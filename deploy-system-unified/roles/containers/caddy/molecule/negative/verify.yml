@@ -33,8 +33,9 @@
         that:
           - verify_result.failed | default(false)
           - verify_result.msg is defined
-        fail_msg: "verify_secrets failed but no error message provided"
-        success_msg: "verify_secrets failed with proper error message"
+          - "'has no attribute' not in (verify_result.msg | default(''))"
+        fail_msg: "verify_secrets failed but no error message provided or internal attribute-access error occurred"
+        success_msg: "verify_secrets failed with proper error message (no attribute-access template errors)"
 
     - name: Log test case and result
       ansible.builtin.debug:
