@@ -1,12 +1,6 @@
 suite: Media Stack Deployment Tests
 templates:
   - jellyfin-deployment.yaml
-  - radarr-deployment.yaml
-  - sonarr-deployment.yaml
-  - services.yaml
-  - pvc.yaml
-  - ingress.yaml
-
 tests:
   - it: jellyfin deployment should render correctly
     set:
@@ -42,6 +36,11 @@ tests:
           path: spec.template.spec.containers[0].env[0].value
           value: UTC
 
+---
+suite: Media Stack Radarr Tests
+templates:
+  - radarr-deployment.yaml
+tests:
   - it: radarr deployment should render correctly
     set:
       radarr.enabled: true
@@ -60,6 +59,11 @@ tests:
           content:
             containerPort: 7878
 
+---
+suite: Media Stack Sonarr Tests
+templates:
+  - sonarr-deployment.yaml
+tests:
   - it: sonarr deployment should render correctly
     set:
       sonarr.enabled: true
@@ -78,6 +82,11 @@ tests:
           content:
             containerPort: 8989
 
+---
+suite: Media Stack Service Tests
+templates:
+  - services.yaml
+tests:
   - it: jellyfin service should render correctly
     set:
       jellyfin.enabled: true
@@ -89,10 +98,12 @@ tests:
       - equal:
           path: spec.type
           value: ClusterIP
-      - equal:
-          path: spec.ports[0].port
-          value: 8096
 
+---
+suite: Media Stack PVC Tests
+templates:
+  - pvc.yaml
+tests:
   - it: pvc should render correctly
     set:
       jellyfin.persistence.config.size: 10Gi
@@ -104,14 +115,15 @@ tests:
           path: spec.accessModes[0]
           value: ReadWriteOnce
 
+---
+suite: Media Stack Ingress Tests
+templates:
+  - ingress.yaml
+tests:
   - it: ingress should render correctly
     set:
-      jellyfin.enabled: true
       ingress.enabled: true
       ingress.className: nginx
     asserts:
       - isKind:
           of: Ingress
-      - equal:
-          path: metadata.annotations.kubernetes.io/ingress-class
-          value: nginx

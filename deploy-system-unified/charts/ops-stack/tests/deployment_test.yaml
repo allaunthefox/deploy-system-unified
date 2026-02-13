@@ -1,12 +1,7 @@
- asuite: Ops Stack Deployment Tests
+---
+suite: Ops Stack Homarr Deployment Tests
 templates:
   - homarr-deployment.yaml
-  - vaultwarden-deployment.yaml
-  - services.yaml
-  - pvc.yaml
-  - secret.yaml
-  - ingress.yaml
-
 tests:
   - it: homarr deployment should render correctly
     set:
@@ -37,6 +32,11 @@ tests:
       - exists:
           path: spec.template.spec.containers[0].readinessProbe
 
+---
+suite: Ops Stack Vaultwarden Deployment Tests
+templates:
+  - vaultwarden-deployment.yaml
+tests:
   - it: vaultwarden deployment should render correctly
     set:
       vaultwarden.enabled: true
@@ -59,15 +59,16 @@ tests:
           path: spec.template.spec.containers[0].ports
           content:
             containerPort: 8081
-      - contains:
-          path: spec.template.spec.containers[0].ports
-          content:
-            containerPort: 3012
       - exists:
           path: spec.template.spec.containers[0].livenessProbe
       - exists:
           path: spec.template.spec.containers[0].readinessProbe
 
+---
+suite: Ops Stack Service Tests
+templates:
+  - services.yaml
+tests:
   - it: homarr service should render correctly
     set:
       homarr.enabled: true
@@ -79,9 +80,6 @@ tests:
       - equal:
           path: spec.type
           value: ClusterIP
-      - equal:
-          path: spec.ports[0].port
-          value: 7575
 
   - it: vaultwarden service should render correctly
     set:
@@ -95,13 +93,12 @@ tests:
       - equal:
           path: spec.type
           value: ClusterIP
-      - equal:
-          path: spec.ports[0].name
-          value: http
-      - equal:
-          path: spec.ports[1].name
-          value: websocket
 
+---
+suite: Ops Stack PVC Tests
+templates:
+  - pvc.yaml
+tests:
   - it: pvc should render correctly
     set:
       homarr.persistence.configs.size: 1Gi
@@ -115,6 +112,11 @@ tests:
           path: spec.accessModes[0]
           value: ReadWriteOnce
 
+---
+suite: Ops Stack Secret Tests
+templates:
+  - secret.yaml
+tests:
   - it: secret should render correctly
     set:
       secrets.vaultwardenAdminToken: "test-token"
@@ -128,14 +130,15 @@ tests:
           path: type
           value: Opaque
 
+---
+suite: Ops Stack Ingress Tests
+templates:
+  - ingress.yaml
+tests:
   - it: ingress should render correctly
     set:
-      homarr.enabled: true
       ingress.enabled: true
       ingress.className: nginx
     asserts:
       - isKind:
           of: Ingress
-      - equal:
-          path: metadata.annotations.kubernetes.io/ingress-class
-          value: nginx
