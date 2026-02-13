@@ -15,6 +15,12 @@ hardware:
     pciId: ""
     vendor: intel
 
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: caddy  # Options: caddy, traefik, nginx, etc.
+  host: local
+
 # Jellyfin
 jellyfin:
   enabled: true

@@ -1,39 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "media-stack.fullname" . }}-jellyfin
+  name: {{ include "media-stack.fullname" . }}-radarr
   labels:
-    app: jellyfin
+    app: radarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jellyfin
+      app: radarr
   template:
     metadata:
       labels:
-        app: jellyfin
+        app: radarr
     spec:
       containers:
-        - name: jellyfin
-          image: "{{ .Values.jellyfin.image.repository }}:{{ .Values.jellyfin.image.tag }}"
+        - name: radarr
+          image: "{{ .Values.radarr.image.repository }}:{{ .Values.radarr.image.tag }}"
           ports:
-            - containerPort: 8096
+            - containerPort: 7878
           env:
             - name: TZ
               value: {{ .Values.global.timezone }}
+            - name: PUID
+              value: {{ .Values.global.puid | quote }}
+            - name: PGID
+              value: {{ .Values.global.pgid | quote }}
           livenessProbe:
             httpGet:
-              path: /health
-              port: 8096
+              path: /ping
+              port: 7878
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health
-              port: 8096
+              path: /ping
+              port: 7878
             initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
@@ -43,15 +47,10 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /data
-          {{- if .Values.hardware.gpu.enabled }}
-          resources:
-            limits:
-              gpu.intel.com/i915: 1 # Standard K8s Device Plugin syntax
-          {{- end }}
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: {{ include "media-stack.fullname" . }}-jellyfin-config
+            claimName: {{ include "media-stack.fullname" . }}-radarr-config
         - name: media
           persistentVolumeClaim:
             claimName: {{ include "media-stack.fullname" . }}-media-pvc

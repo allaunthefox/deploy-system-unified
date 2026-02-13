@@ -1,0 +1,117 @@
+suite: Media Stack Deployment Tests
+templates:
+  - jellyfin-deployment.yaml
+  - radarr-deployment.yaml
+  - sonarr-deployment.yaml
+  - services.yaml
+  - pvc.yaml
+  - ingress.yaml
+
+tests:
+  - it: jellyfin deployment should render correctly
+    set:
+      jellyfin.enabled: true
+      jellyfin.image.repository: jellyfin/jellyfin
+      jellyfin.image.tag: latest
+      jellyfin.service.type: ClusterIP
+      jellyfin.service.port: 8096
+      global.timezone: UTC
+      global.puid: "1000"
+      global.pgid: "1000"
+      jellyfin.persistence.config.size: 10Gi
+      jellyfin.persistence.media.size: 100Gi
+      hardware.gpu.enabled: true
+      hardware.gpu.vendor: intel
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-media-stack-jellyfin
+      - equal:
+          path: spec.replicas
+          value: 1
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 8096
+      - equal:
+          path: spec.template.spec.containers[0].env[0].name
+          value: TZ
+      - equal:
+          path: spec.template.spec.containers[0].env[0].value
+          value: UTC
+
+  - it: radarr deployment should render correctly
+    set:
+      radarr.enabled: true
+      radarr.image.repository: binhex/arch-radarr
+      radarr.image.tag: latest
+      radarr.service.type: ClusterIP
+      radarr.service.port: 7878
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-media-stack-radarr
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 7878
+
+  - it: sonarr deployment should render correctly
+    set:
+      sonarr.enabled: true
+      sonarr.image.repository: binhex/arch-sonarr
+      sonarr.image.tag: latest
+      sonarr.service.type: ClusterIP
+      sonarr.service.port: 8989
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-media-stack-sonarr
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 8989
+
+  - it: jellyfin service should render correctly
+    set:
+      jellyfin.enabled: true
+      jellyfin.service.type: ClusterIP
+      jellyfin.service.port: 8096
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].port
+          value: 8096
+
+  - it: pvc should render correctly
+    set:
+      jellyfin.persistence.config.size: 10Gi
+      jellyfin.persistence.media.size: 100Gi
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+
+  - it: ingress should render correctly
+    set:
+      jellyfin.enabled: true
+      ingress.enabled: true
+      ingress.className: nginx
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: metadata.annotations.kubernetes.io/ingress-class
+          value: nginx

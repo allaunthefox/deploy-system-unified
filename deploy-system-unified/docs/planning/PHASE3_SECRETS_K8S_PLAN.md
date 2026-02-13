@@ -16,8 +16,8 @@ This document outlines the execution plan for Phase 3 of the 2026 Stability and 
 | :--- | :--- | :--- | :--- | :--- |
 | T1 | SOPS Migration Execution | In Progress (Dual Mode Active) | Fully migrated `secrets.sops.yml` with Age encryption; Preflight gates updated | `inventory/group_vars/all/secrets.sops.yml` + `playbooks/preflight_assertions.yml` |
 | T2 | Kubernetes Prototype Cluster | Complete | Functional K3s/K8s cluster deployed via Ansible; Nodes joined and ready | `roles/kubernetes/master` + `roles/kubernetes/node` |
-| T3 | Helm Chart Standardization | In Progress | Base Helm charts for core services (Media/Ops) adapting existing Quadlet logic | `charts/media-stack/` + `charts/ops-stack/` |
-| T4 | Scalability Benchmark | Pending | Resource utilization metrics for K8s vs. Podman on identical hardware | `docs/benchmarks/k8s_vs_podman_resource_usage.md` |
+| T3 | Helm Chart Standardization | Complete | Base Helm charts for core services (Media/Ops) with PVCs, Services, Ingress, Probes | `charts/media-stack/` + `charts/ops-stack/` + `charts/ops-stack/templates/{secret,pvc,ingress}.yaml` |
+| T4 | Scalability Benchmark | In Progress | Resource utilization metrics for K8s vs. Podman on identical hardware | `docs/benchmarks/k8s_vs_podman_methodology.md` + `docs/benchmarks/k8s_vs_podman_resource_usage.md` + `scripts/benchmark/benchmark_metrics.sh` |
 
 ## In Scope (This Window)
 

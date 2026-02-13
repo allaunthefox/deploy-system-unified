@@ -1,0 +1,51 @@
+---
+# Global settings
+global:
+  timezone: UTC
+  configRoot: /config
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: caddy  # Options: caddy, traefik, nginx, etc.
+  host: local
+
+# Homarr
+homarr:
+  enabled: true
+  image:
+    repository: ghcr.io/ajnart/homarr
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 7575
+  persistence:
+    configs:
+      size: 1Gi
+    icons:
+      size: 1Gi
+    data:
+      size: 1Gi
+
+# Vaultwarden
+vaultwarden:
+  enabled: true
+  image:
+    repository: vaultwarden/server
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8081
+    websocketPort: 3012
+  config:
+    signupsAllowed: false
+    websocketEnabled: true
+  persistence:
+    data:
+      size: 5Gi
+
+# Secrets (to be managed via SOPS/K8s Secrets)
+secrets:
+  vaultwardenAdminToken: "CHANGE_ME"
