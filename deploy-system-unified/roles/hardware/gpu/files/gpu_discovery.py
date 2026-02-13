@@ -447,7 +447,8 @@ def main():
     
     parser = argparse.ArgumentParser(description="GPU Discovery and Validation")
     parser.add_argument("--configured-vendor", "-c", help="Configured vendor to validate against")
-    parser.add_argument("--json", "-j", action="store_true", help="Output JSON format")
+    parser.add_argument("--json", "-j", action="store_true", help="Output JSON format (kept for compatibility)")
+    parser.add_argument("--pretty", "-p", action="store_true", help="Human-readable summary (overrides JSON)")
     parser.add_argument("--validation-only", "-v", action="store_true", help="Only run validation")
     parser.add_argument("--container-check", action="store_true", help="Check container runtime GPU support")
     parser.add_argument("--egpu-check", action="store_true", help="Check eGPU hot-swap capability")
@@ -517,9 +518,8 @@ def main():
                 result["multi_gpu_details"]["by_vendor"][vendor] = []
             result["multi_gpu_details"]["by_vendor"][vendor].append(d["model"])
     
-    if args.json:
-        print(json.dumps(result, indent=2))
-    else:
+    if args.pretty:
+        # Human-readable summary (optional)
         print("=== GPU Detection Summary ===")
         print(f"Total GPUs: {len(devices)}")
         print(f"Detected Vendors: {', '.join(vendor_list)}")
@@ -550,6 +550,9 @@ def main():
             for runtime, info in result["container_runtime"].items():
                 if isinstance(info, dict) and info.get("available"):
                     print(f"{runtime}: {'✓' if info.get('nvidia_support') or info.get('fuse_support') else 'basic'}")
+    else:
+        # Default output is JSON for automation (Ansible/Molecule)
+        print(json.dumps(result, indent=2))
         
         # eGPU hot-swap check
         if args.egpu_check:
