@@ -6,7 +6,7 @@
   ansible.builtin.include_tasks:
     file: "../../../../tasks/save_checkpoint.yml"
   vars:
-    # Ensure variables are passed in a clean, isolated way
-    additional_phases: "{{ additional_phases | default([]) }}"
+    # Use explicit phase for this role to avoid recursive variable expansion in test environments
+    additional_phases: ["containers/runtime"]
     checkpoint_status: "{{ checkpoint_status | default('running') }}"
 
