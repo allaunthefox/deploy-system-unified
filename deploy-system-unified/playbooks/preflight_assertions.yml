@@ -130,3 +130,39 @@
           - inventory_file | length > 0
         fail_msg: "CRITICAL: no inventory file specified. Use -i <inventory_path>."
       delegate_to: localhost
+
+    # ============================================================
+    # Helm Values Security Checks
+    # ============================================================
+    - name: Check for unencrypted secrets in Helm values
+      ansible.builtin.shell:
+        cmd: |
+          grep -r "password.*CHANGEME\|secret.*changeme\|password.*default" charts/*/values.yaml 2>/dev/null || true
+      delegate_to: localhost
+      register: helm_unencrypted_check
+      changed_when: false
+      failed_when: false
+
+    - name: Warn about default passwords in Helm values
+      ansible.builtin.debug:
+        msg: |
+          WARNING: Helm charts contain default/placeholder passwords.
+          See docs/HELM_SECRETS.md for secure deployment options.
+          Run: grep -n "CHANGEME" charts/*/values.yaml
+      delegate_to: localhost
+      when: helm_unencrypted_check.stdout | length > 0
+
+    - name: Verify Age key file is not in repository
+      ansible.builtin.stat:
+        path: "{{ preflight_repo_root }}/age.key"
+      register: age_key_check
+      delegate_to: localhost
+      failed_when: false
+      changed_when: false
+
+    - name: Assert Age key is not committed
+      ansible.builtin.assert:
+        that:
+          - not age_key_check.stat.exists
+        fail_msg: "CRITICAL: age.key found in repository! Never commit encryption keys."
+      delegate_to: localhost
