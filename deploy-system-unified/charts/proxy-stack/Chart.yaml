@@ -1,0 +1,13 @@
+apiVersion: v2
+name: proxy-stack
+description: Caddy, Nginx for reverse proxy
+type: application
+version: 0.1.0
+appVersion: "1.0"
+keywords:
+  - caddy
+  - nginx
+  - proxy
+  - reverse-proxy
+maintainers:
+  - name: deploy-system-unified

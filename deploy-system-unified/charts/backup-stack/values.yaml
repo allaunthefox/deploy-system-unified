@@ -1,0 +1,24 @@
+# Backup Stack Values
+
+# Restic
+restic:
+  enabled: true
+  image:
+    repository: restic/restic
+    tag: 0.17.0
+  repository: ""  # e.g., s3:https://s3.amazonaws.com/bucket
+  password: ""   # Encryption password
+  schedule: "0 2 * * *"  # Daily at 2am
+  retention:
+    daily: 7
+    weekly: 4
+    monthly: 6
+
+# Rclone
+rclone:
+  enabled: false
+  image:
+    repository: rclone/rclone
+    tag: 1.68.0
+  config: ""  # Rclone config content
+  schedule: "0 3 * * *"  # Daily at 3am
