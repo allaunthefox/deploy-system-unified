@@ -1,22 +1,38 @@
 # K8s vs Podman Resource Usage Benchmark
 
 **Created:** February 13, 2026  
-**Status:** Pending (Awaiting Benchmark Execution)  
+**Status:** Ready (Awaiting Target Hardware)  
 **Task:** T4 - Scalability Benchmark
 
-## TODO: Execute Benchmark and Fill Results
+## Benchmark Ready
 
-This document will contain the actual benchmark results after running `scripts/benchmark/benchmark_metrics.sh`.
+The benchmark infrastructure is ready. Execute on target hardware:
 
-## Test Configuration
+```bash
+# Podman baseline (24h recommended)
+./scripts/benchmark/benchmark_metrics.sh podman 1440
+
+# K3s comparison
+./scripts/benchmark/benchmark_metrics.sh k8s 1440
+```
+
+## Current Environment
 
 | Parameter | Value |
 |-----------|-------|
-| Hardware | TBD |
-| K3s Version | TBD |
-| Podman Version | TBD |
-| Duration | TBD minutes |
-| Date | TBD |
+| Podman | Available (idle containers) |
+| K3s | Not available in this environment |
+| Benchmark Script | Ready |
+| Methodology | Documented |
+
+## Test Configuration (Target Hardware)
+
+| Parameter | Value |
+|-----------|-------|
+| Hardware | Target x86_64/aarch64/riscv64 |
+| K3s Version | v1.28+ |
+| Podman Version | 4.x |
+| Duration | 24h (1440 min) recommended |
 
 ## Baseline Measurements (No Containers)
 
