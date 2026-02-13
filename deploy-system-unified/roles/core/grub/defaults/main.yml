@@ -23,3 +23,10 @@ core_grub_config_path: "/etc/default/grub"
 
 # Whether to force a GRUB update even if no changes were detected in the config file
 core_grub_force_update: false
+
+# GRUB backup settings
+core_grub_backup_enabled: true
+core_grub_backup_dir: "/var/backups/grub"
+core_grub_backup_retention_days: 30
+core_grub_backup_encrypt: true
+core_grub_backup_gpg_recipient: ""

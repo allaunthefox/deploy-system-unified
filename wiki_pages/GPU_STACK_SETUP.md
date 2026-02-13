@@ -146,3 +146,53 @@ After deployment, the role provides a verification task that prints GPU status a
 *   **Container Projection**: Executes a smoke test container to verify hardware acceleration is available within the OCI runtime.
 
 Required reboot is often handled via notify handlers (`Update initramfs`), but a manual reboot may be required for the first installation of kernel modules.
+
+## GPU Discovery Script
+
+The project includes an enhanced GPU discovery script (`roles/hardware/gpu/files/gpu_discovery.py`) that provides comprehensive hardware detection:
+
+### Usage
+
+```bash
+# Basic GPU detection
+python3 roles/hardware/gpu/files/gpu_discovery.py
+
+# JSON output for automation
+python3 roles/hardware/gpu/files/gpu_discovery.py --json
+
+# Vendor validation
+python3 roles/hardware/gpu/files/gpu_discovery.py -c nvidia
+
+# Container runtime GPU support
+python3 roles/hardware/gpu/files/gpu_discovery.py --container-check
+
+# eGPU hot-swap detection
+python3 roles/hardware/gpu/files/gpu_discovery.py --egpu-check
+
+# DisplayPort Alt Mode
+python3 roles/hardware/gpu/files/gpu_discovery.py --dp-alt-mode
+
+# RDMA support
+python3 roles/hardware/gpu/files/gpu_discovery.py --rdma
+
+# eGPU + RDMA integration
+python3 roles/hardware/gpu/files/gpu_discovery.py --egpu-rdma
+```
+
+### Features
+
+- Vendor validation against configured hardware
+- Multi-GPU detection and reporting
+- Intel GPU generation detection (Gen9-Gen12, Xe, Battlemage)
+- Driver version detection (NVIDIA, AMDGPU, Intel)
+- Container runtime GPU support (Podman/Docker)
+- eGPU hot-swap detection (Thunderbolt, USB4, OCuLink)
+- DisplayPort Alt Mode via USB-C
+- RDMA support (InfiniBand, RoCE, iWARP)
+- eGPU + RDMA integration checking
+
+## Related Documentation
+
+- [Vulkan Examples](../deploy-system-unified/docs/deployment/VULKAN_EXAMPLES.md) - Running Vulkan applications in containers
+- [DisplayPort Alt Mode Guide](../deploy-system-unified/docs/deployment/DP_ALT_MODE.md) - USB-C/Thunderbolt eGPU setup
+- [GPU Slicing](GPU_SLICING.md) - Slicing strategies and configuration

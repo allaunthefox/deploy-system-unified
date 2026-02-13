@@ -60,9 +60,17 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 * **[Ingress Controller Setup](./deployment/INGRESS_CONTROLLER_SETUP.md)**: Caddy, Traefik, and Nginx ingress configuration.
 * **[Helm Charts](./charts/)**: Deployable Helm charts for:
+  * **auth-stack**: Authentik (SSO)
+  * **backup-stack**: Restic, Rclone (backups)
+  * **database-stack**: PostgreSQL
+  * **logging-stack**: Loki, Promtail (log aggregation)
   * **media-stack**: Jellyfin, Radarr, Sonarr
-  * **ops-stack**: Homarr, Vaultwarden
   * **monitoring-stack**: Prometheus, Grafana
+  * **network-stack**: Pi-hole (DNS)
+  * **ops-stack**: Homarr, Vaultwarden
+  * **proxy-stack**: Caddy, Nginx (reverse proxy)
+  * **security-stack**: Security tools
+* **K8s Deployment**: Use `playbooks/deploy_kubernetes.yml` to deploy the full stack on K3s
 * **Benchmark**: [K8s vs Podman methodology](./benchmarks/k8s_vs_podman_methodology.md) for resource comparison.
 
 ### [4. GPU Slicing](./deployment/GPU_SLICING.md)

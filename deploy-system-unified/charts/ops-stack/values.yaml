@@ -47,5 +47,8 @@ vaultwarden:
       size: 5Gi
 
 # Secrets (to be managed via SOPS/K8s Secrets)
+# SECURITY: Do not store plain-text secrets here. Use SOPS-encrypted values files.
 secrets:
-  vaultwardenAdminToken: "CHANGE_ME"
+  # SECURITY: vaultwardenAdminToken must be provided via external secrets or SOPS-encrypted values
+  # Do not use default tokens in production
+  vaultwardenAdminToken: ""  # REQUIRED: Set via --set-file or external secret

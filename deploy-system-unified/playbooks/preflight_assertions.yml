@@ -166,3 +166,89 @@
           - not age_key_check.stat.exists
         fail_msg: "CRITICAL: age.key found in repository! Never commit encryption keys."
       delegate_to: localhost
+
+    # ============================================================
+    # Backup & Restore Requirements
+    # ============================================================
+    - name: Gather OS facts for package detection
+      ansible.builtin.setup:
+        gather_subset:
+          - os_family
+      delegate_to: localhost
+
+    - name: Detect OS and set package names
+      ansible.builtin.set_fact:
+        _hash_tools_packages:
+          Debian: "coreutils,openssl"
+          RedHat: "coreutils,openssl"
+          Alpine: "busybox,openssl"
+          Archlinux: "coreutils,openssl"
+        _chrony_packages:
+          Debian: "chrony"
+          RedHat: "chrony"
+          Alpine: "chrony"
+          Archlinux: "chrony"
+        _gpg_packages:
+          Debian: "gnupg2"
+          RedHat: "gnupg2"
+          Alpine: "gnupg"
+          Archlinux: "gnuPG"
+      delegate_to: localhost
+
+    - name: Check for hash verification tools
+      ansible.builtin.command: which sha256sum sha512sum openssl
+      register: hash_tools_check
+      changed_when: false
+      failed_when: false
+
+    - name: Assert hash tools available
+      ansible.builtin.assert:
+        that:
+          - hash_tools_check.rc == 0
+        fail_msg: >-
+          CRITICAL: Hash verification tools required.
+          Install via: apt install {{ _hash_tools_packages[ansible_facts.os_family] | default('coreutils openssl') }}
+          or: dnf install {{ _hash_tools_packages['RedHat'] }}
+          or: apk add {{ _hash_tools_packages['Alpine'] }}
+          or: pacman -S {{ _hash_tools_packages['Archlinux'] }}
+      delegate_to: localhost
+
+    - name: Check for chrony time sync
+      ansible.builtin.command: which chronyc
+      register: chrony_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if chrony not available for backup security
+      ansible.builtin.fail:
+        msg: >-
+          CRITICAL: chrony required for backup timestamp verification.
+          Install via: apt install {{ _chrony_packages[ansible_facts.os_family] | default('chrony') }}
+          or: dnf install chrony
+          or: apk add chrony
+          or: pacman -S chrony
+          Or disable: set backup_security_enabled: false
+      delegate_to: localhost
+      when: 
+        - chrony_check.rc != 0
+        - backup_security_enabled | default(true) | bool
+
+    - name: Check GPG availability for encrypted backups
+      ansible.builtin.command: which gpg
+      register: gpg_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if GPG not available for encrypted backups
+      ansible.builtin.fail:
+        msg: >-
+          CRITICAL: GPG required for encrypted GRUB backups.
+          Install via: apt install {{ _gpg_packages[ansible_facts.os_family] | default('gnupg2') }}
+          or: dnf install gnupg2
+          or: apk add gnupg
+          or: pacman -S gnupg
+          Or disable: set core_grub_backup_encrypt: false
+      delegate_to: localhost
+      when: 
+        - gpg_check.rc != 0
+        - core_grub_backup_encrypt | default(true) | bool

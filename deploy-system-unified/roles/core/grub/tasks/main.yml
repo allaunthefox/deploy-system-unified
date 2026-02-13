@@ -19,6 +19,9 @@
   ansible.builtin.set_fact:
     _core_grub_cmdline: "{{ _core_grub_all_params | join(' ') }}"
 
+- name: Validate kernel parameters for conflicts
+  ansible.builtin.include_tasks: validate_params.yml
+
 - name: Ensure GRUB configuration exists
   ansible.builtin.stat:
     path: "{{ core_grub_config_path }}"
@@ -55,3 +58,6 @@
     - core_grub_enabled
     - core_grub_force_update
     - grub_stat.stat.exists
+
+- name: Backup GRUB configuration
+  ansible.builtin.include_tasks: backup.yml

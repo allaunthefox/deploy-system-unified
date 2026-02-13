@@ -191,3 +191,57 @@
     state: present
   become: true
   when: gpu_stack_enable_level_zero | default(false) | bool
+
+# ===== Battlemage Performance Tuning =====
+
+- name: Configure Intel GPU Performance Settings
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/intel-gpu-performance.conf
+    mode: '0644'
+    content: |
+      # Intel GPU Performance Configuration
+      # Video Encode Quality: 0=fast, 1=balanced, 2=quality
+      options i915 enable_psr=1
+      options i915 enable_fbc=1
+      options i915 enable_guc=3
+      # Battlemage specific
+      options xe force_probe=*
+  become: true
+  when:
+    - ansible_os_family in ['Debian', 'RedHat']
+    - not _gpu_is_container | default(false)
+    - gpu_stack_mode | default('server') != 'server'
+
+- name: Configure Video Encode Bitrate (for transcoding workloads)
+  ansible.builtin.copy:
+    dest: /etc/security/limits.d/gpu-transcode.conf
+    mode: '0644'
+    content: |
+      # Allow transcoding processes to use more threads
+      @video - nice -10
+      @video - rtprio 99
+  become: true
+  when: not _gpu_is_container | default(false)
+
+- name: Setup VAAPI environment for encoding
+  ansible.builtin.copy:
+    dest: /etc/environment.d/intel-vaapi.conf
+    mode: '0644'
+    content: |
+      LIBVA_DRIVER_NAME=iHD
+      INTEL_DEBUG=norbc
+      MESA_LOADER_DRIVER_OVERRIDE=iris
+  become: true
+  when: not _gpu_is_container | default(false)
+
+- name: Configure max resolution for display (if desktop mode)
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/intel-display.conf
+    mode: '0644'
+    content: |
+      # Allow higher resolutions on Battlemage
+      options i915 max_vfs=0
+  become: true
+  when:
+    - gpu_stack_mode | default('server') == 'desktop'
+    - not _gpu_is_container | default(false)

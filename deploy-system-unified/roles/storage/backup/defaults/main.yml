@@ -1,3 +1,7 @@
 ---
-# Placeholder defaults
-# Intentionally empty
+# Shared backup settings
+
+# Hash verification and backup security
+# Apply to all backup types (restic, rclone, timeshift)
+backup_security_enabled: true
+backup_security_dir: "/var/backups/security"

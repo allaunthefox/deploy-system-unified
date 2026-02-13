@@ -1,6 +1,31 @@
 ---
 - ansible.builtin.import_playbook: bootstrap_ssh.yml
 
+- name: Preflight - Verify backup integrity before restore
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Check for hash verification tools
+      ansible.builtin.command: which sha256sum sha512sum openssl
+      register: hash_tools_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if hash tools missing
+      ansible.builtin.fail:
+        msg: "Hash verification tools required for restore"
+      when: hash_tools_check.rc != 0
+
+    - name: Check for hash manifest
+      ansible.builtin.stat:
+        path: "/var/backups/security/hash_manifest.txt"
+      register: hash_manifest_check
+
+    - name: Fail if no hash manifest found during restore
+      ansible.builtin.fail:
+        msg: "CRITICAL: No hash manifest found. Cannot verify backup integrity. Restore aborted for security."
+      when: not hash_manifest_check.stat.exists
+
 - name: Restore Migration Data
   hosts: all
   become: true

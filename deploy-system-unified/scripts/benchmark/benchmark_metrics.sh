@@ -24,6 +24,86 @@ log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+#===============================================================================
+# Dependency Checks
+#===============================================================================
+check_dependencies() {
+    local missing_deps=()
+    
+    # Common dependencies
+    for cmd in jq bc; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing_deps+=("$cmd")
+        fi
+    done
+    
+    # Runtime-specific dependencies
+    if [[ "$RUNTIME" == "podman" ]]; then
+        if ! command -v podman &> /dev/null; then
+            missing_deps+=("podman")
+        fi
+    else
+        if ! command -v kubectl &> /dev/null; then
+            missing_deps+=("kubectl")
+        fi
+    fi
+    
+    # Optional: iostat for disk metrics
+    if ! command -v iostat &> /dev/null; then
+        log_warn "iostat not found - disk I/O metrics will be skipped"
+    fi
+    
+    # Report missing required dependencies
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        log_error "Missing required dependencies: ${missing_deps[*]}"
+        log_info "Install with: apt-get install ${missing_deps[*]}"
+        exit 1
+    fi
+    
+    log_info "All dependencies satisfied"
+}
+
+#===============================================================================
+# Unit Conversion Helpers
+#===============================================================================
+# Convert K8s CPU millicores to percentage (assuming 1 core = 100%)
+convert_cpu_to_percent() {
+    local cpu_value="$1"
+    local num_cores
+    num_cores=$(nproc 2>/dev/null || echo "1")
+    
+    # If value ends in 'm', it's in millicores
+    if [[ "$cpu_value" == *"m" ]]; then
+        local millicores
+        millicores=$(echo "$cpu_value" | sed 's/m//')
+        echo "scale=2; $millicores / (100 * $num_cores)" | bc
+    else
+        # Assume cores, convert to percentage
+        echo "scale=2; $cpu_value * 100 / $num_cores" | bc
+    fi
+}
+
+# Convert K8s memory (Mi/Gi) to percentage
+convert_mem_to_percent() {
+    local mem_value="$1"
+    local total_mem
+    total_mem=$(free -m | awk 'NR==2{print $2}')
+    
+    # Extract numeric value and unit
+    local mem_num
+    local mem_unit
+    mem_num=$(echo "$mem_value" | sed 's/[MiGi]//')
+    mem_unit=$(echo "$mem_value" | sed 's/[0-9.]*//')
+    
+    # Convert to Mi
+    if [[ "$mem_unit" == "Gi" ]]; then
+        mem_num=$(echo "scale=2; $mem_num * 1024" | bc)
+    fi
+    
+    # Calculate percentage
+    echo "scale=2; $mem_num * 100 / $total_mem" | bc
+}
+
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
@@ -34,6 +114,9 @@ LOG_FILE="$OUTPUT_DIR/${RUNTIME}_benchmark_${TIMESTAMP}.log"
 log_info "Starting $RUNTIME benchmark for $DURATION minutes..."
 log_info "Output directory: $OUTPUT_DIR"
 log_info "Log file: $LOG_FILE"
+
+# Check dependencies before starting
+check_dependencies
 
 #===============================================================================
 # CPU Metrics Collection
@@ -137,10 +220,15 @@ main() {
         else
             while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
-                    local cname cpu mem
+                    local cname cpu_raw mem_raw cpu mem
                     cname=$(echo "$line" | awk '{print $1}')
-                    cpu=$(echo "$line" | awk '{print $2}' | sed 's/m//; s/Mi//')
-                    mem=$(echo "$line" | awk '{print $3}' | sed 's/Mi//; s/Gi//')
+                    cpu_raw=$(echo "$line" | awk '{print $2}')
+                    mem_raw=$(echo "$line" | awk '{print $3}')
+                    
+                    # Convert K8s units to percentages for consistency with Podman
+                    cpu=$(convert_cpu_to_percent "$cpu_raw")
+                    mem=$(convert_mem_to_percent "$mem_raw")
+                    
                     echo "$timestamp,$cpu_usage,$mem_usage,$cname,$cpu,$mem" >> "$LOG_FILE"
                 fi
             done < <(kubectl top pods --no-headers 2>/dev/null || echo "")

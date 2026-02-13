@@ -36,3 +36,10 @@ restic_keep_monthly: 6
 
 # Schedule (Systemd Timer)
 restic_schedule_on_calendar: "daily"
+
+# Hash verification and backup security
+# Enable: Include shared/tasks/backup_security.yml in your playbook
+backup_security_enabled: true
+backup_security_dir: "/var/backups/security"
+backup_name: "restic"
+backup_source_path: "{{ restic_repo }}"

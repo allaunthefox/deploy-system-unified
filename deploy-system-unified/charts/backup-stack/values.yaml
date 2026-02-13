@@ -1,4 +1,9 @@
 # Backup Stack Values
+# SECURITY: Do not store credentials here. Use SOPS or external secrets management.
+
+# Global settings
+global:
+  timezone: UTC
 
 # Restic
 restic:
@@ -6,9 +11,10 @@ restic:
   image:
     repository: restic/restic
     tag: 0.17.0
-  repository: ""  # e.g., s3:https://s3.amazonaws.com/bucket
-  password: ""   # Encryption password
-  schedule: "0 2 * * *"  # Daily at 2am
+  # SECURITY: repository and password must be provided via external secrets
+  repository: ""  # e.g., s3:https://s3.amazonaws.com/bucket - REQUIRED
+  password: ""    # Encryption password - REQUIRED: Set via external secret
+  schedule: "0 2 * *"  # Daily at 2am
   retention:
     daily: 7
     weekly: 4
@@ -20,5 +26,12 @@ rclone:
   image:
     repository: rclone/rclone
     tag: 1.68.0
-  config: ""  # Rclone config content
-  schedule: "0 3 * * *"  # Daily at 3am
+  # SECURITY: config must be provided via external secrets
+  config: ""  # Rclone config content - REQUIRED: Set via external secret
+  schedule: "0 3 * *"  # Daily at 3am
+
+# Ingress Configuration
+ingress:
+  enabled: false
+  className: ""
+  host: ""

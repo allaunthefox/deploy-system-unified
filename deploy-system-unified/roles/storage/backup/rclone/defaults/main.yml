@@ -18,3 +18,8 @@ rclone_group: "root"
 #   token = ...
 rclone_config_content: ""
 restic_script_dir: "/usr/local/bin"
+
+# Hash verification and backup security
+backup_security_enabled: true
+backup_security_dir: "/var/backups/security"
+backup_name: "rclone"
