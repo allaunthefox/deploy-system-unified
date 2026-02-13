@@ -4,10 +4,14 @@ This directory contains guidance and helper scripts related to detecting and han
 Detect-secrets CI
 
 - We run `detect-secrets` in CI via `.github/workflows/detect-secrets.yml` to detect accidental commits of secrets.
-- To run locally:
+- The CI now emits a `/.detect-secrets-findings.md` artifact and creates GitHub check annotations that include `file:line` references and nearby code snippets to make triage easier.
+- To run locally and reproduce the CI artifact:
 
-  python -m pip install detect-secrets
+  python -m pip install detect-secrets jq
   detect-secrets scan --all-files --json > .secrets_scan.json
+  # or use the provided local runner to produce the same CI artifacts:
+  .ci-local/run-local-ci.sh detect-secrets
+
 - If the scan finds results, review the listed files and remove/rotate secrets; prefer Ansible Vault or an external secret manager.
 
 Ansible Vault guidance
