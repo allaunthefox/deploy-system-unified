@@ -57,6 +57,12 @@
     - ansible_os_family == 'RedHat'
     - not (is_virtualized | default(false))
 
+- name: Import Nftables Rules (Alpine)
+  ansible.builtin.include_tasks: rules_nftables.yml
+  when:
+    - ansible_os_family == 'Alpine'
+    - not (is_virtualized | default(false))
+
 - name: Enable UFW Final State
   community.general.ufw:
     state: enabled
@@ -72,4 +78,5 @@
   when:
     - ansible_os_family != 'Debian'
     - ansible_os_family != 'RedHat'
+    - ansible_os_family != 'Alpine'
     - ansible_distribution != 'Archlinux'

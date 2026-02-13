@@ -47,6 +47,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Hybrid Security Setup](SECURITY_CROWDSEC_HYBRID)**: Implementation details for the Container+Host CrowdSec architecture.
 * **[Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)**: Configuration guide for strict GPG/Checksum verification.
 * **[Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE)**: Specific setup for modern Intel GPUs.
+* **[Battlemage Setup Guide](BATTLEMAGE_SETUP)**: Technical walkthrough for discovery and allocation.
 * **[Intel Video Guide](INTEL_VIDEO_GUIDE)**: Hardware acceleration guide for Intel QuickSync.
 * **[EXAMPLES](EXAMPLES)**: Solution stack examples.
 
@@ -63,8 +64,8 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 ### 📋 Planning & Improvement
 
-* **[Wiki Improvement Plan](../projects/deploy-system-unified/docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
-* **[Community Enhancement Plan](../projects/deploy-system-unified/docs/planning/COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
+* **[Wiki Improvement Plan](../deploy-system-unified/docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
+* **[Community Enhancement Plan](../deploy-system-unified/docs/planning/COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
 
 ### 📊 Variable References
 
@@ -85,4 +86,4 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 ### 📚 Documentation Integration
 
-For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](../projects/deploy-system-unified/docs/DOCUMENTATION_BRIDGE.md)**.
+For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](../deploy-system-unified/docs/DOCUMENTATION_BRIDGE.md)**.

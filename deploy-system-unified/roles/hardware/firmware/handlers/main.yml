@@ -1,6 +1,6 @@
 ---
 # Handlers for hardware/firmware
-- name: restart watchdog
+- name: Restart watchdog
   ansible.builtin.systemd:
     name: watchdog
     state: restarted

@@ -2,8 +2,7 @@
 # Stability 2026 - Idempotence Verification Tool
 # This script runs a playbook and ensures that a subsequent run produces zero changes.
 
-set -e
-set -o pipefail
+set -euo pipefail
 
 PLAYBOOK=$1
 INVENTORY=${2:-inventory/local.ini}

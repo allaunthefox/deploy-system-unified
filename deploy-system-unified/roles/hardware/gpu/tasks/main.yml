@@ -43,11 +43,29 @@
       - gpu_stack_mode in ['server', 'desktop', 'hybrid']
     fail_msg: "Invalid GPU mode: {{ gpu_stack_mode }}"
 
-- name: Auto-Detect Video Hardware (If Vendor is Auto/Generic)
+- name: Run Video Hardware Detection
   ansible.builtin.include_tasks: detect_video.yml
-  when: gpu_stack_vendor in ['auto', 'generic']
 
-- name: Normalize Vendor List (Re-eval after detection)
+- name: Resolve Driver Conflicts
+  ansible.builtin.include_tasks: driver_integrity.yml
+
+- name: Resolve and Validate GPU Vendor
+  block:
+    - name: Set Vendor from Auto-Detection
+      ansible.builtin.set_fact:
+        gpu_stack_vendor: "{{ _gpu_primary_detected_vendor }}"
+      when: gpu_stack_vendor in ['auto', 'generic']
+
+    - name: Validate Manual Vendor Configuration
+      ansible.builtin.assert:
+        that:
+          - (gpu_stack_vendor in _gpu_detected_vendor_list) or (gpu_stack_vendor == 'generic')
+        fail_msg: "Configured GPU vendor '{{ gpu_stack_vendor }}' was not detected in hardware (Detected: {{ _gpu_detected_vendor_list }}). Set gpu_force_vendor=true to bypass."
+      when:
+        - gpu_stack_vendor not in ['auto', 'generic']
+        - not (gpu_force_vendor | default(false))
+
+- name: Normalize Vendor List (Final)
   ansible.builtin.set_fact:
     _gpu_vendor_list: "{{ [gpu_stack_vendor] if gpu_stack_vendor is string else gpu_stack_vendor }}"
 
@@ -69,6 +87,10 @@
   ansible.builtin.include_tasks: features/egpu.yml
   when: gpu_stack_enable_egpu | default(false)
 
+- name: Optional - Configure GPU Slicing Support
+  ansible.builtin.include_tasks: features/gpu_slicing.yml
+  when: gpu_stack_enable_slicing | default(false) or gpu_stack_slicing_strategy | default('none') != 'none'
+
 - name: Optional - Configure RDMA Support
   ansible.builtin.include_tasks: features/rdma.yml
   when: gpu_stack_enable_rdma | default(false)
@@ -76,3 +98,21 @@
 - name: Optional - Configure DP Alt Mode
   ansible.builtin.include_tasks: features/dp_alt_mode.yml
   when: gpu_stack_enable_dp_alt_mode | default(false)
+
+- name: Optional - Verify Vulkan Capabilities
+  ansible.builtin.include_tasks: features/vulkan_validation.yml
+  when: gpu_stack_mode in ['desktop', 'hybrid']
+
+- name: Optional - Verify Containerized Vulkan Projection
+  ansible.builtin.include_tasks: features/verify_container_vulkan.yml
+  when: 
+    - gpu_stack_mode in ['desktop', 'hybrid']
+    - gpu_vulkan_supported | bool
+
+
+- name: Save Role Checkpoint
+  ansible.builtin.include_tasks: save_checkpoint.yml
+  vars:
+    additional_phases: ["hardware/gpu"]
+
+

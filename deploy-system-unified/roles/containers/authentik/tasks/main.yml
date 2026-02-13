@@ -44,7 +44,7 @@
       Image={{ authentik_postgres_image }}
       ContainerName=authentik-postgres
 
-      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      {% if authentik_network_name == 'host' %}
       Network=host
       {% else %}
       Network={{ authentik_network_name }}.network
@@ -77,7 +77,7 @@
       Image={{ authentik_redis_image }}
       ContainerName=authentik-redis
 
-      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      {% if authentik_network_name == 'host' %}
       Network=host
       {% else %}
       Network={{ authentik_network_name }}.network
@@ -107,7 +107,7 @@
       Image={{ authentik_image }}
       ContainerName=authentik-server
 
-      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      {% if authentik_network_name == 'host' %}
       Network=host
       {% else %}
       Network={{ authentik_network_name }}.network
@@ -145,7 +145,7 @@
       Image={{ authentik_image }}
       ContainerName=authentik-worker
 
-      {% if authentik_network_name == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      {% if authentik_network_name == 'host' %}
       Network=host
       {% else %}
       Network={{ authentik_network_name }}.network

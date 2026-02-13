@@ -43,3 +43,9 @@
 - name: Set containers runtime completion flag
   ansible.builtin.set_fact:
     containers_runtime_complete: true
+
+- name: Save Role Checkpoint
+  ansible.builtin.include_tasks: save_checkpoint.yml
+  vars:
+    additional_phases: ["containers/runtime"]
+

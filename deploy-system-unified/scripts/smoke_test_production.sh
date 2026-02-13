@@ -2,8 +2,7 @@
 # Stability 2026 - Production Smoke Test
 # Verifies that production_deploy.yml can be parsed and run in check-mode.
 
-set -e
-set -o pipefail
+set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLAYBOOK="$PROJECT_ROOT/production_deploy.yml"

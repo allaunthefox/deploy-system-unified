@@ -1,7 +1,7 @@
 ---
 # Defaults for hardware/firmware
-cpu_tier: "unknown"
-is_server_cpu: false
+hardware_cpu_tier: "unknown"
+hardware_is_server_cpu: false
 # Monitoring settings
 hardware_monitor_temp: true
 hardware_enable_watchdog: true

@@ -9,3 +9,9 @@
     name: firewalld
     state: reloaded
   become: true
+
+- name: Reload nftables
+  ansible.builtin.service:
+    name: nftables
+    state: reloaded
+  become: true

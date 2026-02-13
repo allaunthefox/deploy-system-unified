@@ -1,4 +1,4 @@
-# Recovery Objectives (RPO & RTO)
+# RECOVERY_OBJECTIVES
 
 **Status:** Draft
 **Date:** February 13, 2026

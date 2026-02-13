@@ -1,4 +1,4 @@
-# Logging Policy
+# LOGGING_POLICY
 
 **Status:** Draft
 **Date:** February 13, 2026

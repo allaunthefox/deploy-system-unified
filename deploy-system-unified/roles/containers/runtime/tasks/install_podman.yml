@@ -40,6 +40,18 @@
   when: ansible_facts['distribution'] | lower == 'archlinux'
   become: true
 
+- name: Install Podman on Alpine
+  community.general.apk:
+    name:
+      - podman
+      - slirp4netns
+      - fuse-overlayfs
+      - netavark
+      - aardvark-dns
+    state: present
+  when: ansible_facts['os_family'] == 'Alpine'
+  become: true
+
 - name: Enable IPv4 forwarding for container networking
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
@@ -57,7 +69,9 @@
       log_driver = "journald"
       log_size_max = 10485760
       pids_limit = 2048
+      {% if containers_userns_auto | default(true) | bool %}
       userns = "auto"
+      {% endif %}
       signature_policy = "/etc/containers/policy.json"
       default_capabilities = ["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FSETID", "CAP_FOWNER", "CAP_MKNOD", "CAP_NET_RAW", "CAP_SETGID", "CAP_SETUID", "CAP_SETFCAP", "CAP_SETPCAP", "CAP_NET_BIND_SERVICE", "CAP_SYS_CHROOT", "CAP_KILL", "CAP_AUDIT_WRITE"]
       [network]

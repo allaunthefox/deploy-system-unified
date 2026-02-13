@@ -21,8 +21,28 @@ This role is designed to be **Architecture First**, meaning it first detects the
 ```yaml
 # In group_vars or inventory
 gpu_stack_enable: true
-gpu_stack_vendor: "nvidia"  # or "amd", "intel", "generic"
+gpu_stack_vendor: "auto"    # Recommended: automatically detects hardware
 gpu_stack_mode: "server"    # "server", "desktop", "hybrid"
+```
+
+### Automated Hardware Discovery
+
+The system now features an **Advanced Discovery Engine** (`gpu_discovery.py`):
+*   **Auto-Detection**: Setting `gpu_stack_vendor: auto` enables the Python-based probe.
+*   **Conflict Detection**: Automatically detects and blacklists conflicting drivers (e.g., Nouveau vs NVIDIA) if `deployment_profile: hardened` is active.
+*   **Evidence Logs**: Raw hardware data is stored in `/var/lib/deploy-system/evidence/gpu/` for audit purposes.
+
+### Precision Resource Allocation (Pinning)
+
+For multi-GPU systems, you can pin specific containers to specific hardware using stable PCI paths.
+
+```yaml
+containers_gpu_allocation_map:
+  - container_name: "jellyfin"
+    pci_id: "0000:00:02.0"  # Map Integrated Intel GPU
+  - container_name: "transcoder"
+    vendor: "nvidia"
+    index: 0                # Map first discrete NVIDIA card
 ```
 
 ### Mixed Vendor Environments
@@ -119,11 +139,10 @@ Branch templates like `gpu_slicing_bare_metal.yml` and `k8s_gpu_worker.yml` are 
 
 ## Verify Installation
 
-After deployment, the role provides a verification task that prints GPU status:
+After deployment, the role provides a verification task that prints GPU status and Vulkan capabilities:
 
-```bash
-# Example verification output
-"GPU Status: NVIDIA GPU detected. Driver: 535.129.03, CUDA: 12.2"
-```
+*   **Host Status**: Prints detected driver version and compute stack health.
+*   **Vulkan Check**: Validates `vulkaninfo` on the host (in `desktop` or `hybrid` mode).
+*   **Container Projection**: Executes a smoke test container to verify hardware acceleration is available within the OCI runtime.
 
 Required reboot is often handled via notify handlers (`Update initramfs`), but a manual reboot may be required for the first installation of kernel modules.

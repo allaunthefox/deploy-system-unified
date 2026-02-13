@@ -30,6 +30,14 @@
   when: ansible_distribution == 'Archlinux'
   become: true
 
+- name: Ensure security-related packages are installed (Alpine)
+  community.general.apk:
+    name:
+      - audit
+    state: present
+  when: ansible_os_family == 'Alpine'
+  become: true
+
 - name: Configure auditd service
   ansible.builtin.systemd:
     name: auditd

@@ -1,48 +1,24 @@
 ---
 # Tasks for core/hardware_support
 
-- name: Retrieve CPU flags
-  ansible.builtin.shell: "grep '^flags' /proc/cpuinfo | head -n 1"
-  register: cpu_flags_output
-  changed_when: false
-  check_mode: false
-
-- name: Set Hardware Facts
-  ansible.builtin.set_fact:
-    host_cpu_has_avx: "{{ 'avx' in cpu_flags_output.stdout }}"
-    host_cpu_has_avx2: "{{ 'avx2' in cpu_flags_output.stdout }}"
-    host_cpu_has_sse4_2: "{{ 'sse4_2' in cpu_flags_output.stdout }}"
-    host_cpu_has_aes: "{{ 'aes' in cpu_flags_output.stdout }}"
-    host_cpu_has_sha: "{{ 'sha_ni' in cpu_flags_output.stdout or 'sha2' in cpu_flags_output.stdout }}"
-    host_cpu_has_rdrand: "{{ 'rdrand' in cpu_flags_output.stdout }}"
-
-- name: Check for Intel QAT (QuickAssist Technology)
-  ansible.builtin.shell: "lspci -nn | grep -i QuickAssist || true"
-  register: qat_device_check
-  changed_when: false
-  failed_when: false
-  # Only run if lspci is available (part of pciutils)
-
-- name: Set Crypto Accelerator Facts
-  ansible.builtin.set_fact:
-    host_has_qat: "{{ qat_device_check.stdout | length > 0 }}"
-    # RDRAND is crucial for high-throughput crypto entropy
-    host_has_hardware_rng: "{{ host_cpu_has_rdrand | bool }}"
+- name: Load Architecture Specific Hardware Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
 
 - name: Report Hardware Capabilities
   ansible.builtin.debug:
     msg:
-      - "AVX Support: {{ host_cpu_has_avx }}"
-      - "AVX2 Support: {{ host_cpu_has_avx2 }}"
-      - "AES-NI Support (Crypto): {{ host_cpu_has_aes }}"
-      - "SHA Extensions (Crypto): {{ host_cpu_has_sha }}"
-      - "Hardware RNG (RDRAND): {{ host_cpu_has_rdrand }}"
-      - "Intel QAT Detected: {{ host_has_qat }}"
+      - "AVX Support: {{ host_cpu_has_avx | default(false) }}"
+      - "AVX2 Support: {{ host_cpu_has_avx2 | default(false) }}"
+      - "AES-NI Support (Crypto): {{ host_cpu_has_aes | default(false) }}"
+      - "SHA Extensions (Crypto): {{ host_cpu_has_sha | default(false) }}"
+      - "Hardware RNG (RDRAND): {{ host_cpu_has_rdrand | default(false) }}"
+      - "Intel QAT Detected: {{ host_has_qat | default(false) }}"
 
 - name: Validate AVX Requirement (Generic Media/DB)
   ansible.builtin.fail:
     msg: "Host CPU lacks AVX instructions required for modern Multimedia/Database workloads."
-  when: (require_avx | default(false)) and not host_cpu_has_avx
+  when: (require_avx | default(false)) and not (host_cpu_has_avx | default(false))
 
 - name: Warn on missing AVX (Soft Check)
   ansible.builtin.debug:

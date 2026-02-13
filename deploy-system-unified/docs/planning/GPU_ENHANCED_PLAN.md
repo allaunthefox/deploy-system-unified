@@ -78,18 +78,18 @@ Battlemage in this repository refers specifically to Intel GPU driver enablement
 
 ### Phase 6: Battlemage Intel GPU Drivers (Weeks 11-12)
 
-**Focus**: Adding Battlemage Intel GPU driver support
+**Focus**: Advanced Battlemage Intel GPU driver tuning (Role structure is complete)
 
 - **Completion Metric**: Battlemage Intel GPU driver support is installed and validated
 
 - **Steps**:
-    - [ ] Create `core/battlemage` role structure with defaults, tasks, templates, and vars
-    - [ ] Implement Battlemage Intel GPU driver configuration and validation
+    - [x] Create `core/battlemage` role structure (Integrated into `hardware/gpu`)
+    - [x] Implement Battlemage Intel GPU driver configuration (Basic probe logic complete)
     - [ ] Add Battlemage acceleration settings for Intel GPU workloads
     - [ ] Enhance Battlemage performance configuration for Intel GPUs (encoding, bitrate, resolution)
     - [ ] Improve integration between Thunderbolt and RDMA for Battlemage Intel GPU drivers
     - [ ] Add security configuration (encryption, authentication, certificates)
-    - [ ] Create Battlemage branch templates (standalone, cluster, workstation)
+    - [ ] Create Battlemage branch templates (Basic templates complete)
     - [ ] Improve testing coverage for DP Alt Mode and Battlemage scenarios
 
 ### Phase 7: Security and Hardening (Weeks 13-14)

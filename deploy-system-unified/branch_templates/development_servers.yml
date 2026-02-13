@@ -3,7 +3,6 @@
 # DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
 # USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
 
----
 # Development Workstation - Flexible Solution Stack
 # Solution: Base Hardened Infrastructure + Dev Container Workload
 - ansible.builtin.import_playbook: base_hardened.yml

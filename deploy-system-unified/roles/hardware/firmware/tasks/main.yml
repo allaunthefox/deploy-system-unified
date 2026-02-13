@@ -7,11 +7,11 @@
 
 - name: Detect CPU Tier (Server vs Consumer)
   ansible.builtin.set_fact:
-    cpu_tier: "{{ 'server' if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else 'consumer' }}"
-    is_server_cpu: "{{ true if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else false }}"
+    hardware_cpu_tier: "{{ 'server' if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else 'consumer' }}"
+    hardware_is_server_cpu: "{{ true if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else false }}"
 - name: Report CPU Profile
   ansible.builtin.debug:
-    msg: "Hardware detected as {{ cpu_tier | upper }} tier CPU."
+    msg: "Hardware detected as {{ hardware_cpu_tier | upper }} tier CPU."
 - name: Install Hardware Security Tools
   ansible.builtin.package:
     name:
@@ -49,30 +49,15 @@
   failed_when: false
   when: not _hw_is_container
 
-- name: Set distribution-specific hardware package names
-  ansible.builtin.set_fact:
-    microcode_packages: >-
-      {{ ['intel-ucode', 'amd-ucode'] if ansible_os_family == 'Archlinux' else ['intel-microcode', 'amd64-microcode'] }}
-    monitoring_packages: >-
-      {{ ['lm_sensors', 'smartmontools'] if ansible_os_family == 'Archlinux' else ['lm-sensors', 'smartmontools', 'watchdog'] }}
-    watchdog_service: "{{ [] if ansible_os_family == 'Archlinux' else ['watchdog'] }}"
-
-- name: Install CPU microcode updates (Intel/AMD)
-  ansible.builtin.package:
-    name: "{{ item }}"
-    state: present
-  loop: "{{ microcode_packages }}"
-  become: true
-  failed_when: false
-  when:
-    - ansible_architecture == 'x86_64'
-    - not _hw_is_container
+- name: Load Architecture Specific Firmware Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
 
 - name: Install hardware monitoring and watchdog tools
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
-  loop: "{{ monitoring_packages }}"
+  loop: "{{ monitoring_packages | default([]) }}"
   become: true
   when: not _hw_is_container
 

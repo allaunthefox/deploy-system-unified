@@ -16,9 +16,19 @@
     core_os_family: "{{ ansible_facts['os_family'] }}"
     core_distribution: "{{ ansible_facts['distribution'] | lower }}"
 
+- name: Load Architecture Specific Variables
+  ansible.builtin.include_vars:
+    file: "arch_{{ ansible_architecture }}.yml"
+  failed_when: false
+
 - name: Construct Base Package List
   ansible.builtin.set_fact:
-    _bootstrap_packages: "{{ system_base_packages.common + (system_base_packages[core_os_family] | default([])) }}"
+    _bootstrap_packages: >-
+      {{
+        system_base_packages.common
+        + (system_base_packages[core_os_family] | default([]))
+        + (bootstrap_arch_packages[core_os_family] | default([]))
+      }}
 
 - name: Ensure base packages are installed (Debian/Ubuntu)
   ansible.builtin.apt:

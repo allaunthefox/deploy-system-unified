@@ -12,6 +12,10 @@ galaxy_info:
       versions: [all]
     - name: Fedora
       versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
   galaxy_tags:
     - gpu
     - nvidia
@@ -19,4 +23,5 @@ galaxy_info:
     - intel
     - drivers
 
-dependencies: []
+dependencies:
+  - role: core/hardware_support

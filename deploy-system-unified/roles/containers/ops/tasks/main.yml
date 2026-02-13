@@ -43,6 +43,10 @@
     - "{{ ops_config_dir }}"
     - "{{ ops_config_dir }}/homarr"
     - "{{ ops_config_dir }}/vaultwarden"
+    - "{{ ops_config_dir }}/wikijs-db"
+    - "{{ ops_config_dir }}/wikijs-db/data"
+    - "{{ ops_config_dir }}/wiki"
+    - "{{ ops_config_dir }}/wiki/data"
   become: true
   when: ops_enable
 
@@ -234,8 +238,8 @@
     content: |
       [Unit]
       Description=Wiki.js Documentation Platform
-      After=network-online.target {{ ops_pod_name }}.pod
-      Requires={{ ops_pod_name }}.pod
+      After=network-online.target {{ ops_pod_name }}.pod wikijs-db.service
+      Requires={{ ops_pod_name }}.pod wikijs-db.service
 
       [Container]
       Pod={{ ops_pod_name }}.pod
@@ -244,10 +248,55 @@
 
       Volume={{ ops_config_dir }}/wiki/data:/data:Z
 
-      Environment=DB_TYPE=sqlite
-      Environment=DB_FILEPATH=/data/db.sqlite
+      Environment=DB_TYPE=postgres
+      Environment=DB_HOST=localhost
+      Environment=DB_PORT=5432
+      Environment=DB_USER=wiki
+      Environment=DB_PASS={{ wikijs_pg_password | default('wikijs_pass') }}
+      Environment=DB_NAME=wiki
       Environment=HA_ACTIVE=false
       Environment=PORT=31337
+
+      [Service]
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: wiki_enable
+  notify: reload systemd
+
+- name: Create Wiki.js Postgres Quadlet
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/wikijs-db.container"
+    content: |
+      [Unit]
+      Description=Wiki.js PostgreSQL Database
+      After=network-online.target
+
+      [Container]
+      Image=docker.io/library/postgres:16-alpine
+      ContainerName=wikijs-db
+
+      {% if ops_pod_network == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      Network=host
+      {% else %}
+      Network={{ ops_pod_network }}.network
+      {% endif %}
+
+      # Override default port if in host mode to avoid conflicts
+      {% if ops_pod_network == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
+      Exec=postgres -p {{ wikijs_db_port | default(5433) }}
+      {% endif %}
+
+      Environment=POSTGRES_DB=wiki
+      Environment=POSTGRES_USER=wiki
+      Environment=POSTGRES_PASSWORD={{ wikijs_pg_password | default('wikijs_pass') }}
+
+      Volume={{ ops_config_dir }}/wikijs-db/data:/var/lib/postgresql/data:Z
 
       [Service]
       Restart=always

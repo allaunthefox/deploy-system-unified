@@ -23,7 +23,7 @@ if [[ -n "${RESTIC_SNAPSHOT_ID:-}" ]]; then
     SNAP_ID="$RESTIC_SNAPSHOT_ID"
     echo "Using Snapshot ID from env: $SNAP_ID"
 else
-    read -p "Enter Snapshot ID to restore (or 'latest'): " SNAP_ID
+    read -rp "Enter Snapshot ID to restore (or 'latest'): " SNAP_ID
     SNAP_ID=${SNAP_ID:-latest}
 fi
 

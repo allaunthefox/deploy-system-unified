@@ -3,7 +3,6 @@
 # DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
 # USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
 
----
 # Media Streaming Server - High Performance Media Configuration
 # Based on: Contabo Cloud VPS 30 SSD (8 vCPU, 24 GB RAM, 800 GB SSD)
 # Features: Full Media Stack (Jellyfin, *Arr), ZRAM/ZSwap Hybrid Tuning, Btrfs Optimization

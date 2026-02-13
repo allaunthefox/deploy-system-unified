@@ -91,6 +91,9 @@ This role handles the installation and configuration of the container runtime en
 ### `containers_gpu_count`
 - `containers_gpu_count`
 
+### `containers_gpu_allocation_map`
+- `containers_gpu_allocation_map`
+
 ### `containers_gpu_slicing`
 - `containers_gpu_slicing`
 

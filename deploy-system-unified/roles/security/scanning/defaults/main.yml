@@ -24,6 +24,8 @@ security_package_mapping:
     packages: ['audit', 'clamav', 'rkhunter', 'lynis']
   almalinux:
     packages: ['audit', 'clamav', 'rkhunter', 'lynis']
+  alpine:
+    packages: ['audit', 'clamav', 'rkhunter', 'lynis']
 
 security_scanning_extra_packages:
   - "chrony"

@@ -167,13 +167,14 @@ def benchmark_role(
     container_script = textwrap.dedent(
         f"""\
         set -euo pipefail
-        export ANSIBLE_ROLES_PATH=/workspace/projects/deploy-system-unified/roles:/workspace/projects/deploy-system-unified
+        export ANSIBLE_ROLES_PATH=/workspace/deploy-system-unified/roles:/workspace/deploy-system-unified
         echo 'benchmark-vault-pass' > /tmp/ansible-vault-pass
         chmod 0600 /tmp/ansible-vault-pass
         export ANSIBLE_VAULT_PASSWORD_FILE=/tmp/ansible-vault-pass
         if command -v apt-get >/dev/null 2>&1; then
           apt-get -o APT::Sandbox::User=root update -y >/dev/null 2>&1 || true
         fi
+        ansible-galaxy collection install ansible.posix community.general >/dev/null 2>&1 || true
         ansible-playbook /workspace/{rel_playbook} -i "localhost," -c local > /tmp/run1.log 2>&1 || true
         ansible-playbook /workspace/{rel_playbook} -i "localhost," -c local > /tmp/run2.log 2>&1 || true
         echo "=== RUN1 BEGIN ==="
@@ -190,7 +191,7 @@ def benchmark_role(
         "run",
         "--rm",
         "-v",
-        f"{repo_root.as_posix()}:/workspace",
+        f"{repo_root.as_posix()}:/workspace:z",
         "-w",
         "/workspace",
         image,
@@ -365,7 +366,7 @@ def main() -> int:
 
     script_dir = Path(__file__).resolve().parent
     dsu_root = script_dir.parent
-    repo_root = dsu_root.parent.parent
+    repo_root = dsu_root.parent
     roles_dir = dsu_root / "roles" / "core"
 
     selected_roles = [r.strip() for r in args.roles.split(",") if r.strip()] or None

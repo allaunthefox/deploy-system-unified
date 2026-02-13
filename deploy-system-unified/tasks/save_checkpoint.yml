@@ -14,11 +14,11 @@
     else
       echo "Chrony not installed"
     fi
-  register: chrony_tracking_check
+  register: _dsu_chrony_tracking_check
   changed_when: false
   become: true
 
-- name: Save Deployment Checkpoint with Chrony Integration
+- name: Save Deployment Checkpoint
   ansible.builtin.copy:
     content: |
       {
@@ -26,7 +26,7 @@
         "status": "{{ checkpoint_status | default('running') }}",
         "time_sync": {
           "source": "chrony",
-          "details": {{ chrony_tracking_check.stdout_lines | default([]) | to_json }}
+          "details": {{ _dsu_chrony_tracking_check.stdout_lines | default([]) | to_json }}
         },
         "completed_phases": {{ completed_phases | to_json }}
       }
@@ -34,3 +34,20 @@
     mode: '0600'
   become: true
   changed_when: false
+  register: _dsu_checkpoint_file
+
+- name: Encrypt Checkpoint (Optional - Secure Mode)
+  ansible.builtin.command:
+    argv:
+      - ansible-vault
+      - encrypt
+      - --vault-password-file
+      - "{{ lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') | default('.vault_pass', true) }}"
+      - /var/lib/deploy-system/checkpoints/session.json
+  become: true
+  when: 
+    - dsu_encrypt_checkpoints | default(false) | bool
+    - not _gpu_is_container | default(false)
+  changed_when: false
+  no_log: true
+

@@ -96,6 +96,21 @@
     - not _gpu_is_container | default(false)
   notify: update-initramfs
 
+- name: Configure Battlemage Force Probe via grub.d
+  ansible.builtin.copy:
+    dest: /etc/default/grub.d/intel-battlemage.cfg
+    content: |
+      # Core/Battlemage Force Probe
+      GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} i915.force_probe=!9a49 xe.force_probe=9a49"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when:
+    - gpu_battlemage_force_probe | bool
+    - not _gpu_is_container | default(false)
+  notify: update-grub
+
 - name: Setup Intel OneAPI Repository (Debian/Ubuntu)
   block:
     - name: Download Intel OneAPI GPG key

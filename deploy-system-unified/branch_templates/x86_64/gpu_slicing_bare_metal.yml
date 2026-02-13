@@ -3,7 +3,6 @@
 # DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
 # USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
 
----
 # GPU Slicing Bare Metal Deployment Template
 # For physical servers with GPU hardware slicing capabilities (A100, A30, H100)
 # Features: NVIDIA MIG configuration, hardware isolation, high-performance GPU access

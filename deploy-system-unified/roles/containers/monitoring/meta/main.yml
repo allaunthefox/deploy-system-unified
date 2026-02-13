@@ -1,3 +1,28 @@
 ---
-assumes_permissive: true
+galaxy_info:
+  role_name: container_monitoring
+  author: deploy-system-unified
+  description: Containerized monitoring stack (Prometheus, Grafana)
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - containers
+    - monitoring
+    - prometheus
+    - grafana
+
+dependencies: []
+
+# assumes_permissive: true
 # Monitoring role includes default passwords and may be enabled by default in profiles.

@@ -45,6 +45,18 @@ containers_arch_override: ""
 containers_enable_gpu_support: false
 containers_gpu_vendor: "nvidia"  # Options: nvidia, amd, intel
 containers_gpu_count: 1
+
+# GPU Allocation Mapping
+# Used to pin specific GPUs to containers.
+# Example:
+# containers_gpu_allocation_map:
+#   - container_name: "jellyfin"
+#     pci_id: "0000:03:00.0"
+#   - container_name: "stable-diffusion"
+#     vendor: "nvidia"
+#     index: 0
+containers_gpu_allocation_map: []
+
 # GPU slicing configuration
 containers_gpu_slicing:
   strategy: "auto"  # auto, mig, vgpu, time-slicing, sriov, level-zero, oneapi, passthrough

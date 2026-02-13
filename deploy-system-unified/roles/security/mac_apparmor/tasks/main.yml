@@ -10,13 +10,22 @@
   when: ansible_os_family == 'Debian'
   become: true
 
+- name: Install AppArmor packages (Alpine)
+  ansible.builtin.package:
+    name:
+      - apparmor
+      - apparmor-utils
+    state: present
+  when: ansible_os_family == 'Alpine'
+  become: true
+
 - name: Enable and start AppArmor service
-  ansible.builtin.systemd:
+  ansible.builtin.service:
     name: apparmor
     enabled: true
     state: started
   when:
-    - ansible_os_family == 'Debian'
+    - ansible_os_family in ['Debian', 'Alpine']
     - not (is_virtualized | default(false))
   become: true
 
@@ -28,5 +37,5 @@
         ['apparmor=1', 'security=apparmor']
       }}
   when:
-    - ansible_os_family == 'Debian'
+    - ansible_os_family in ['Debian', 'Alpine']
     - not (is_virtualized | default(false))

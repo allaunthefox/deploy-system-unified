@@ -2,6 +2,9 @@ rulesdir:
   - ansiblelint/rules
 
 # Exclude files that intentionally list placeholders for validation (preflight guard)
+# Also exclude vault-encrypted secrets that cannot be decrypted in all environments
 exclude_paths:
   - roles/ops/preflight/tasks/main.yml
   - secrets/tasks/main.yml
+  - inventory/group_vars/all/secrets.*.yml
+  - inventory/group_vars/all/vault.yml

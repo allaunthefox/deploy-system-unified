@@ -14,6 +14,7 @@ For local file-based access, see the [**Documentation Index**](./docs/INDEX.md).
    ```bash
    ansible-playbook production_deploy.yml -i inventory/your_inventory.ini
    ```
-2. **Reference Templates**: Standard architecture patterns are available in `branch_templates/` for reference only.
+2. **Architecture Support**: This project is now architecture-aware (x86_64, aarch64, riscv64). Core roles and GPU drivers adapt automatically to the target architecture.
+3. **Reference Templates**: Standard architecture patterns are available in `branch_templates/` (categorized by architecture) for reference only.
 
 **Pre-commit & local checks:** See [docs/development/PRE_COMMIT.md](./docs/development/PRE_COMMIT.md) for instructions on installing `pre-commit` and running the repository enforcement locally.

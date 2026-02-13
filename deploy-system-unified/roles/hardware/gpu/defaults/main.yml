@@ -9,7 +9,7 @@ gpu_stack_enable: false
 gpu_stack_vendor: generic
 
 # GPU Mode: server (headless/compute), desktop (graphics/display), hybrid
-gpu_stack_mode: server
+gpu_stack_mode: "{{ 'desktop' if deployment_profile | default('server') == 'workstation' else 'server' }}"
 
 # GPU Reservation: host (host uses GPU), vfio (GPU reserved for VM passthrough)
 # If 'vfio', kernel modules will not be loaded by this role.
@@ -29,8 +29,12 @@ gpu_stack_enable_dp_alt_mode: false  # Enable DisplayPort Alt Mode handling
 
 # Compute Stack Enablement
 gpu_stack_enable_oneapi: false       # Enable Intel OneAPI Base Toolkit (or runtime)
+gpu_stack_enable_level_zero: false   # Enable Intel Level Zero (compute) support
 gpu_stack_enable_cuda: false         # Enable NVIDIA CUDA Toolkit (compiler/dev tools)
 gpu_stack_enable_rocm: false         # Enable AMD ROCm SDK
+
+# Battlemage Specific
+gpu_battlemage_force_probe: false    # Force probe for Intel Xe2 (Battlemage) GPUs
 
 # Supply-chain hardening (optional key verification)
 intel_oneapi_gpg_key_url: "https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB"
@@ -58,6 +62,11 @@ gpu_desktop_power_profile: "balanced"     # Options: performance, balanced, powe
 gpu_desktop_enable_wayland_support: true  # Enable DRM KMS for Wayland (essential for GNOME/KDE)
 gpu_desktop_enable_x11_support: true      # Ensure X11 drivers/utilities are present
 gpu_desktop_grant_user_access: true       # Grant 'video'/'render' group access to standard users
+
+# Security and Evidence Encryption
+# Default to true if deployment_profile is 'hardened', 'production', or 'ephemeral'
+dsu_encrypt_evidence: "{{ true if deployment_profile | default('standard') in ['hardened', 'production', 'ephemeral'] else false }}"
+dsu_encrypt_checkpoints: "{{ true if deployment_profile | default('standard') in ['hardened', 'production', 'ephemeral'] else false }}"
 
 # Variable Namespacing:
 # All variables internal to this role should be prefixed with gpu_stack_ or specific

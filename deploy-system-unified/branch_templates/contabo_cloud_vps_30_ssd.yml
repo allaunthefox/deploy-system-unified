@@ -3,7 +3,6 @@
 # DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
 # USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
 
----
 # Contabo Cloud VPS 30 SSD - Production-Ready Hardened Configuration
 # Solution: Cloud Provider Sync + Base Hardened Infrastructure + Contabo-Specific VPS Optimization
 # Target Instance: Cloud VPS 30 SSD (8 vCPU, 24 GB RAM, 800 GB SSD)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 if command -v podman >/dev/null 2>&1; then
   if podman info >/dev/null 2>&1; then

@@ -7,14 +7,9 @@
   changed_when: false
   become: true
 
-- name: Detect Shared Video Memory (UMA)
-  ansible.builtin.shell: |
-    if lspci -v 2>/dev/null | grep -i "VGA" | grep -i "Intel"; then echo "true";
-    elif [ "$(lspci 2>/dev/null | grep -c "VGA")" -eq 1 ] && lspci 2>/dev/null | grep -i "VGA" | grep -E "Renoir|Cezanne|Raven|Picasso|VanGogh|Rembrandt|Phoenix|Stoney|Carrizo|Kaveri|Temash|Kabini|Mullins"; then echo "true";
-    else echo "false"; fi
-  register: uma_detection
-  changed_when: false
-  when: core_memory_shared_vram == 'auto'
+- name: Load Architecture Specific Memory Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
 
 - name: Determine Memory Strategy (Auto-Selection)
   ansible.builtin.set_fact:

@@ -11,6 +11,7 @@
     production_roles:
       # Container Infrastructure Workload
       - hardware/sas
+      - hardware/gpu
       - containers/runtime
       - containers/config
       - containers/quadlets

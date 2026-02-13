@@ -3,7 +3,6 @@
 # DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
 # USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
 
----
 # GPU Slicing Bare Metal Deployment Template (aarch64)
 # For ARM Server (Grace Hopper, Ampere Altra + A100/H100) or Jetson Orin AGX
 # Features: NVIDIA MIG configuration (Server) or Shared Memory (SoC)

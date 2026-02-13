@@ -19,6 +19,7 @@
 - name: Update Initramfs Debian
   ansible.builtin.command: update-initramfs -u
   become: true
+  changed_when: true
   when:
     - ansible_facts['os_family'] == 'Debian'
     - not _gpu_is_container | default(false)
@@ -26,6 +27,7 @@
 - name: Update Initramfs RedHat
   ansible.builtin.command: dracut --force
   become: true
+  changed_when: true
   when:
     - ansible_facts['os_family'] == 'RedHat'
     - not _gpu_is_container | default(false)
@@ -33,18 +35,23 @@
 - name: Update Initramfs Alpine
   ansible.builtin.command: mkinitfs
   become: true
+  changed_when: true
   when:
     - ansible_facts['os_family'] == 'Alpine'
     - not _gpu_is_container | default(false)
 
-- name: reload_udev
-  ansible.builtin.shell: udevadm control --reload-rules && udevadm trigger
+- name: Reload udev
+  ansible.builtin.shell: set -o pipefail && udevadm control --reload-rules && udevadm trigger
+  args:
+    executable: /bin/bash
   become: true
+  changed_when: true
   when: not _gpu_is_container | default(false)
 
 - name: Update Initramfs Archlinux
   ansible.builtin.command: mkinitcpio -P
   become: true
+  changed_when: true
   when:
     - ansible_facts['os_family'] == 'Archlinux'
     - not _gpu_is_container | default(false)

@@ -50,3 +50,15 @@
         msg: "Skipping automatic system updates on Arch Linux. Rolling releases require manual intervention (pacman -Syu)."
   when: ansible_distribution == 'Archlinux'
   become: true
+
+- name: Configure Updates (Alpine)
+  block:
+    - name: Update package cache (Alpine)
+      community.general.apk:
+        update_cache: true
+    - name: Run system upgrade (Alpine)
+      community.general.apk:
+        upgrade: true
+  when: ansible_os_family == 'Alpine'
+  become: true
+

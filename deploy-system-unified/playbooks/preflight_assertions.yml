@@ -74,8 +74,8 @@
     - name: Assert no placeholder SOPS config
       ansible.builtin.assert:
         that:
-          - not sops_stat.stat.exists
-        fail_msg: "CRITICAL: Placeholder .sops.yaml found at repository root. Remove it to avoid configuration confusion until SOPS is fully implemented."
+          - (not sops_stat.stat.exists) or (secrets_allow_transition_state | default(false) | bool)
+        fail_msg: "CRITICAL: Placeholder .sops.yaml found at repository root. Remove it or set secrets_allow_transition_state=true to proceed with SOPS migration."
       delegate_to: localhost
 
     - name: Validate inventory path

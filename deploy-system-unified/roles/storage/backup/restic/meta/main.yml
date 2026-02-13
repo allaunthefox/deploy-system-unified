@@ -1,3 +1,28 @@
 ---
+galaxy_info:
+  role_name: restic_backup
+  author: deploy-system-unified
+  description: Automated, deduplicated, and encrypted system backups using Restic
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - backup
+    - restic
+    - security
+    - storage
+
+dependencies: []
+
 assumes_permissive: true
 # Restic role has default placeholder restic_password values in defaults; consider enforcing via preflight diagnostics.

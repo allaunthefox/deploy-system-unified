@@ -37,11 +37,11 @@ This file is the planning index and the single place to see what is actively tar
 ### Backlog / Later-Phase Plans
 
 - `docs/planning/GPU_ENHANCED_PLAN.md`
-- `docs/planning/RESTRUCTURING_PLAN_2026.md`
 - `docs/planning/COMMUNITY_ENHANCEMENT_PLAN.md`
 
 ### Completed / Historical Reference
 
+- `docs/planning/RESTRUCTURING_PLAN_2026.md`
 - `docs/planning/WIKI_IMPROVEMENT_PLAN.md`
 - `docs/planning/IMPLEMENTATION_REVIEW.md`
 - `docs/planning/MEDIA_STACK_V2.md`

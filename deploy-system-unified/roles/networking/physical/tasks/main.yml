@@ -143,22 +143,9 @@
   ansible.builtin.set_fact:
     active_profile: "{{ networking_physical_profiles[max_interface_speed|string] | default(networking_physical_profiles[networking_physical_default_profile]) }}"
 
-- name: Apply High-Speed Kernel Tuning (Sysctl)
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-    sysctl_file: /etc/sysctl.d/98-networking-performance.conf
-    reload: "{{ ansible_virtualization_type not in ['docker', 'podman', 'container'] }}"
-  ignore_errors: "{{ ansible_virtualization_type in ['docker', 'podman', 'container'] }}"
-  loop:
-    - { name: 'net.core.rmem_max', value: "{{ active_profile.rmem_max }}" }
-    - { name: 'net.core.wmem_max', value: "{{ active_profile.wmem_max }}" }
-    - { name: 'net.core.netdev_max_backlog', value: "{{ active_profile.netdev_backlog }}" }
-    - { name: 'net.ipv4.tcp_rmem', value: "{{ active_profile.tcp_rmem }}" }
-    - { name: 'net.ipv4.tcp_wmem', value: "{{ active_profile.tcp_wmem }}" }
-  become: true
-  when: networking_physical_ring_tuning_enabled
+- name: Load Architecture Specific Networking Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
 
 # --- Per-Interface Tuning (Jumbo Frames & Ring Buffers) ---
 

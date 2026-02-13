@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # =================================================================================================
 # SCRIPT: run_deployment_session.sh
 # ARCHITECTURE: Agnostic (x86_64, aarch64, riscv64)
