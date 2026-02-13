@@ -110,3 +110,8 @@ secrets.generated.yml
 
 # SSH port discovery cache (controller-side)
 inventory/.ssh_port_cache/
+
+# Age encryption keys
+*.key
+age.key
+

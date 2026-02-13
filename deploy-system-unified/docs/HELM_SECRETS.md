@@ -47,20 +47,35 @@ spec:
         property: password
 ```
 
-### Option 2: SOPS Encrypted Values
+### Option 2: SOPS + Age (Project Standard)
+
+This project uses **SOPS with Age** encryption as the standard. Generate an Age key first:
+
+```bash
+# Install age
+brew install age
+
+# Generate key pair
+age-keygen -o age.key
+
+# Export public key (for SOPS)
+AGE_PUBLIC_KEY=$(age-keygen -y age.key)
+```
 
 Encrypt sensitive values file:
 
 ```bash
 # Install SOPS
-brew installmozilla/sops/sops
+brew install sops
 
-# Create encrypted values file
-sops -e values.yaml > values.encrypted.yaml
+# Create encrypted values file with Age
+SOPS_AGE_KEY_FILE=age.key sops -e --age $AGE_PUBLIC_KEY values.yaml > values.encrypted.yaml
 
 # Decrypt for deployment
-sops -d values.encrypted.yaml > values.yaml
+SOPS_AGE_KEY_FILE=age.key sops -d values.encrypted.yaml > values.yaml
 ```
+
+> **Important**: Add `age.key` to `.gitignore` - never commit the private key!
 
 ### Option 3: Kubernetes Secrets
 
