@@ -49,6 +49,22 @@ To maintain consistency and ensure clean linting for YAML files in the Deploy-Sy
       when: deployment_mode == "resume"
     ```
 
+## Helm/Kubernetes Exceptions
+
+The following exceptions apply when working with Helm charts and Kubernetes manifests:
+
+| Standard | Project Rule | Helm/K8s Exception | Notes |
+|----------|--------------|-------------------|-------|
+| File Extension | `.yml` | `.yaml` | Helm requires `Chart.yaml`; Kubernetes manifests commonly use `.yaml` |
+| Indentation | 2 spaces | 2 spaces | Kubernetes also uses 2 spaces |
+
+### Helm-Specific Notes
+
+- **Chart.yaml**: Must use `.yaml` extension (Helm requirement)
+- **Templates**: Use `.yaml` for consistency with K8s manifests
+- **Values**: Use `.yaml` for Helm conventions
+- **Tests**: Must be named `*_test.yaml` (helm-unittest requirement)
+
 ## Linting
 
 These standards are enforced via the `make lint` suite. All YAML files must pass linting checks before acceptance.
