@@ -15,3 +15,20 @@
         state: restarted
       become: true
       when: systemctl_check.stat.exists
+
+# Compatibility aliases (snake_case) — added to satisfy canonical notify: names
+- name: restart_sshd
+  block:
+    - name: check_for_systemctl_presence
+      ansible.builtin.stat:
+        path: /bin/systemctl
+      register: systemctl_check
+      changed_when: false
+      become: true
+
+    - name: restart_sshd_via_systemd_if_available
+      ansible.builtin.systemd:
+        name: "{{ ssh_service_name }}"
+        state: restarted
+      become: true
+      when: systemctl_check.stat.exists

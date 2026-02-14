@@ -203,6 +203,8 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 
 ### Task Naming
 
+* Handlers must use `lowercase_snake_case` (letters, digits, underscores).
+
 * **Descriptive Names**: Every task and handler MUST have a `name` key that clearly describes its purpose.
 * **Uniqueness**: Ensure task names are unique within a role to facilitate debugging and logging.
 

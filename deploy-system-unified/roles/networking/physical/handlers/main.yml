@@ -11,3 +11,15 @@
     name: NetworkManager
     state: restarted
   become: true
+
+- name: apply_netplan
+  ansible.builtin.command: netplan apply
+  become: true
+  when: ansible_os_family == "Debian"
+
+
+- name: restart_networkmanager
+  ansible.builtin.service:
+    name: NetworkManager
+    state: restarted
+  become: true

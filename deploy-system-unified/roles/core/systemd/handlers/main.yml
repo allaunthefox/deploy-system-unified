@@ -11,3 +11,16 @@
     state: restarted
   become: true
   failed_when: false
+
+- name: restart_journald
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+  become: true
+
+- name: restart_resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+  become: true
+  failed_when: false

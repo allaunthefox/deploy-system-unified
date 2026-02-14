@@ -36,3 +36,23 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
   failed_when: false  # compatibility alias for tasks that notify 'restart caddy'
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+
+
+- name: restart_caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: restarted
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  failed_when: false
+

@@ -9,6 +9,11 @@
       ansible.builtin.debug:
         msg: "restart sshd handler (noop for test)"
 
+    # Compatibility alias for canonical handler-name tests
+    - name: restart_sshd
+      ansible.builtin.debug:
+        msg: "restart_sshd handler (noop for test)"
+
   tasks:
     - name: Stat current sshd_config before any changes
       ansible.builtin.stat:

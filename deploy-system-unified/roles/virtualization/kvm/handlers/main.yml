@@ -11,3 +11,16 @@
     daemon_reload: true
   become: true
   listen: "reload systemd"
+
+- name: restart_libvirtd
+  ansible.builtin.systemd:
+    name: libvirtd
+    state: restarted
+  become: true
+  listen: "restart libvirtd"
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  listen: "reload systemd"
