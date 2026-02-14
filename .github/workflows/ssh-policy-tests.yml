@@ -17,7 +17,7 @@ jobs:
         run: |
           # Start an ephemeral container with the repo mounted
           docker run --rm -d --name sshd-test -v "$GITHUB_WORKSPACE":/workspace -w /workspace ubuntu:22.04 sleep infinity
-          docker exec sshd-test bash -lc "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server python3-pip python3-apt gnupg2 wget --no-install-recommends && curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && chmod +x /usr/local/bin/sops"
+          docker exec sshd-test bash -lc "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl openssh-server python3-pip python3-apt gnupg2 wget --no-install-recommends && curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && chmod +x /usr/local/bin/sops"
           docker exec sshd-test bash -lc "pip3 install 'ansible-core>=2.15,<2.16'"
           # Ensure sshd_config exists
           docker exec sshd-test bash -lc "test -f /etc/ssh/sshd_config || dpkg-reconfigure -f noninteractive openssh-server"
