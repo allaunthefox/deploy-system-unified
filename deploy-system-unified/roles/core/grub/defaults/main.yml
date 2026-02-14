@@ -1,0 +1,32 @@
+---
+# Defaults for core/grub role
+
+# General enablement
+core_grub_enabled: true
+
+# Base kernel parameters applied to all systems
+core_grub_base_params:
+  - "quiet"
+  - "splash"
+
+# Categorized parameters (usually populated by other roles via group_vars or facts)
+core_grub_security_params: []
+core_grub_hardware_params: []
+core_grub_isolation_params: []
+core_grub_performance_params: []
+
+# Extra raw parameters for manual overrides
+core_grub_extra_params: []
+
+# Path to GRUB configuration
+core_grub_config_path: "/etc/default/grub"
+
+# Whether to force a GRUB update even if no changes were detected in the config file
+core_grub_force_update: false
+
+# GRUB backup settings
+core_grub_backup_enabled: true
+core_grub_backup_dir: "/var/backups/grub"
+core_grub_backup_retention_days: 30
+core_grub_backup_encrypt: true
+core_grub_backup_gpg_recipient: ""

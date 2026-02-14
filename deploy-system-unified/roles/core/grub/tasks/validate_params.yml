@@ -1,0 +1,64 @@
+---
+# Kernel Parameter Validation - Conflict Detection
+- name: Set known conflicting param groups as facts
+  ansible.builtin.set_fact:
+    _iommu_conflicts:
+      - "intel_iommu=on"
+      - "amd_iommu=on"
+      - "iommu=off"
+      - "iommu=pt"
+    _gpu_conflicts:
+      - "vfio-pci.ids="
+      - "nvidia.modest=0"
+      - "nouveau.modeset=0"
+      - "radeon.modeset=0"
+
+- name: Detect kernel parameter conflicts
+  ansible.builtin.set_fact:
+    _detected_conflicts: []
+
+- name: Check for IOMMU conflicts
+  ansible.builtin.set_fact:
+    _iommu_params: "{{ _core_grub_all_params | select('search', 'iommu') | list }}"
+  when: _core_grub_all_params | length > 0
+
+- name: Warn on conflicting IOMMU settings
+  ansible.builtin.debug:
+    msg: "WARNING: Multiple IOMMU settings detected: {{ _iommu_params }}. This may cause boot issues."
+  when: _iommu_params | length > 1
+
+- name: Check for GPU passthrough conflicts
+  ansible.builtin.set_fact:
+    _vfio_params: "{{ _core_grub_all_params | select('search', 'vfio') | list }}"
+    _nvidia_params: "{{ _core_grub_all_params | select('search', 'nvidia') | list }}"
+    _nouveau_params: "{{ _core_grub_all_params | select('search', 'nouveau') | list }}"
+  when: _core_grub_all_params | length > 0
+
+- name: Warn on GPU passthrough conflicts
+  ansible.builtin.debug:
+    msg: "WARNING: Potential GPU passthrough conflict - VFIO with NVIDIA/Nouveau drivers"
+  when:
+    - _vfio_params | length > 0
+    - (_nvidia_params | length > 0 or _nouveau_params | length > 0)
+
+- name: Check for duplicate parameters (last one wins)
+  ansible.builtin.set_fact:
+    _param_names: "{{ _core_grub_all_params | map('regex_replace', '=.*', '') | list }}"
+    _unique_params: "{{ _param_names | unique | list }}"
+
+- name: Report duplicate parameters
+  ansible.builtin.debug:
+    msg: "INFO: Duplicate parameters detected (last value wins): {{ _param_names | difference(_unique_params) | join(', ') }}"
+  when: _param_names | length != _unique_params | length
+
+- name: Validate required parameters for virtualization
+  ansible.builtin.debug:
+    msg: "Virtualization profile detected - ensure nested virtualization is enabled in BIOS"
+  when: deployment_profile | default('bare_metal') == 'virtual_host'
+
+- name: Validate bare-metal specific parameters
+  ansible.builtin.debug:
+    msg: "Bare-metal profile - virtualization parameters may not be needed"
+  when:
+    - deployment_profile | default('bare_metal') == 'bare_metal'
+    - _core_grub_all_params | select('search', 'kvm|virt|nested') | length > 0

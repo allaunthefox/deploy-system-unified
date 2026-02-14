@@ -1,0 +1,55 @@
+---
+# Container-Native Vulkan Capability Verification
+
+- name: Initialize Container Vulkan Fact
+  ansible.builtin.set_fact:
+    gpu_container_vulkan_verified: false
+
+- name: Determine Verification Image
+  ansible.builtin.set_fact:
+    _vulkan_test_image: >-
+      {{
+        'docker.io/library/alpine:latest'
+        if ansible_facts['os_family'] == 'Alpine' else
+        'docker.io/library/ubuntu:24.04'
+      }}
+
+- name: Run Vulkan Smoke Test Container
+  ansible.builtin.shell: |
+    set -o pipefail
+    {% set pkg_cmd = "apk add --no-cache vulkan-utils" if ansible_facts['os_family'] == 'Alpine' else "apt-get update && apt-get install -y vulkan-tools" %}
+    podman run --rm \
+      --security-opt label=disable \
+      --device /dev/dri:/dev/dri:rw \
+      {{ _vulkan_test_image }} \
+      sh -c "{{ pkg_cmd }} && vulkaninfo --summary" | grep -i 'Devices:'
+  register: _container_vulkan_probe
+  changed_when: false
+  failed_when: false
+  become: true
+  when: 
+    - gpu_vulkan_supported | bool
+    - not _gpu_is_container | default(false)
+    - containers_runtime_complete | default(false) | bool
+
+- name: Set Container Vulkan Verification Fact
+  ansible.builtin.set_fact:
+    gpu_container_vulkan_verified: "{{ _container_vulkan_probe.rc == 0 and 'GPU' in _container_vulkan_probe.stdout }}"
+  when: _container_vulkan_probe.rc is defined and _container_vulkan_probe.rc == 0
+
+- name: Validate Container Vulkan Projection (Hardened)
+  ansible.builtin.assert:
+    that:
+      - gpu_container_vulkan_verified | bool
+    fail_msg: "CRITICAL: Host supports Vulkan but containerized projection failed. This indicates a runtime or permission isolation issue."
+  when: 
+    - core_security_fail_secure | default(false) | bool
+    - gpu_vulkan_supported | bool
+    - not _gpu_is_container | default(false)
+    - containers_runtime_complete | default(false) | bool
+
+- name: Report Container Vulkan Status
+  ansible.builtin.debug:
+    msg:
+      - "Host Vulkan Support: {{ gpu_vulkan_supported }}"
+      - "Container Vulkan Verified: {{ gpu_container_vulkan_verified }}"

@@ -1,0 +1,254 @@
+---
+- name: Preflight Assertions - Stability & Secrets Hygiene
+  hosts: all
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Define vault secrets file path
+      ansible.builtin.set_fact:
+        preflight_repo_root: "{{ playbook_dir | dirname }}"
+        preflight_vault_secrets_file: "{{ (playbook_dir | dirname) }}/inventory/group_vars/all/secrets.generated.yml"
+        preflight_vault_password_file: >-
+          {{
+            lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')
+            | default((playbook_dir | dirname) ~ '/.vault_pass', true)
+          }}
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Set secret provider facts
+      ansible.builtin.set_fact:
+        preflight_provider_mode: "{{ secrets_provider_mode | default('vault') }}"
+      delegate_to: localhost
+
+    - name: Verify secrets file starts with Vault header
+      ansible.builtin.command:
+        argv:
+          - head
+          - -n
+          - "1"
+          - "{{ preflight_vault_secrets_file }}"
+      delegate_to: localhost
+      register: vault_header_check
+      failed_when: false
+      changed_when: false
+      check_mode: false
+      when: preflight_provider_mode in ['vault', 'dual']
+
+    - name: Assert vault header is first line
+      ansible.builtin.assert:
+        that:
+          - vault_header_check.rc == 0
+          - vault_header_check.stdout is match('^\\$ANSIBLE_VAULT;')
+        fail_msg: >-
+          CRITICAL: inventory/group_vars/all/secrets.generated.yml is missing
+          or malformed. The first line must start with '$ANSIBLE_VAULT;'
+      delegate_to: localhost
+      when: preflight_provider_mode in ['vault', 'dual']
+
+    - name: Verify secrets decryptability (Ansible Vault)
+      ansible.builtin.command:
+        argv:
+          - ansible-vault
+          - view
+          - --vault-password-file
+          - "{{ preflight_vault_password_file }}"
+          - "{{ preflight_vault_secrets_file }}"
+      delegate_to: localhost
+      register: vault_decrypt_check
+      failed_when: false
+      changed_when: false
+      check_mode: false
+      no_log: true
+      when: preflight_provider_mode in ['vault', 'dual']
+
+    - name: Assert secrets can be decrypted
+      ansible.builtin.assert:
+        that:
+          - vault_decrypt_check.rc == 0
+        fail_msg: "CRITICAL: inventory/group_vars/all/secrets.generated.yml could not be decrypted."
+      delegate_to: localhost
+      when: preflight_provider_mode in ['vault', 'dual']
+
+    - name: Verify SOPS configuration
+      ansible.builtin.stat:
+        path: "{{ preflight_repo_root }}/.sops.yaml"
+      register: sops_stat
+      delegate_to: localhost
+      when: preflight_provider_mode in ['sops', 'dual']
+
+    - name: Validate SOPS config if present
+      ansible.builtin.command:
+        argv:
+          - grep
+          - -q
+          - "creation_rules:"
+          - "{{ preflight_repo_root }}/.sops.yaml"
+      delegate_to: localhost
+      register: sops_config_check
+      when: 
+        - preflight_provider_mode in ['sops', 'dual']
+        - sops_stat.stat.exists
+      failed_when: false
+      changed_when: false
+
+    - name: Assert SOPS config is valid
+      ansible.builtin.assert:
+        that:
+          - sops_config_check.rc | default(1) == 0
+        fail_msg: "CRITICAL: .sops.yaml is missing or malformed."
+      delegate_to: localhost
+      when: preflight_provider_mode in ['sops', 'dual']
+
+    - name: Verify SOPS secrets decryptability
+      ansible.builtin.command:
+        argv:
+          - sops
+          - -d
+          - "{{ preflight_repo_root }}/inventory/group_vars/all/secrets.sops.yml"
+      delegate_to: localhost
+      register: sops_decrypt_check
+      when: preflight_provider_mode in ['sops', 'dual']
+      failed_when: false
+      changed_when: false
+      environment:
+        SOPS_AGE_KEY_FILE: "{{ lookup('env', 'SOPS_AGE_KEY_FILE') | default('/home/prod/.config/sops/age/keys.txt', true) }}"
+      no_log: true
+
+    - name: Assert SOPS secrets can be decrypted
+      ansible.builtin.assert:
+        that:
+          - sops_decrypt_check.rc == 0
+        fail_msg: "CRITICAL: inventory/group_vars/all/secrets.sops.yml could not be decrypted."
+      delegate_to: localhost
+      when: preflight_provider_mode in ['sops', 'dual']
+
+    - name: Validate inventory path
+      ansible.builtin.assert:
+        that:
+          - inventory_file is defined
+          - inventory_file | length > 0
+        fail_msg: "CRITICAL: no inventory file specified. Use -i <inventory_path>."
+      delegate_to: localhost
+
+    # ============================================================
+    # Helm Values Security Checks
+    # ============================================================
+    - name: Check for unencrypted secrets in Helm values
+      ansible.builtin.shell:
+        cmd: |
+          grep -r "password.*CHANGEME\|secret.*changeme\|password.*default" charts/*/values.yaml 2>/dev/null || true
+      delegate_to: localhost
+      register: helm_unencrypted_check
+      changed_when: false
+      failed_when: false
+
+    - name: Warn about default passwords in Helm values
+      ansible.builtin.debug:
+        msg: |
+          WARNING: Helm charts contain default/placeholder passwords.
+          See docs/HELM_SECRETS.md for secure deployment options.
+          Run: grep -n "CHANGEME" charts/*/values.yaml
+      delegate_to: localhost
+      when: helm_unencrypted_check.stdout | length > 0
+
+    - name: Verify Age key file is not in repository
+      ansible.builtin.stat:
+        path: "{{ preflight_repo_root }}/age.key"
+      register: age_key_check
+      delegate_to: localhost
+      failed_when: false
+      changed_when: false
+
+    - name: Assert Age key is not committed
+      ansible.builtin.assert:
+        that:
+          - not age_key_check.stat.exists
+        fail_msg: "CRITICAL: age.key found in repository! Never commit encryption keys."
+      delegate_to: localhost
+
+    # ============================================================
+    # Backup & Restore Requirements
+    # ============================================================
+    - name: Gather OS facts for package detection
+      ansible.builtin.setup:
+        gather_subset:
+          - os_family
+      delegate_to: localhost
+
+    - name: Detect OS and set package names
+      ansible.builtin.set_fact:
+        _hash_tools_packages:
+          Debian: "coreutils,openssl"
+          RedHat: "coreutils,openssl"
+          Alpine: "busybox,openssl"
+          Archlinux: "coreutils,openssl"
+        _chrony_packages:
+          Debian: "chrony"
+          RedHat: "chrony"
+          Alpine: "chrony"
+          Archlinux: "chrony"
+        _gpg_packages:
+          Debian: "gnupg2"
+          RedHat: "gnupg2"
+          Alpine: "gnupg"
+          Archlinux: "gnuPG"
+      delegate_to: localhost
+
+    - name: Check for hash verification tools
+      ansible.builtin.command: which sha256sum sha512sum openssl
+      register: hash_tools_check
+      changed_when: false
+      failed_when: false
+
+    - name: Assert hash tools available
+      ansible.builtin.assert:
+        that:
+          - hash_tools_check.rc == 0
+        fail_msg: >-
+          CRITICAL: Hash verification tools required.
+          Install via: apt install {{ _hash_tools_packages[ansible_facts.os_family] | default('coreutils openssl') }}
+          or: dnf install {{ _hash_tools_packages['RedHat'] }}
+          or: apk add {{ _hash_tools_packages['Alpine'] }}
+          or: pacman -S {{ _hash_tools_packages['Archlinux'] }}
+      delegate_to: localhost
+
+    - name: Check for chrony time sync
+      ansible.builtin.command: which chronyc
+      register: chrony_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if chrony not available for backup security
+      ansible.builtin.fail:
+        msg: >-
+          CRITICAL: chrony required for backup timestamp verification.
+          Install via: apt install {{ _chrony_packages[ansible_facts.os_family] | default('chrony') }}
+          or: dnf install chrony
+          or: apk add chrony
+          or: pacman -S chrony
+          Or disable: set backup_security_enabled: false
+      delegate_to: localhost
+      when: 
+        - chrony_check.rc != 0
+        - backup_security_enabled | default(true) | bool
+
+    - name: Check GPG availability for encrypted backups
+      ansible.builtin.command: which gpg
+      register: gpg_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if GPG not available for encrypted backups
+      ansible.builtin.fail:
+        msg: >-
+          CRITICAL: GPG required for encrypted GRUB backups.
+          Install via: apt install {{ _gpg_packages[ansible_facts.os_family] | default('gnupg2') }}
+          or: dnf install gnupg2
+          or: apk add gnupg
+          or: pacman -S gnupg
+          Or disable: set core_grub_backup_encrypt: false
+      delegate_to: localhost
+      when: 
+        - gpg_check.rc != 0
+        - core_grub_backup_encrypt | default(true) | bool

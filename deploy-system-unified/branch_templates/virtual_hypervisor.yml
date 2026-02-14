@@ -1,0 +1,20 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# Virtual Hypervisor - Secure Solution Stack
+# Solution: Base Hardened Infrastructure + QEMU/KVM Virtualization
+- ansible.builtin.import_playbook: base_hardened.yml
+- name: Deploy Virtualization Workload
+  hosts: all
+  become: true
+  roles:
+    # Physical Network Optimization
+    - role: networking/physical
+    # Virtualization Stack
+    - role: virtualization/kvm
+    - role: networking/virtual
+    - role: virtualization/storage
+    # Final Solution Integrity Verification
+    - role: security/scanning

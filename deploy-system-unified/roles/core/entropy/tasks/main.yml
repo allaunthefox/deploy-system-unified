@@ -1,0 +1,44 @@
+---
+# Tasks for core/entropy role
+- name: Refresh package cache for entropy dependencies (Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install entropy enhancement services (idempotent)
+  ansible.builtin.package:
+    name:
+      - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_package }}"
+      - "{{ entropy_service_mapping[ansible_distribution | lower].rng_package }}"
+    state: present
+  become: true
+  when: ansible_distribution | lower in entropy_service_mapping.keys()
+- name: Enable and start entropy enhancement services (idempotent)
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_service }}"
+    - "{{ entropy_service_mapping[ansible_distribution | lower].rng_service }}"
+  become: true
+  ignore_errors: "{{ is_virtualized | default(false) }}"
+  when:
+    - ansible_service_mgr == 'systemd'
+    - ansible_distribution | lower in entropy_service_mapping.keys()
+    - not (is_virtualized | default(false))
+- name: Validate entropy services are running (idempotent)
+  ansible.builtin.service_facts:
+- name: Verify entropy services status
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.services[entropy_service_mapping[ansible_distribution | lower].entropy_service + '.service'].state == 'running'
+      - ansible_facts.services[entropy_service_mapping[ansible_distribution | lower].rng_service + '.service'].state == 'running'
+    fail_msg: "Entropy services are not running"
+  when:
+    - not (is_virtualized | default(false))
+    - ansible_service_mgr == 'systemd'
+    - ansible_distribution | lower in entropy_service_mapping.keys()
+    - not is_virtualized | default(false)

@@ -1,0 +1,6 @@
+- name: Benchmark core/repositories
+  hosts: localhost
+  gather_facts: true
+  become: true
+  roles:
+    - role: core/repositories

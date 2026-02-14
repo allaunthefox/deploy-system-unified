@@ -1,0 +1,54 @@
+---
+# Generic task to save the current session state
+# Requires: 'checkpoint_status' (default: running) and 'additional_phases' (optional)
+# Updates: 'completed_phases' fact and 'session.json' file
+
+- name: Update completed phases fact
+  ansible.builtin.set_fact:
+    completed_phases: "{{ additional_phases | default([]) }}"  # simplified to avoid recursive expansion in test environments
+
+- name: Check Chrony Status (Integration)
+  ansible.builtin.shell: |
+    if command -v chronyc >/dev/null 2>&1; then
+      chronyc tracking || echo "Not synchronized"
+    else
+      echo "Chrony not installed"
+    fi
+  register: _dsu_chrony_tracking_check
+  changed_when: false
+  become: true
+
+- name: Save Deployment Checkpoint
+  ansible.builtin.copy:
+    content: |
+      {
+        "timestamp": "{{ ansible_date_time.iso8601 }}",
+        "status": "{{ checkpoint_status | default('running') }}",
+        "time_sync": {
+          "source": "chrony",
+          "details": {{ _dsu_chrony_tracking_check.stdout_lines | default([]) | to_json }}
+        },
+        "completed_phases": {{ completed_phases | to_json }}
+      }
+    dest: /var/lib/deploy-system/checkpoints/session.json
+    mode: '0600'
+  become: true
+  changed_when: false
+  register: _dsu_checkpoint_file
+  when: lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''  # skip checkpoint write during molecule tests
+
+- name: Encrypt Checkpoint (Optional - Secure Mode)
+  ansible.builtin.command:
+    argv:
+      - ansible-vault
+      - encrypt
+      - --vault-password-file
+      - "{{ lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') | default('.vault_pass', true) }}"
+      - /var/lib/deploy-system/checkpoints/session.json
+  become: true
+  when: 
+    - dsu_encrypt_checkpoints | default(false) | bool
+    - not _gpu_is_container | default(false)
+  changed_when: false
+  no_log: true
+

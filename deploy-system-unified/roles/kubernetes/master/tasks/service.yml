@@ -1,0 +1,18 @@
+---
+# Manage K3s Service
+
+- name: Enable and start K3s service
+  ansible.builtin.systemd:
+    name: k3s
+    state: started
+    enabled: true
+  become: true
+
+- name: Wait for k3s node to be ready
+  ansible.builtin.command: kubectl get node {{ ansible_hostname }} -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+  register: _node_ready
+  until: _node_ready.stdout == "True"
+  retries: 20
+  delay: 10
+  changed_when: false
+  become: true

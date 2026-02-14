@@ -1,0 +1,6 @@
+- name: Benchmark core/hardware_support
+  hosts: localhost
+  gather_facts: true
+  become: true
+  roles:
+    - role: core/hardware_support

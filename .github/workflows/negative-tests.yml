@@ -5,12 +5,12 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'projects/deploy-system-unified/roles/containers/**'
+      - 'roles/containers/**'
       - '.github/workflows/negative-tests.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'projects/deploy-system-unified/roles/containers/**'
+      - 'roles/containers/**'
       - '.github/workflows/negative-tests.yml'
   workflow_dispatch:
 
@@ -26,29 +26,29 @@ jobs:
       fail-fast: false
       matrix:
         role:
-          - projects/deploy-system-unified/roles/containers/ops
-          - projects/deploy-system-unified/roles/containers/caddy
-          - projects/deploy-system-unified/roles/containers/authentik
-          - projects/deploy-system-unified/roles/containers/media
+          - roles/containers/ops
+          - roles/containers/caddy
+          - roles/containers/authentik
+          - roles/containers/media
         test_case:
           - missing_file
           - wrong_permissions
           - placeholder_values
           - wrong_owner
         include:
-          - role: projects/deploy-system-unified/roles/containers/caddy
+          - role: roles/containers/caddy
             test_case: missing_ssl_dir
-          - role: projects/deploy-system-unified/roles/containers/caddy
+          - role: roles/containers/caddy
             test_case: wrong_ssl_permissions
-          - role: projects/deploy-system-unified/roles/containers/authentik
+          - role: roles/containers/authentik
             test_case: missing_redis_file
-          - role: projects/deploy-system-unified/roles/containers/authentik
+          - role: roles/containers/authentik
             test_case: empty_file
-          - role: projects/deploy-system-unified/roles/containers/media
+          - role: roles/containers/media
             test_case: missing_jellyfin_file
-          - role: projects/deploy-system-unified/roles/containers/media
+          - role: roles/containers/media
             test_case: missing_radarr_file
-          - role: projects/deploy-system-unified/roles/containers/media
+          - role: roles/containers/media
             test_case: empty_media_file
     steps:
       - name: Checkout repository

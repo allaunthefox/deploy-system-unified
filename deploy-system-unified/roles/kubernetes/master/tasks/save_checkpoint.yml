@@ -1,0 +1,40 @@
+---
+# Save checkpoint for kubernetes/master
+
+- name: Create evidence directory
+  ansible.builtin.file:
+    path: "/var/lib/deploy-system/evidence/kubernetes"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Capture K3s node status
+  ansible.builtin.command: kubectl get nodes -o json
+  register: _k8s_node_status
+  changed_when: false
+  become: true
+
+- name: Save K3s status evidence
+  ansible.builtin.copy:
+    content: "{{ _k8s_node_status.stdout | from_json | to_nice_json }}"
+    dest: "/var/lib/deploy-system/evidence/kubernetes/master_status.json"
+    mode: '0644'
+  become: true
+
+- name: Update deployment checkpoint
+  ansible.builtin.set_fact:
+    _dsu_checkpoint_phases: "{{ (_dsu_checkpoint_phases | default([])) + additional_phases }}"
+
+- name: Save Checkpoint Evidence
+  ansible.builtin.copy:
+    content: |
+      {
+        "phase": "kubernetes/master",
+        "timestamp": "{{ ansible_date_time.iso8601 }}",
+        "status": "success",
+        "node": "{{ ansible_hostname }}",
+        "arch": "{{ _k8s_norm_arch }}"
+      }
+    dest: "/var/lib/deploy-system/evidence/kubernetes/checkpoint.json"
+    mode: '0644'
+  become: true

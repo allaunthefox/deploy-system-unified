@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "auth-stack.fullname" . }}-authentik
+  labels:
+    app: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik
+  template:
+    metadata:
+      labels:
+        app: authentik
+    spec:
+      containers:
+        - name: authentik
+          image: "{{ .Values.authentik.image.repository }}:{{ .Values.authentik.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.authentik.service.port }}
+          env:
+            - name: TZ
+              value: {{ .Values.global.timezone | default "UTC" }}
+            - name: AUTHENTIK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "auth-stack.fullname" . }}-secrets
+                  key: secretKey
+                  optional: true
+            - name: AUTHENTIK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "auth-stack.fullname" . }}-secrets
+                  key: adminPassword
+                  optional: true
+          {{- if .Values.authentik.email.host }}
+            - name: AUTHENTIK_EMAIL_HOST
+              value: {{ .Values.authentik.email.host }}
+            - name: AUTHENTIK_EMAIL_PORT
+              value: {{ .Values.authentik.email.port | quote }}
+            - name: AUTHENTIK_EMAIL_USERNAME
+              value: {{ .Values.authentik.email.username }}
+            - name: AUTHENTIK_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "auth-stack.fullname" . }}-secrets
+                  key: emailPassword
+                  optional: true
+            - name: AUTHENTIK_EMAIL_USE_TLS
+              value: {{ .Values.authentik.email.useTls | quote }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: {{ .Values.authentik.service.port }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: {{ .Values.authentik.service.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/authentik
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+      volumes:
+        - name: data
+          {{- if .Values.authentik.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "auth-stack.fullname" . }}-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "auth-stack.fullname" . }}-authentik
+  labels:
+    app: authentik
+spec:
+  type: {{ .Values.authentik.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.authentik.service.port }}
+      targetPort: {{ .Values.authentik.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: authentik
+---
+{{- if .Values.authentik.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "auth-stack.fullname" . }}-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.authentik.persistence.size | default "10Gi" }}
+{{- end }}

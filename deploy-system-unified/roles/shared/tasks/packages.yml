@@ -1,0 +1,43 @@
+---
+# Shared package installation tasks
+# Use: ansible.builtin.include_tasks: roles/shared/tasks/packages.yml
+
+- name: Set package name fact
+  ansible.builtin.set_fact:
+    _package_list: "{{ package_list | default([package_name]) }}"
+
+- name: Install packages (Debian)
+  ansible.builtin.apt:
+    name: "{{ _package_list }}"
+    state: present
+  become: true
+  register: _apt_result
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install packages (RedHat)
+  ansible.builtin.yum:
+    name: "{{ _package_list }}"
+    state: present
+  become: true
+  register: _yum_result
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Install packages (Alpine)
+  ansible.builtin.apk:
+    name: "{{ _package_list }}"
+    state: present
+  become: true
+  register: _apk_result
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Install packages (Arch Linux)
+  ansible.builtin.pacman:
+    name: "{{ _package_list }}"
+    state: present
+  become: true
+  register: _pacman_result
+  when: ansible_facts['os_family'] == 'Archlinux'
+
+- name: Report package installation result
+  ansible.builtin.debug:
+    msg: "Package {{ _package_list }} installation complete"

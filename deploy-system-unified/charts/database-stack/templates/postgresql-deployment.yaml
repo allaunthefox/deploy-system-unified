@@ -1,0 +1,65 @@
+---
+{{- if .Values.postgresql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "database-stack.fullname" . }}-postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgresql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "database-stack.fullname" . }}-postgresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.database }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.username }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresql.password }}
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          {{- if .Values.postgresql.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "database-stack.fullname" . }}-postgresql
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+{{- if .Values.postgresql.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "database-stack.fullname" . }}-postgresql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.persistence.size }}
+{{- end }}
+{{- end }}

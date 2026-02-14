@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ops-stack.fullname" . }}-homarr
+spec:
+  type: {{ .Values.homarr.service.type }}
+  ports:
+    - port: {{ .Values.homarr.service.port }}
+      targetPort: 7575
+      protocol: TCP
+  selector:
+    app: homarr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ops-stack.fullname" . }}-vaultwarden
+spec:
+  type: {{ .Values.vaultwarden.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.vaultwarden.service.port }}
+      targetPort: 8081
+      protocol: TCP
+    - name: websocket
+      port: {{ .Values.vaultwarden.service.websocketPort }}
+      targetPort: 3012
+      protocol: TCP
+  selector:
+    app: vaultwarden

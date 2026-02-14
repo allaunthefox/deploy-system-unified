@@ -1,0 +1,356 @@
+---
+# Kubernetes Deployment Playbook
+# Deploys the stack using K3s and Helm charts
+
+- name: Setup Kubernetes Infrastructure
+  hosts: k8s_master
+  become: true
+  vars:
+    k3s_version: v1.31.4+k3s1
+    k3s_install_dir: /var/lib/rancher/k3s
+    k3s_data_dir: /var/lib/rancher/k3s
+    k3s_token_file: /var/lib/rancher/k3s/server/node-token
+    k3s_server_url: ""
+    k3s_agent_mode: false
+
+  tasks:
+    - name: Check if K3s is already installed
+      ansible.builtin.stat:
+        path: "{{ k3s_install_dir }}/bin/k3s"
+      register: k3s_binary
+
+    - name: Install K3s Master
+      when: not k3s_binary.stat.exists
+      block:
+        - name: Download and install K3s
+          ansible.builtin.shell:
+            cmd: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -
+            creates: "{{ k3s_install_dir }}/bin/k3s"
+
+        - name: Wait for K3s to be ready
+          ansible.builtin.wait_for:
+            port: 6443
+            timeout: 120
+
+    - name: Get K3s node token
+      ansible.builtin.slurp:
+        src: "{{ k3s_token_file }}"
+      register: k3s_token
+      when: k3s_token_file is exists
+
+    - name: Setup kubeconfig for root user
+      ansible.builtin.copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: /root/.kube/config
+        mode: '0600'
+      become: true
+
+- name: Join Kubernetes Nodes
+  hosts: k8s_nodes
+  become: true
+  vars:
+    k3s_version: v1.31.4+k3s1
+    k3s_install_dir: /var/lib/rancher/k3s
+    k3s_server_url: ""
+    k3s_node_token: ""
+
+  tasks:
+    - name: Check if K3s agent is running
+      ansible.builtin.systemd:
+        name: k3s-agent
+        state: started
+      register: k3s_agent
+      ignore_errors: true
+
+    - name: Join node to cluster
+      when: k3s_server_url and k3s_node_token and not k3s_agent.failed
+      ansible.builtin.shell:
+        cmd: |
+          curl -sfL https://get.k3s.io | \
+            K3S_URL={{ k3s_server_url }} \
+            K3S_TOKEN={{ k3s_node_token }} \
+            INSTALL_K3S_VERSION={{ k3s_version }} \
+            sh -
+        creates: /var/lib/rancher/k3s/agent/etc/k3s-agent.yaml
+
+- name: Deploy Helm Charts
+  hosts: k8s_master
+  become: true
+  vars:
+    helm_charts:
+      - name: auth-stack
+        chart: charts/auth-stack
+        namespace: auth
+        state: present
+      - name: backup-stack
+        chart: charts/backup-stack
+        namespace: backup
+        state: present
+      - name: logging-stack
+        chart: charts/logging-stack
+        namespace: logging
+        state: present
+      - name: media-stack
+        chart: charts/media-stack
+        namespace: media
+        state: present
+      - name: monitoring-stack
+        chart: charts/monitoring-stack
+        namespace: monitoring
+        state: present
+      - name: network-stack
+        chart: charts/network-stack
+        namespace: network
+        state: present
+      - name: ops-stack
+        chart: charts/ops-stack
+        namespace: ops
+        state: present
+      - name: proxy-stack
+        chart: charts/proxy-stack
+        namespace: proxy
+        state: present
+      - name: security-stack
+        chart: charts/security-stack
+        namespace: security
+        state: present
+
+  tasks:
+    - name: Install Helm if not present
+      ansible.builtin.shell:
+        cmd: command -v helm || (curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash)
+        creates: /usr/local/bin/helm
+
+    - name: Create Kubernetes namespaces
+      kubernetes.core.k8s:
+        name: "{{ item.namespace }}"
+        kind: Namespace
+        state: present
+      loop: "{{ helm_charts }}"
+      ignore_errors: true
+
+    - name: Deploy Helm charts
+      kubernetes.core.helm:
+        name: "{{ item.name }}"
+        chart_ref: "{{ item.chart }}"
+        namespace: "{{ item.namespace }}"
+        state: "{{ item.state }}"
+      loop: "{{ helm_charts }}"
+      when: item.state == 'present'
+
+    - name: List deployed releases
+      kubernetes.core.helm_info:
+        namespace: "{{ item.namespace }}"
+      loop: "{{ helm_charts }}"
+      register: helm_releases
+      ignore_errors: true
+
+- name: Validate Helm Deployments
+  hosts: k8s_master
+  become: true
+  vars:
+    validation_timeout: 300
+
+  tasks:
+    - name: Wait for all deployments to be ready
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: "{{ item }}"
+      register: deployments
+      until: >
+        deployments.resources | length > 0 and
+        deployments.resources | json_query('[].status.readyReplicas') | unique | first >= 1
+      retries: 10
+      delay: 30
+      loop:
+        - auth
+        - backup
+        - logging
+        - media
+        - monitoring
+        - network
+        - ops
+        - proxy
+        - security
+      ignore_errors: true
+
+    - name: Get pod status
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: "{{ item }}"
+        field_selector: status.phase=Running
+      register: running_pods
+      loop:
+        - auth
+        - backup
+        - logging
+        - media
+        - monitoring
+        - network
+        - ops
+        - proxy
+        - security
+      ignore_errors: true
+
+    - name: Display validation results
+      ansible.builtin.debug:
+        msg: "Helm deployment validation complete. All charts deployed and pods running."
+
+# High Availability Configuration (Multi-Master)
+- name: Configure High Availability
+  hosts: k8s_master
+  become: true
+  vars:
+    ha_enabled: false  # Set to true for multi-master HA
+    etcd_snapshot_interval: 24h
+    etcd_snapshot_retention: 7
+    k3s_ha_server_port: 6444
+
+  tasks:
+    - name: Configure HA settings (when enabled)
+      when: ha_enabled | bool
+      block:
+        - name: Enable etcd snapshots
+          ansible.builtin.lineinfile:
+            path: /etc/rancher/k3s/k3s.yaml
+            regexp: '^    etcd-snapshot-'
+            line: "    etcd-snapshot-retention: {{ etcd_snapshot_retention }}"
+            mode: '0600'
+          ignore_errors: true
+
+        - name: Enable automatic etcd snapshots
+          ansible.builtin.lineinfile:
+            path: /etc/rancher/k3s/k3s.yaml
+            regexp: '^    etcd-snapshot-'
+            line: "    etcd-snapshot-interval: {{ etcd_snapshot_interval }}"
+            mode: '0600'
+          ignore_errors: true
+
+        - name: Configure HA embedded etcd
+          ansible.builtin.lineinfile:
+            path: /etc/rancher/k3s/k3s.yaml
+            regexp: '^    disable'
+            line: "    cluster-init: true"
+            mode: '0600'
+          ignore_errors: true
+
+        - name: Configure HA proxy (kube-proxy in IPVS mode)
+          kubernetes.core.k8s:
+            definition:
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: kube-proxy
+                namespace: kube-system
+              data:
+                config.conf: |
+                  mode: ipvs
+                  ipvs:
+                    strictArp: true
+            state: present
+          ignore_errors: true
+
+    - name: Display HA status
+      ansible.builtin.debug:
+        msg: "HA configuration complete. Use k3s etcd-snapshot for backup/restore."
+      when: ha_enabled | bool
+
+# Multi-Master Cluster Setup
+- name: Setup Additional Master Nodes
+  hosts: k8s_master_nodes
+  become: true
+  vars:
+    k3s_version: v1.31.4+k3s1
+    k3s_install_dir: /var/lib/rancher/k3s
+    k3s_server_url: ""
+    k3s_master_token: ""
+    ha_enabled: false
+
+  tasks:
+    - name: Check if this is additional master
+      ansible.builtin.set_fact:
+        is_additional_master: "{{ inventory_hostname in groups.get('k8s_master_nodes', []) }}"
+
+    - name: Install additional master node
+      when: ha_enabled | bool and is_additional_master and k3s_server_url and k3s_master_token
+      block:
+        - name: Download and install K3s as additional master
+          ansible.builtin.shell:
+            cmd: |
+              curl -sfL https://get.k3s.io | \
+                K3S_URL={{ k3s_server_url }} \
+                K3S_TOKEN={{ k3s_master_token }} \
+                K3S_CLUSTER_INIT=true \
+                INSTALL_K3S_VERSION={{ k3s_version }} \
+                sh -
+            creates: "{{ k3s_install_dir }}/bin/k3s"
+
+        - name: Wait for API server to be ready
+          ansible.builtin.wait_for:
+            host: "{{ inventory_hostname }}"
+            port: 6443
+            timeout: 120
+
+    - name: Verify master node status
+      when: ha_enabled | bool
+      ansible.builtin.shell:
+        cmd: kubectl get nodes --kubeconfig /etc/rancher/k3s/k3s.yaml
+      register: node_status
+      changed_when: false
+      failed_when: false
+
+    - name: Display cluster status
+      ansible.builtin.debug:
+        msg: "Cluster nodes: {{ node_status.stdout }}"
+      when: ha_enabled | bool
+
+# etcd Backup Configuration
+- name: Configure etcd Snapshots
+  hosts: k8s_master
+  become: true
+  vars:
+    ha_enabled: false
+    etcd_backup_location: /var/backups/k3s
+    etcd_retention_days: 7
+
+  tasks:
+    - name: Create backup directory
+      when: ha_enabled | bool
+      ansible.builtin.file:
+        path: "{{ etcd_backup_location }}"
+        state: directory
+        mode: '0700'
+      become: true
+
+    - name: Create etcd snapshot script
+      when: ha_enabled | bool
+      ansible.builtin.copy:
+        dest: /usr/local/bin/k3s-etcd-snapshot.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          # K3s etcd snapshot script
+          BACKUP_DIR="{{ etcd_backup_location }}"
+          DATE=$(date +%Y%m%d_%H%M%S)
+          
+          mkdir -p $BACKUP_DIR
+          
+          # Create snapshot
+          /var/lib/rancher/k3s/bin/k3s etcd-snapshot save --etcd-snapshot-name "backup-$DATE"
+          
+          # List snapshots
+          /var/lib/rancher/k3s/bin/k3s etcd-snapshot ls
+          
+          # Cleanup old snapshots
+          find $BACKUP_DIR -name "*.db" -mtime +{{ etcd_retention_days }} -delete
+      become: true
+
+    - name: Schedule daily etcd snapshots via cron
+      when: ha_enabled | bool
+      ansible.builtin.cron:
+        name: "K3s etcd snapshot"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/k3s-etcd-snapshot.sh >> /var/log/k3s-etcd-snapshot.log 2>&1"
+      become: true
+

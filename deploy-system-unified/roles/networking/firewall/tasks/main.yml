@@ -1,0 +1,82 @@
+---
+# Tasks for networking/firewall role
+# Multi-distro support: UFW (Debian/Arch) | Firewalld (RedHat)
+
+- name: Install UFW (Debian/Ubuntu/Arch)
+  ansible.builtin.package:
+    name: ufw
+    state: present
+  when: ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
+  become: true
+
+- name: Install Firewalld (RedHat/CentOS)
+  ansible.builtin.package:
+    name: firewalld
+    state: present
+  when: ansible_os_family == 'RedHat'
+  become: true
+
+- name: Build effective firewall TCP port list
+  ansible.builtin.set_fact:
+    firewall_allowed_tcp_ports_effective: >-
+      {{ (firewall_allowed_tcp_ports
+          + ([firewall_endlessh_port] if firewall_allow_endlessh | bool else []))
+          | map('string') | unique | list }}
+  changed_when: false
+
+- name: Set UFW Default Forward Policy
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY='
+    line: 'DEFAULT_FORWARD_POLICY="{{ firewall_forward_policy }}"'
+  when: ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
+  become: true
+  notify: Reload UFW
+
+- name: Import UFW Rules
+  ansible.builtin.include_tasks: rules_ufw.yml
+  when:
+    - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
+    - not (is_virtualized | default(false))
+
+- name: Configure UFW defaults
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
+  when:
+    - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
+    - not (is_virtualized | default(false))
+  become: true
+
+- name: Import Firewalld Rules
+  ansible.builtin.include_tasks: rules_firewalld.yml
+  when:
+    - ansible_os_family == 'RedHat'
+    - not (is_virtualized | default(false))
+
+- name: Import Nftables Rules (Alpine)
+  ansible.builtin.include_tasks: rules_nftables.yml
+  when:
+    - ansible_os_family == 'Alpine'
+    - not (is_virtualized | default(false))
+
+- name: Enable UFW Final State
+  community.general.ufw:
+    state: enabled
+  when:
+    - (ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux')
+    - firewall_enabled | bool
+    - not (is_virtualized | default(false))
+  become: true
+
+- name: Fail on unsupported OS Family
+  ansible.builtin.fail:
+    msg: "Firewall configuration not supported for this OS Family: {{ ansible_os_family }}"
+  when:
+    - ansible_os_family != 'Debian'
+    - ansible_os_family != 'RedHat'
+    - ansible_os_family != 'Alpine'
+    - ansible_distribution != 'Archlinux'

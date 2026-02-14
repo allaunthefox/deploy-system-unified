@@ -1,0 +1,78 @@
+# Monitoring Stack Values
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: caddy  # Options: caddy, traefik, nginx
+  host: local
+
+# Prometheus
+prometheus:
+  enabled: true
+  image:
+    repository: prom/prometheus
+    tag: v2.53.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9090
+  resources:
+    limits:
+      memory: 2Gi
+    requests:
+      memory: 1Gi
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# Grafana
+grafana:
+  enabled: true
+  image:
+    repository: grafana/grafana
+    tag: "11.5"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  adminUser: admin
+  adminPassword: admin  # Change in production
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 256Mi
+  persistence:
+    enabled: true
+    size: 5Gi
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-server:9090
+          isDefault: true
+
+# AlertManager
+alertmanager:
+  enabled: true
+  image:
+    repository: prom/alertmanager
+    tag: v0.27.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9093
+  config:
+    route:
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1h
+      receiver: default
+    receivers:
+      - name: default
+        webhook_configs:
+          - url: 'http://localhost:5001/webhooks'

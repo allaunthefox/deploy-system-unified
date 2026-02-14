@@ -1,0 +1,157 @@
+{
+  "run_id": "20260212T201735Z",
+  "started_at_utc": "2026-02-12T20:17:35.403030+00:00",
+  "ended_at_utc": "2026-02-12T20:26:07.930447+00:00",
+  "roles_benchmarked": 12,
+  "summary_counts": {
+    "idempotent": 4,
+    "failed": 8
+  },
+  "results": [
+    {
+      "role": "bootstrap",
+      "status": "idempotent",
+      "duration_seconds": 133.34,
+      "changed_second_run": 0,
+      "failed_second_run": 0,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=12   changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0",
+      "failure_excerpt": null,
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_bootstrap.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_bootstrap.yml"
+    },
+    {
+      "role": "entropy",
+      "status": "failed",
+      "duration_seconds": 10.86,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"changed\": false, \"msg\": \"No package matching 'haveged' is available\"}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_entropy.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_entropy.yml"
+    },
+    {
+      "role": "grub",
+      "status": "failed",
+      "duration_seconds": 11.91,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=4    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"msg\": \"Unsupported parameters for (ansible_collections.ansible.builtin.plugins.action.debug) module: warn. Supported parameters include: msg, var, verbosity.\"}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_grub.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_grub.yml"
+    },
+    {
+      "role": "hardware_support",
+      "status": "failed",
+      "duration_seconds": 9.54,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"changed\": false, \"msg\": \"Unsupported parameters for (ansible.legacy.command) module: pipefail. Supported parameters include: _raw_params, _uses_shell, argv, chdir, creates, executable, removes, stdin, stdin_add_newline, strip_empty_ends.\"}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_hardware_support.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_hardware_support.yml"
+    },
+    {
+      "role": "identity",
+      "status": "idempotent",
+      "duration_seconds": 10.83,
+      "changed_second_run": 0,
+      "failed_second_run": 0,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": null,
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_identity.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_identity.yml"
+    },
+    {
+      "role": "logging",
+      "status": "idempotent",
+      "duration_seconds": 19.76,
+      "changed_second_run": 0,
+      "failed_second_run": 0,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0",
+      "failure_excerpt": null,
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_logging.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_logging.yml"
+    },
+    {
+      "role": "memory",
+      "status": "failed",
+      "duration_seconds": 7.54,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"changed\": false, \"msg\": \"Unsupported parameters for (ansible.legacy.command) module: pipefail. Supported parameters include: _raw_params, _uses_shell, argv, chdir, creates, executable, removes, stdin, stdin_add_newline, strip_empty_ends.\"}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_memory.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_memory.yml"
+    },
+    {
+      "role": "repositories",
+      "status": "failed",
+      "duration_seconds": 118.21,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"attempts\": 5, \"changed\": false, \"msg\": \"No package matching 'software-properties-common' is available\"}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_repositories.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_repositories.yml"
+    },
+    {
+      "role": "secrets",
+      "status": "failed",
+      "duration_seconds": 15.29,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=5    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"censored\": \"the output has been hidden due to the fact that 'no_log: true' was specified for this result\", \"changed\": false}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_secrets.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_secrets.yml"
+    },
+    {
+      "role": "systemd",
+      "status": "failed",
+      "duration_seconds": 7.39,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_systemd.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_systemd.yml"
+    },
+    {
+      "role": "time",
+      "status": "failed",
+      "duration_seconds": 12.05,
+      "changed_second_run": 0,
+      "failed_second_run": 1,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0",
+      "failure_excerpt": "fatal: [localhost]: FAILED! => {\"changed\": false, \"msg\": \"No package matching 'chrony' is available\"}",
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_time.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_time.yml"
+    },
+    {
+      "role": "updates",
+      "status": "idempotent",
+      "duration_seconds": 59.61,
+      "changed_second_run": 0,
+      "failed_second_run": 0,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0",
+      "failure_excerpt": null,
+      "log_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/logs/core_updates.log",
+      "playbook_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/playbooks/core_updates.yml"
+    }
+  ],
+  "summary_markdown_path": "projects/deploy-system-unified/ci-artifacts/idempotence/20260212T201735Z/summary.md"
+}

@@ -13,4 +13,7 @@ Ensures the integrity and immutability of system audit logs using cryptographic 
 ### `audit_integrity_output_dir`
 - `audit_integrity_output_dir`
 
+### `audit_integrity_vault_encrypt_id`
+- `audit_integrity_vault_encrypt_id`
+
 

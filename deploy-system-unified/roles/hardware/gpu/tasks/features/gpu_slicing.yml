@@ -1,0 +1,7 @@
+---
+# GPU Slicing Support (SR-IOV, MIG, etc.)
+
+- name: Perform Hardware Compatibility Validation
+  ansible.builtin.include_tasks: ../validate_slicing.yml
+
+# Rest of the implementation for slicing follows...

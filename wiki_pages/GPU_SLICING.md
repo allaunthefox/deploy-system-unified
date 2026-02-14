@@ -30,6 +30,14 @@ This guide documents the changes made to the Deploy-System-Unified project to su
 - Updated the converge.yml file to skip security roles (firewall, hardening, access)
 - Updated the verify.yml file to fix YAML parsing errors and variable access issues
 
+### 4. Automated Capability Validation
+
+The system now includes an automated validation engine (`tasks/validate_slicing.yml`):
+*   **SR-IOV**: Detects Physical Function (PF) support via sysfs.
+*   **MIG**: Probes hardware for Multi-Instance GPU capability.
+*   **MPS**: Checks for NVIDIA Multi-Process Service readiness.
+*   **IOMMU**: Verifies kernel-level isolation for passthrough strategies.
+
 ## Supported GPU Vendors and Frameworks
 
 The implementation supports the following GPU vendors and frameworks:

@@ -1,0 +1,229 @@
+{
+    "checks": {
+        "container_runtime": [
+            {
+                "details": {
+                    "command": [
+                        "podman",
+                        "info"
+                    ],
+                    "output_excerpt": "",
+                    "rc": 0
+                },
+                "failure_reason": "",
+                "mandatory": true,
+                "name": "podman-info",
+                "ok": true,
+                "severity": "pass",
+                "type": "container_runtime"
+            }
+        ],
+        "disk": [
+            {
+                "details": {
+                    "critical_percent": 90.0,
+                    "mountpoint": "/",
+                    "size_available": 673273454592,
+                    "size_total": 858676768768,
+                    "used_percent": 21.59,
+                    "warn_percent": 80.0
+                },
+                "failure_reason": "",
+                "mandatory": true,
+                "name": "/",
+                "ok": true,
+                "severity": "pass",
+                "type": "disk"
+            },
+            {
+                "details": {
+                    "critical_percent": 95.0,
+                    "mountpoint": "/srv",
+                    "size_available": 0,
+                    "size_total": 0,
+                    "used_percent": -1.0,
+                    "warn_percent": 85.0
+                },
+                "failure_reason": "mountpoint not found",
+                "mandatory": false,
+                "name": "/srv",
+                "ok": false,
+                "severity": "warning",
+                "type": "disk"
+            }
+        ],
+        "endpoints": [
+            {
+                "details": {
+                    "elapsed": 0,
+                    "expected_status": [
+                        200,
+                        301,
+                        302,
+                        307,
+                        308,
+                        401,
+                        403,
+                        404
+                    ],
+                    "method": "GET",
+                    "status": -1,
+                    "url": "http://127.0.0.1"
+                },
+                "failure_reason": "Status code was -1 and not [200, 301, 302, 307, 308, 401, 403, 404]: Request failed: <urlopen error [Errno 111] Connection refused>",
+                "mandatory": true,
+                "name": "caddy-http-local",
+                "ok": false,
+                "severity": "critical",
+                "type": "endpoint"
+            },
+            {
+                "details": {
+                    "elapsed": 0,
+                    "expected_status": [
+                        200
+                    ],
+                    "method": "GET",
+                    "status": 200,
+                    "url": "http://127.0.0.1:9100/metrics"
+                },
+                "failure_reason": "",
+                "mandatory": false,
+                "name": "node-exporter-local",
+                "ok": true,
+                "severity": "pass",
+                "type": "endpoint"
+            }
+        ],
+        "systemd": [
+            {
+                "details": {
+                    "exists": true,
+                    "service_manager": "systemd",
+                    "state": "stopped",
+                    "status": "disabled",
+                    "unit": "podman.service"
+                },
+                "failure_reason": "unit not running",
+                "mandatory": true,
+                "name": "podman",
+                "ok": false,
+                "severity": "critical",
+                "type": "systemd"
+            },
+            {
+                "details": {
+                    "exists": false,
+                    "service_manager": "systemd",
+                    "state": "unknown",
+                    "status": "unknown",
+                    "unit": "caddy.service"
+                },
+                "failure_reason": "unit not found",
+                "mandatory": true,
+                "name": "caddy",
+                "ok": false,
+                "severity": "critical",
+                "type": "systemd"
+            },
+            {
+                "details": {
+                    "exists": true,
+                    "service_manager": "systemd",
+                    "state": "running",
+                    "status": "enabled",
+                    "unit": "prometheus-node-exporter.service"
+                },
+                "failure_reason": "",
+                "mandatory": false,
+                "name": "prometheus-node-exporter",
+                "ok": true,
+                "severity": "pass",
+                "type": "systemd"
+            },
+            {
+                "details": {
+                    "exists": true,
+                    "service_manager": "systemd",
+                    "state": "stopped",
+                    "status": "enabled",
+                    "unit": "smartd.service"
+                },
+                "failure_reason": "unit not running",
+                "mandatory": false,
+                "name": "smartd",
+                "ok": false,
+                "severity": "warning",
+                "type": "systemd"
+            }
+        ]
+    },
+    "counts": {
+        "failed": 5,
+        "mandatory_failures": 3,
+        "passed": 4,
+        "total": 9,
+        "warnings": 2
+    },
+    "deployment_id": "unknown",
+    "generated_at": "2026-02-12T21:34:25Z",
+    "host": "localhost",
+    "mandatory_failures": [
+        {
+            "details": {
+                "exists": true,
+                "service_manager": "systemd",
+                "state": "stopped",
+                "status": "disabled",
+                "unit": "podman.service"
+            },
+            "failure_reason": "unit not running",
+            "mandatory": true,
+            "name": "podman",
+            "ok": false,
+            "severity": "critical",
+            "type": "systemd"
+        },
+        {
+            "details": {
+                "exists": false,
+                "service_manager": "systemd",
+                "state": "unknown",
+                "status": "unknown",
+                "unit": "caddy.service"
+            },
+            "failure_reason": "unit not found",
+            "mandatory": true,
+            "name": "caddy",
+            "ok": false,
+            "severity": "critical",
+            "type": "systemd"
+        },
+        {
+            "details": {
+                "elapsed": 0,
+                "expected_status": [
+                    200,
+                    301,
+                    302,
+                    307,
+                    308,
+                    401,
+                    403,
+                    404
+                ],
+                "method": "GET",
+                "status": -1,
+                "url": "http://127.0.0.1"
+            },
+            "failure_reason": "Status code was -1 and not [200, 301, 302, 307, 308, 401, 403, 404]: Request failed: <urlopen error [Errno 111] Connection refused>",
+            "mandatory": true,
+            "name": "caddy-http-local",
+            "ok": false,
+            "severity": "critical",
+            "type": "endpoint"
+        }
+    ],
+    "overall_ok": false,
+    "schema": "deploy-system-unified/health-check/v1"
+}

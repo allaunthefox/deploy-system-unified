@@ -1,7 +1,10 @@
 # DEPLOYMENT_STATUS
 
-**Updated:** February 10, 2026
-**Status:** **READY FOR DEPLOYMENT** (Phase 1 Stability Gates Active)
+**Updated:** February 13, 2026  
+**Status:** **READY FOR DEPLOYMENT** (Phase 3 In Progress - Kubernetes + SOPS)
+
+> [!IMPORTANT]
+> Phase 3 is in progress: Kubernetes prototype cluster deployed, Helm charts standardized with tests. See [PHASE3_SECRETS_K8S_PLAN.md](../deploy-system-unified/docs/planning/PHASE3_SECRETS_K8S_PLAN.md) for details.
 
 ## 1. Accomplished Objectives
 
@@ -24,7 +27,7 @@
 
 ### D. Security & Integrity
 - **Role:** `security/scanning` (Refined)
-- **Preflight:** `playbooks/preflight_assertions.yml` and `playbooks/preflight_validate.yml` strictly enforce Vault encryption and SOPS hygiene before any deployment tasks run.
+- **Preflight:** `preflight_assertions.yml` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
 
 ## 2. Pre-Deployment Check List
 

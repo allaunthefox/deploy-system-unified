@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ops-stack.fullname" . }}-homarr
+  labels:
+    app: homarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homarr
+  template:
+    metadata:
+      labels:
+        app: homarr
+    spec:
+      containers:
+        - name: homarr
+          image: "{{ .Values.homarr.image.repository }}:{{ .Values.homarr.image.tag }}"
+          ports:
+            - containerPort: 7575
+          livenessProbe:
+            tcpSocket:
+              port: 7575
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 7575
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: configs
+              mountPath: /app/data/configs
+            - name: icons
+              mountPath: /app/public/icons
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: configs
+          persistentVolumeClaim:
+            claimName: {{ include "ops-stack.fullname" . }}-homarr-configs
+        - name: icons
+          persistentVolumeClaim:
+            claimName: {{ include "ops-stack.fullname" . }}-homarr-icons
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "ops-stack.fullname" . }}-homarr-data

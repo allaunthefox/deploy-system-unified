@@ -1,0 +1,36 @@
+{
+  "run_id": "20260213T002256Z",
+  "started_at_utc": "2026-02-13T00:22:56.227064+00:00",
+  "ended_at_utc": "2026-02-13T00:23:26.341943+00:00",
+  "roles_benchmarked": 2,
+  "summary_counts": {
+    "idempotent": 2
+  },
+  "results": [
+    {
+      "role": "hardware_support",
+      "status": "idempotent",
+      "duration_seconds": 15.34,
+      "changed_second_run": 0,
+      "failed_second_run": 0,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=7    rescued=0    ignored=0",
+      "failure_excerpt": null,
+      "log_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T002256Z/logs/core_hardware_support.log",
+      "playbook_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T002256Z/playbooks/core_hardware_support.yml"
+    },
+    {
+      "role": "memory",
+      "status": "idempotent",
+      "duration_seconds": 14.77,
+      "changed_second_run": 0,
+      "failed_second_run": 0,
+      "unreachable_second_run": 0,
+      "recap_line_second_run": "localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0",
+      "failure_excerpt": null,
+      "log_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T002256Z/logs/core_memory.log",
+      "playbook_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T002256Z/playbooks/core_memory.yml"
+    }
+  ],
+  "summary_markdown_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T002256Z/summary.md"
+}

@@ -1,0 +1,60 @@
+---
+# Tasks for core/hardware_support
+
+- name: Load Architecture Specific Hardware Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
+
+- name: Report Hardware Capabilities
+  ansible.builtin.debug:
+    msg:
+      - "AVX Support: {{ host_cpu_has_avx | default(false) }}"
+      - "AVX2 Support: {{ host_cpu_has_avx2 | default(false) }}"
+      - "AES-NI Support (Crypto): {{ host_cpu_has_aes | default(false) }}"
+      - "SHA Extensions (Crypto): {{ host_cpu_has_sha | default(false) }}"
+      - "Hardware RNG (RDRAND): {{ host_cpu_has_rdrand | default(false) }}"
+      - "Intel QAT Detected: {{ host_has_qat | default(false) }}"
+
+- name: Validate AVX Requirement (Generic Media/DB)
+  ansible.builtin.fail:
+    msg: "Host CPU lacks AVX instructions required for modern Multimedia/Database workloads."
+  when: (require_avx | default(false)) and not (host_cpu_has_avx | default(false))
+
+- name: Warn on missing AVX (Soft Check)
+  ansible.builtin.debug:
+    msg: "WARNING: Host CPU lacks AVX. Performance for MongoDB/Jellyfin may be severely degraded or fail."
+  when: (warn_on_missing_avx | default(false)) and not host_cpu_has_avx
+
+- name: Get timedatectl status
+  ansible.builtin.command: timedatectl show
+  register: timedatectl_show
+  changed_when: false
+  check_mode: false
+  failed_when: false
+  when: ansible_service_mgr == 'systemd'
+
+- name: Configure Hardware Clock (RTC) to UTC
+  ansible.builtin.command: timedatectl set-local-rtc 0
+  become: true
+  failed_when: false
+  when:
+    - ansible_service_mgr == 'systemd'
+    - "'LocalRTC=yes' in timedatectl_show.stdout_lines"
+
+- name: Enable NTP-based RTC synchronization
+  ansible.builtin.command: timedatectl set-ntp true
+  become: true
+  failed_when: false
+  when:
+    - ansible_service_mgr == 'systemd'
+    - "'NTP=no' in timedatectl_show.stdout_lines"
+
+- name: Validate Crypto Acceleration (Secure Nodes)
+  ansible.builtin.fail:
+    msg: "Host CPU lacks critical Crypto Extensions (AES-NI or SHA)."
+  when: (require_crypto_extensions | default(false)) and (not host_cpu_has_aes)
+
+- name: Warn on missing Crypto extensions
+  ansible.builtin.debug:
+    msg: "WARNING: Host lacks AES-NI. VPN/SSL performance will be poor."
+  when: (warn_on_missing_crypto | default(false)) and not host_cpu_has_aes

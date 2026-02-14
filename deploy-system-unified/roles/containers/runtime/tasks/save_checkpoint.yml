@@ -1,0 +1,12 @@
+---
+# Shim to forward includes to the repository-level tasks/save_checkpoint.yml
+# Properly isolated via relative path mapping and explicit private scope
+
+- name: Include repository-level save_checkpoint
+  ansible.builtin.include_tasks:
+    file: "../../../../tasks/save_checkpoint.yml"
+  vars:
+    # Use explicit phase for this role to avoid recursive variable expansion in test environments
+    additional_phases: ["containers/runtime"]
+    checkpoint_status: "{{ checkpoint_status | default('running') }}"
+

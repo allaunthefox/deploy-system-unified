@@ -33,7 +33,7 @@ jobs:
       # yamllint disable rule:line-length
       - name: Make script executable
         run: |
-          chmod +x projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+          chmod +x deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
       # yamllint enable rule:line-length
 
       - name: Run enforcement (generate report)
@@ -42,13 +42,13 @@ jobs:
           # Ensure style tools are available in the runner
           python -m pip install --upgrade pip || true
           python -m pip install --upgrade ansible-lint yamllint || true
-          SCRIPT=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
+          SCRIPT=deploy-system-unified/dev_tools/tools/style-guide-enforcement
           ./$SCRIPT/enforce_style_guide.sh --report || echo $? > .enforce_status
         continue-on-error: true
 
       - name: List reports
         run: |
-          SCRIPT=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
+          SCRIPT=deploy-system-unified/dev_tools/tools/style-guide-enforcement
           ls -l $SCRIPT || true
 
       - name: Install jq (needed for report comments)
@@ -61,7 +61,7 @@ jobs:
         with:
           name: style-compliance-report
           path: |
-            projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/compliance_report_*.md
+            deploy-system-unified/dev_tools/tools/style-guide-enforcement/compliance_report_*.md
 
       - name: Comment on PR with compliance report
         if: ${{ github.event_name == 'pull_request' }}
@@ -71,7 +71,7 @@ jobs:
         # yamllint disable rule:line-length
         run: |
           set -x
-          SCRIPT_DIR=projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement
+          SCRIPT_DIR=deploy-system-unified/dev_tools/tools/style-guide-enforcement
           if [ -f .enforce_status ]; then
             report_file=$(ls -t $SCRIPT_DIR/compliance_report_*.md 2>/dev/null | head -n1)
             echo "PR_NUMBER=$PR_NUMBER report_file=$report_file"

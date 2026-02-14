@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  role_name: media
+  author: prod
+  description: Media container role with negative tests
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags: [containers, media]
+# assumes_permissive: true
+# Media stack often uses host networking and placeholder credentials in examples.
+
+# Negative Testing
+# This role includes comprehensive negative testing to ensure secret validation works correctly.
+# Test files are located in: molecule/negative/
+#
+# Test scenarios cover:
+# - Missing jellyfin.env file
+# - Wrong file permissions (should be 0600)
+# - Placeholder values in API keys and passwords
+# - Missing radarr.env file
+# - Wrong file ownership
+# - Empty media secrets files
+#
+# To run negative tests locally:
+# cd roles/containers/media && molecule test --scenario-name negative

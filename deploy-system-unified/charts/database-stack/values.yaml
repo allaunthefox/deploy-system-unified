@@ -1,0 +1,29 @@
+# Database Stack Values
+
+# PostgreSQL
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "17"
+  service:
+    port: 5432
+  database: app
+  username: appuser
+  password: changeme  # Change in production
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# Redis
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7"
+  service:
+    port: 6379
+  password: changeme  # Change in production
+  persistence:
+    enabled: true
+    size: 5Gi

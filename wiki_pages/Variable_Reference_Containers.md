@@ -257,6 +257,7 @@
 - [`containers_enable_gpu_support`](roles/containers_runtime.md#containersenablegpusupport)
 - [`containers_gpu_vendor`](roles/containers_runtime.md#containersgpuvendor)
 - [`containers_gpu_count`](roles/containers_runtime.md#containersgpucount)
+- [`containers_gpu_allocation_map`](roles/containers_runtime.md#containersgpuallocationmap)
 - [`containers_gpu_slicing`](roles/containers_runtime.md#containersgpuslicing)
 - [`containers_gpu_profiles`](roles/containers_runtime.md#containersgpuprofiles)
 - [`containers_gpu_device_selectors`](roles/containers_runtime.md#containersgpudeviceselectors)

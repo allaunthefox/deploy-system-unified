@@ -1,0 +1,46 @@
+---
+# Alpine/Nftables rules for networking/firewall
+- name: Ensure nftables is installed (Alpine)
+  ansible.builtin.package:
+    name: nftables
+    state: present
+  when: ansible_os_family == 'Alpine'
+  become: true
+
+- name: Configure basic nftables rules (Alpine)
+  ansible.builtin.copy:
+    dest: /etc/nftables.nft
+    content: |
+      #!/usr/sbin/nft -f
+      flush ruleset
+      table inet filter {
+        chain input {
+          type filter hook input priority 0; policy drop;
+          ct state established,related accept
+          iif lo accept
+          {% for port in firewall_allowed_tcp_ports_effective %}
+          tcp dport {{ port }} accept
+          {% endfor %}
+          {% for port in firewall_allowed_udp_ports %}
+          udp dport {{ port }} accept
+          {% endfor %}
+        }
+        chain forward {
+          type filter hook forward priority 0; policy {{ firewall_forward_policy | lower }};
+        }
+        chain output {
+          type filter hook output priority 0; policy accept;
+        }
+      }
+    mode: '0644'
+  become: true
+  when: ansible_os_family == 'Alpine'
+  notify: Reload nftables
+
+- name: Enable nftables service (Alpine)
+  ansible.builtin.service:
+    name: nftables
+    enabled: true
+    state: started
+  when: ansible_os_family == 'Alpine'
+  become: true

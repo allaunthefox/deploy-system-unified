@@ -1,0 +1,51 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    k3s_version: v1.31.4+k3s1
+    k3s_install_dir: /var/lib/rancher/k3s
+    k3s_data_dir: /var/lib/rancher/k3s
+
+  tasks:
+    - name: Include kubernetes master role
+      ansible.builtin.include_role:
+        name: kubernetes.master
+
+    - name: Verify K3s is installed
+      ansible.builtin.stat:
+        path: "{{ k3s_install_dir }}/bin/k3s"
+      register: k3s_binary
+
+    - name: Assert K3s binary exists
+      ansible.builtin.assert:
+        that:
+          - k3s_binary.stat.exists
+          - k3s_binary.stat.mode == '0755'
+
+    - name: Verify K3s service is configured
+      ansible.builtin.systemd:
+        name: k3s
+        state: stopped
+      register: k3s_service
+      failed_when: false
+
+    - name: Get K3s server token if exists
+      ansible.builtin.slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+      failed_when: false
+
+    - name: Verify kubeconfig exists
+      ansible.builtin.stat:
+        path: /etc/rancher/k3s/k3s.yaml
+      register: kubeconfig
+      failed_when: false
+
+    - name: Print validation results
+      ansible.builtin.debug:
+        msg:
+          - "K3s binary installed: {{ k3s_binary.stat.exists }}"
+          - "K3s service configured: {{ k3s_service.failed == false }}"
+          - "Kubeconfig exists: {{ kubeconfig.stat.exists }}"
+          - "K3s token available: {{ k3s_token.content is defined }}"

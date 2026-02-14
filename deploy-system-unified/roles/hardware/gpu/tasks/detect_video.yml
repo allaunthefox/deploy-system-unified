@@ -1,0 +1,89 @@
+---
+# Hardware Detection Logic
+# Detects Installed GPU Vendors to override generic defaults
+
+- name: Ensure Discovery Dependencies are Present (pciutils)
+  ansible.builtin.package:
+    name: pciutils
+    state: present
+  register: _pciutils_install
+  until: _pciutils_install is success
+  retries: 3
+  delay: 5
+  ignore_errors: true
+  when: not _gpu_is_container | default(false)
+
+- name: Handle Dependency Installation Failure
+  ansible.builtin.fail:
+    msg: >-
+      CRITICAL: Failed to install 'pciutils' on the target host. 
+      This package is required for GPU hardware discovery.
+      Please ensure the package manager is configured correctly and the host has internet access.
+      Error details: {{ _pciutils_install.msg | default('Unknown error') }}
+  when: 
+    - not _gpu_is_container | default(false)
+    - _pciutils_install is failed
+
+- name: Run Advanced GPU Discovery Script
+  ansible.builtin.script: gpu_discovery.py
+  register: gpu_discovery_raw
+  changed_when: false
+
+- name: Parse GPU Discovery Output
+  ansible.builtin.set_fact:
+    _gpu_discovery_results: "{{ gpu_discovery_raw.stdout | from_json }}"
+
+- name: Apply Detected Vendors (Internal Facts)
+  ansible.builtin.set_fact:
+    _gpu_detected_vendor_list: "{{ _gpu_discovery_results.detected_vendor_list }}"
+    _gpu_primary_detected_vendor: "{{ _gpu_discovery_results.primary_detected_vendor }}"
+    _gpu_detected_devices: "{{ _gpu_discovery_results.detected_devices }}"
+    _gpu_count: "{{ _gpu_discovery_results.gpu_count }}"
+    _gpu_is_multi_gpu: "{{ _gpu_discovery_results.is_multi_gpu }}"
+    _gpu_is_multi_vendor: "{{ _gpu_discovery_results.is_multi_vendor }}"
+
+- name: Report Detected GPUs
+  ansible.builtin.debug:
+    msg:
+      - "Detected GPU Vendors: {{ _gpu_detected_vendor_list }}"
+      - "Primary Detected: {{ _gpu_primary_detected_vendor }}"
+      - "GPU Count: {{ _gpu_count }}"
+      - "Multi-GPU: {{ _gpu_is_multi_gpu }}"
+      - "Multi-Vendor: {{ _gpu_is_multi_vendor }}"
+
+- name: Ensure Evidence Directory Exists
+  ansible.builtin.file:
+    path: "/var/lib/deploy-system/evidence/gpu"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Save GPU Discovery Evidence
+  ansible.builtin.copy:
+    content: |
+      {
+        "timestamp": "{{ ansible_date_time.iso8601 }}",
+        "discovery_results": {{ _gpu_discovery_results | to_json }}
+      }
+    dest: "/var/lib/deploy-system/evidence/gpu/discovery_{{ ansible_date_time.iso8601_basic_short }}.json"
+    mode: '0644'
+  become: true
+  changed_when: false
+  register: _dsu_gpu_evidence_file
+
+- name: Encrypt Evidence (Optional - Secure Mode)
+  ansible.builtin.command:
+    argv:
+      - ansible-vault
+      - encrypt
+      - --vault-password-file
+      - "{{ lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') | default('.vault_pass', true) }}"
+      - "{{ _dsu_gpu_evidence_file.dest }}"
+  become: true
+  when: 
+    - dsu_encrypt_evidence | default(false) | bool
+    - not _gpu_is_container | default(false)
+  changed_when: false
+  no_log: true
+
+

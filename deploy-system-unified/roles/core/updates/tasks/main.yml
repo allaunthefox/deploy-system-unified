@@ -1,0 +1,64 @@
+---
+# Tasks for core/updates - Automatic Security Patching
+- name: Configure Unattended-Upgrades (Debian/Ubuntu)
+  block:
+    - name: Install unattended-upgrades
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: present
+        update_cache: true
+      register: apt_uu_result
+      until: apt_uu_result is success
+      retries: 5
+      delay: 10
+    - name: Ensure unattended-upgrades is enabled
+      ansible.builtin.copy:
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        mode: '0644'
+  when: ansible_os_family == 'Debian'
+  become: true
+- name: Configure DNF-Automatic (RedHat/Fedora)
+  block:
+    - name: Install dnf-automatic
+      ansible.builtin.package:
+        name: dnf-automatic
+        state: present
+      register: dnf_auto_result
+      until: dnf_auto_result is success
+      retries: 5
+      delay: 10
+    - name: Enable dnf-automatic timer
+      ansible.builtin.systemd:
+        name: dnf-automatic.timer
+        enabled: true
+        state: started
+  when: ansible_os_family == 'RedHat'
+  become: true
+- name: Configure Updates (Arch Linux)
+  block:
+    - name: Ensure keyring is up to date (Arch)
+      community.general.pacman:
+        name: archlinux-keyring
+        state: latest
+        update_cache: true
+      when: not ansible_check_mode
+    - name: Warn about automatic updates on Rolling Release
+      ansible.builtin.debug:
+        msg: "Skipping automatic system updates on Arch Linux. Rolling releases require manual intervention (pacman -Syu)."
+  when: ansible_distribution == 'Archlinux'
+  become: true
+
+- name: Configure Updates (Alpine)
+  block:
+    - name: Update package cache (Alpine)
+      community.general.apk:
+        update_cache: true
+    - name: Run system upgrade (Alpine)
+      community.general.apk:
+        upgrade: true
+  when: ansible_os_family == 'Alpine'
+  become: true
+

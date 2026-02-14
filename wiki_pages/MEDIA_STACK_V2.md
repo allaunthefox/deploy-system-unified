@@ -55,6 +55,59 @@ These services run adjacent to the media stack but provide infrastructure utilit
 * **Status**: Implemented.
 * **Integration**: Provides `authentik_protect` snippet for all Caddy ingress routes listed above.
 
+## Kubernetes Helm Charts
+
+As of February 2026, the media and ops stacks are also available as Helm charts for Kubernetes deployment:
+
+### media-stack Chart
+
+Located in `charts/media-stack/`, includes:
+
+| Service | Template | Port |
+|---------|----------|------|
+| Jellyfin | `jellyfin-deployment.yaml` | 8096 |
+| Radarr | `radarr-deployment.yaml` | 7878 |
+| Sonarr | `sonarr-deployment.yaml` | 8989 |
+
+**Features:**
+- Liveness/readiness probes
+- PVCs for config and media storage
+- Configurable ingress (caddy/traefik/nginx)
+- GPU support modeled
+
+### ops-stack Chart
+
+Located in `charts/ops-stack/`, includes:
+
+| Service | Template | Port |
+|---------|----------|------|
+| Homarr | `homarr-deployment.yaml` | 7575 |
+| Vaultwarden | `vaultwarden-deployment.yaml` | 8081, 3012 (ws) |
+
+**Features:**
+- K8s Secret for admin token
+- PVCs for configs, icons, data
+- Liveness/readiness probes
+- Configurable ingress
+
+### Ingress Configuration
+
+Both charts support configurable ingress class via values.yaml:
+
+```yaml
+ingress:
+  enabled: true
+  className: caddy  # Options: caddy, traefik, nginx
+  host: local
+```
+
+### Validation
+
+```bash
+helm lint charts/media-stack charts/ops-stack  # Passed
+helm unittest charts/media-stack charts/ops-stack  # 13/13 tests passed
+```
+
 ## Implementation Roadmap
 
 1. **Refactor `containers/media`**:
@@ -65,3 +118,6 @@ These services run adjacent to the media stack but provide infrastructure utilit
     * Implement Vaultwarden (SQLite/MariaDB) and Homarr.
 3. **Deploy**:
     * Update `media_streaming_server.yml` to enable specific feature flags (e.g., `enable_books: true`, `enable_music: true`).
+4. **Kubernetes Deployment (Phase 3)**:
+    * Helm charts now available for K3s/K8s deployment
+    * Benchmark Podman vs K8s resource usage in progress

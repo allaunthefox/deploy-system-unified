@@ -1,0 +1,144 @@
+---
+suite: Ops Stack Homarr Deployment Tests
+templates:
+  - homarr-deployment.yaml
+tests:
+  - it: homarr deployment should render correctly
+    set:
+      homarr.enabled: true
+      homarr.image.repository: ghcr.io/ajnart/homarr
+      homarr.image.tag: latest
+      homarr.service.type: ClusterIP
+      homarr.service.port: 7575
+      global.timezone: UTC
+      homarr.persistence.configs.size: 1Gi
+      homarr.persistence.icons.size: 1Gi
+      homarr.persistence.data.size: 1Gi
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-ops-stack-homarr
+      - equal:
+          path: spec.replicas
+          value: 1
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 7575
+      - exists:
+          path: spec.template.spec.containers[0].livenessProbe
+      - exists:
+          path: spec.template.spec.containers[0].readinessProbe
+
+---
+suite: Ops Stack Vaultwarden Deployment Tests
+templates:
+  - vaultwarden-deployment.yaml
+tests:
+  - it: vaultwarden deployment should render correctly
+    set:
+      vaultwarden.enabled: true
+      vaultwarden.image.repository: vaultwarden/server
+      vaultwarden.image.tag: latest
+      vaultwarden.service.type: ClusterIP
+      vaultwarden.service.port: 8081
+      vaultwarden.service.websocketPort: 3012
+      vaultwarden.config.signupsAllowed: false
+      vaultwarden.config.websocketEnabled: true
+      vaultwarden.persistence.data.size: 5Gi
+      secrets.vaultwardenAdminToken: "test-token"
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-ops-stack-vaultwarden
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 8081
+      - exists:
+          path: spec.template.spec.containers[0].livenessProbe
+      - exists:
+          path: spec.template.spec.containers[0].readinessProbe
+
+---
+suite: Ops Stack Service Tests
+templates:
+  - services.yaml
+tests:
+  - it: homarr service should render correctly
+    set:
+      homarr.enabled: true
+      homarr.service.type: ClusterIP
+      homarr.service.port: 7575
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: ClusterIP
+
+  - it: vaultwarden service should render correctly
+    set:
+      vaultwarden.enabled: true
+      vaultwarden.service.type: ClusterIP
+      vaultwarden.service.port: 8081
+      vaultwarden.service.websocketPort: 3012
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: ClusterIP
+
+---
+suite: Ops Stack PVC Tests
+templates:
+  - pvc.yaml
+tests:
+  - it: pvc should render correctly
+    set:
+      homarr.persistence.configs.size: 1Gi
+      homarr.persistence.icons.size: 1Gi
+      homarr.persistence.data.size: 1Gi
+      vaultwarden.persistence.data.size: 5Gi
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+
+---
+suite: Ops Stack Secret Tests
+templates:
+  - secret.yaml
+tests:
+  - it: secret should render correctly
+    set:
+      secrets.vaultwardenAdminToken: "test-token"
+    asserts:
+      - isKind:
+          of: Secret
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-ops-stack-vaultwarden-secrets
+      - equal:
+          path: type
+          value: Opaque
+
+---
+suite: Ops Stack Ingress Tests
+templates:
+  - ingress.yaml
+tests:
+  - it: ingress should render correctly
+    set:
+      ingress.enabled: true
+      ingress.className: nginx
+    asserts:
+      - isKind:
+          of: Ingress

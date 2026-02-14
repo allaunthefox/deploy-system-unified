@@ -7,11 +7,11 @@ Manages microcode, firmware updates, and low-level system attributes for physica
 
 ## Variables
 
-### `cpu_tier`
-- `cpu_tier`
+### `hardware_cpu_tier`
+- `hardware_cpu_tier`
 
-### `is_server_cpu`
-- `is_server_cpu`
+### `hardware_is_server_cpu`
+- `hardware_is_server_cpu`
 
 ### `hardware_monitor_temp`
 - `hardware_monitor_temp`

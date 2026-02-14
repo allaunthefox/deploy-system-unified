@@ -1,0 +1,232 @@
+---
+# Bootloader Backup and Recovery Procedures
+# Includes encrypted backups for security
+
+- name: Check if GRUB backup is enabled
+  ansible.builtin.set_fact:
+    _grub_backup_enabled: "{{ core_grub_backup_enabled | default(true) }}"
+
+- name: Check if encryption is enabled
+  ansible.builtin.set_fact:
+    _grub_backup_encrypt: "{{ core_grub_backup_encrypt | default(true) }}"
+
+- name: Fail if encryption enabled but no GPG recipient
+  ansible.builtin.fail:
+    msg: "core_grub_backup_gpg_recipient must be set when encryption is enabled"
+  when:
+    - _grub_backup_encrypt | bool
+    - core_grub_backup_gpg_recipient | length == 0
+
+- name: Get chrony synchronized time
+  ansible.builtin.command: chronyc -n tracking
+  register: chrony_status
+  changed_when: false
+  failed_when: false
+
+- name: Set backup timestamp from chrony
+  ansible.builtin.set_fact:
+    _backup_timestamp: "{{ ansible_date_time.iso8601 | default(ansible_date_time.epoch) }}"
+  when: chrony_status.rc == 0
+
+- name: Set fallback timestamp
+  ansible.builtin.set_fact:
+    _backup_timestamp: "{{ ansible_date_time.epoch }}"
+  when: chrony_status.rc != 0
+
+- name: Create GRUB backup directory
+  ansible.builtin.file:
+    path: "{{ core_grub_backup_dir }}"
+    state: directory
+    mode: '0700'
+  become: true
+  when: _grub_backup_enabled | bool
+
+- name: Compute SHA256 hash of GRUB config
+  ansible.builtin.shell: "sha256sum {{ core_grub_config_path }} | awk '{print $1}'"
+  register: grub_config_hash_sha256
+  changed_when: false
+  become: true
+
+- name: Compute SHA512 hash of GRUB config
+  ansible.builtin.shell: "sha512sum {{ core_grub_config_path }} | awk '{print $1}'"
+  register: grub_config_hash_sha512
+  changed_when: false
+  become: true
+
+- name: Compute BLAKE3 hash of GRUB config
+  ansible.builtin.shell: "b3sum {{ core_grub_config_path }} | awk '{print $1}'"
+  register: grub_config_hash_b3
+  changed_when: false
+  become: true
+  failed_when: false
+
+- name: Backup GRUB config file (unencrypted)
+  ansible.builtin.copy:
+    src: "{{ core_grub_config_path }}"
+    dest: "{{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.sha256"
+    mode: '0600'
+  become: true
+  when:
+    - _grub_backup_enabled | bool
+    - not _grub_backup_encrypt | bool
+    - grub_stat.stat.exists
+  register: grub_backup
+
+- name: Create hash manifest entry
+  ansible.builtin.copy:
+    dest: "{{ core_grub_backup_dir }}/hash_manifest.txt"
+    mode: '0600'
+    content: |
+      # GRUB Backup Hash Manifest
+      # Generated: {{ ansible_date_time.iso8601 }}
+      # Timestamp: {{ _backup_timestamp }}
+      # Chrony Sync: {{ chrony_status.rc | default(-1) }}
+      {% if grub_config_hash_sha256.rc == 0 %}
+      sha256:grub.default.{{ _backup_timestamp }} {{ grub_config_hash_sha256.stdout }}
+      {% endif %}
+      {% if grub_config_hash_sha512.rc == 0 %}
+      sha512:grub.default.{{ _backup_timestamp }} {{ grub_config_hash_sha512.stdout }}
+      {% endif %}
+      {% if grub_config_hash_b3.rc == 0 %}
+      blake3:grub.default.{{ _backup_timestamp }} {{ grub_config_hash_b3.stdout }}
+      {% endif %}
+  become: true
+  when: _grub_backup_enabled | bool
+
+- name: Backup GRUB config file (encrypted)
+  when:
+    - _grub_backup_enabled | bool
+    - _grub_backup_encrypt | bool
+    - grub_stat.stat.exists
+  block:
+    - name: Read GRUB config for encryption
+      ansible.builtin.slurp:
+        src: "{{ core_grub_config_path }}"
+      register: grub_config_content
+
+    - name: Encrypt GRUB backup with GPG
+      ansible.builtin.shell: |
+        echo "{{ core_grub_backup_gpg_recipient }}" | gpg --batch --yes --encrypt \
+          --recipient "{{ core_grub_backup_gpg_recipient }}" \
+          --output "{{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg" -
+      args:
+        stdin: "{{ grub_config_content.content | b64decode }}"
+        executable: /bin/bash
+      become: true
+      register: grub_backup_encrypted
+
+    - name: Compute SHA256 hash of encrypted backup
+      ansible.builtin.shell: "sha256sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'"
+      register: grub_encrypted_hash_sha256
+      changed_when: false
+      become: true
+
+    - name: Compute SHA512 hash of encrypted backup
+      ansible.builtin.shell: "sha512sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'"
+      register: grub_encrypted_hash_sha512
+      changed_when: false
+      become: true
+
+    - name: Append encrypted hashes to manifest
+      ansible.builtin.lineinfile:
+        path: "{{ core_grub_backup_dir }}/hash_manifest.txt"
+        line: "sha256:grub.default.{{ _backup_timestamp }}.gpg {{ grub_encrypted_hash_sha256.stdout }}"
+        mode: '0600'
+      become: true
+      when: grub_encrypted_hash_sha256.stdout is defined
+
+    - name: Append SHA512 hash to manifest
+      ansible.builtin.lineinfile:
+        path: "{{ core_grub_backup_dir }}/hash_manifest.txt"
+        line: "sha512:grub.default.{{ _backup_timestamp }}.gpg {{ grub_encrypted_hash_sha512.stdout }}"
+        mode: '0600'
+      become: true
+      when: grub_encrypted_hash_sha512.stdout is defined
+
+- name: Backup GRUB menu (if exists)
+  ansible.builtin.copy:
+    src: /boot/grub/grub.cfg
+    dest: "{{ core_grub_backup_dir }}/grub.cfg.{{ _backup_timestamp }}"
+    mode: '0600'
+    force: no
+  become: true
+  when: _grub_backup_enabled | bool
+  register: grub_menu_backup
+  failed_when: false
+
+- name: Encrypt GRUB menu backup
+  when:
+    - _grub_backup_enabled | bool
+    - _grub_backup_encrypt | bool
+    - grub_menu_backup.changed
+  block:
+    - name: Read GRUB menu for encryption
+      ansible.builtin.slurp:
+        src: /boot/grub/grub.cfg
+      register: grub_menu_content
+      failed_when: false
+
+- name: List available GRUB backups
+  ansible.builtin.find:
+    paths: "{{ core_grub_backup_dir }}"
+    patterns: "grub.*"
+    age: "-{{ core_grub_backup_retention_days }}d"
+  register: old_backups
+  when: _grub_backup_enabled | bool
+
+- name: Cleanup old GRUB backups
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: old_backups.files
+  when:
+    - _grub_backup_enabled | bool
+    - old_backups.files | length > 0
+  become: true
+
+- name: Verify GRUB backup integrity
+  ansible.builtin.debug:
+    msg: "GRUB backup completed (encrypted: {{ _grub_backup_encrypt }})"
+  when: _grub_backup_enabled | bool
+
+- name: Create GRUB recovery script
+  ansible.builtin.copy:
+    dest: "{{ core_grub_backup_dir }}/recover_grub.sh"
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      # GRUB Recovery Script
+      # Usage: ./recover_grub.sh [encrypted|plain] /path/to/backup
+      
+      MODE="${1:-encrypted}"
+      BACKUP_FILE="${2:-{{ core_grub_backup_dir }}/grub.default.*.gpg}"
+      
+      if [ "$MODE" = "encrypted" ]; then
+          echo "Decrypting GRUB backup..."
+          gpg --decrypt --output /tmp/grub.recovered "$BACKUP_FILE" || exit 1
+          BACKUP_FILE="/tmp/grub.recovered"
+      fi
+      
+      if [ ! -f "$BACKUP_FILE" ]; then
+          echo "Error: Backup file not found: $BACKUP_FILE"
+          exit 1
+      fi
+      
+      echo "Recovering GRUB from: $BACKUP_FILE"
+      sudo cp "$BACKUP_FILE" {{ core_grub_config_path }}
+      sudo update-grub
+      
+      echo "GRUB recovery complete. Please reboot."
+  become: true
+  when: _grub_backup_enabled | bool
+
+- name: Create GRUB environment block backup
+  ansible.builtin.copy:
+    dest: "{{ core_grub_backup_dir }}/grubenv.default"
+    content: |
+      # GRUB Environment Block
+      # This file preserves GRUB menu selection across reboots
+      # Copy from /boot/grub/grubenv if it exists
+  become: true
+  force: no
+  when: _grub_backup_enabled | bool

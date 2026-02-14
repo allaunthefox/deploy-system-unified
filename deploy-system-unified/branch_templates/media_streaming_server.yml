@@ -1,0 +1,164 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# Media Streaming Server - High Performance Media Configuration
+# Based on: Contabo Cloud VPS 30 SSD (8 vCPU, 24 GB RAM, 800 GB SSD)
+# Features: Full Media Stack (Jellyfin, *Arr), ZRAM/ZSwap Hybrid Tuning, Btrfs Optimization
+
+- name: Sync with Cloud Provider (Contabo)
+  hosts: local
+  become: true
+  roles:
+    - role: ops/cloud_init
+- ansible.builtin.import_playbook: base_hardened.yml
+
+- name: System Hardware Validation
+  hosts: local
+  gather_facts: false
+  roles:
+    - role: hardware/firmware
+
+- name: Deploy Media Streaming Workload
+  hosts: local
+  gather_facts: true
+  become: true
+  vars:
+    # VPS Provider Identification
+    vps_provider: "contabo"
+    sshd_allow_tcp_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
+    system_ssh_port: 2222
+
+    # Rootless Podman (Host Networking Model)
+    # Reconfigured via kernel tuning to allow unprivileged binding
+    podman_rootless_enabled: true
+    podman_rootless_user: "{{ system_admin_user | default('admin') }}"
+    podman_rootless_user_home: "/home/{{ system_admin_user | default('admin') }}"
+    podman_rootless_allow_privileged_ports: true
+    podman_rootless_privileged_port_start: 80
+
+    # Memory Tuning - Database Profile for SQLite (Jellyfin/Arr) Performance
+    memory_workload_profile: "database"
+    # Mapping vm_dirty_* to memory_dirty_* for core/memory role compatibility
+    memory_dirty_bytes: 4294967296          # 4GB Dirty Limit for massive file moves
+    memory_dirty_background_bytes: 1073741824 # 1GB Background starting point
+    memory_swappiness: 10
+
+    # VM Tuning for Media Buffers
+    vm_dirty_ratio: "10"
+    vm_dirty_background_ratio: "5"
+    vm_dirty_bytes: "{{ memory_dirty_bytes }}"
+    vm_dirty_background_bytes: "{{ memory_dirty_background_bytes }}"
+
+    # Btrfs Subvolume Configuration
+    btrfs_subvolumes:
+      - { path: "/@", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@" }
+      - { path: "/@home", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@home" }
+      - { path: "/@var", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var" }
+      - { path: "/@srv", mount_options: "rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@srv" }
+
+    # Firewall Configuration
+    # Host Mode requires strictly allowing the service ports
+    firewall_enabled: true
+    firewall_forward_policy: "DROP" # Forwarding not required for Host Mode
+    firewall_allowed_tcp_ports:
+      - "{{ ssh_effective_port | default(system_ssh_port) | default(2222) }}"
+      - 80
+      - 443
+      - 51413 # Transmission Peer
+    firewall_allowed_udp_ports:
+      - 443
+      - 51413 # Transmission Peer
+
+    # Volatile Secrets Configuration
+    volatile_secrets: false  # Set to true to use tmpfs for secrets
+
+  pre_tasks:
+    - name: Ensure Facts are Gathered
+      ansible.builtin.setup:
+
+    - name: Reconfigure Kernel for Host Based Networking (Media Profile)
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+        sysctl_file: /etc/sysctl.d/99-media-profile.conf
+        reload: true
+      loop:
+        # Allow Rootless Podman to use User Namespaces (Required on Hardened Arch)
+        - { name: 'kernel.unprivileged_userns_clone', value: '1' }
+        # Allow Rootless Podman to bind to privileged ports (80/443)
+        - { name: 'net.ipv4.ip_unprivileged_port_start', value: '80' }
+        # Performance Tuning for Media Buffers
+        - { name: 'vm.dirty_ratio', value: '{{ vm_dirty_ratio }}' }
+        - { name: 'vm.dirty_background_ratio', value: '{{ vm_dirty_background_ratio }}' }
+        - { name: 'vm.dirty_bytes', value: '{{ vm_dirty_bytes }}' }
+        - { name: 'vm.dirty_background_bytes', value: '{{ vm_dirty_background_bytes }}' }
+      become: true
+
+    - name: Mount secrets directory as tmpfs (volatile mode)
+      ansible.builtin.mount:
+        path: /var/lib/deploy-system/secrets
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size=64M,mode=0700"
+        state: mounted
+      when: volatile_secrets | bool
+      tags: [security, ephemeral]
+
+  roles:
+    # Container Runtime & Orchestration
+    - role: containers/runtime
+    - role: core/memory # Apply memory tuning explicitly
+    - role: containers/quadlets
+      vars:
+        quadlet_network_name: "host"
+        quadlet_create_network: false
+
+    # Gateway & Application Stack
+    - role: containers/caddy
+      vars:
+        caddy_acme_email: "admin@my-media-server.com"
+        caddy_network: "host"
+
+    - role: containers/authentik
+      vars:
+        authentik_network_name: "host"
+        # SECURITY WARNING: These must be changed in production!
+        authentik_secret_key: "change_me_to_random_string"
+        authentik_pg_pass: "change_me_to_random_string"
+
+    - role: containers/media
+      vars:
+        jellyfin_memory_max: 12G
+        media_root_dir: /srv/media
+        media_gatekeeper_mode: true
+        media_hw_accel: false
+        media_auth_provider: "authentik"
+        media_domain: "home.lab"
+        media_pod_network: "host"
+        transmission_user: "media_admin"
+        transmission_pass: "media_secret_pass"
+
+    - role: containers/ops
+      vars:
+        ops_enable: true
+        ops_domain: "home.lab"
+        ops_pod_network: "host"
+        # Enable Dashboard and Password Manager
+        homarr_enable: true
+        vaultwarden_enable: true
+
+  post_tasks:
+    - name: Securely shred temporary deployment artifacts (volatile mode)
+      ansible.builtin.shell: |
+        find /tmp/deploy_secrets* -type f -exec shred -u {} \; 2>/dev/null || true
+        find /tmp/ssh_connection_info* -type f -exec shred -u {} \; 2>/dev/null || true
+      delegate_to: localhost
+      run_once: true
+      when: volatile_secrets | bool
+      tags: [cleanup, ephemeral]
+      changed_when: false

@@ -1,0 +1,9 @@
+- name: Benchmark core/grub
+  hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    virt_type: container
+    is_virtualized: true
+  roles:
+    - role: core/grub

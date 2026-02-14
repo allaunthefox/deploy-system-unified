@@ -1,0 +1,13 @@
+---
+- name: Test Battlemage Structure
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    gpu_stack_enable: true
+    gpu_stack_vendor: intel
+    # Dry run prevention for actual install
+    gpu_stack_enable_oneapi: false
+    gpu_battlemage_force_probe: false
+  roles:
+    - role: hardware/gpu

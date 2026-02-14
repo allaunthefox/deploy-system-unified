@@ -1,3 +1,0 @@
----
-assumes_permissive: true
-# Monitoring role includes default passwords and may be enabled by default in profiles.

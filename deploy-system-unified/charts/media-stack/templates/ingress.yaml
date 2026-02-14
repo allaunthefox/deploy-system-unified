@@ -1,0 +1,59 @@
+---
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "media-stack.fullname" . }}-jellyfin
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+spec:
+  rules:
+    - host: jellyfin.{{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "media-stack.fullname" . }}-jellyfin
+                port:
+                  number: 8096
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "media-stack.fullname" . }}-radarr
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+spec:
+  rules:
+    - host: radarr.{{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "media-stack.fullname" . }}-radarr
+                port:
+                  number: 7878
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "media-stack.fullname" . }}-sonarr
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+spec:
+  rules:
+    - host: sonarr.{{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "media-stack.fullname" . }}-sonarr
+                port:
+                  number: 8989
+{{- end }}

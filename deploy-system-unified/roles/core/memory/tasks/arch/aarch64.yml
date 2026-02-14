@@ -1,0 +1,8 @@
+---
+# aarch64 specific memory tasks
+
+- name: Detect Shared Video Memory (UMA) - aarch64
+  ansible.builtin.set_fact:
+    uma_detection:
+      stdout: "false" # Default for many ARM SBCs unless we add specific checks
+  when: core_memory_shared_vram == 'auto'

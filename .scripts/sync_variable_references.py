@@ -4,7 +4,7 @@ from pathlib import Path
 
 ROOT = Path('.').resolve()
 WIKI_DIR = ROOT / 'wiki_pages'
-PROJECT_ROLES = ROOT / 'projects' / 'deploy-system-unified' / 'roles'
+PROJECT_ROLES = ROOT / 'deploy-system-unified' / 'roles'
 ROLE_REF = WIKI_DIR / 'Role_Reference.md'
 
 def slugify(s):

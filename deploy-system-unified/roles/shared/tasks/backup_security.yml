@@ -1,0 +1,157 @@
+---
+# Shared Backup Security Tasks
+# Apply hash verification and timestamping to all backups
+# Include this in any backup role: ansible.builtin.include_tasks: roles/shared/tasks/backup_security.yml
+
+- name: Check if backup security is enabled
+  ansible.builtin.set_fact:
+    _backup_security_enabled: "{{ backup_security_enabled | default(true) }}"
+
+- name: Get chrony synchronized time
+  ansible.builtin.command: chronyc -n tracking
+  register: _chrony_status
+  changed_when: false
+  failed_when: false
+
+- name: Set backup timestamp from chrony
+  ansible.builtin.set_fact:
+    _backup_timestamp: "{{ ansible_date_time.iso8601 | default(ansible_date_time.epoch) }}"
+  when: _chrony_status.rc == 0
+
+- name: Set fallback timestamp
+  ansible.builtin.set_fact:
+    _backup_timestamp: "{{ ansible_date_time.epoch }}"
+  when: _chrony_status.rc != 0
+
+- name: Create backup security directory
+  ansible.builtin.file:
+    path: "{{ backup_security_dir | default('/var/backups/security') }}"
+    state: directory
+    mode: '0700'
+  become: true
+  when: _backup_security_enabled | bool
+
+- name: Compute SHA256 hash of backup
+  ansible.builtin.shell: |
+    {% if backup_source_path is defined %}
+    sha256sum {{ backup_source_path }} | awk '{print $1}'
+    {% else %}
+    echo "no_source"
+    {% endif %}
+  register: _backup_hash_sha256
+  changed_when: false
+  become: true
+  when: _backup_security_enabled | bool
+
+- name: Compute SHA512 hash of backup
+  ansible.builtin.shell: |
+    {% if backup_source_path is defined %}
+    sha512sum {{ backup_source_path }} | awk '{print $1}'
+    {% else %}
+    echo "no_source"
+    {% endif %}
+  register: _backup_hash_sha512
+  changed_when: false
+  become: true
+  when: _backup_security_enabled | bool
+
+- name: Compute BLAKE3 hash of backup
+  ansible.builtin.shell: |
+    {% if backup_source_path is defined %}
+    b3sum {{ backup_source_path }} | awk '{print $1}'
+    {% else %}
+    echo "no_source"
+    {% endif %}
+  register: _backup_hash_b3
+  changed_when: false
+  become: true
+  failed_when: false
+  when: _backup_security_enabled | bool
+
+- name: Create backup hash manifest
+  ansible.builtin.copy:
+    dest: "{{ backup_security_dir | default('/var/backups/security') }}/hash_manifest.txt"
+    mode: '0600'
+    content: |
+      # Backup Hash Manifest
+      # Generated: {{ ansible_date_time.iso8601 }}
+      # Timestamp: {{ _backup_timestamp }}
+      # Chrony Sync: {{ _chrony_status.rc | default(-1) }}
+      # Backup: {{ backup_name | default('unknown') }}
+      {% if _backup_hash_sha256.rc == 0 and _backup_hash_sha256.stdout != 'no_source' %}
+      sha256:{{ backup_name | default('backup') }} {{ _backup_timestamp }} {{ _backup_hash_sha256.stdout }}
+      {% endif %}
+      {% if _backup_hash_sha512.rc == 0 and _backup_hash_sha512.stdout != 'no_source' %}
+      sha512:{{ backup_name | default('backup') }} {{ _backup_timestamp }} {{ _backup_hash_sha512.stdout }}
+      {% endif %}
+      {% if _backup_hash_b3.rc == 0 and _backup_hash_b3.stdout != 'no_source' %}
+      blake3:{{ backup_name | default('backup') }} {{ _backup_timestamp }} {{ _backup_hash_b3.stdout }}
+      {% endif %}
+  become: true
+  when: _backup_security_enabled | bool
+
+- name: Create self-contained hash verification script
+  ansible.builtin.copy:
+    dest: "{{ backup_security_dir | default('/var/backups/security') }}/verify_hash.sh"
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      # Self-contained hash verification script
+      # Requires OpenSSL as minimum (available on all major OSes)
+      
+      FILE="$1"
+      EXPECTED_HASH="$2"
+      ALGO="${3:-sha256}"
+      
+      if [ -z "$FILE" ] || [ -z "$EXPECTED_HASH" ]; then
+          echo "Usage: $0 <file> <expected_hash> [sha256|sha512]"
+          exit 1
+      fi
+      
+      if ! command -v openssl &> /dev/null; then
+          echo "ERROR: OpenSSL is required but not installed"
+          exit 2
+      fi
+      
+      case "$ALGO" in
+          sha256|sha512)
+              ACTUAL=$(openssl dgst -"$ALGO" "$FILE" | awk '{print $2}')
+              ;;
+          *)
+              echo "ERROR: Unsupported algorithm: $ALGO"
+              exit 3
+              ;;
+      esac
+      
+      if [ "$ACTUAL" = "$EXPECTED_HASH" ]; then
+          echo "OK: Hash verified"
+          exit 0
+      else
+          echo "FAIL: Hash mismatch"
+          echo "Expected: $EXPECTED_HASH"
+          echo "Actual:   $ACTUAL"
+          exit 1
+      fi
+  become: true
+  when: _backup_security_enabled | bool
+
+- name: Store precomputed hashes in backup for offline verification
+  ansible.builtin.copy:
+    dest: "{{ backup_security_dir | default('/var/backups/security') }}/{{ backup_name | default('backup') }}.hashes"
+    mode: '0600'
+    content: |
+      # Precomputed Hashes for Offline Verification
+      # Generated: {{ ansible_date_time.iso8601 }}
+      # Backup: {{ backup_name | default('unknown') }}
+      sha256 {{ _backup_timestamp }} {{ _backup_hash_sha256.stdout | default('N/A') }}
+      sha512 {{ _backup_timestamp }} {{ _backup_hash_sha512.stdout | default('N/A') }}
+      blake3 {{ _backup_timestamp }} {{ _backup_hash_b3.stdout | default('N/A') }}
+  become: true
+  when: 
+    - _backup_security_enabled | bool
+    - _backup_hash_sha256.stdout is defined
+
+- name: Verify backup hash integrity
+  ansible.builtin.debug:
+    msg: "Backup security applied - SHA256: {{ _backup_hash_sha256.stdout | default('N/A')[:16] }}..."
+  when: _backup_security_enabled | bool

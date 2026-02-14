@@ -1,0 +1,181 @@
+{{- if .Values.caddy.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proxy-stack.fullname" . }}-caddy
+  labels:
+    app: caddy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: caddy
+  template:
+    metadata:
+      labels:
+        app: caddy
+    spec:
+      containers:
+        - name: caddy
+          image: "{{ .Values.caddy.image.repository }}:{{ .Values.caddy.image.tag }}"
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          env:
+            - name: CADDY_CONFIG_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "proxy-stack.fullname" . }}-caddy-config
+                  key: config-hash
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+          {{- if .Values.caddy.adminEnabled }}
+            - name: admin
+              mountPath: /admin
+          {{- end }}
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "proxy-stack.fullname" . }}-caddy-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "proxy-stack.fullname" . }}-caddy-data
+        {{- if .Values.caddy.adminEnabled }}
+        - name: admin
+          configMap:
+            name: {{ include "proxy-stack.fullname" . }}-caddy-admin
+            optional: true
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "proxy-stack.fullname" . }}-caddy
+  labels:
+    app: caddy
+spec:
+  type: {{ .Values.caddy.service.type | default "LoadBalancer" }}
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: https
+  selector:
+    app: caddy
+{{- end }}
+
+{{- if .Values.nginx.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proxy-stack.fullname" . }}-nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: data
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "proxy-stack.fullname" . }}-nginx-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "proxy-stack.fullname" . }}-nginx-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "proxy-stack.fullname" . }}-nginx
+  labels:
+    app: nginx
+spec:
+  type: {{ .Values.nginx.service.type | default "ClusterIP" }}
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: https
+  selector:
+    app: nginx
+{{- end }}

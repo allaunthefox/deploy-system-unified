@@ -1,0 +1,38 @@
+---
+# Main entry point for kubernetes/master
+
+- name: Normalize Architecture
+  ansible.builtin.set_fact:
+    _k8s_norm_arch: >-
+      {{
+        'x86_64' if ansible_architecture in ['amd64', 'x86_64'] else
+        'aarch64' if ansible_architecture in ['arm64', 'aarch64', 'armv8b', 'armv8l'] else
+        'riscv64' if ansible_architecture in ['riscv64', 'risc64', 'riscv'] else
+        ansible_architecture
+      }}
+
+- name: Validate OS Compatibility
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family in ['Debian', 'RedHat', 'Archlinux', 'Alpine']
+    fail_msg: "Unsupported OS for Kubernetes prototype: {{ ansible_os_family }}"
+
+- name: Run K3s Pre-flight Checks
+  ansible.builtin.include_tasks: preflight.yml
+
+- name: Install K3s Binary
+  ansible.builtin.include_tasks: install.yml
+
+- name: Configure K3s Master
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Manage K3s Service
+  ansible.builtin.include_tasks: service.yml
+
+- name: Export Kubeconfig
+  ansible.builtin.include_tasks: kubeconfig.yml
+
+- name: Save Role Checkpoint
+  ansible.builtin.include_tasks: save_checkpoint.yml
+  vars:
+    additional_phases: ["kubernetes/master"]
