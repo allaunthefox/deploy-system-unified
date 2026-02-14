@@ -41,9 +41,16 @@ restic_password: "$(rand)"
 monitoring_grafana_admin_password: "$(rand)"
 vaultwarden_admin_token: "$(rand)"
 crowdsec_firewall_bouncer_key: "$(rand)"
+vault_crowdsec_firewall_bouncer_key: "$(rand)"
+# Authentik test secrets (used by containers/authentik verify)
+authentik_secret_key: "$(rand)"
+authentik_pg_pass: "$(rand)"
+# Containers secrets directory used for test fixtures and ownership
+containers_secrets_dir: "/tmp/dsu_test_secrets"
+containers_secrets_owner: "$(whoami)"
 # extra placeholders (optional)
-# porkbun_api_key: "$(rand)"
-# porkbun_secret_api_key: "$(rand)"
+porkbun_api_key: "$(rand)"
+porkbun_secret_api_key: "$(rand)"
 YML
 chmod 600 "$OUT"
 

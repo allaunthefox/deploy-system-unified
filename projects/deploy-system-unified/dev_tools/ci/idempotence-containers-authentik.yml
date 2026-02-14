@@ -1,0 +1,30 @@
+---
+- name: Idempotence test for containers/authentik
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    # default owner when not provided by test secrets
+    containers_secrets_owner: "{{ containers_secrets_owner | default(ansible_user_id) }}"
+  tasks:
+    - name: Ensure containers secrets dir exists (test fixture)
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir | default('/tmp/dsu_test_secrets') }}"
+        state: directory
+        owner: "{{ containers_secrets_owner }}"
+        mode: '0700'
+      when: containers_secrets_dir is defined
+
+    - name: Create Authentik test secrets file
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir | default('/tmp/dsu_test_secrets') }}/authentik.env"
+        content: |
+          AUTHENTIK_SECRET_KEY={{ authentik_secret_key | default('test_secret_key') }}
+          AUTHENTIK_DB_PASSWORD={{ authentik_pg_pass | default('test_db_pass') }}
+        owner: "{{ containers_secrets_owner }}"
+        mode: '0600'
+      when: containers_secrets_dir is defined
+
+    - name: Apply containers/authentik role
+      ansible.builtin.import_role:
+        name: containers/authentik
