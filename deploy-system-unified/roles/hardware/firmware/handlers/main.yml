@@ -1,13 +1,5 @@
 ---
 # Handlers for hardware/firmware
-- name: Restart watchdog
-  ansible.builtin.systemd:
-    name: watchdog
-    state: restarted
-  become: true
-  listen: "restart watchdog"
-  when: not _hw_is_container | default(false)
-
 - name: restart_watchdog
   ansible.builtin.systemd:
     name: watchdog

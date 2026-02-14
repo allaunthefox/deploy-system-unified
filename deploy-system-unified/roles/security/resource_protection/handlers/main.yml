@@ -1,11 +1,5 @@
 ---
 # Handlers for security/resource_protection
-- name: reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: true
-  become: true
-  listen: "reload systemd"
-
 - name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
