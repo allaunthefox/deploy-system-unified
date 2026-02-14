@@ -21,12 +21,9 @@ STYLE_GUIDE="$PROJECT_ROOT/LLM_RESEARCH/Style_Guide.md"
 STYLE_IGNORE="$PROJECT_ROOT/dev_tools/tools/style-guide-enforcement/.styleignore"
 VENV_DIR="$PROJECT_ROOT/.venv"
 
-<<<<<<< HEAD:projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
-=======
 # Ensure relative paths (e.g., ansible.cfg) resolve consistently regardless of invocation cwd.
 cd "$PROJECT_ROOT"
 
->>>>>>> origin/main:deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
 # Prefer project-local virtualenv if available (stability + consistent collections)
 if [ -x "$VENV_DIR/bin/ansible-lint" ]; then
     export PATH="$VENV_DIR/bin:$PATH"

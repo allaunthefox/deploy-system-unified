@@ -92,3 +92,21 @@ roles/orchestration/k8s_node/defaults/main.yml
 roles/networking/vpn_mesh/defaults/main.yml
 # Reason: Security task uses example password for tests
 roles/security/access/tasks/main.yml
+
+# Reason: Known chart values / secrets files are SOPS-encrypted or intentionally contain placeholders
+charts/security-stack/values.yaml
+charts/security-stack/templates/secrets.yaml
+charts/database-stack/values.yaml
+charts/backup-stack/values.yaml
+charts/backup-stack/templates/deployment.yaml
+charts/auth-stack/values.yaml
+
+# Reason: Encrypted inventory / migration secrets (managed via sops)
+inventory/group_vars/all/secrets.sops.yml
+inventory/group_vars/all/secrets.migration.yml
+
+# Reason: Deployment playbook legitimately contains token placeholders
+playbooks/deploy_kubernetes.yml
+
+# Reason: Role defaults include example tokens/fields that trigger false positives
+roles/kubernetes/node/defaults/main.yml
