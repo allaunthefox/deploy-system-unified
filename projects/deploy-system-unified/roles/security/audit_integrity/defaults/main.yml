@@ -1,8 +1,0 @@
----
-# Defaults for security/audit_integrity
-
-# Store FSS verification keys on the controller (encrypted with Ansible Vault).
-audit_integrity_store_keys: true
-
-# Destination directory on the controller for encrypted verification keys.
-audit_integrity_output_dir: "/tmp"

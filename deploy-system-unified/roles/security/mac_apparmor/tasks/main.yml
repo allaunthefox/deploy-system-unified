@@ -1,0 +1,41 @@
+---
+# Tasks for security/mac_apparmor - Mandatory Access Control
+- name: Install AppArmor packages (Debian/Ubuntu)
+  ansible.builtin.package:
+    name:
+      - apparmor
+      - apparmor-utils
+      - apparmor-profiles
+    state: present
+  when: ansible_os_family == 'Debian'
+  become: true
+
+- name: Install AppArmor packages (Alpine)
+  ansible.builtin.package:
+    name:
+      - apparmor
+      - apparmor-utils
+    state: present
+  when: ansible_os_family == 'Alpine'
+  become: true
+
+- name: Enable and start AppArmor service
+  ansible.builtin.service:
+    name: apparmor
+    enabled: true
+    state: started
+  when:
+    - ansible_os_family in ['Debian', 'Alpine']
+    - not (is_virtualized | default(false))
+  become: true
+
+- name: Register AppArmor Security Parameters for GRUB
+  ansible.builtin.set_fact:
+    core_grub_security_params: >-
+      {{
+        core_grub_security_params | default([]) +
+        ['apparmor=1', 'security=apparmor']
+      }}
+  when:
+    - ansible_os_family in ['Debian', 'Alpine']
+    - not (is_virtualized | default(false))

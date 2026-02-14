@@ -1,0 +1,38 @@
+---
+# Pre-flight checks for K3s Master
+
+- name: Check for swap
+  ansible.builtin.command: swapon --show
+  register: _swap_check
+  changed_when: false
+  failed_when: false
+
+- name: Fail if swap is enabled (Kubernetes requirement)
+  ansible.builtin.fail:
+    msg: "Swap is enabled on the host. Kubernetes requires swap to be disabled."
+  when: 
+    - _swap_check.stdout | length > 0
+    - ansible_os_family != 'Alpine' # Alpine often runs with no swap by default or handles it differently
+
+- name: Ensure required kernel modules are loaded
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - overlay
+    - br_netfilter
+  become: true
+  when: ansible_os_family != 'Alpine' # Alpine uses different module management
+
+- name: Set sysctl parameters for Kubernetes networking
+  ansible.builtin.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+  loop:
+    - { key: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+    - { key: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+    - { key: 'net.ipv4.ip_forward', value: '1' }
+  become: true
+  when: ansible_os_family != 'Alpine'

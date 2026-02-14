@@ -1,0 +1,115 @@
+{{- if .Values.restic.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "backup-stack.fullname" . }}-restic
+  labels:
+    app: restic
+spec:
+  schedule: {{ .Values.restic.schedule | quote }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: restic
+              image: "{{ .Values.restic.image.repository }}:{{ .Values.restic.image.tag }}"
+              command: ["restic", "backup", "/data", "--repo", "{{ .Values.restic.repository }}"]
+              env:
+                - name: RESTIC_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "backup-stack.fullname" . }}-secrets
+                      key: restic-password
+                      optional: true
+              {{- if .Values.restic.repository }}
+              {{- if hasPrefix "s3:" .Values.restic.repository }}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "backup-stack.fullname" . }}-secrets
+                      key: s3-access-key
+                      optional: true
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "backup-stack.fullname" . }}-secrets
+                      key: s3-secret-key
+                      optional: true
+              {{- end }}
+              {{- end }}
+              volumeMounts:
+                - name: backup-data
+                  mountPath: /data
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+          volumes:
+            - name: backup-data
+              persistentVolumeClaim:
+                claimName: {{ include "backup-stack.fullname" . }}-backup-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "backup-stack.fullname" . }}-backup-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+{{- end }}
+
+{{- if .Values.rclone.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "backup-stack.fullname" . }}-rclone
+  labels:
+    app: rclone
+spec:
+  schedule: {{ .Values.rclone.schedule | quote }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: rclone
+              image: "{{ .Values.rclone.image.repository }}:{{ .Values.rclone.image.tag }}"
+              command: ["rclone", "sync", "/data", "remote:backup"]
+              env:
+                - name: RCLONE_CONFIG_REMOTE_TYPE
+                  value: "s3"
+              volumeMounts:
+                - name: backup-data
+                  mountPath: /data
+                - name: rclone-config
+                  mountPath: /config/rclone
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+          volumes:
+            - name: backup-data
+              persistentVolumeClaim:
+                claimName: {{ include "backup-stack.fullname" . }}-backup-data
+            - name: rclone-config
+              secret:
+                secretName: {{ include "backup-stack.fullname" . }}-rclone-config
+                optional: true
+{{- end }}

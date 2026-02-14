@@ -1,0 +1,14 @@
+---
+# Architecture specific packages for x86_64
+bootstrap_arch_packages:
+  Debian:
+    - intel-microcode
+    - amd64-microcode
+  RedHat:
+    - microcode_ctl
+  Archlinux:
+    - intel-ucode
+    - amd-ucode
+  Alpine:
+    - intel-ucode
+    - amd-ucode

@@ -1,0 +1,72 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# GPU Slicing Bare Metal Deployment Template (riscv64)
+# For RISC-V Server (Milk-V Pioneer, Spacemit K1/M1)
+# Features: Generic GPU support (Mesa) or specialized vendor drivers
+
+- ansible.builtin.import_playbook: ../base_hardened.yml
+- name: Deploy GPU Slicing (Bare Metal - RISCV64)
+  hosts: all
+  become: true
+
+  vars:
+    # RISCV64-specific defaults
+    gpu_stack_arch: "riscv64"
+    gpu_stack_vendor: "generic" # Often AMD or Imagination on RISC-V
+
+  pre_tasks:
+    - name: Validate System Identity
+      ansible.builtin.assert:
+        that:
+          - ansible_architecture in ['riscv64', 'risc64']
+        fail_msg: "System must be riscv64 architecture."
+
+    - name: Precreate essential directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "/var/lib/deploy-system"
+        - "/tmp/deploy-system"
+      become: true
+
+    - name: Include preflight checks
+      ansible.builtin.import_role:
+        name: ops/preflight
+      tags: [preflight]
+
+  roles:
+    - core/bootstrap
+    - core/identity
+    - role: networking/physical
+    - networking/firewall
+    - security/hardening
+    - security/access
+    - role: ops/monitoring
+    - core/logging
+
+    # GPU Driver Stack
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ gpu_stack_vendor }}"
+        gpu_stack_mode: server
+
+    # GPU-specific configuration
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "{{ gpu_stack_vendor }}"
+        containers_gpu_slicing:
+          strategy: "time-slicing"
+          auto_strategy:
+            bare_metal: "time-slicing"
+
+  post_tasks:
+    - name: Display Deployment Info
+      ansible.builtin.debug:
+        msg: "Deployed on RISCV64. Architecture: {{ ansible_architecture }}"

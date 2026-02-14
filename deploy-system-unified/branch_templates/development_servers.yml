@@ -1,0 +1,36 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# Development Workstation - Flexible Solution Stack
+# Solution: Base Hardened Infrastructure + Dev Container Workload
+- ansible.builtin.import_playbook: base_hardened.yml
+- name: Deploy Development Container Workload
+  hosts: all
+  become: true
+  roles:
+    # Container Infrastructure Workload (Flexible)
+    - role: containers/runtime
+    - role: containers/config
+    - role: containers/quadlets
+    - role: containers/caddy
+  post_tasks:
+    - name: Create development container directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
+  handlers:
+    - name: Restart caddy
+      ansible.builtin.systemd:
+        name: caddy
+        state: restarted
+      listen: "restart caddy"

@@ -1,0 +1,19 @@
+---
+# Handlers for core/grub
+
+- name: update-grub
+  ansible.builtin.command: update-grub
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: update-grub-redhat
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  become: true
+  when: ansible_os_family == 'RedHat'
+  listen: update-grub
+
+- name: update-grub-arch-alpine
+  ansible.builtin.command: grub-mkconfig -o /boot/grub/grub.cfg
+  become: true
+  when: ansible_os_family in ['Archlinux', 'Alpine']
+  listen: update-grub

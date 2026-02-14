@@ -1,0 +1,37 @@
+name: Prevent accidental gitlinks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches:
+      - main
+
+jobs:
+  no-gitlinks:
+    name: Detect accidental gitlink (submodule) entries
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository (PR head)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref }}
+
+      - name: Fail if repository tree contains gitlink entries (mode 160000)
+        run: |
+          set -euo pipefail
+          echo "Scanning repository for gitlink (submodule) entries..."
+          git ls-tree -r HEAD | awk '$1 == "160000" {print $4}' > /tmp/gitlinks || true
+          if [ -s /tmp/gitlinks ]; then
+            echo "\nERROR: found gitlink(s) in repository tree:\n"
+            nl -ba /tmp/gitlinks
+            echo
+            echo "If this is accidental remove the gitlink and .gitmodules, for example:"
+            echo "  git rm --cached <path-to-gitlink>"
+            echo "  git commit -m \"ci: remove accidental gitlink\" && git push"
+            exit 1
+          fi
+          echo "No gitlink entries detected."

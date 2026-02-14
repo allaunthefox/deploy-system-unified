@@ -1,0 +1,139 @@
+---
+# Tasks for core/memory - Intelligent Memory Compression
+
+- name: Detect Physical Swap
+  ansible.builtin.shell: swapon --show=NAME --noheadings | wc -l
+  register: physical_swap_count
+  changed_when: false
+  become: true
+
+- name: Load Architecture Specific Memory Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
+
+- name: Determine Memory Strategy (Auto-Selection)
+  ansible.builtin.set_fact:
+    active_memory_strategy: >-
+      {{
+        'zram' if (
+           core_memory_compression_strategy == 'zram'  or
+           (core_memory_compression_strategy == 'auto' and core_memory_shared_vram == true) or
+           (core_memory_compression_strategy == 'auto' and core_memory_shared_vram == 'auto' and uma_detection.stdout == 'true') or
+           (core_memory_compression_strategy == 'auto' and ansible_memtotal_mb < 8192) or
+           (core_memory_compression_strategy == 'auto' and physical_swap_count.stdout | int == 0)
+        ) else
+        'zswap' if (
+           core_memory_compression_strategy == 'zswap'  or
+           (core_memory_compression_strategy == 'auto' and ansible_memtotal_mb >= 8192 and physical_swap_count.stdout | int > 0)
+        ) else
+        'none'
+      }}
+
+- name: Report Selected Strategy
+  ansible.builtin.debug:
+    msg: "System Memory: {{ ansible_memtotal_mb }}MB. Strategy Selected: {{ active_memory_strategy | upper }}"
+
+- name: Resolve Configuration Conflicts (Intelligent Resolution)
+  ansible.builtin.set_fact:
+    # Danger: ZRAM requires high swappiness to actually compress. If using database profile (swappiness=10),
+    # ZRAM becomes useless unless we bump it up. However, if physical swap exists, 10 is fine.
+    # Resolution: If ZRAM is sole swap, FORCE moderate swappiness (60) even for databases to prevent OOM.
+    core_memory_swappiness: >-
+      {{
+        60 if (active_memory_strategy == 'zram' and physical_swap_count.stdout | int == 0 and core_memory_swappiness | int < 60)
+        else core_memory_swappiness
+      }}
+    # Danger: THP 'always' kills Redis latency.
+    core_memory_thp_state: >-
+      {{
+        'madvise' if (core_memory_workload_profile == 'database' and core_memory_thp_state == 'always')
+        else core_memory_thp_state
+      }}
+
+- name: Validate Final Configuration
+  ansible.builtin.debug:
+    msg: >-
+      Conflict Resolution Applied:
+      Swappiness set to {{ core_memory_swappiness }} (Reason: {{ 'ZRAM-OOM-Protection' if active_memory_strategy == 'zram' and physical_swap_count.stdout|int == 0 else 'Profile-Default' }}).
+      THP set to {{ core_memory_thp_state }} (Reason: {{ 'Database-Latency-Protection' if core_memory_workload_profile == 'database' else 'User-Configured' }}).
+
+- name: Configure ZRAM (zram-generator)
+  when:
+    - active_memory_strategy == 'zram'
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
+  block:
+    - name: Install zram-generator
+      ansible.builtin.package:
+        name: zram-generator
+        state: present
+      become: true
+
+    - name: Configure zram-generator.conf
+      ansible.builtin.copy:
+        content: |
+          [zram0]
+          zram-size = {{ (ansible_memtotal_mb * (core_memory_zram_size_percent | float / 100)) | int }}
+          compression-algorithm = {{ core_memory_zram_algorithm }}
+          swap-priority = {{ core_memory_zram_priority }}
+          fs-type = swap
+        dest: /etc/systemd/zram-generator.conf
+        mode: '0644'
+      become: true
+      notify: restart systemd-zram-setup
+
+- name: Configure ZSwap (Kernel Modules)
+  when:
+    - active_memory_strategy == 'zswap'
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
+  block:
+    - name: Enable ZSwap Kernel Parameters
+      ansible.builtin.set_fact:
+        core_grub_performance_params: >-
+          {{
+            core_grub_performance_params | default([]) +
+            [
+              'zswap.enabled=1',
+              'zswap.compressor=' ~ core_memory_zswap_compressor,
+              'zswap.max_pool_percent=' ~ core_memory_zswap_max_pool_percent
+            ]
+          }}
+
+    - name: Disable ZRAM (Conflict Avoidance)
+      ansible.builtin.systemd:
+        name: systemd-zram-setup@zram0.service
+        state: stopped
+        enabled: false
+      failed_when: false
+      become: true
+
+- name: Tune Virtual Memory for Compression
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+    sysctl_file: /etc/sysctl.d/99-memory-tuning.conf
+  loop:
+    - { key: 'vm.swappiness', value: '{{ core_memory_swappiness }}' }
+    - { key: 'vm.vfs_cache_pressure', value: '{{ core_memory_cache_pressure }}' }
+    - { key: 'vm.page-cluster', value: '0' } # Essential for ZRAM/ZSwap effectiveness
+    - { key: 'vm.dirty_bytes', value: '{{ core_memory_dirty_bytes }}', condition: "{{ core_memory_dirty_bytes | int > 0 }}" }
+    - { key: 'vm.dirty_background_bytes', value: '{{ core_memory_dirty_background_bytes }}', condition: "{{ core_memory_dirty_background_bytes | int > 0 }}" }
+  when:
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
+    - active_memory_strategy != 'none' or core_memory_workload_profile == 'database'
+  become: true
+
+- name: Configure Transparent Huge Pages (THP)
+  ansible.builtin.shell: |
+    if ! grep -q '\[{{ core_memory_thp_state }}\]' /sys/kernel/mm/transparent_hugepage/enabled; then
+      echo {{ core_memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
+      echo {{ core_memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/defrag
+      echo "changed"
+    fi
+  register: thp_result
+  changed_when: "'changed' in thp_result.stdout"
+  become: true
+  when:
+    - core_memory_workload_profile != 'standard'
+    - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']

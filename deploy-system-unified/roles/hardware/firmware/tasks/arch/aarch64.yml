@@ -1,0 +1,9 @@
+---
+# aarch64 specific firmware tasks
+
+- name: Set distribution-specific hardware package names (aarch64)
+  ansible.builtin.set_fact:
+    microcode_packages: [] # ARM uses different firmware mechanisms
+    monitoring_packages: >-
+      {{ ['smartmontools'] if ansible_os_family == 'Archlinux' else ['smartmontools'] }}
+    watchdog_service: []

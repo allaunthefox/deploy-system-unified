@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  role_name: caddy
+  author: prod
+  description: Caddy web server role with negative tests
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags: [containers, caddy]
+# assumes_permissive: true
+# Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.
+
+# Negative Testing
+# This role includes comprehensive negative testing to ensure secret validation works correctly.
+# Test files are located in: molecule/negative/
+#
+# Test scenarios cover:
+# - Missing Caddyfile
+# - Wrong file permissions (should be 0600)
+# - Placeholder values in configuration
+# - Wrong file ownership
+# - Missing SSL certificate directory
+# - Wrong SSL directory permissions
+#
+# To run negative tests locally:
+# cd roles/containers/caddy && molecule test --scenario-name negative
