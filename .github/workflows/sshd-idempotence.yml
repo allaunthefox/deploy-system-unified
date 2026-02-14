@@ -21,7 +21,8 @@ jobs:
           docker run --rm -v "$PWD":/workspace -w /workspace ubuntu:22.04 bash -lc '
             export DEBIAN_FRONTEND=noninteractive; 
             export ANSIBLE_ROLES_PATH=/workspace/roles:/workspace; 
-            apt-get update -y; apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg; 
+            apt-get update -y; apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg wget; \
+            curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && chmod +x /usr/local/bin/sops; 
             pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"; 
             # Ensure role resolution works by providing a convenience symlink when roles are nested
             ln -s /workspace/roles/security/sshd /workspace/roles/sshd || true; 
