@@ -1,0 +1,14 @@
+---
+# Defaults for security/resource_protection
+# Minimum requirements to run the full hardened stack
+resource_min_ram_mb:
+  bare-metal: 1024
+  virtual: 512
+  vps: 512
+  container: 256
+  default: 512
+  # Legacy value (older virt_type behavior used ansible_facts['virtualization_type'])
+  kvm: 512
+# Sane global limits for systemd services
+resource_default_tasks_max: 4096
+resource_default_memory_max: "80%" # Prevent a single leak from killing the host

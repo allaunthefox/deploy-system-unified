@@ -1,0 +1,64 @@
+---
+# Tasks for core/time role
+- name: Refresh package cache for time synchronization dependencies (Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install time synchronization service (idempotent)
+  ansible.builtin.package:
+    name: "{{ time_service_mapping[ansible_distribution | lower].package }}"
+    state: present
+  become: true
+  when: ansible_distribution | lower in time_service_mapping.keys()
+- name: Configure secure time synchronization (idempotent)
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: "{{ time_service_mapping[ansible_distribution | lower].conf_dir }}/chrony.conf"
+    mode: '0644'
+    owner: root
+    group: root
+  become: true
+  notify: restart chrony
+  when:
+    - ansible_distribution | lower in time_service_mapping.keys()
+    - (virt_type | default('container')) != "container" # Containers typically share host clock
+- name: Enable and start time synchronization service (idempotent)
+  ansible.builtin.service:
+    name: "{{ time_service_mapping[ansible_distribution | lower].service }}"
+    enabled: true
+    state: started
+  become: true
+  when:
+    - ansible_distribution | lower in time_service_mapping.keys()
+    - (virt_type | default('container')) != "container"
+- name: Verify time synchronization is working (idempotent)
+  ansible.builtin.command: chronyc tracking
+  register: time_sync_status
+  changed_when: false
+  become: true
+  failed_when: false
+  check_mode: false
+  retries: 5
+  delay: 5
+  until: time_sync_status.rc == 0
+  when: (virt_type | default('container')) != "container"
+
+- name: Validate time synchronization quality (idempotent)
+  ansible.builtin.assert:
+    that:
+      - time_sync_status.rc == 0
+      - >-
+        ('System time' in time_sync_status.stdout) or
+        ('Reference ID' in time_sync_status.stdout) or
+        ('Leap status' in time_sync_status.stdout)
+    fail_msg: >-
+      Time synchronization not properly configured - checkpoint functionality may be unreliable.
+      chronyc tracking output:
+      {{ time_sync_status.stdout | default('NO OUTPUT') }}
+      {{ time_sync_status.stderr | default('NO ERROR OUTPUT') }}
+  when:
+    - (virt_type | default('container')) != "container"
+    - not time_sync_status.failed

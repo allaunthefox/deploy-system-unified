@@ -13,6 +13,7 @@
 - [Core Philosophy](NON_COMINGLING)
 - [Virtual Networking](VIRTUAL_NETWORKING)
 - [Backup Strategy](BACKUP_STRATEGY)
+- [GPU Stack Setup](GPU_STACK_SETUP)
 - [GPU Slicing](GPU_SLICING)
 - [x86 Guide](ARCH_GUIDE_X86)
 - [ARM64 Guide](ARCH_GUIDE_ARM64)
@@ -32,6 +33,10 @@
 
 ### 🚀 Deployment
 - [Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)
+- [Quick Reference](QUICK_REFERENCE)
+- [Beginner Guide](BEGINNER_GUIDE)
+- [Deployment Metrics](DEPLOYMENT_METRICS)
+- [GPU Dashboards](GPU_DASHBOARDS)
 - [Deployment Status](DEPLOYMENT_STATUS)
 - [Examples](EXAMPLES)
 - [OS Configuration](OS_CONFIGURATION)
@@ -57,6 +62,7 @@
 
 ### 📅 Planning
 - [Versioning Policy](VERSIONING_POLICY)
+- [Release Cycles](RELEASE_CYCLES)
 - [Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)
 - [Migration Plan](MIGRATION_PLAN)
 - [Restructuring Plan](RESTRUCTURING_PLAN_2026)

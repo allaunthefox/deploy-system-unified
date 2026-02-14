@@ -1,0 +1,43 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# VPS Hardened - Cloud Infrastructure Solution Stack
+# Solution: Cloud Provider Sync + Base Hardened Infrastructure + VPS Optimization
+
+- name: Sync with Cloud Provider
+  hosts: all
+  become: true
+  vars:
+    cloud_sync_roles:
+      - ops/cloud_init
+  tasks:
+    - name: Execute Cloud Sync Roles
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      loop: "{{ cloud_sync_roles }}"
+      loop_control:
+        loop_var: role_item
+
+- ansible.builtin.import_playbook: base_hardened.yml
+
+- name: Deploy VPS Workload
+  hosts: all
+  become: true
+  vars:
+    # Allow TCP forwarding for VPS environments (required for Contabo)
+    # Deprecated: prefer trusted-group exceptions instead of allowing globally
+    sshd_allow_tcp_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
+    vps_roles:
+      # VPS Specialized Roles
+      - hardware/virtual_guest
+      # Final Solution Integrity Verification
+      - security/scanning
+  tasks:
+    - name: Execute VPS Roles
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      loop: "{{ vps_roles }}"
+      loop_control:
+        loop_var: role_item

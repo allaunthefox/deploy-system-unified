@@ -1,0 +1,36 @@
+---
+# Shared assertions and validation tasks
+# Use: ansible.builtin.include_tasks: roles/shared/tasks/assertions.yml
+
+- name: Check required variables are defined
+  ansible.builtin.assert:
+    that:
+      - item.key in vars or item.key in hostvars[inventory_hostname]
+    fail_msg: "Required variable '{{ item.key }}' is not defined"
+    quiet: true
+  loop:
+    - { key: 'deployment_profile' }
+    - { key: 'ansible_facts' }
+  when: item.key not in vars
+
+- name: Verify OS is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine', 'Archlinux']
+    fail_msg: "Unsupported OS: {{ ansible_facts['os_family'] }}"
+
+- name: Check network connectivity
+  ansible.builtin.wait_for:
+    host: "{{ item.host }}"
+    port: "{{ item.port | default(22) }}"
+    timeout: 5
+  loop:
+    - { host: '8.8.8.8' }
+  changed_when: false
+  failed_when: false
+
+- name: Verify package manager availability
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['pkg_mgr'] is defined
+    fail_msg: "Package manager not detected"

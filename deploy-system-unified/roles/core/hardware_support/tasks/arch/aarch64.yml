@@ -1,0 +1,13 @@
+---
+# aarch64 specific hardware tasks
+
+- name: Set Hardware Facts (aarch64)
+  ansible.builtin.set_fact:
+    host_cpu_has_avx: false
+    host_cpu_has_avx2: false
+    host_cpu_has_sse4_2: false
+    host_cpu_has_aes: "{{ 'aes' in ansible_facts['processor_features'] | default([]) }}"
+    host_cpu_has_sha: "{{ 'sha1' in ansible_facts['processor_features'] | default([]) or 'sha2' in ansible_facts['processor_features'] | default([]) }}"
+    host_cpu_has_rdrand: false
+    host_has_qat: false
+    host_has_hardware_rng: false # ARM uses different mechanisms for RNG usually

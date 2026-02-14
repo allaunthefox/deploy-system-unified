@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ops-stack.fullname" . }}-vaultwarden
+  labels:
+    app: vaultwarden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+        - name: vaultwarden
+          image: "{{ .Values.vaultwarden.image.repository }}:{{ .Values.vaultwarden.image.tag }}"
+          ports:
+            - containerPort: 8081
+            - containerPort: 3012
+          env:
+            - name: SIGNUPS_ALLOWED
+              value: {{ .Values.vaultwarden.config.signupsAllowed | quote }}
+            - name: WEBSOCKET_ENABLED
+              value: {{ .Values.vaultwarden.config.websocketEnabled | quote }}
+            - name: ROCKET_PORT
+              value: "8081"
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ops-stack.fullname" . }}-vaultwarden-secrets
+                  key: admin-token
+          livenessProbe:
+            httpGet:
+              path: /alive
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "ops-stack.fullname" . }}-vaultwarden-data

@@ -1,0 +1,58 @@
+---
+# GPU Driver Integrity and Conflict Resolution
+
+- name: Initialize Conflict Facts
+  ansible.builtin.set_fact:
+    gpu_driver_conflicts_found: false
+    gpu_conflicting_modules: []
+
+- name: Detect Active Kernel Modules
+  ansible.builtin.shell: "lsmod | awk '{print $1}'"
+  register: _active_modules
+  changed_when: false
+  failed_when: false
+
+- name: Check for NVIDIA/Nouveau Conflict
+  ansible.builtin.set_fact:
+    gpu_conflicting_modules: "{{ gpu_conflicting_modules + ['nouveau'] }}"
+  when: 
+    - "'nvidia' in _gpu_vendor_list"
+    - "'nouveau' in _active_modules.stdout_lines"
+
+- name: Check for AMD Legacy/Modern Conflict
+  ansible.builtin.set_fact:
+    gpu_conflicting_modules: "{{ gpu_conflicting_modules + ['radeon'] }}"
+  when: 
+    - "'amd' in _gpu_vendor_list"
+    - "'radeon' in _active_modules.stdout_lines"
+
+- name: Report Driver Conflicts
+  ansible.builtin.debug:
+    msg: "WARNING: Conflicting GPU drivers detected: {{ gpu_conflicting_modules | join(', ') }}"
+  when: gpu_conflicting_modules | length > 0
+
+- name: Enforce Driver Isolation (Blacklist Conflicts)
+  block:
+    - name: Ensure modprobe.d directory exists
+      ansible.builtin.file:
+        path: /etc/modprobe.d
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: Apply Module Blacklists
+      ansible.builtin.template:
+        src: gpu-blacklist.conf.j2
+        dest: "/etc/modprobe.d/dsu-gpu-blacklist.conf"
+        mode: '0644'
+        owner: root
+        group: root
+      become: true
+      notify: "Update initramfs"
+
+    - name: Notify Reboot Requirement
+      ansible.builtin.debug:
+        msg: "CRITICAL: GPU driver blacklist applied. A reboot is REQUIRED to unload conflicting modules."
+  when: 
+    - gpu_conflicting_modules | length > 0
+    - (gpu_force_driver_isolation | default(false) or core_security_fail_secure | default(false))

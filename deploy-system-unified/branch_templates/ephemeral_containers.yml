@@ -1,0 +1,69 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# Ephemeral Secure Container - Volatile Solution Stack
+# Solution: Base Ephemeral Infrastructure + Volatile Container Workload
+- ansible.builtin.import_playbook: base_hardened.yml
+- ansible.builtin.import_playbook: base_ephemeral.yml
+- name: Deploy Ephemeral Container Workload
+  hosts: all
+  become: true
+  roles:
+    # Container Infrastructure Workload
+    - role: containers/runtime
+    - role: containers/config
+    - role: containers/quadlets
+    - role: containers/caddy
+    # Final Solution Integrity Verification
+    - role: security/scanning
+  post_tasks:
+    - name: Configure ephemeral-specific container security settings
+      block:
+        - name: Set up temporary security logs
+          tempfile:
+            state: directory
+          register: temp_security_logs
+        - name: Configure audit logging for ephemeral container
+          lineinfile:
+            path: /etc/audit/rules.d/ephemeral.rules
+            line: "{{ item }}"
+            create: true
+          loop:
+            - "-w /etc/passwd -p wa -k etc_passwd_changes"
+            - "-w /etc/shadow -p wa -k etc_shadow_changes"
+            - "-w /etc/ssh/ -p wa -k ssh_config_changes"
+            - "-w /srv/containers -p wa -k container_dir_changes"
+          notify: Restart auditd
+        - name: Limit SSH connection attempts during ephemeral session
+          lineinfile:
+            path: /etc/ssh/sshd_config
+            regexp: "^MaxAuthTries"
+            line: "MaxAuthTries 3"
+            validate: "/usr/sbin/sshd -t -f %s"
+          notify: Restart sshd
+          no_log: true
+        - name: Create ephemeral container directories
+          ansible.builtin.file:
+            path: "{{ item.path }}"
+            state: directory
+            mode: "{{ item.mode }}"
+            owner: "{{ item.owner | default('root') }}"
+            group: "{{ item.group | default('root') }}"
+          loop:
+            - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
+            - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
+            - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
+            - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
+  handlers:
+    - name: Restart auditd
+      ansible.builtin.systemd:
+        name: auditd
+        state: restarted
+      listen: "restart auditd"
+    - name: Restart caddy
+      ansible.builtin.systemd:
+        name: caddy
+        state: restarted
+      listen: "restart caddy"

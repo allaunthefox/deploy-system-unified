@@ -1,0 +1,7 @@
+---
+# Architecture specific packages for aarch64
+bootstrap_arch_packages:
+  Debian: []
+  RedHat: []
+  Archlinux: []
+  Alpine: []

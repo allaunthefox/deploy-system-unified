@@ -23,7 +23,9 @@
 - [`encryption_method`](roles/security_advanced.md#encryptionmethod)
 
 ### `security/audit_integrity`
-- *No variables defined in defaults/main.yml*
+- [`audit_integrity_store_keys`](roles/security_audit_integrity.md#auditintegritystorekeys)
+- [`audit_integrity_output_dir`](roles/security_audit_integrity.md#auditintegrityoutputdir)
+- [`audit_integrity_vault_encrypt_id`](roles/security_audit_integrity.md#auditintegrityvaultencryptid)
 
 ### `security/file_integrity`
 - *No variables defined in defaults/main.yml*

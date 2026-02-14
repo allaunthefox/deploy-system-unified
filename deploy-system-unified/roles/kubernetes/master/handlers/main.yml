@@ -1,0 +1,14 @@
+---
+# Handlers for kubernetes/master
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: restart k3s
+  ansible.builtin.systemd:
+    name: k3s
+    state: restarted
+    enabled: true
+  become: true

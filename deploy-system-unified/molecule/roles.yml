@@ -1,0 +1,4 @@
+---
+# Empty role requirements for Molecule's Ansible Galaxy dependency step.
+# This project vendors roles locally and pins *collections* via requirements.yml.
+roles: []

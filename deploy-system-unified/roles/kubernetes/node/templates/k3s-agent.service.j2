@@ -1,0 +1,34 @@
+[Unit]
+Description=Lightweight Kubernetes (Agent)
+Documentation=https://k3s.io
+After=network-online.target
+
+[Service]
+Type=notify
+EnvironmentFile=-/etc/default/k3s
+EnvironmentFile=-/etc/sysconfig/k3s
+EnvironmentFile=-/etc/systemd/system/k3s-agent.service.env
+ExecStart=/usr/local/bin/k3s 
+    agent 
+    --server=https://{{ kubernetes_master_api_ip }}:{{ kubernetes_master_api_port }} 
+    --token={{ kubernetes_k3s_token }} 
+    {% for label in kubernetes_node_labels %}
+    --node-label={{ label }} 
+    {% endfor %}
+    {% for taint in kubernetes_node_taints %}
+    --node-taint={{ taint }} 
+    {% endfor %}
+    --data-dir={{ kubernetes_data_dir }}
+
+KillMode=process
+Delegate=yes
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

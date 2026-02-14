@@ -1,0 +1,29 @@
+# Security Stack Values
+
+# CrowdSec
+crowdsec:
+  enabled: true
+  image:
+    repository: crowdsecurity/crowdsec
+    tag: latest
+  config:
+    local_api_credentials_path: /etc/crowdsec/local_api_credentials.yaml
+    prometheus: true
+    prometheus_level: full
+
+# Trivy
+trivy:
+  enabled: true
+  image:
+    repository: aquasec/trivy
+    tag: 0.56.0
+
+# Backup
+backup:
+  enabled: true
+  image:
+    repository: restic/restic
+    tag: 0.17.0
+  repository: ""  # Set your backup repository
+  password: ""   # Set encryption password
+  schedule: "0 2 * * *"  # Daily at 2am

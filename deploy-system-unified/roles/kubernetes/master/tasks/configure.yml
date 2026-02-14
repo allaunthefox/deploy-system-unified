@@ -1,0 +1,43 @@
+---
+# Configure K3s Master
+
+- name: Create required directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+  loop:
+    - "{{ kubernetes_token_path | dirname }}"
+    - "/etc/rancher/k3s"
+  become: true
+
+- name: Check if k3s token exists
+  ansible.builtin.stat:
+    path: "{{ kubernetes_token_path }}"
+  register: _k3s_token_stat
+  become: true
+
+- name: Generate k3s token
+  ansible.builtin.set_fact:
+    _new_k3s_token: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+  when: not _k3s_token_stat.stat.exists
+
+- name: Save k3s token
+  ansible.builtin.copy:
+    content: "{{ _new_k3s_token }}"
+    dest: "{{ kubernetes_token_path }}"
+    mode: '0600'
+    owner: root
+    group: root
+  become: true
+  when: not _k3s_token_stat.stat.exists
+
+- name: Deploy k3s systemd unit
+  ansible.builtin.template:
+    src: k3s.service.j2
+    dest: /etc/systemd/system/k3s.service
+    mode: '0644'
+  become: true
+  notify: reload systemd

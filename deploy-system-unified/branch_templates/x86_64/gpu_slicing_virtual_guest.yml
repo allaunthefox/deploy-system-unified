@@ -1,0 +1,146 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# GPU Slicing Virtual Guest Deployment Template
+# For virtual machines with GPU passthrough or vGPU capabilities
+# Features: GPU passthrough configuration, guest OS GPU driver installation
+
+- ansible.builtin.import_playbook: ../base_hardened.yml
+- name: Deploy GPU Slicing (Virtual Guest)
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Validate System Identity (FQDN Enforcement)
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn is defined
+          - ansible_fqdn != "localhost"
+          - ansible_fqdn != "localhost.localdomain"
+        fail_msg: "System must have a valid FQDN configured for secure deployment."
+    - name: Precreate essential directories (idempotent)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/var/lib/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/checkpoints", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/backups", mode: '0700', owner: 'root', group: 'root' }
+        - { path: "/var/lib/deploy-system/logs", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/tmp/deploy-system", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/security", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ssh", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/ufw", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/etc/fail2ban", mode: '0755', owner: 'root', group: 'root' }
+      become: true
+      tags: [bootstrap, directories]
+    - name: Set directory precreation flag (idempotent)
+      ansible.builtin.set_fact:
+        directories_precreated: true
+    - name: Check if preflight validation already completed (idempotent)
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Include preflight checks if not already completed (idempotent)
+      ansible.builtin.import_role:
+        name: ops/preflight
+      when: not preflight_flag.stat.exists
+      tags: [preflight]
+    - name: Create preflight completion flag (idempotent)
+      ansible.builtin.file:
+        path: /tmp/preflight_completed.flag
+        state: touch
+        mode: '0644'
+      when: not preflight_flag.stat.exists
+
+  roles:
+    # Core system setup
+    - core/bootstrap
+    - core/identity
+    - networking/firewall
+    - security/hardening
+    - security/access
+    - role: ops/monitoring
+    - core/logging
+
+    # GPU Driver Stack
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: nvidia
+        gpu_stack_mode: server
+
+    # GPU-specific configuration with passthrough
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        containers_gpu_count: 1
+        containers_gpu_slicing:
+          strategy: "passthrough"  # Use passthrough for virtual guest GPU access
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          passthrough: { devices: [] }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          time_slicing: { enabled: false, max_instances: 4 }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+
+    - role: containers/quadlets
+      vars:
+        quadlet_enable_gpu_support: true
+        quadlet_gpu_vendor: "nvidia"  # Set to "amd" or "intel" if needed
+        quadlet_gpu_slicing:
+          strategy: "passthrough"
+          auto_strategy:
+            bare_metal: "mig"
+            virtual_host: "sriov"
+            virtual_guest: "passthrough"
+          passthrough: { devices: [] }
+          mig: { enabled: false, profiles: ["1g.5gb"] }
+          time_slicing: { enabled: false, max_instances: 4 }
+          sriov: { enabled: false, vf_count: 4 }
+          level_zero: { enabled: false, partitions: [] }
+          oneapi: { enabled: false, toolkit: "base", components: ["compiler", "mpi", "tbb"] }
+        quadlet_gpu_capabilities: []
+        quadlet_container_gpu_config:
+          ai_workload:
+            devices: ["/dev/nvidia0"]
+          visualization:
+            devices: ["/dev/nvidia0"]
+
+  post_tasks:
+    - name: Verify GPU passthrough configuration
+      ansible.builtin.command:
+        cmd: lspci -nn | grep -E "(VGA|3D|NVIDIA|AMD|Intel)"
+      register: gpu_passthrough
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Verify GPU functionality
+      ansible.builtin.command:
+        cmd: nvidia-smi
+      register: nvidia_smi_output
+      changed_when: false
+      failed_when: false
+      become: false
+      when: containers_gpu_vendor == "nvidia"
+
+    - name: Display GPU slicing information
+      ansible.builtin.debug:
+        msg: |
+          GPU Slicing (Virtual Guest) Deployment Complete
+          Vendor: {{ containers_gpu_vendor | upper }}
+          Slicing Strategy: {{ containers_gpu_slicing.strategy }}
+          GPU Passthrough: {{ gpu_passthrough.stdout | default('No GPU device detected') }}
+          GPU Functionality: {{ nvidia_smi_output.stdout | default('GPU not accessible') }}
+          Container Runtime: Podman with GPU support enabled
+          Quadlet GPU Support: {{ quadlet_enable_gpu_support }}

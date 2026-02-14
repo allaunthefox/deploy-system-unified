@@ -1,0 +1,11 @@
+---
+# Defaults for backup/timeshift
+
+timeshift_enable: true
+timeshift_device: "/dev/sda1"
+timeshift_backup_path: "/timeshift"
+
+# Hash verification and backup security
+backup_security_enabled: true
+backup_security_dir: "/var/backups/security"
+backup_name: "timeshift"

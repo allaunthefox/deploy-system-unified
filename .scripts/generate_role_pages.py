@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RR = ROOT / 'wiki_pages' / 'Role_Reference.md'
 OUT_DIR = ROOT / 'wiki_pages' / 'roles'
-PROJECT_ROLES = ROOT / 'projects' / 'deploy-system-unified' / 'roles'
+PROJECT_ROLES = ROOT / 'deploy-system-unified' / 'roles'
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
