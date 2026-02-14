@@ -9,7 +9,7 @@ galaxy_info:
     - name: Fedora
       versions: [all]
   galaxy_tags: [containers, authentik]
-assumes_permissive: true
+# 'assumes_permissive' removed: metadata key unsupported by Ansible role metadata.
 # Authentik role has secrets and may be used with host-network assumptions in some profiles.
 
 # Negative Testing

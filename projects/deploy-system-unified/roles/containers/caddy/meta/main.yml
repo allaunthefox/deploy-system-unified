@@ -9,7 +9,8 @@ galaxy_info:
     - name: Fedora
       versions: [all]
   galaxy_tags: [containers, caddy]
-assumes_permissive: true
+# 'assumes_permissive' removed: not valid RoleMetadata attribute for Ansible;
+# role behavior for permissive profiles is documented in README or role defaults.
 # Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.
 
 # Negative Testing
