@@ -1,17 +1,5 @@
 ---
 # Handlers for networking/services/endlessh
-- name: restart endlessh
-  ansible.builtin.systemd:
-    name: endlessh
-    state: restarted
-  become: true
-  listen: "restart endlessh"
-- name: reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: true
-  become: true
-  listen: "reload systemd"
-
 - name: restart_endlessh
   ansible.builtin.systemd:
     name: endlessh

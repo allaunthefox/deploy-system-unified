@@ -1,11 +1,5 @@
 ---
 # Handlers for security/access role
-- name: restart sshd
-  ansible.builtin.systemd:
-    name: "{{ ssh_service_name }}"
-    state: restarted
-  become: true
-
 - name: restart_sshd
   ansible.builtin.systemd:
     name: "{{ ssh_service_name }}"
