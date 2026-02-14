@@ -27,6 +27,8 @@ Thank you for your interest in contributing to Deploy-System-Unified! We welcome
 3.  Submit a Pull Request with a clear description of the change.
 4.  Link to any relevant issues (e.g., `Closes #123`).
 
+- **CI checks:** This repository includes an automated check that rejects PRs which introduce accidental `gitlink`/submodule entries (mode `160000`). If your change intentionally adds a submodule, update `.gitmodules`; otherwise remove any unintended gitlink and `.gitmodules` before submitting.
+
 ## Reporting Issues
 
 - Use the Issue Tracker to report bugs or request features.
