@@ -83,7 +83,7 @@
       {% endfor %}
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
-  notify: restart sshd
+  notify: 'restart_sshd'
   when: ssh_match_rules is defined and ssh_match_rules | length > 0
 - name: Set access configuration completion flag
   ansible.builtin.set_fact:

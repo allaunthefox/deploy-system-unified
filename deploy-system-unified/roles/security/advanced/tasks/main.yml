@@ -21,7 +21,7 @@
     - ssh_randomize_port | bool
     - advanced_security_hardening_random_ssh_port is defined
   become: true
-  notify: restart sshd
+  notify: 'restart_sshd'
   no_log: true
 - name: Enable SSH key rotation if enabled (idempotent)
   ansible.builtin.debug:
@@ -63,7 +63,7 @@
       chmod 600 /etc/ssh/ssh_host_*
       chmod 644 /etc/ssh/ssh_host_*.pub
       # Restart SSH service
-      systemctl restart sshd
+      systemctl 'restart_sshd'
     dest: /usr/local/bin/rotate_ssh_keys.sh
     mode: '0700'
     owner: root
