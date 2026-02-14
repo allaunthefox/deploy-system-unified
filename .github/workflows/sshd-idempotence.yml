@@ -29,5 +29,15 @@ jobs:
             ls -la /workspace || true; ls -la /workspace/roles || true; 
             # Ensure role resolution works by providing a convenience symlink when roles are nested
             ln -s /workspace/roles/security/sshd /workspace/roles/sshd || true; 
-            ansible-playbook /workspace/roles/security/sshd/tests/idempotence.yml --connection=local;
+            # Locate playbook robustly (repo may be checked-out into a nested folder in runner)
+            PLAYBOOK_PATH=""
+            for CAND in "/workspace/roles/security/sshd/tests/idempotence.yml" "/workspace/deploy-system-unified/roles/security/sshd/tests/idempotence.yml" /workspace/*/roles/security/sshd/tests/idempotence.yml; do
+              if [ -f "$CAND" ]; then
+                PLAYBOOK_PATH="$CAND" && break
+              fi
+            done
+            if [ -z "${PLAYBOOK_PATH:-}" ]; then
+              echo "ERROR: idempotence playbook not found in container"; ls -la /workspace || true; exit 2
+            fi
+            ansible-playbook "$PLAYBOOK_PATH" --connection=local;
           '
