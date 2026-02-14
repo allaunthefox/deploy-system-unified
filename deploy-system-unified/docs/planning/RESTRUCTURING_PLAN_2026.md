@@ -1,7 +1,14 @@
 # RESTRUCTURING_PLAN_2026
 
+<<<<<<< HEAD:projects/deploy-system-unified/docs/planning/RESTRUCTURING_PLAN_2026.md
+**Status:** Backlog (Not in current 2-4 week target window)  
+**Activation Rule:** Break into scoped execution tasks and add to `STABILITY_EXECUTION_PLAN_2026.md` before implementation.
+
+## Overview
+=======
 **Status:** Completed (February 2026)  
 **Execution Record:** Integrated into `STABILITY_EXECUTION_PLAN_2026.md`.
+>>>>>>> origin/main:deploy-system-unified/docs/planning/RESTRUCTURING_PLAN_2026.md
 
 ## Overview (Implemented)
 

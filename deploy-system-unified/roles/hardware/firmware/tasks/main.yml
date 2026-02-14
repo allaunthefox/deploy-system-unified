@@ -49,9 +49,30 @@
   failed_when: false
   when: not _hw_is_container
 
+<<<<<<< HEAD:projects/deploy-system-unified/roles/hardware/firmware/tasks/main.yml
+- name: Set distribution-specific hardware package names
+  ansible.builtin.set_fact:
+    microcode_packages: >-
+      {{ ['intel-ucode', 'amd-ucode'] if ansible_os_family == 'Archlinux' else ['intel-microcode', 'amd64-microcode'] }}
+    monitoring_packages: >-
+      {{ ['lm_sensors', 'smartmontools'] if ansible_os_family == 'Archlinux' else ['lm-sensors', 'smartmontools', 'watchdog'] }}
+    watchdog_service: "{{ [] if ansible_os_family == 'Archlinux' else ['watchdog'] }}"
+
+- name: Install CPU microcode updates (Intel/AMD)
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ microcode_packages }}"
+  become: true
+  failed_when: false
+  when:
+    - ansible_architecture == 'x86_64'
+    - not _hw_is_container
+=======
 - name: Load Architecture Specific Firmware Tasks
   ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
   ignore_errors: true
+>>>>>>> origin/main:deploy-system-unified/roles/hardware/firmware/tasks/main.yml
 
 - name: Install hardware monitoring and watchdog tools
   ansible.builtin.package:

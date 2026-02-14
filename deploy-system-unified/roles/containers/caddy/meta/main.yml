@@ -17,7 +17,12 @@ galaxy_info:
     - name: Alpine
       versions: [all]
   galaxy_tags: [containers, caddy]
+<<<<<<< HEAD:projects/deploy-system-unified/roles/containers/caddy/meta/main.yml
+# 'assumes_permissive' removed: not valid RoleMetadata attribute for Ansible;
+# role behavior for permissive profiles is documented in README or role defaults.
+=======
 # assumes_permissive: true
+>>>>>>> origin/main:deploy-system-unified/roles/containers/caddy/meta/main.yml
 # Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.
 
 # Negative Testing

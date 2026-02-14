@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #===============================================================================
 # chaos_monkey.sh - Chaos Testing for Deploy-System-Unified
 #===============================================================================
@@ -147,9 +147,9 @@ cd /home/prod/Workspaces/deploy-system-unified
 for playbook in playbooks/*.yml; do
     # Check YAML syntax (ansible-playbook --syntax-check needs collections)
     if python3 -c "import yaml; yaml.safe_load(open('$playbook'))" 2>/dev/null; then
-        log_pass "$(basename $playbook) is valid YAML"
+        log_pass "$(basename "$playbook") is valid YAML"
     else
-        log_fail "$(basename $playbook) has YAML errors"
+        log_fail "$(basename "$playbook") has YAML errors"
     fi
 done
 
@@ -161,9 +161,9 @@ cd /home/prod/Workspaces/deploy-system-unified
 
 for chart in charts/*; do
     if helm lint "$chart" >/dev/null 2>&1; then
-        log_pass "$(basename $chart) passes helm lint"
+        log_pass "$(basename "$chart") passes helm lint"
     else
-        log_fail "$(basename $chart) fails helm lint"
+        log_fail "$(basename "$chart") fails helm lint"
     fi
 done
 
@@ -176,9 +176,9 @@ cd /home/prod/Workspaces/deploy-system-unified
 for values in charts/*/values.yaml; do
     # Check for empty required fields that should have values
     if grep -q 'password: ""' "$values" 2>/dev/null; then
-        log_pass "$(basename $values) has documented empty required fields"
+        log_pass "$(basename "$values") has documented empty required fields"
     else
-        log_skip "$(basename $values) - no empty required fields"
+        log_skip "$(basename "$values") - no empty required fields"
     fi
 done
 

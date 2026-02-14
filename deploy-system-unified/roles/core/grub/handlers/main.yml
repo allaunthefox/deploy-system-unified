@@ -1,4 +1,14 @@
 ---
+<<<<<<< HEAD:projects/deploy-system-unified/roles/core/memory/handlers/main.yml
+# Handlers for core/memory
+
+- name: restart systemd-zram-setup
+  ansible.builtin.systemd:
+    name: systemd-zram-setup@zram0.service
+    state: restarted
+    daemon_reload: true
+  become: true
+=======
 # Handlers for core/grub
 
 - name: update-grub
@@ -17,3 +27,4 @@
   become: true
   when: ansible_os_family in ['Archlinux', 'Alpine']
   listen: update-grub
+>>>>>>> origin/main:deploy-system-unified/roles/core/grub/handlers/main.yml

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #===============================================================================
 # benchmark_metrics.sh - Container Runtime Benchmark Metrics Collection
 #===============================================================================
@@ -75,7 +75,7 @@ convert_cpu_to_percent() {
     # If value ends in 'm', it's in millicores
     if [[ "$cpu_value" == *"m" ]]; then
         local millicores
-        millicores=$(echo "$cpu_value" | sed 's/m//')
+        millicores=${cpu_value%m}
         echo "scale=2; $millicores / (100 * $num_cores)" | bc
     else
         # Assume cores, convert to percentage
@@ -92,8 +92,8 @@ convert_mem_to_percent() {
     # Extract numeric value and unit
     local mem_num
     local mem_unit
-    mem_num=$(echo "$mem_value" | sed 's/[MiGi]//')
-    mem_unit=$(echo "$mem_value" | sed 's/[0-9.]*//')
+    mem_num="${mem_value//[!0-9.]/}"
+    mem_unit="${mem_value//[0-9.]/}"
     
     # Convert to Mi
     if [[ "$mem_unit" == "Gi" ]]; then
