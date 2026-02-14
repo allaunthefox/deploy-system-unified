@@ -6,3 +6,10 @@
     state: restarted
   become: true
   listen: "restart fail2ban"
+
+- name: restart_fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: restarted
+  become: true
+  listen: "restart fail2ban"
