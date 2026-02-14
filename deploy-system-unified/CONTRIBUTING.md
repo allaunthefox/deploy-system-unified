@@ -19,6 +19,7 @@ Thank you for your interest in contributing to Deploy-System-Unified! We welcome
 - **Idempotence**: All roles must be idempotent. Run `scripts/verify_idempotence.sh` to verify.
 - **Preflight**: Changes must pass `playbooks/preflight_validate.yml`.
 - **Secrets**: Never commit secrets. Use SOPS/Age for secret management.
+- **Detect‑Secrets baseline**: See `docs/DETECT_SECRETS_BASELINE.md` for the policy and PR checklist when adding entries to `.secrets.baseline`.
 
 ## Pull Request Process
 
