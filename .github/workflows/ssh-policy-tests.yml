@@ -10,26 +10,37 @@ jobs:
   idempotence:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (PR head)
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          submodules: false
 
-      - name: Set up Docker container and run idempotence test
+      - name: Run idempotence test on runner
         run: |
-          # Start an ephemeral container with the repo mounted
-          docker run --rm -d --name sshd-test -v "$GITHUB_WORKSPACE":/workspace -w /workspace ubuntu:22.04 sleep infinity
-          docker exec sshd-test bash -lc "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl openssh-server python3-pip python3-apt gnupg2 wget --no-install-recommends && curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && chmod +x /usr/local/bin/sops"
-          docker exec sshd-test bash -lc "pip3 install 'ansible-core>=2.15,<2.16'"
-          # Ensure sshd_config exists
-          docker exec sshd-test bash -lc "test -f /etc/ssh/sshd_config || dpkg-reconfigure -f noninteractive openssh-server"
-          # Provide convenience symlink so the role can be referenced by short name
-          docker exec sshd-test bash -lc "ln -s /workspace/roles/security/sshd /workspace/roles/sshd || true"
-          # Run the idempotence test playbook inside the container
-          docker exec sshd-test bash -lc "ANSIBLE_ROLES_PATH=/workspace/roles:/workspace ansible-playbook roles/security/sshd/tests/idempotence.yml"
+          set -euo pipefail
+          # Build ANSIBLE_ROLES_PATH from any 'roles' directories inside the workspace (robust to nesting)
+          ROLES_PATHS=$(find "$GITHUB_WORKSPACE" -type d -name roles -print | paste -sd ':' -)
+          if [ -z "$ROLES_PATHS" ]; then
+            echo "ERROR: no 'roles' directories found in workspace"
+            find "$GITHUB_WORKSPACE" -maxdepth 4 -type d -name roles -print || true
+            exit 2
+          fi
+          export ANSIBLE_ROLES_PATH="$ROLES_PATHS:$GITHUB_WORKSPACE"
 
-      - name: Collect container logs (if any)
-        if: failure()
-        run: |
-          docker logs sshd-test || true
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates gnupg wget
+          curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && sudo chmod +x /usr/local/bin/sops
+          sudo pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"
 
-      - name: Tear down container
-        run: docker rm -f sshd-test || true
+          # Locate the idempotence playbook anywhere under the workspace
+          PLAYBOOK=$(find "$GITHUB_WORKSPACE" -path '*/roles/security/sshd/tests/idempotence.yml' -print -quit)
+          if [ -z "$PLAYBOOK" ]; then
+            echo "ERROR: idempotence playbook not found in workspace"
+            find "$GITHUB_WORKSPACE" -maxdepth 4 -type f -name idempotence.yml -print || true
+            exit 2
+          fi
+          echo "Using playbook: $PLAYBOOK"; ls -la "$(dirname "$PLAYBOOK")" || true
+          ansible-playbook "$PLAYBOOK" --connection=local
