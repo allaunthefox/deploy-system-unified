@@ -13,7 +13,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Validate Quadlet GPU capabilities (Linux CAP_* only)
   ansible.builtin.assert:
@@ -69,7 +69,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   notify:
-    - reload systemd
+    - reload_systemd
     - restart anubis
   when: anubis_enabled | bool
 - name: Enable and start Anubis service (if systemd is available and running)

@@ -94,7 +94,7 @@
         dest: /etc/systemd/zram-generator.conf
         mode: '0644'
       become: true
-      notify: restart systemd-zram-setup
+      notify: restart_systemd_zram_setup
 
 - name: Configure ZSwap (Kernel Modules)
   when:

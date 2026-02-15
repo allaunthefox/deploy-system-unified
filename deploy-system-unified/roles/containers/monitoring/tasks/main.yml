@@ -40,7 +40,7 @@
   when:
     - monitoring_enable | bool
     - monitoring_network != "host"
-  notify: Reload systemd
+  notify: reload_systemd
 
 - name: Create Monitoring Directories
   ansible.builtin.file:
@@ -74,7 +74,7 @@
     dest: "{{ monitoring_config_dir }}/prometheus/prometheus.yml"
     mode: '0644'
   become: true
-  notify: Restart Monitoring Pod
+  notify: restart_monitoring_pod
   when: monitoring_enable | bool
 
 - name: Deploy Monitoring Pod Quadlet
@@ -85,7 +85,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: Reload systemd
+  notify: reload_systemd
   when: monitoring_enable | bool
 
 - name: Deploy Prometheus Container Quadlet
@@ -96,7 +96,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: Reload systemd
+  notify: reload_systemd
   when: monitoring_enable | bool
 
 - name: Deploy Grafana Container Quadlet
@@ -107,7 +107,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: Reload systemd
+  notify: reload_systemd
   when: monitoring_enable | bool
 
 - name: Remove legacy generated systemd units (rootless)

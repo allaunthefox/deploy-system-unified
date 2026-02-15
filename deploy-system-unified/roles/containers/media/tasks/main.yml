@@ -15,7 +15,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Media Directories
   ansible.builtin.file:
@@ -102,7 +102,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: media_pod_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Deploy Media Caddy Configuration
   ansible.builtin.copy:
@@ -230,7 +230,7 @@
     mode: '0644'
   become: true
   when: media_gatekeeper_mode
-  notify: restart caddy
+  notify: restart_caddy
 
 - name: Create Jellyfin Container Quadlet
   ansible.builtin.copy:
@@ -281,7 +281,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_jellyfin_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Radarr Container Quadlet
   ansible.builtin.copy:
@@ -314,7 +314,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_radarr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Sonarr Container Quadlet
   ansible.builtin.copy:
@@ -347,7 +347,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_sonarr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Prowlarr Container Quadlet
   ansible.builtin.copy:
@@ -379,7 +379,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_prowlarr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Verify media secrets when fail-secure is enabled
   ansible.builtin.include_tasks: verify_secrets.yml
@@ -409,7 +409,7 @@
     group: "{{ containers_secrets_group }}"
   become: true
   when: transmission_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Transmission Container Quadlet
   ansible.builtin.copy:
@@ -445,7 +445,7 @@
     group: "{{ containers_secrets_group }}"
   become: true
   when: transmission_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Lidarr Container Quadlet
   ansible.builtin.copy:
@@ -478,7 +478,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_lidarr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Readarr Container Quadlet
   ansible.builtin.copy:
@@ -511,7 +511,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_readarr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Jellyseerr Container Quadlet
   ansible.builtin.copy:
@@ -542,7 +542,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: containers_jellyseerr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Navidrome Container Quadlet
   ansible.builtin.copy:
@@ -576,7 +576,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: navidrome_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Plex Container Quadlet
   ansible.builtin.copy:
@@ -625,7 +625,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: plex_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Bazarr Container Quadlet
   ansible.builtin.copy:
@@ -658,7 +658,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: bazarr_enable | default(false)
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Kavita Container Quadlet
   ansible.builtin.copy:
@@ -689,7 +689,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: kavita_enable | default(false)
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Audiobookshelf Container Quadlet
   ansible.builtin.copy:
@@ -721,4 +721,4 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: audiobookshelf_enable | default(false)
-  notify: reload systemd
+  notify: reload_systemd

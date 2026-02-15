@@ -13,7 +13,7 @@
     dest: /etc/udev/rules.d/60-vps-disk-scheduler.rules
     mode: '0644'
   become: true
-  notify: reload udev
+  notify: reload_udev
   when: not _vps_is_container
 
 - name: Optimize Virtual Memory for shared cloud resources

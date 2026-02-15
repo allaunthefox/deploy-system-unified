@@ -58,4 +58,4 @@
     - { key: 'group', value: 'libvirt-qemu' }
     - { key: 'dynamic_ownership', value: '0' }
   become: true
-  notify: restart libvirtd
+  notify: restart_libvirtd
