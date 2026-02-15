@@ -1,28 +1,44 @@
 ---
+# verify.yml - Verification playbook for molecule tests
+# Validates that deployment was successful by checking directories and flags
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Passes if all required directories and flags exist
+#
+# Example:
+#     molecule verify -s default
+
 - name: Verify
   hosts: all
   gather_facts: false
-  vars:
-    expected_ssh_port: "{{ ssh_effective_port | default(system_ssh_port) | default(22) }}"
   tasks:
-    - name: Verify development container directories
+    - name: Verify essential directories exist
       ansible.builtin.stat:
         path: "{{ item }}"
-      register: dev_dirs
+      register: dir_stats
       loop:
-        - /srv/containers
-        - /srv/containers/config
-    - name: Validate development directories
+        - /var/lib/deploy-system
+        - /var/lib/deploy-system/checkpoints
+        - /var/lib/deploy-system/backups
+        - /var/lib/deploy-system/logs
+        - /tmp/deploy-system
+        - /etc/security
+    - name: Validate directory existence
       ansible.builtin.assert:
         that:
           - item.stat.exists
-      loop: "{{ dev_dirs.results }}"
-    - name: Check SSHD config for port {{ expected_ssh_port }}
-      ansible.builtin.command: grep "Port {{ expected_ssh_port }}" /etc/ssh/sshd_config
-      register: sshd_port_check
-      failed_when: false
-      changed_when: false
-    - name: Validate SSHD port
+          - item.stat.isdir
+        fail_msg: "Directory {{ item.item }} should exist"
+      loop: "{{ dir_stats.results }}"
+    - name: Verify preflight flag exists
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Validate preflight flag
       ansible.builtin.assert:
         that:
-          - sshd_port_check.rc == 0
+          - preflight_flag.stat.exists
+        fail_msg: "Preflight completion flag should exist"

@@ -1,2 +1,14 @@
 ---
-- import_playbook: ../../branch_templates/ephemeral_containers.yml
+# converge.yml - Main playbook execution for testing
+# This playbook runs the production deployment against test instances
+#
+# Args:
+#     Uses inventory from ansible.executor.args in molecule.yml
+#
+# Returns:
+#     Executes the production_deploy.yml playbook against test hosts
+#
+# Example:
+#     molecule converge -s ephemeral
+
+- import_playbook: ../../production_deploy.yml

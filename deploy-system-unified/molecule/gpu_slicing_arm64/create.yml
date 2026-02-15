@@ -1,0 +1,58 @@
+---
+# create.yml - Ansible-Native container creation for gpu_slicing_arm64
+# This playbook creates a Podman container with ARM64 architecture and GPU/DRI device access
+#
+# Args:
+#     molecule_ephemeral_directory: Molecule's ephemeral directory for state
+#
+# Returns:
+#     Creates a Podman container with ARM64 + /dev/dri GPU access
+#
+# Example:
+#     molecule create -s gpu_slicing_arm64
+
+- name: Create
+  hosts: localhost
+  gather_facts: false
+  vars:
+    molecule_file: "{{ molecule_ephemeral_directory }}/../molecule.yml"
+    molecule_instance_config: "{{ molecule_ephemeral_directory }}/instance_config.yml"
+
+  tasks:
+    # Create a Podman container with ARM64 architecture and GPU/DRI device access
+    - name: Create molecule instance with ARM64 + GPU support
+      containers.podman.podman_container:
+        name: gpu_slicing_arm64_instance
+        image: ubi9/ubi-init
+        privileged: true
+        state: started
+        command: /sbin/init
+        tmpfs:
+          - /run
+          - /tmp
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:ro
+        devices:
+          - /dev/dri:/dev/dri
+        capabilities:
+          - CAP_SYS_ADMIN
+        architecture: arm64
+      register: container
+
+    # Save instance configuration for other playbooks to reference
+    - name: Save instance config
+      ansible.builtin.copy:
+        content: |
+          molecule_instances:
+            - name: gpu_slicing_arm64_instance
+              image: ubi9/ubi-init
+              state: started
+              architecture: arm64
+        dest: "{{ molecule_instance_config }}"
+
+    # Wait for the container to be ready
+    - name: Wait for instance to be ready
+      ansible.builtin.wait_for:
+        timeout: 60
+      register: wait_result
+      failed_when: false
