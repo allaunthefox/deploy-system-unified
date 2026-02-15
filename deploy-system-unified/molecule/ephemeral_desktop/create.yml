@@ -1,0 +1,53 @@
+---
+# create.yml - Ansible-Native container creation for ephemeral_desktop
+# This playbook creates a Podman container with systemd support for desktop testing
+#
+# Args:
+#     molecule_ephemeral_directory: Molecule's ephemeral directory for state
+#
+# Returns:
+#     Creates a Podman container with systemd support
+#
+# Example:
+#     molecule create -s ephemeral_desktop
+
+- name: Create
+  hosts: localhost
+  gather_facts: false
+  vars:
+    molecule_file: "{{ molecule_ephemeral_directory }}/../molecule.yml"
+    molecule_instance_config: "{{ molecule_ephemeral_directory }}/instance_config.yml"
+
+  tasks:
+    # Create a Podman container with systemd support
+    - name: Create molecule instance with systemd
+      containers.podman.podman_container:
+        name: test-ephemeral-desktop
+        image: geerlingguy/docker-ubuntu2204-ansible
+        privileged: true
+        state: started
+        command: /lib/systemd/systemd
+        tmpfs:
+          - /run
+          - /tmp
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      register: container
+
+    # Save instance configuration for other playbooks to reference
+    - name: Save instance config
+      ansible.builtin.copy:
+        content: |
+          molecule_instances:
+            - name: test-ephemeral-desktop
+              image: geerlingguy/docker-ubuntu2204-ansible
+              state: started
+        dest: "{{ molecule_instance_config }}"
+
+    # Wait for the container to be ready
+    - name: Wait for instance to be ready
+      ansible.builtin.wait_for:
+        timeout: 60
+      register: wait_result
+      failed_when: false

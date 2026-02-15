@@ -21,7 +21,7 @@
     dest: /etc/udev/rules.d/60-disk-scheduler.rules
     mode: '0644'
   become: true
-  notify: reload udev
+  notify: reload_udev
 
 - name: Gather storage device facts (Robust & Aligned)
   ansible.builtin.command: lsblk -d -o NAME,SIZE,ROTA,PHY-SEC,OPT-IO -n --bytes

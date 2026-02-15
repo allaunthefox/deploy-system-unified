@@ -1,43 +1,57 @@
 ---
-dependency:
-  name: galaxy
-  options:
-    role-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/roles.yml
-    requirements-file: ${MOLECULE_PROJECT_DIRECTORY}/requirements.yml
-    p: ${MOLECULE_PROJECT_DIRECTORY}/.collections
-driver:
-  name: podman
-platforms:
-  - name: gpu_slicing_arm64_instance
-    image: docker.io/library/ubuntu:24.04
-    # Note: This requires the host to support ARM64 execution (via binfmt_misc/qemu-static)
-    architecture: arm64
-    privileged: true
-    pre_build_image: true
-    capabilities:
-      - CAP_SYS_ADMIN
-    devices:
-      - /dev/dri:/dev/dri
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-provisioner:
-  name: ansible
-  config_options:
-    defaults:
-      deprecation_warnings: false
-      # molecule_podman create.yml uses `when: lookup('env','HOME')`, which Ansible 2.20
-      # rejects as a non-boolean conditional. This keeps the scenario runnable while the
-      # upstream plugin updates.
-      allow_broken_conditionals: true
+# molecule.yml - Ansible-Native Molecule configuration for gpu_slicing_arm64 scenario
+#
+# This configuration uses the ansible-native approach which gives full control
+# over the testing lifecycle through custom create/destroy playbooks.
+#
+# This scenario tests GPU slicing on ARM64, so it requires:
+#   - ARM64 architecture (via binfmt_misc/qemu-static)
+#   - /dev/dri:/dev/dri for GPU access
+#   - CAP_SYS_ADMIN capability
+#
+# Key sections:
+#   - ansible.executor: Defines how playbooks are executed
+#   - ansible.env: Environment variables for Ansible
+#   - ansible.cfg: Ansible configuration options
+#   - ansible.playbooks: Paths to create/destroy/converge/verify playbooks
+#   - scenario.test_sequence: Order of test execution
+#   - verifier: Verification backend (ansible-native uses ansible)
+#
+# Example:
+#     molecule test -s gpu_slicing_arm64
+
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=inventory/
   env:
+    ANSIBLE_FORCE_COLOR: true
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
     ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/.collections
-  lint:
-    name: ansible-lint
+  cfg:
+    defaults:
+      deprecation_warnings: false
+      interpreter_python: auto_silent
+      host_key_checking: false
+      allow_broken_conditionals: true
+
   playbooks:
+    create: create.yml
+    destroy: destroy.yml
     converge: converge.yml
-    destroy: ${MOLECULE_PROJECT_DIRECTORY}/molecule/_shared/podman_destroy.yml
-    cleanup: ${MOLECULE_PROJECT_DIRECTORY}/molecule/_shared/cleanup.yml
-    side_effect: ${MOLECULE_PROJECT_DIRECTORY}/molecule/_shared/side_effect.yml
+    prepare: prepare.yml
+    verify: verify.yml
+
+scenario:
+  test_sequence:
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - destroy
+
 verifier:
   name: ansible

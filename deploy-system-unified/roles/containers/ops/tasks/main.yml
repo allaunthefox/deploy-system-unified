@@ -29,7 +29,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Ops Directories
   ansible.builtin.file:
@@ -95,7 +95,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: ops_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Set Ops proxy hosts
   ansible.builtin.set_fact:
@@ -149,7 +149,7 @@
     mode: '0644'
   become: true
   when: ops_enable
-  notify: restart caddy
+  notify: restart_caddy
 
 - name: Create Homarr Container Quadlet
   ansible.builtin.copy:
@@ -182,7 +182,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: homarr_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Vaultwarden Secrets File
   ansible.builtin.copy:
@@ -195,7 +195,7 @@
     group: "{{ containers_secrets_group }}"
   become: true
   when: vaultwarden_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Vaultwarden Container Quadlet
   ansible.builtin.copy:
@@ -230,7 +230,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: vaultwarden_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Wiki.js Container Quadlet
   ansible.builtin.copy:
@@ -267,7 +267,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: wiki_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Wiki.js Postgres Quadlet
   ansible.builtin.copy:
@@ -308,7 +308,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: wiki_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Wastebin Container Quadlet
   ansible.builtin.copy:
@@ -339,7 +339,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: wastebin_enable
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Filebrowser Container Quadlet
   ansible.builtin.copy:
@@ -371,4 +371,4 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: filebrowser_enable | default(false)
-  notify: reload systemd
+  notify: reload_systemd

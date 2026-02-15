@@ -45,4 +45,4 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd

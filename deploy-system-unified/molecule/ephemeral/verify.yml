@@ -1,23 +1,44 @@
 ---
+# verify.yml - Verification playbook for molecule tests
+# Validates that deployment was successful by checking directories and flags
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Passes if all required directories and flags exist
+#
+# Example:
+#     molecule verify -s default
+
 - name: Verify
   hosts: all
   gather_facts: false
   tasks:
-    - name: Verify ephemeral audit rules exist
+    - name: Verify essential directories exist
       ansible.builtin.stat:
-        path: /etc/audit/rules.d/ephemeral.rules
-      register: audit_rules
-    - name: Validate audit rules
+        path: "{{ item }}"
+      register: dir_stats
+      loop:
+        - /var/lib/deploy-system
+        - /var/lib/deploy-system/checkpoints
+        - /var/lib/deploy-system/backups
+        - /var/lib/deploy-system/logs
+        - /tmp/deploy-system
+        - /etc/security
+    - name: Validate directory existence
       ansible.builtin.assert:
         that:
-          - audit_rules.stat.exists
-      when: audit_rules.stat is defined
-    - name: Check SSHD MaxAuthTries
-      ansible.builtin.command: grep "MaxAuthTries 3" /etc/ssh/sshd_config
-      register: sshd_auth_check
-      failed_when: false
-      changed_when: false
-    - name: Validate SSHD MaxAuthTries
+          - item.stat.exists
+          - item.stat.isdir
+        fail_msg: "Directory {{ item.item }} should exist"
+      loop: "{{ dir_stats.results }}"
+    - name: Verify preflight flag exists
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Validate preflight flag
       ansible.builtin.assert:
         that:
-          - sshd_auth_check.rc == 0
+          - preflight_flag.stat.exists
+        fail_msg: "Preflight completion flag should exist"

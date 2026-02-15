@@ -52,7 +52,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: Reload systemd
+  notify: reload_systemd
   when: restic_enable | bool
 
 - name: Deploy Restic Systemd Timer
@@ -62,7 +62,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: Reload systemd
+  notify: reload_systemd
   when: restic_enable | bool
 
 - name: Enable and Start Restic Timer

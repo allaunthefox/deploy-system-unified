@@ -21,7 +21,7 @@
     owner: root
     group: root
   become: true
-  notify: restart chrony
+  notify: restart_chrony
   when:
     - ansible_distribution | lower in time_service_mapping.keys()
     - (virt_type | default('container')) != "container" # Containers typically share host clock

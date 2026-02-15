@@ -19,7 +19,7 @@
     dest: /etc/fail2ban/jail.d/99-sshd-hardened.local
     mode: '0644'
   become: true
-  notify: restart fail2ban
+  notify: restart_fail2ban
 
 - name: Install Caddy Filter
   ansible.builtin.copy:
@@ -27,7 +27,7 @@
     dest: /etc/fail2ban/filter.d/caddy.conf
     mode: '0644'
   become: true
-  notify: restart fail2ban
+  notify: restart_fail2ban
 
 - name: Configure Fail2Ban for Caddy (Web Protection)
   ansible.builtin.copy:
@@ -43,7 +43,7 @@
     dest: /etc/fail2ban/jail.d/99-caddy-hardened.local
     mode: '0644'
   become: true
-  notify: restart fail2ban
+  notify: restart_fail2ban
 
 - name: Enable and start Fail2Ban
   ansible.builtin.systemd:

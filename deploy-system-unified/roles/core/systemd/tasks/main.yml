@@ -27,7 +27,7 @@
         - { regexp: '^#?SystemMaxUse=', line: 'SystemMaxUse=500M' }
         - { regexp: '^#?SystemMaxFileSize=', line: 'SystemMaxFileSize=50M' }
       become: true
-      notify: restart journald
+      notify: restart_journald
 
     - name: Configure systemd resolved if available
       ansible.builtin.lineinfile:
@@ -41,7 +41,7 @@
         - { regexp: '^#?DNSOverTLS=', line: 'DNSOverTLS=opportunistic' }
       become: true
       failed_when: false
-      notify: restart resolved
+      notify: restart_resolved
 
     - name: Enable persistent journal storage
       ansible.builtin.file:

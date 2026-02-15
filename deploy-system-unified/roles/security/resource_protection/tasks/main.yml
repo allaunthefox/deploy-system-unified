@@ -30,4 +30,4 @@
     - { key: 'MemoryAccounting', value: 'yes' }
     - { key: 'CPUAccounting', value: 'yes' }
   become: true
-  notify: reload systemd
+  notify: reload_systemd

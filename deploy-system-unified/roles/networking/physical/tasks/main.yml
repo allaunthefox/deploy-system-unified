@@ -159,7 +159,7 @@
     - (item.value.speed_mbps | int) >= 10000 or item.value.port_type in ['FIBRE', 'Direct Attach Copper', 'DA']
     - item.value.mtu | int != networking_physical_jumbo_mtu | int
   become: true
-  notify: restart networkmanager
+  notify: restart_networkmanager
 
 - name: Tune Ring Buffers (Adaptive per Interface Speed)
   vars:

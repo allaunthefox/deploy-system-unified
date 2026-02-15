@@ -22,7 +22,7 @@
     group: "{{ containers_systemd_group }}"
   loop: "{{ container_networks_list }}"
   when: container_networks_enable | bool
-  notify: Reload systemd
+  notify: reload_systemd
 
 # Legacy cleanup (Optional - if we want to remove the old manual file)
 - name: Remove legacy frontend network definitions
@@ -30,7 +30,7 @@
     path: "{{ containers_systemd_dir }}/frontend.network"
     state: absent
   become: true
-  notify: Reload systemd
+  notify: reload_systemd
 
 - name: Create Backend Network Segment (Application Layer)
   ansible.builtin.copy:
@@ -45,7 +45,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: container_networks_enable | bool
-  notify: Reload systemd
+  notify: reload_systemd
 
 - name: Create Management Network Segment (Logging/Forensics)
   ansible.builtin.copy:
@@ -59,4 +59,4 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: container_networks_enable | bool
-  notify: Reload systemd
+  notify: reload_systemd

@@ -88,7 +88,7 @@
     regexp: "^#?watchdog-device"
     line: "watchdog-device = /dev/watchdog"
   become: true
-  notify: restart watchdog
+  notify: restart_watchdog
   when:
     - not _hw_is_container
     - ansible_os_family != 'Archlinux'

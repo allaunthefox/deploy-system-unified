@@ -1,32 +1,51 @@
 ---
-driver:
-  name: docker
+# molecule.yml - Ansible-Native Molecule configuration for kubernetes-master scenario
+#
+# This configuration uses the ansible-native approach which gives full control
+# over the testing lifecycle through custom create/destroy playbooks.
+#
+# This scenario tests K3s installation, so it uses different settings:
+#   - centos:stream9 base image
+#   - k3s specific configuration
+#
+# Key sections:
+#   - ansible.executor: Defines how playbooks are executed
+#   - ansible.env: Environment variables for Ansible
+#   - ansible.cfg: Ansible configuration options
+#   - ansible.playbooks: Paths to create/destroy/converge/verify playbooks
+#   - scenario.test_sequence: Order of test execution
+#   - verifier: Verification backend (ansible-native uses ansible)
+#
+# Example:
+#     molecule test -s kubernetes-master
 
-platforms:
-  - name: instance
-    image: docker.io/pycontribs/centos:8
-    command: /sbin/init
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    capabilities:
-      - SYS_ADMIN
-    privileged: true
-
-provisioner:
-  name: ansible
-  config_options:
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=inventory/
+  env:
+    ANSIBLE_FORCE_COLOR: true
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+    ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/.collections
+  cfg:
     defaults:
+      deprecation_warnings: false
       interpreter_python: auto_silent
       remote_user: root
-  inventory:
-    group_vars:
-      all:
-        k3s_version: v1.31.4+k3s1
-        k3s_install_dir: /var/lib/rancher/k3s
-        k3s_data_dir: /var/lib/rancher/k3s
+      host_key_checking: false
+
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+
+scenario:
+  test_sequence:
+    - create
+    - converge
+    - destroy
 
 verifier:
   name: ansible

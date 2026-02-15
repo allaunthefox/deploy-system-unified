@@ -48,7 +48,7 @@
         owner: root
         group: root
       become: true
-      notify: "Update initramfs"
+      notify: "update_initramfs"
 
     - name: Notify Reboot Requirement
       ansible.builtin.debug:

@@ -1,0 +1,46 @@
+---
+# create.yml - Ansible-Native container creation
+# This playbook creates the test instance using Podman
+#
+# Args:
+#     molecule_ephemeral_directory: Molecule's ephemeral directory for state
+#
+# Returns:
+#     Creates a Podman container named 'instance' with systemd support
+#
+# Example:
+#     molecule create -s default
+
+- name: Create
+  hosts: localhost
+  gather_facts: false
+  vars:
+    molecule_instance_config: "/tmp/molecule_instance_config.yml"
+
+  tasks:
+    # Create a Podman container with systemd support for testing
+    - name: Create molecule instance
+      containers.podman.podman_container:
+        name: instance
+        image: docker.io/library/ubuntu:22.04
+        privileged: true
+        state: started
+        command: sleep infinity
+      register: container
+
+    # Save instance configuration for other playbooks to reference
+    - name: Save instance config
+      ansible.builtin.copy:
+        content: |
+          molecule_instances:
+            - name: instance
+              image: ubi9/ubi-init
+              state: started
+        dest: "{{ molecule_instance_config }}"
+
+    # Wait for the container to be ready
+    - name: Wait for instance to be ready
+      ansible.builtin.wait_for:
+        timeout: 30
+      register: wait_result
+      failed_when: false

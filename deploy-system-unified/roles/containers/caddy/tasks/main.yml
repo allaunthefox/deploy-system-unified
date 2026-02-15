@@ -42,7 +42,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Caddy directories
   ansible.builtin.file:
@@ -91,7 +91,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: caddy_generate_config | default(true)
-  notify: restart caddy
+  notify: restart_caddy
 
 - name: Validate Quadlet GPU capabilities (Linux CAP_* only)
   ansible.builtin.assert:
@@ -159,8 +159,8 @@
     group: "{{ containers_systemd_group }}"
   become: true
   notify:
-    - reload systemd
-    - restart caddy
+    - reload_systemd
+    - restart_caddy
 
 - name: Set containers caddy completion flag
   ansible.builtin.set_fact:
@@ -219,7 +219,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: crowdsec_enable | default(false)
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Install Crowdsec Bouncer Dependencies
   community.general.pacman:
