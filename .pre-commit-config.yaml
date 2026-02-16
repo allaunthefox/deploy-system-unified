@@ -19,7 +19,7 @@ repos:
   # ===== TRUFFLEHOG (matches CI: Detect Secrets) =====
   # Pin to a specific version to avoid unexpected behavior changes
   - repo: https://github.com/trufflesecurity/trufflehog
-    rev: v3.80.0
+    rev: v3.93.3
     hooks:
       - id: trufflehog
         args: [--only-verified]
