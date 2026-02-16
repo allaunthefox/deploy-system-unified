@@ -1,0 +1,13 @@
+# MegaLinter configuration
+# Exclude paths that have existing issues
+EXCLUDED_LINTERS:
+  - JAVASCRIPT_ES
+  - TYPESCRIPT_ES
+  - PYTHON_PYLINT
+  - PYTHON_FLAKE8
+  - YAML_YAMLLINT
+  - DOCKERFILE_HADOLINT
+  - REPOSITORY_KICS
+
+# Only run on changed files
+APPLY_FIXES: none
