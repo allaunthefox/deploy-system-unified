@@ -1,0 +1,50 @@
+# Local CI Gate - Pre-commit hooks
+# Mirrors CI gates: Detect Secrets, Style Guide
+# Run: pre-commit install
+# To bypass: git commit --no-verify
+
+repos:
+  # ===== YAML LINTING =====
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: yaml-lint
+
+  # ===== JSON LINTING =====
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: json-lint
+
+  # ===== TRUFFLEHOG (matches CI: Detect Secrets) =====
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: main
+    hooks:
+      - id: trufflehog
+        args: [--only-verified]
+        stages: [commit]
+
+  # ===== SECRET DETECTION =====
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: detect-private-key
+
+  # ===== FILE FIXES =====
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  # ===== SHELL SCRIPT LINTING =====
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+
+  # ===== ANSIBLE LINTING =====
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.9.0
+    hooks:
+      - id: ansible-lint
