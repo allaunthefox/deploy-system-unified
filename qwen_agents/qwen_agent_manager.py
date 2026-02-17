@@ -8,14 +8,17 @@ Agents are loaded on-demand to improve performance and resource usage.
 
 import json
 import os
+from pathlib import Path
 from typing import Dict, Any, Optional, List
 
 
 class QwenAgentManager:
     """Manages multiple specialized Qwen agents with on-demand loading."""
     
-    def __init__(self, config_dir: str = "/home/prod/Workspaces/qwen_agents/config"):
-        self.config_dir = config_dir
+    def __init__(self, config_dir: Optional[str] = None):
+        # Resolve config directory from argument, env var, or fallback to ~/Workspaces/qwen_agents/config
+        default_config = Path(os.environ.get("QWEN_AGENTS_CONFIG", Path.home() / "Workspaces" / "qwen_agents" / "config"))
+        self.config_dir = str(Path(config_dir).expanduser().resolve()) if config_dir else str(default_config)
         self.agents: Dict[str, Any] = {}  # Cache for loaded agents
         self.main_config = self.load_main_config()
         self._available_agents = None  # Lazy-loaded list of available agents
@@ -28,7 +31,7 @@ class QwenAgentManager:
     
     def load_agent_config(self, agent_name: str) -> Dict[str, Any]:
         """Load configuration for a specific agent."""
-        agent_config_path = f"/home/prod/Workspaces/qwen_agents/agents/{agent_name}.json"
+        agent_config_path = os.path.join(os.environ.get("QWEN_AGENTS_AGENTS_DIR", str(Path.home() / "Workspaces" / "qwen_agents" / "agents")), f"{agent_name}.json")
         with open(agent_config_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     
@@ -51,14 +54,14 @@ class QwenAgentManager:
     def get_available_agents(self) -> List[str]:
         """Get a list of available agent names (lazy-loaded)."""
         if self._available_agents is None:
-            agents_dir = "/home/prod/Workspaces/qwen_agents/agents"
+            agents_dir = os.environ.get("QWEN_AGENTS_AGENTS_DIR", str(Path.home() / "Workspaces" / "qwen_agents" / "agents"))
             agent_files = [f for f in os.listdir(agents_dir) if f.endswith('.json')]
             self._available_agents = [os.path.splitext(f)[0] for f in agent_files]
         return self._available_agents
     
     def _get_agent_capabilities(self, agent_name: str) -> List[str]:
         """Get capabilities of an agent without fully loading it into cache."""
-        agent_config_path = f"/home/prod/Workspaces/qwen_agents/agents/{agent_name}.json"
+        agent_config_path = os.path.join(os.environ.get("QWEN_AGENTS_AGENTS_DIR", str(Path.home() / "Workspaces" / "qwen_agents" / "agents")), f"{agent_name}.json")
         with open(agent_config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
         return config['agent']['capabilities']

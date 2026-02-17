@@ -14,7 +14,8 @@ def slugify(s):
     return s.strip('-')
 
 # Read the role file
-role_file = Path('/home/prod/Workspaces/wiki_pages/roles/containers_anubis.md')
+wiki_root = Path(os.environ.get("WORKSPACES_WIKI", Path.home() / "Workspaces" / "wiki_pages"))
+role_file = wiki_root / 'roles' / 'containers_anubis.md'
 role_content = role_file.read_text()
 
 # Extract headings like the linter does
@@ -34,7 +35,7 @@ for anchor in test_anchors:
     print(f"  {anchor}: {'FOUND' if exists else 'MISSING'}")
 
 # Read the variable reference file
-var_file = Path('/home/prod/Workspaces/wiki_pages/Variable_Reference_Containers.md')
+var_file = wiki_root / 'Variable_Reference_Containers.md'
 var_content = var_file.read_text()
 
 print("\nLinks found in Variable_Reference_Containers.md with 'anubis':")
