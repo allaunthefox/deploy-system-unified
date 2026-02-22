@@ -62,9 +62,7 @@
       ansible.builtin.package:
         name: "{{ _input_packages }}"
         state: present
-<<<<<<< HEAD:projects/deploy-system-unified/roles/hardware/gpu/tasks/features/desktop_setup.yml
       failed_when: false
-=======
       register: _input_deps_install
       until: _input_deps_install is success
       retries: 3
@@ -76,11 +74,10 @@
         - name: Warn on Optional Failure
           ansible.builtin.debug:
             msg: "WARNING: Failed to install input device dependencies. Desktop interaction might be limited."
-          when: not core_security_fail_secure | default(false)
+            when: not core_security_fail_secure | default(false)
 
         - name: Fail on Hardened Profile Failure
           ansible.builtin.fail:
             msg: "CRITICAL: Failed to install input dependencies in hardened environment. Aborting."
-          when: core_security_fail_secure | default(false)
+            when: core_security_fail_secure | default(false)
       when: _input_deps_install is failed
->>>>>>> origin/main:deploy-system-unified/roles/hardware/gpu/tasks/features/desktop_setup.yml
