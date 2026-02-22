@@ -33,9 +33,12 @@ jobs:
           sudo apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg wget
           curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && sudo chmod +x /usr/local/bin/sops
           sudo pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"
-          # make sure Ansible has a vault password file (avoids error when no secrets are used)
-          export ANSIBLE_VAULT_PASSWORD_FILE="$PROJECT_ROOT/.vault_pass"
-          touch "$ANSIBLE_VAULT_PASSWORD_FILE" || true
+          # override ansible config to disable vault password file (avoids missing/invalid errors)
+          cat <<'EOF' > "$PROJECT_ROOT/ci-ansible.cfg"
+[defaults]
+vault_password_file =
+EOF
+          export ANSIBLE_CONFIG="$PROJECT_ROOT/ci-ansible.cfg"
           # Locate the idempotence playbook anywhere under the workspace
           PLAYBOOK=$(find "$PROJECT_ROOT" -path '*/roles/security/sshd/tests/idempotence.yml' -print -quit)
           if [ -z "$PLAYBOOK" ]; then echo "ERROR: idempotence playbook not found in project root"; find "$PROJECT_ROOT" -maxdepth 4 -type f -name idempotence.yml -print || true; exit 2; fi
