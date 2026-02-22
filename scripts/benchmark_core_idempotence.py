@@ -167,7 +167,7 @@ def benchmark_role(
     container_script = textwrap.dedent(
         f"""\
         set -euo pipefail
-        export ANSIBLE_ROLES_PATH=/workspace/deploy-system-unified/roles:/workspace/deploy-system-unified
+        export ANSIBLE_ROLES_PATH=/workspace/roles:/workspace
         echo 'benchmark-vault-pass' > /tmp/ansible-vault-pass
         chmod 0600 /tmp/ansible-vault-pass
         export ANSIBLE_VAULT_PASSWORD_FILE=/tmp/ansible-vault-pass

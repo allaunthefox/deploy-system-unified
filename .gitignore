@@ -39,7 +39,8 @@ coverage.xml
 .coverage
 
 # Secrets and sensitive files
-*.secrets.baseline
+# track secret baselines so CI can use them
+!*.secrets.baseline
 secrets.generated.yml
 .vault_pass
 .ansible-vault-password

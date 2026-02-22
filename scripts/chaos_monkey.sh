@@ -11,6 +11,9 @@
 set -euo pipefail
 
 # Colors
+
+# determine repository root (directory above scripts/)
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -34,7 +37,7 @@ echo ""
 # Test 1: Helm Chart - Empty values rendering
 #===============================================================================
 log_info "Test 1: Helm Chart rendering with minimal values"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 for chart in charts/auth-stack charts/backup-stack charts/logging-stack charts/proxy-stack; do
     if helm template "$chart" --namespace test --generate-name >/dev/null 2>&1; then
@@ -63,7 +66,7 @@ done
 # Test 3: Benchmark Script - Various runtime inputs
 #===============================================================================
 log_info "Test 3: Benchmark script with various inputs"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 # Test with podman (will fail if podman not available, but should handle gracefully)
 if bash scripts/benchmark/benchmark_metrics.sh podman 1 2>&1 | grep -q "ERROR\| dependency\|Missing"; then
@@ -109,7 +112,7 @@ fi
 # Test 5: YAML Validation - All Chart.yaml files
 #===============================================================================
 log_info "Test 5: YAML validation for all Chart.yaml files"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 for chart in charts/*/Chart.yaml; do
     if python3 -c "import yaml; yaml.safe_load(open('$chart'))" 2>/dev/null; then
@@ -123,7 +126,7 @@ done
 # Test 6: SOPS Configuration
 #===============================================================================
 log_info "Test 6: SOPS configuration validation"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 if grep -q "creation_rules" .sops.yaml && grep -q "age:" .sops.yaml; then
     log_pass "SOPS config has valid structure"
@@ -142,7 +145,7 @@ fi
 # Test 7: Ansible Playbook Syntax
 #===============================================================================
 log_info "Test 7: Ansible playbook syntax"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 for playbook in playbooks/*.yml; do
     # Check YAML syntax (ansible-playbook --syntax-check needs collections)
@@ -157,7 +160,7 @@ done
 # Test 8: Helm Lint All Charts
 #===============================================================================
 log_info "Test 8: Helm lint all charts"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 for chart in charts/*; do
     if helm lint "$chart" >/dev/null 2>&1; then
@@ -171,7 +174,7 @@ done
 # Test 9: Values.yaml Structure Validation
 #===============================================================================
 log_info "Test 9: Values.yaml structure validation"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 for values in charts/*/values.yaml; do
     # Check for empty required fields that should have values
@@ -186,7 +189,7 @@ done
 # Test 10: Security - Check for hardcoded secrets
 #===============================================================================
 log_info "Test 10: Security - Scan for hardcoded secrets (excluding SOPS)"
-cd /home/prod/Workspaces/deploy-system-unified
+cd "$REPO_ROOT"
 
 # Look for common secret patterns in non-encrypted files
 SECRETS_FOUND=0
