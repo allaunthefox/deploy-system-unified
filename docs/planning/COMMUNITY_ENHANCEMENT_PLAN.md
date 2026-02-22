@@ -14,7 +14,7 @@ Based on analysis using the Qwen agent system, the following deficits were ident
 1. **Missing Essential Documentation**:
    - CONTRIBUTING.md: Guidelines for contributors
    - CHANGELOG.md: Record of changes between versions
-   - ROADMAP.md: Future development plans
+   - docs/planning/ROADMAP.md: Future development plans
    - SECURITY.md: Security policy and disclosure procedure
    - CODE_OF_CONDUCT.md: Community guidelines
 
@@ -53,7 +53,7 @@ Based on analysis using the Qwen agent system, the following deficits were ident
 - Track feature additions, bug fixes, and breaking changes
 - Include upgrade/migration guidance
 
-#### 2.2 Create ROADMAP.md
+#### 2.2 Create docs/planning/ROADMAP.md
 - Define short-term goals (next 3-6 months)
 - Outline medium-term objectives (6-12 months)
 - Establish long-term vision (1-2 years)
@@ -101,7 +101,7 @@ Based on analysis using the Qwen agent system, the following deficits were ident
 ### Week 2: Project Management Documentation
 
 1. Create CHANGELOG.md with initial entries
-2. Develop ROADMAP.md based on current priorities
+2. Develop docs/planning/ROADMAP.md based on current priorities
 3. Integrate changelog generation into release process
 4. Establish roadmap review cycle (quarterly)
 5. Communicate roadmap to community

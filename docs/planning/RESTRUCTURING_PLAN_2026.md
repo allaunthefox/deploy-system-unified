@@ -13,7 +13,7 @@ Based on analysis using the Qwen agent system, the following deficits were ident
 1. **Missing Essential Documentation**:
    - CONTRIBUTING.md: Guidelines for contributors
    - CHANGELOG.md: Record of changes between versions
-   - ROADMAP.md: Future development plans
+   - docs/planning/ROADMAP.md: Future development plans
    - SECURITY.md: Security policy and disclosure procedure
    - CODE_OF_CONDUCT.md: Community guidelines
 2. **Dependency Management Issues**:
@@ -39,7 +39,7 @@ projects/deploy-system-unified/ ├── roles/ │ ├── core/ │ │ ├
    - Created SECURITY.md with security policy and disclosure process
    - Created CODE_OF_CONDUCT.md with community guidelines
    - Created CHANGELOG.md to track changes between versions
-   - Created ROADMAP.md outlining future development plans
+   - Created docs/planning/ROADMAP.md outlining future development plans
 5. Added requirements.yml to define external dependencies
 ### Phase 4: Testing and Validation (DONE)
 1. Verified restructuring via comprehensive idempotence benchmark script.

@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Observability**: Log retention policies (`docs/architecture/LOGGING_POLICY.md`) and enforcement.
 - **Resilience**: Disaster recovery runbook (`RESTORE_RUNBOOK.md`) and helper script (`scripts/restore_data.sh`).
 - **Secrets**: SOPS/Age integration for secure secret management.
-- **Community**: Standard community files (`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `ROADMAP.md`).
+- **Community**: Standard community files (`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `docs/planning/ROADMAP.md`).
 - **Inventory**: Production profile added to Contabo inventory.
 
 ### Changed
