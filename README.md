@@ -7,6 +7,15 @@
 
 **Modular, security-first infrastructure deployment built on Ansible.**
 
+## About
+
+This repo serves as a **workspace**, with the primary project situated under
+`projects/deploy-system-unified/`.  All other top-level folders and files are
+ancillary (CI configuration, research notes, tooling, etc.).  The layout keeps
+production code isolated and simplifies navigation when multiple initiatives
+coexist.
+
+
 ---
 
 ## 🚀 Quick Start
