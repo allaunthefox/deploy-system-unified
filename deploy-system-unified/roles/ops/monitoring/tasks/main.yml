@@ -1,0 +1,102 @@
+---
+# Tasks for ops/monitoring
+
+- name: Load platform-specific variables
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_facts['os_family'] | lower }}.yml"
+        - "main.yml"
+      paths:
+        - "../vars"
+      skip: true
+
+# --- Package Installation ---
+
+- name: Install monitoring packages (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name:
+      - prometheus-node-exporter
+      - smartmontools
+      - nvme-cli
+    state: present
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - monitoring_enable_node_exporter or monitoring_enable_smartmon
+
+- name: Install monitoring packages (RHEL/Rocky)
+  ansible.builtin.dnf:
+    name:
+      - node_exporter  # Note: Requires EPEL usually
+      - smartmontools
+      - nvme-cli
+    state: present
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - monitoring_enable_node_exporter or monitoring_enable_smartmon
+
+- name: Install monitoring packages (Arch Linux)
+  ansible.builtin.pacman:
+    name:
+      - prometheus-node-exporter
+      - smartmontools
+      - nvme-cli
+    state: present
+  when:
+    - ansible_facts['os_family'] == "Archlinux"
+    - monitoring_enable_node_exporter or monitoring_enable_smartmon
+
+- name: Install monitoring packages (Alpine)
+  community.general.apk:
+    name:
+      - prometheus-node-exporter
+      - smartmontools
+      - nvme-cli
+    state: present
+  when:
+    - ansible_facts['os_family'] == "Alpine"
+    - monitoring_enable_node_exporter or monitoring_enable_smartmon
+
+- name: Determine Node Exporter Service Name
+  ansible.builtin.set_fact:
+    _node_exporter_service: "{{
+      'node-exporter' if ansible_facts['os_family'] == 'Alpine' else
+      'prometheus-node-exporter'
+    }}"
+  when: monitoring_enable_node_exporter
+
+# --- Service Configuration ---
+
+- name: Enable and start Node Exporter
+  ansible.builtin.service:
+    name: "{{ _node_exporter_service }}"
+    state: started
+    enabled: true
+  when: monitoring_enable_node_exporter
+  failed_when: false
+
+- name: Configure Smartd (Basic)
+  ansible.builtin.lineinfile:
+    path: /etc/smartd.conf
+    regexp: '^DEVICESCAN'
+    line: 'DEVICESCAN -a -o on -S on -n standby,q -s (S/../.././02|L/../../6/03) -W 4,35,40 -m root'
+    create: true
+  notify: restart_smartd
+  when:
+    - monitoring_enable_smartmon
+    - ansible_facts['virtualization_type'] != "docker"
+    - ansible_facts['virtualization_type'] != "podman"
+    - ansible_facts['virtualization_type'] != "container"
+  become: true
+
+- name: Enable and start Smartd
+  ansible.builtin.service:
+    name: smartd
+    state: started
+    enabled: true
+  when:
+    - monitoring_enable_smartmon
+    - ansible_facts['virtualization_type'] != "docker"
+    - ansible_facts['virtualization_type'] != "podman"
+    - ansible_facts['virtualization_type'] != "container"

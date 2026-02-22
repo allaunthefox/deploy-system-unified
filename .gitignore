@@ -1,23 +1,73 @@
-Offline_Research/
-projects/SystemBackups/
-SystemBackups/
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+
+# Ansible artifacts
+.ansible/
+.ansible_local/
+ansible.cfg.local
+*.retry
+*.log
+
+# Molecule artifacts
+.molecule/
+molecule/**/molecule_shared/
+molecule/**/__pycache__/
+.Molecule-full-run.log
+.molecule-full-run.pid
+
+# CI/CD artifacts
+.github/workflows/*.log
+.reports/
+test_results.xml
+coverage.xml
+.coverage
+
+# Secrets and sensitive files
+*.secrets.baseline
+secrets.generated.yml
+.vault_pass
+.ansible-vault-password
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Build artifacts
 *.tar.xz
-**/*.pyc
-**/__pycache__/
-secrets.generated.ymlprojects/deploy-system-unified/.secrets_scan.*
-.secrets_scan.*
-third_party/universal-mcp-github/
+*.zip
 
-# Ignore Molecule ephemeral shared artifacts
-projects/deploy-system-unified/roles/**/molecule/**/molecule_shared/
-projects/deploy-system-unified/roles/**/molecule/**/molecule_shared/**
-
-# Ignore symlink helper created in CI or locally
-projects/deploy-system-unified/roles/sshd
+# Wiki and documentation builds
 wiki_audit/
 wiki_clean_sync/
 wiki_crowdsec_audit/
 wiki_final/
 
-# Ignore linter/report artifacts
-.reports/
+# Third-party integrations
+third_party/
+
+# Project-specific
+Offline_Research/
+projects/
+SystemBackups/

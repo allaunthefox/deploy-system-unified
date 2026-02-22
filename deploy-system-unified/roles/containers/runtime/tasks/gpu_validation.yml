@@ -1,0 +1,70 @@
+---
+# GPU validation and health checks - Enhanced for Sprint 3
+
+- name: Validate GPU hardware support
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_vendor_detected in ["nvidia", "amd", "intel", "generic"]
+      - containers_gpu_slicing.strategy in ["auto", "mig", "vgpu", "time-slicing", "sriov", "level-zero", "oneapi", "passthrough", "none"]
+    fail_msg: "GPU hardware or strategy not supported"
+  when: containers_enable_gpu_support
+
+- name: Verify Multi-GPU Configuration Consistency
+  ansible.builtin.assert:
+    that:
+      - not (_gpu_is_multi_vendor | default(false)) or (gpu_stack_vendor == 'generic' or gpu_stack_vendor is sequence)
+    fail_msg: "Multi-vendor hardware detected but single vendor requested without force. Detected: {{ _gpu_detected_vendor_list }}"
+  when:
+    - containers_enable_gpu_support
+    - not (gpu_force_vendor | default(false))
+
+- name: Validate NVIDIA vGPU license (virtual guest)
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_slicing.vgpu.license_server | length > 0
+    fail_msg: "NVIDIA vGPU requires license server configuration"
+  when:
+    - containers_enable_gpu_support
+    - is_virtualized
+    - containers_gpu_vendor_detected == "nvidia"
+    - containers_gpu_slicing.strategy == "vgpu"
+
+- name: Validate SR-IOV support (bare metal)
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_slicing.sriov.pf_device | default("") | length > 0 or gpu_slicing_sriov_supported
+    fail_msg: "SR-IOV requires physical device configuration or SR-IOV capable hardware"
+  when:
+    - containers_enable_gpu_support
+    - not is_virtualized
+    - containers_gpu_slicing.strategy == "sriov"
+
+- name: Validate NVIDIA MIG support
+  ansible.builtin.assert:
+    that:
+      - containers_gpu_vendor_detected == "nvidia"
+      - containers_gpu_nvidia_mig_supported | default(false)
+    fail_msg: "NVIDIA MIG requires MIG-capable GPU"
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_slicing.strategy == "mig"
+
+- name: Verify GPU devices in container (Podman Smoke Test)
+  ansible.builtin.command:
+    cmd: podman run --rm --device=all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+  register: nvidia_smi_smoke
+  changed_when: false
+  failed_when: false
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_vendor_detected == "nvidia"
+    - not _gpu_is_container
+
+- name: Report GPU Health Summary
+  ansible.builtin.debug:
+    msg:
+      - "Detected GPUs: {{ _gpu_count | default('Unknown') }}"
+      - "Primary Vendor: {{ containers_gpu_vendor_detected | upper }}"
+      - "Multi-Vendor: {{ _gpu_is_multi_vendor | default(false) }}"
+      - "Slicing Strategy: {{ containers_gpu_slicing.strategy }}"
+  when: containers_enable_gpu_support

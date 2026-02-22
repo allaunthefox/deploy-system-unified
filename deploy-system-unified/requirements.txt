@@ -1,0 +1,7 @@
+# Runtime dependencies
+requests>=2.31.0
+
+# Development dependencies
+ansible-core>=2.15.0
+ansible-lint>=6.0.0
+yamllint>=1.30.0

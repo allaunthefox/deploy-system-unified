@@ -1,0 +1,24 @@
+---
+# destroy.yml - Ansible-Native container cleanup for kubernetes-master
+# This playbook destroys the test instance
+#
+# Args:
+#     None required - uses molecule instance name from create.yml
+#
+# Returns:
+#     Destroys the Podman container 'instance' if it exists
+#
+# Example:
+#     molecule destroy -s kubernetes-master
+
+- name: Destroy
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    # Remove the Podman container created in create.yml
+    - name: Destroy molecule instance
+      containers.podman.podman_container:
+        name: instance
+        state: absent
+      failed_when: false

@@ -1,0 +1,44 @@
+---
+# verify.yml - Verification playbook for molecule tests
+# Validates that deployment was successful by checking directories and flags
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Passes if all required directories and flags exist
+#
+# Example:
+#     molecule verify -s default
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Verify essential directories exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: dir_stats
+      loop:
+        - /var/lib/deploy-system
+        - /var/lib/deploy-system/checkpoints
+        - /var/lib/deploy-system/backups
+        - /var/lib/deploy-system/logs
+        - /tmp/deploy-system
+        - /etc/security
+    - name: Validate directory existence
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.isdir
+        fail_msg: "Directory {{ item.item }} should exist"
+      loop: "{{ dir_stats.results }}"
+    - name: Verify preflight flag exists
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+    - name: Validate preflight flag
+      ansible.builtin.assert:
+        that:
+          - preflight_flag.stat.exists
+        fail_msg: "Preflight completion flag should exist"

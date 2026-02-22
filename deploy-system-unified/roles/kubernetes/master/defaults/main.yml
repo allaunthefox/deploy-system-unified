@@ -1,0 +1,33 @@
+---
+# Defaults for kubernetes/master
+kubernetes_k3s_enable: true
+kubernetes_k3s_version: "v1.31.2+k3s1"
+
+# Network Configuration
+kubernetes_pod_cidr: "10.42.0.0/16"
+kubernetes_service_cidr: "10.43.0.0/16"
+kubernetes_cluster_dns: "10.43.0.10"
+kubernetes_cluster_domain: "cluster.local"
+
+# API Server Configuration
+kubernetes_api_port: 6443
+kubernetes_tls_san: []
+
+# K3s Feature Flags
+kubernetes_disable_traefik: false
+kubernetes_disable_servicelb: false
+kubernetes_disable_agent: false
+
+# Storage
+kubernetes_data_dir: "/var/lib/rancher/k3s"
+
+# Architecture Binary Mapping
+# Experimental RISC-V support uses community-maintained binaries
+kubernetes_k3s_bin_url:
+  x86_64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s"
+  aarch64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s-arm64"
+  riscv64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s-riscv64" # Placeholder for experimental
+
+# Security
+kubernetes_token_path: "/var/lib/deploy-system/kubernetes/token"
+kubernetes_encryption_enabled: true

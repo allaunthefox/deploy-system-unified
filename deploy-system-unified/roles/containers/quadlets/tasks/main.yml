@@ -1,0 +1,117 @@
+---
+# Container quadlets role - Systemd quadlet management
+
+- name: Ensure checkpoint directory exists
+  ansible.builtin.file:
+    path: /var/lib/deploy-system/checkpoints
+    state: directory
+    mode: '0700'
+  become: true
+
+- name: Check for Quadlet checkpoint
+  ansible.builtin.stat:
+    path: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
+  register: containers_quadlet_checkpoint_stat
+  become: true
+
+- name: Read existing checkpoint
+  ansible.builtin.slurp:
+    src: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
+  register: containers_checkpoint_content
+  when: containers_quadlet_checkpoint_stat.stat.exists
+  become: true
+
+- name: Restore object UUID from checkpoint
+  ansible.builtin.set_fact:
+    containers_object_uuid: "{{ (containers_checkpoint_content.content | b64decode | from_json).uuid }}"
+  when: containers_quadlet_checkpoint_stat.stat.exists
+
+- name: Generate new Network UUID (if no checkpoint)
+  ansible.builtin.import_role:
+    name: core/identity
+  when: not containers_quadlet_checkpoint_stat.stat.exists
+
+- name: Determine quadlet object UUID
+  ansible.builtin.set_fact:
+    containers_quadlet_object_uuid: "{{ containers_object_uuid | default(object_uuid | default('')) }}"
+  changed_when: false
+
+- name: Ensure quadlet directory exists
+  ansible.builtin.file:
+    path: "{{ containers_systemd_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+- name: Create quadlet network configuration
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/{{ containers_quadlet_network_name }}.network"
+    content: |
+      [Network]
+      Label=org.deploy-system.uuid={{ containers_quadlet_object_uuid }}
+      NetworkName={{ containers_quadlet_network_name }}
+      Driver=bridge
+      Subnet={{ containers_quadlet_network_subnet }}
+      Gateway={{ containers_quadlet_network_gateway }}
+      IPRange={{ containers_quadlet_network_iprange }}
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_quadlet_create_network | bool
+- name: Deploy custom quadlet files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ containers_systemd_dir }}/{{ item | basename }}"
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  loop: "{{ containers_quadlet_custom_files }}"
+  become: true
+  when: containers_quadlet_custom_files | length > 0
+  notify: reload_systemd
+- name: reload_systemd to pick up quadlets
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  when: ansible_facts['service_mgr'] == 'systemd'
+  failed_when: false
+- name: List generated quadlet services
+  ansible.builtin.shell:
+    cmd: >-
+      {{ (podman_rootless_enabled | default(false) | bool)
+         | ternary("bash -o pipefail -c 'systemctl --user list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'",
+                   "bash -o pipefail -c 'systemctl list-unit-files --type=service | grep -E \"\\\\.container|\\\\.pod\"'") }}
+  register: containers_quadlet_services
+  changed_when: false
+  failed_when: false
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  when: ansible_facts['service_mgr'] == 'systemd'
+- name: Display available quadlet services
+  ansible.builtin.debug:
+    msg: "Available quadlet services: {{ containers_quadlet_services.stdout_lines | default([]) }}"
+  when: ansible_facts['service_mgr'] == 'systemd'
+- name: Set containers quadlets completion flag
+  ansible.builtin.set_fact:
+    containers_quadlets_complete: true
+
+- name: Save Quadlet checkpoint
+  ansible.builtin.copy:
+    dest: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
+    content: |
+      {
+        "uuid": "{{ containers_quadlet_object_uuid }}",
+        "role": "containers/quadlets",
+        "deployment_variables": {
+          "network_name": "{{ containers_quadlet_network_name }}",
+          "subnet": "{{ containers_quadlet_network_subnet }}"
+        }
+      }
+    mode: '0600'
+  become: true

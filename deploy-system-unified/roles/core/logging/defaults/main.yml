@@ -1,0 +1,20 @@
+---
+# Defaults for core/logging role
+
+# Package mapping for systemd journal remote capabilities
+logging_journal_remote_packages:
+  archlinux: "systemd"
+  debian: "systemd-journal-remote"
+  ubuntu: "systemd-journal-remote"
+  fedora: "systemd-journal-remote"
+  centos: "systemd-journal-remote"
+  rocky: "systemd-journal-remote"
+  almalinux: "systemd-journal-remote"
+
+# Rate Limiting
+logging_rate_limit_interval: "30s"
+logging_rate_limit_burst: "1000"
+
+# Retention and Rotation
+logging_max_file_sec: "1day"
+logging_max_retention_sec: "30day"

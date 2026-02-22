@@ -1,0 +1,43 @@
+---
+- name: Idempotence test for containers/caddy
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    containers_secrets_owner: "{{ containers_secrets_owner | default(ansible_user_id) }}"
+    caddy_network: "proxy_net"
+    caddy_http_port: 80
+    caddy_https_port: 443
+    caddy_https_port_udp: 443
+    quadlet_enable_gpu_support: false
+  tasks:
+    - name: Ensure containers secrets dir exists (test fixture)
+      ansible.builtin.file:
+        path: "{{ containers_secrets_dir | default('/tmp/dsu_test_secrets') }}"
+        state: directory
+        owner: "{{ containers_secrets_owner }}"
+        mode: '0700'
+      when: containers_secrets_dir is defined
+
+    - name: Create caddy.env test secrets file
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir | default('/tmp/dsu_test_secrets') }}/caddy.env"
+        content: |
+          CADDY_API_TOKEN={{ crowdsec_firewall_bouncer_key | default('test_caddy_token') }}
+        owner: "{{ containers_secrets_owner }}"
+        mode: '0600'
+      when: containers_secrets_dir is defined
+
+    - name: Create Caddyfile test configuration
+      ansible.builtin.copy:
+        dest: "{{ containers_secrets_dir | default('/tmp/dsu_test_secrets') }}/Caddyfile"
+        content: |
+          :80
+            respond \"ok\"
+        owner: "{{ containers_secrets_owner }}"
+        mode: '0644'
+      when: containers_secrets_dir is defined
+
+    - name: Apply containers/caddy role
+      ansible.builtin.import_role:
+        name: containers/caddy

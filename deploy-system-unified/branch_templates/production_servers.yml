@@ -1,0 +1,59 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# Production Container Host - Secure Solution Stack
+# Solution: Base Hardened Infrastructure + Container Workload
+- ansible.builtin.import_playbook: base_hardened.yml
+
+- name: Deploy Production Container Workload
+  hosts: all
+  become: true
+  vars:
+    # Define roles sequence in vars
+    production_roles:
+      # Container Infrastructure Workload
+      - hardware/sas
+      - containers/runtime
+      - containers/config
+      - containers/quadlets
+      - containers/caddy
+      # Monitoring
+      - ops/monitoring          # Host Agent (Node Exporter)
+      - containers/monitoring   # Stack (Prometheus/Grafana)
+      # Backup & Disaster Recovery
+      - storage/backup/restic
+      - storage/backup/rclone
+      # Final Solution Integrity Verification
+      - security/scanning
+
+  tasks:
+    - name: Execute Production Roles with Granular Checkpoints
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      loop: "{{ production_roles }}"
+      loop_control:
+        loop_var: role_item
+      tags:
+        - containers
+        - monitoring
+
+  post_tasks:
+    - name: Create production container directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
+        - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
+  handlers:
+    - name: Restart caddy
+      ansible.builtin.systemd:
+        name: caddy
+        state: restarted
+      listen: "restart caddy"

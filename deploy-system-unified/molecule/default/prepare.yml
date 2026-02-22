@@ -1,0 +1,34 @@
+---
+# prepare.yml - Prepare test instances for Ansible testing
+# Ensures Python is available for Ansible to work in containers
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Installs Python if missing, gathers facts
+#
+# Example:
+#     molecule prepare -s default
+
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for system to become reachable
+      ansible.builtin.wait_for_connection:
+        connect_timeout: 10
+        sleep: 5
+        delay: 5
+        timeout: 60
+    - name: Check if Python is available
+      ansible.builtin.raw: command -v python3 || command -v python
+      register: python_check
+      changed_when: false
+      failed_when: false
+    - name: Install Python on Debian/Ubuntu
+      ansible.builtin.raw: apt-get update && apt-get install -y python3
+      when: python_check.rc != 0
+      changed_when: true
+    - name: Gather facts after Python install
+      ansible.builtin.setup:

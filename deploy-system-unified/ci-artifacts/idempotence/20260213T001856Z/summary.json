@@ -1,0 +1,24 @@
+{
+  "run_id": "20260213T001856Z",
+  "started_at_utc": "2026-02-13T00:18:56.554675+00:00",
+  "ended_at_utc": "2026-02-13T00:18:59.775387+00:00",
+  "roles_benchmarked": 1,
+  "summary_counts": {
+    "failed": 1
+  },
+  "results": [
+    {
+      "role": "bootstrap",
+      "status": "failed",
+      "duration_seconds": 3.22,
+      "changed_second_run": null,
+      "failed_second_run": null,
+      "unreachable_second_run": null,
+      "recap_line_second_run": null,
+      "failure_excerpt": "ERROR! the role 'core/bootstrap' was not found in /workspace/Workspaces/deploy-system-unified/ci-artifacts/idempotence/20260213T001856Z/playbooks/roles:/workspace/projects/deploy-system-unified/roles:/workspace/projects/deploy-system-unified:/workspace/Workspaces/deploy-system-unified/ci-artifacts/idempotence/20260213T001856Z/playbooks",
+      "log_path": "Workspaces/deploy-system-unified/ci-artifacts/idempotence/20260213T001856Z/logs/core_bootstrap.log",
+      "playbook_path": "Workspaces/deploy-system-unified/ci-artifacts/idempotence/20260213T001856Z/playbooks/core_bootstrap.yml"
+    }
+  ],
+  "summary_markdown_path": "Workspaces/deploy-system-unified/ci-artifacts/idempotence/20260213T001856Z/summary.md"
+}
