@@ -42,7 +42,7 @@ DEFAULT_PATHS = [
     Path('wiki_audit'),
     Path('wiki_crowdsec_audit'),
     Path('wiki_clean_sync'),
-    Path('deploy-system-unified/docs'),
+    Path('docs'),
 ]
 
 LINK_RE = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
