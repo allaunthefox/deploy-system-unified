@@ -22,8 +22,15 @@ def identify_project_deficits():
     print(f"Available agents: {manager.get_available_agents()}")
     print()
     
-    # Path to the deploy-system-unified project
-    project_path = Path(os.environ.get('WORKSPACES_PROJECTS', Path.home() / 'Workspaces' / 'projects')) / 'deploy-system-unified'
+    # Path to the deploy-system-unified project.  Note: this example uses
+    # WORKSPACES_PROJECTS (see comprehensive_deficit_analysis.py for the
+    # alternate DEPLOY_SYSTEM_UNIFIED_PROJECT_PATH variable).  Either could be
+    # used consistently; they currently point to the same location by
+    # convention.
+    project_path = Path(
+        os.environ.get('WORKSPACES_PROJECTS', Path.home() / 'Workspaces' / 'projects')
+    ) / 'deploy-system-unified'
+    project_path = project_path.expanduser().resolve()
     
     # Check if the project exists
     if not os.path.exists(project_path):

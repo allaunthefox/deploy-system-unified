@@ -4,7 +4,7 @@ Initializer script for Qwen Sub-Agent System
 """
 
 import os
-from qwen_agent_manager import QwenAgentManager
+from .qwen_agent_manager import QwenAgentManager
 
 def initialize_qwen_agents():
     """Initialize the Qwen agent system."""

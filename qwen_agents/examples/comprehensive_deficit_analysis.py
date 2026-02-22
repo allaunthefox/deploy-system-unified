@@ -23,8 +23,13 @@ def comprehensive_deficit_analysis():
     print(f"Available agents: {manager.get_available_agents()}")
     print()
     
-    # Path to the deploy-system-unified project
-    project_path = os.environ.get("DEPLOY_SYSTEM_UNIFIED_PROJECT_PATH", str(Path(__file__).resolve().parents[2] / "projects" / "deploy-system-unified"))
+    # Path to the deploy-system-unified project (env var or default). Normalize to an absolute path.
+    project_path = Path(
+        os.environ.get(
+            "DEPLOY_SYSTEM_UNIFIED_PROJECT_PATH",
+            Path(__file__).resolve().parents[2] / "projects" / "deploy-system-unified",
+        )
+    ).expanduser().resolve()
     
     # Check if the project exists
     if not os.path.exists(project_path):
