@@ -5,6 +5,10 @@ on:
     branches: [ main, 'chore/*' ]
   pull_request:
     branches: [ main ]
+<<<<<<< HEAD
+=======
+  # allow manual execution during CI troubleshooting
+>>>>>>> ci/idempotence-main
   workflow_dispatch: {}
 
 jobs:
@@ -15,9 +19,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run idempotence test on runner
+      - name: Run idempotence test on runner (shared script)
         run: |
           set -euo pipefail
+<<<<<<< HEAD
           # Install minimal deps on runner and run the idempotence playbook directly (avoids Docker mount issues)
           # determine project root (checkout may nest repository directory)
           PROJECT_ROOT="$GITHUB_WORKSPACE"
@@ -44,3 +49,6 @@ EOF
           if [ -z "$PLAYBOOK" ]; then echo "ERROR: idempotence playbook not found in project root"; find "$PROJECT_ROOT" -maxdepth 4 -type f -name idempotence.yml -print || true; exit 2; fi
           echo "Using playbook: $PLAYBOOK"; ls -la "$(dirname "$PLAYBOOK")" || true
           ansible-playbook "$PLAYBOOK" --connection=local
+=======
+          bash .scripts/run_idempotence.sh
+>>>>>>> ci/idempotence-main

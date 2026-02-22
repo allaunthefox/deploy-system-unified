@@ -5,6 +5,7 @@ on:
     branches: [ "chore/ssh-policy-hardening", "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch: {}
 
 jobs:
   idempotence:
@@ -17,9 +18,10 @@ jobs:
           fetch-depth: 0
           submodules: false
 
-      - name: Run idempotence test on runner
+      - name: Run idempotence test on runner (shared script)
         run: |
           set -euo pipefail
+<<<<<<< HEAD
           # determine actual project root (checkout sometimes nests in another directory)
           PROJECT_ROOT="$GITHUB_WORKSPACE"
           if [ -d "$GITHUB_WORKSPACE/deploy-system-unified" ]; then
@@ -56,3 +58,6 @@ EOF
           fi
           echo "Using playbook: $PLAYBOOK"; ls -la "$(dirname "$PLAYBOOK")" || true
           ansible-playbook "$PLAYBOOK" --connection=local
+=======
+          bash .scripts/run_idempotence.sh
+>>>>>>> ci/idempotence-main
