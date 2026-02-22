@@ -7,7 +7,7 @@ on:
       - 'wiki_audit/**'
       - 'wiki_crowdsec_audit/**'
       - 'wiki_clean_sync/**'
-      - 'projects/deploy-system-unified/docs/**'
+      - 'docs/**'
   push:
     branches:
       - main
@@ -16,7 +16,7 @@ on:
       - 'wiki_audit/**'
       - 'wiki_crowdsec_audit/**'
       - 'wiki_clean_sync/**'
-      - 'projects/deploy-system-unified/docs/**'
+      - 'docs/**'
 
 jobs:
   lint:
