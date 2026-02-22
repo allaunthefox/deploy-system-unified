@@ -28,7 +28,6 @@ cd "$PROJECT_ROOT"
 if [ -x "$VENV_DIR/bin/ansible-lint" ]; then
     export PATH="$VENV_DIR/bin:$PATH"
     unset ANSIBLE_COLLECTIONS_PATHS
-    export ANSIBLE_COLLECTIONS_PATH="$PROJECT_ROOT/.collections"
     export ANSIBLE_CONFIG="$PROJECT_ROOT/ansible.cfg"
 fi
 

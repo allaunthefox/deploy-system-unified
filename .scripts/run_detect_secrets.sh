@@ -22,8 +22,6 @@ EXCLUDES=(
   --exclude-files '(^|/)\.secrets\.baseline$'
   --exclude-files '\.ansible/collections/.*'
   --exclude-files '\.ansible/galaxy_cache/.*'
-  --exclude-files '\.collections/.*'
-  --exclude-files 'projects/.*/\.collections/.*'
   --exclude-files 'dev_tools/ci/.*'
   --exclude-files '\.git/.*'
   --exclude-files '\.github/workflows/vault-secrets\.yml'

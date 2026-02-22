@@ -26,15 +26,15 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      # Use WIKI_PAT secret if available; otherwise requires manual SSH key configured for action
       - name: Prepare wiki repo clone
         env:
-          WIKI_GIT_URL: "git@github.com:${{ github.repository }}.wiki.git"
-          # Use WIKI_PAT secret if available; otherwise requires manual SSH key configured for action
+          WIKI_GIT_URL: "git@github.com:${{ github.event.repository.full_name }}.wiki.git"
         run: |
           echo "This step will clone and replace wiki content when run with proper PAT or SSH key configured."
           echo "To enable pushing, set repository secret WIKI_PAT to a personal access token with repo scope and create a deploy key or use SSH setup."
 
-      - name: Dry-run: Show planned files
+      - name: Dry-run show planned files
         run: |
           echo "Would copy the following files to the wiki repo (dry-run):"
           find wiki_pages -maxdepth 1 -type f -name "*.md" -print

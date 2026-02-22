@@ -52,10 +52,6 @@
 - name: Load Architecture Specific Firmware Tasks
   ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
   ignore_errors: true
-- name: Load Architecture Specific Firmware Tasks
-  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
-  ignore_errors: true
->>>>>>> origin/main:deploy-system-unified/roles/hardware/firmware/tasks/main.yml
 
 - name: Install hardware monitoring and watchdog tools
   ansible.builtin.package:

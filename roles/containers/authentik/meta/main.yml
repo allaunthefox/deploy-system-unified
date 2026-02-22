@@ -17,11 +17,7 @@ galaxy_info:
     - name: Alpine
       versions: [all]
   galaxy_tags: [containers, authentik]
-<<<<<<< HEAD:projects/deploy-system-unified/roles/containers/authentik/meta/main.yml
 # 'assumes_permissive' removed: metadata key unsupported by Ansible role metadata.
-=======
-# assumes_permissive: true
->>>>>>> origin/main:deploy-system-unified/roles/containers/authentik/meta/main.yml
 # Authentik role has secrets and may be used with host-network assumptions in some profiles.
 
 # Negative Testing
