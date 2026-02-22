@@ -16,27 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run idempotence test on runner
+      - name: Run idempotence test on runner (shared script)
         run: |
           set -euo pipefail
-          # Install minimal deps on runner and run the idempotence playbook directly (avoids Docker mount issues)
-          # Build ANSIBLE_ROLES_PATH from any 'roles' directories inside the workspace (robust to nesting)
-          ROLES_PATHS=$(find "$GITHUB_WORKSPACE" -type d -name roles -print | paste -sd ':' -)
-          if [ -z "$ROLES_PATHS" ]; then echo "ERROR: no 'roles' directories found in workspace"; find "$GITHUB_WORKSPACE" -maxdepth 3 -type d -name roles -print || true; exit 2; fi
-          export ANSIBLE_ROLES_PATH="$ROLES_PATHS:$GITHUB_WORKSPACE"
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt-get update -y
-          sudo apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg wget
-          curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && sudo chmod +x /usr/local/bin/sops
-          sudo pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"
-          # override ansible config to disable vault password file
-          cat <<'EOF' > "$PROJECT_ROOT/ci-ansible.cfg"
-[defaults]
-# vault_password_file disabled for CI
-EOF
-          export ANSIBLE_CONFIG="$PROJECT_ROOT/ci-ansible.cfg"
-          # Locate the idempotence playbook anywhere under the workspace
-          PLAYBOOK=$(find "$GITHUB_WORKSPACE" -path '*/roles/security/sshd/tests/idempotence.yml' -print -quit)
-          if [ -z "$PLAYBOOK" ]; then echo "ERROR: idempotence playbook not found in workspace"; find "$GITHUB_WORKSPACE" -maxdepth 4 -type f -name idempotence.yml -print || true; exit 2; fi
-          echo "Using playbook: $PLAYBOOK"; ls -la "$(dirname "$PLAYBOOK")" || true
-          ansible-playbook "$PLAYBOOK" --connection=local
+          bash .scripts/run_idempotence.sh
