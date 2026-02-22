@@ -1,0 +1,153 @@
+---
+# License Compliance Preflight Checks
+# Ensures license compliance before deployment proceeds
+
+- name: Check LICENSE file exists
+  ansible.builtin.stat:
+    path: "{{ preflight_repo_root }}/LICENSE"
+  register: preflight_license_file
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: Assert LICENSE file is present
+  ansible.builtin.assert:
+    that:
+      - preflight_license_file.stat.exists
+    fail_msg: >-
+      CRITICAL: LICENSE file not found in repository root.
+      This project requires GPL-3.0 license compliance.
+  delegate_to: localhost
+  run_once: true
+  when: preflight_check_license | default(true) | bool
+
+- name: Check license compliance workflow exists
+  ansible.builtin.stat:
+    path: "{{ preflight_repo_root }}/.github/workflows/license-compliance.yml"
+  register: preflight_license_workflow
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: Warn if license compliance workflow is missing
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: License compliance workflow not found.
+      CI will not automatically check dependency licenses.
+      Consider adding .github/workflows/license-compliance.yml
+  delegate_to: localhost
+  run_once: true
+  when:
+    - not preflight_license_workflow.stat.exists
+    - preflight_check_license | default(true) | bool
+
+- name: Check THIRD_PARTY_LICENSES.md exists
+  ansible.builtin.stat:
+    path: "{{ preflight_repo_root }}/docs/security/THIRD_PARTY_LICENSES.md"
+  register: preflight_third_party_licenses
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: Warn if third-party licenses document is missing
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: docs/security/THIRD_PARTY_LICENSES.md not found.
+      This document tracks third-party dependency licenses for compliance.
+  delegate_to: localhost
+  run_once: true
+  when:
+    - not preflight_third_party_licenses.stat.exists
+    - preflight_check_license | default(true) | bool
+
+- name: Check for pip-licenses tool availability
+  ansible.builtin.command: which pip-licenses
+  register: preflight_pip_licenses_check
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+  failed_when: false
+
+- name: Install pip-licenses if not present
+  ansible.builtin.pip:
+    name: pip-licenses
+    state: present
+  delegate_to: localhost
+  run_once: true
+  become: "{{ preflight_become_pip | default(false) | bool }}"
+  when:
+    - preflight_pip_licenses_check.rc != 0
+    - preflight_check_license | default(true) | bool
+    - preflight_install_license_tools | default(false) | bool
+
+- name: Generate license report for current dependencies
+  ansible.builtin.command: >-
+    pip-licenses --format=json --with-authors --with-urls
+  register: preflight_license_report
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+  failed_when: false
+  when:
+    - preflight_check_license | default(true) | bool
+    - preflight_pip_licenses_check.rc == 0 or preflight_install_license_tools | default(false) | bool
+
+- name: Check for GPL-incompatible licenses
+  ansible.builtin.set_fact:
+    preflight_incompatible_licenses: >-
+      {{
+        (preflight_license_report.stdout | from_json | default([]))
+        | selectattr('License', 'search', 'AGPL|SSPL|Proprietary|Commercial')
+        | list
+      }}
+  delegate_to: localhost
+  run_once: true
+  when:
+    - preflight_license_report.stdout is defined
+    - preflight_check_license | default(true) | bool
+
+- name: Warn about potentially incompatible licenses
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: Found {{ preflight_incompatible_licenses | length }} dependencies
+      with potentially GPL-3.0 incompatible licenses:
+      {% for pkg in preflight_incompatible_licenses | default([]) %}
+      - {{ pkg.Name }} ({{ pkg.License }}) - {{ pkg.URL | default('No URL') }}
+      {% endfor %}
+      
+      Review docs/security/THIRD_PARTY_LICENSES.md for allowed licenses.
+      Set preflight_strict_license_check=true to fail on incompatible licenses.
+  delegate_to: localhost
+  run_once: true
+  when:
+    - preflight_incompatible_licenses is defined
+    - preflight_incompatible_licenses | length > 0
+    - preflight_check_license | default(true) | bool
+
+- name: Fail on incompatible licenses if strict mode enabled
+  ansible.builtin.assert:
+    that:
+      - preflight_incompatible_licenses | length == 0
+    fail_msg: >-
+      CRITICAL: Found {{ preflight_incompatible_licenses | length }} dependencies
+      with GPL-3.0 incompatible licenses.
+      Review and remove/replace these dependencies or set preflight_strict_license_check=false.
+  delegate_to: localhost
+  run_once: true
+  when:
+    - preflight_incompatible_licenses is defined
+    - preflight_incompatible_licenses | length > 0
+    - preflight_strict_license_check | default(false) | bool
+    - preflight_check_license | default(true) | bool
+
+- name: Record license compliance status
+  ansible.builtin.set_fact:
+    preflight_license_compliant: >-
+      {{
+        (preflight_incompatible_licenses | default([]) | length == 0) or
+        not (preflight_strict_license_check | default(false) | bool)
+      }}
+    preflight_license_checked: true
+  delegate_to: localhost
+  run_once: true
+  when: preflight_check_license | default(true) | bool

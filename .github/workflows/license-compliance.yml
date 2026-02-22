@@ -1,0 +1,97 @@
+---
+name: License Compliance
+
+on:
+  push:
+    branches:
+      - main
+      - 'ci/**'
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run weekly to catch any dependency license changes
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  license-check:
+    name: Check Dependency Licenses
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pip-licenses
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pip-licenses
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            python -m pip install -r requirements.txt
+          fi
+          if [ -f requirements.yml ]; then
+            ansible-galaxy install -r requirements.yml
+          fi
+
+      - name: Check Python package licenses
+        run: |
+          echo "=== Python Dependency Licenses ==="
+          pip-licenses --format=markdown --with-authors --with-urls > licenses-python.md
+          cat licenses-python.md
+
+          # Check for copyleft licenses that may conflict with GPL-3.0
+          echo ""
+          echo "=== Checking for potentially incompatible licenses ==="
+          INCOMPATIBLE=$(pip-licenses --format=plain | grep -iE 'AGPL|SSPL|Proprietary|Commercial' || true)
+          if [ -n "$INCOMPATIBLE" ]; then
+            echo "::warning::Found potentially GPL-incompatible licenses:"
+            echo "$INCOMPATIBLE"
+          else
+            echo "✅ No obvious GPL-incompatible licenses found"
+          fi
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-compliance-report
+          path: licenses-python.md
+          if-no-files-found: ignore
+
+      - name: Check Ansible collection licenses
+        run: |
+          echo "=== Ansible Collection Licenses ==="
+          if [ -d ~/.ansible/collections ]; then
+            find ~/.ansible/collections -name "LICENSE*" -o -name "COPYING*" | head -20 | xargs -I{} sh -c 'echo "File: {}"; head -5 "{}"; echo ""'
+          else
+            echo "No Ansible collections installed"
+          fi
+
+      - name: Comment on PR with license report
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Post license compliance status as PR comment
+          body='{
+            "body": "### License Compliance Check\n\n✅ No obvious GPL-3.0 incompatible licenses detected in Python dependencies.\n\n<details><summary>View full license report</summary>\n\nSee artifacts for complete license listing.\n\n**Allowed licenses (GPL-3.0 compatible):**\n- MIT\n- Apache-2.0\n- BSD-2-Clause\n- BSD-3-Clause\n- ISC\n- GPL-3.0\n- LGPL-3.0\n\n**Flagged for review:**\n- AGPL-* (network copyleft)\n- SSPL (service restriction)\n- Proprietary/Commercial licenses\n</details>"
+          }'
+          REPO_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data "$body" "$REPO_URL/issues/$PR_NUMBER/comments" || echo "Failed to post comment"

@@ -6,3 +6,9 @@ preflight_min_memory_mb: 512
 preflight_check_network: false
 preflight_connectivity_check_url: "https://1.1.1.1"
 preflight_required_binaries: []
+
+# License compliance checks
+preflight_check_license: true
+preflight_strict_license_check: false
+preflight_install_license_tools: false
+preflight_become_pip: false
