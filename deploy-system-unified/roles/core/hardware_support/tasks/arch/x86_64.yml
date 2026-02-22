@@ -1,0 +1,28 @@
+---
+# x86_64 specific hardware tasks
+
+- name: Retrieve CPU flags
+  ansible.builtin.shell: "grep '^flags' /proc/cpuinfo | head -n 1"
+  register: cpu_flags_output
+  changed_when: false
+  check_mode: false
+
+- name: Set Hardware Facts (x86_64)
+  ansible.builtin.set_fact:
+    host_cpu_has_avx: "{{ 'avx' in cpu_flags_output.stdout }}"
+    host_cpu_has_avx2: "{{ 'avx2' in cpu_flags_output.stdout }}"
+    host_cpu_has_sse4_2: "{{ 'sse4_2' in cpu_flags_output.stdout }}"
+    host_cpu_has_aes: "{{ 'aes' in cpu_flags_output.stdout }}"
+    host_cpu_has_sha: "{{ 'sha_ni' in cpu_flags_output.stdout or 'sha2' in cpu_flags_output.stdout }}"
+    host_cpu_has_rdrand: "{{ 'rdrand' in cpu_flags_output.stdout }}"
+
+- name: Check for Intel QAT (QuickAssist Technology)
+  ansible.builtin.shell: "lspci -nn | grep -i QuickAssist || true"
+  register: qat_device_check
+  changed_when: false
+  failed_when: false
+
+- name: Set Crypto Accelerator Facts (x86_64)
+  ansible.builtin.set_fact:
+    host_has_qat: "{{ qat_device_check.stdout | length > 0 }}"
+    host_has_hardware_rng: "{{ host_cpu_has_rdrand | bool }}"

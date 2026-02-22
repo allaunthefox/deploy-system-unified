@@ -1,0 +1,94 @@
+---
+{{- if .Values.pihole.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "network-stack.fullname" . }}-pihole
+spec:
+  type: {{ .Values.pihole.service.type }}
+  ports:
+    - name: dns
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+    - name: http
+      port: {{ .Values.pihole.service.httpPort }}
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: pihole
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "network-stack.fullname" . }}-pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+        - name: pihole
+          image: "{{ .Values.pihole.image.repository }}:{{ .Values.pihole.image.tag }}"
+          env:
+            - name: TZ
+              value: "UTC"
+            - name: WEBPASSWORD
+              value: {{ .Values.pihole.adminPassword }}
+          ports:
+            - containerPort: 53
+              name: dns
+            - containerPort: 80
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /admin/
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /admin/
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.pihole.resources | nindent 10 }}
+          volumeMounts:
+            - name: pihole-data
+              mountPath: /etc/pihole
+            - name: dnsmasq-data
+              mountPath: /etc/dnsmasq.d
+      volumes:
+        - name: pihole-data
+          {{- if .Values.pihole.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "network-stack.fullname" . }}-pihole
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: dnsmasq-data
+          emptyDir: {}
+---
+{{- if .Values.pihole.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "network-stack.fullname" . }}-pihole
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pihole.persistence.size }}
+{{- end }}
+{{- end }}

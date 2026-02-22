@@ -1,0 +1,19 @@
+---
+# x86_64 specific firmware/microcode tasks
+
+- name: Set distribution-specific hardware package names (x86_64)
+  ansible.builtin.set_fact:
+    microcode_packages: >-
+      {{ ['intel-ucode', 'amd-ucode'] if ansible_os_family == 'Archlinux' else ['intel-microcode', 'amd64-microcode'] }}
+    monitoring_packages: >-
+      {{ ['lm_sensors', 'smartmontools'] if ansible_os_family == 'Archlinux' else ['lm-sensors', 'smartmontools', 'watchdog'] }}
+    watchdog_service: "{{ [] if ansible_os_family == 'Archlinux' else ['watchdog'] }}"
+
+- name: Install CPU microcode updates (Intel/AMD)
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ microcode_packages }}"
+  become: true
+  failed_when: false
+  when: not _hw_is_container

@@ -1,0 +1,15 @@
+apiVersion: v2
+name: monitoring-stack
+description: A Helm chart for Kubernetes monitoring (Prometheus, Grafana)
+type: application
+version: 0.1.0
+appVersion: "1.0"
+keywords:
+  - monitoring
+  - prometheus
+  - grafana
+  - observability
+icon: https://example.com/icon.png
+icon: https://example.com/icon.png
+maintainers:
+  - name: deploy-system-unified

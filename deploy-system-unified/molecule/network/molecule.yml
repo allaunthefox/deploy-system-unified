@@ -1,0 +1,55 @@
+---
+# molecule.yml - Ansible-Native Molecule configuration for network scenario
+#
+# This configuration uses the ansible-native approach which gives full control
+# over the testing lifecycle through custom create/destroy playbooks.
+#
+# This scenario tests network functionality using cEOS containers:
+#   - Arista cEOS for network device simulation
+#   - Multiple devices for topology testing
+#   - eAPI enablement for Ansible network modules
+#
+# Key sections:
+#   - ansible.executor: Defines how playbooks are executed
+#   - ansible.env: Environment variables for Ansible
+#   - ansible.cfg: Ansible configuration options
+#   - ansible.playbooks: Paths to create/destroy/converge/verify playbooks
+#   - scenario.test_sequence: Order of test execution
+#   - verifier: Verification backend (ansible-native uses ansible)
+#
+# Example:
+#     molecule test -s network
+
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=inventory/
+  env:
+    ANSIBLE_FORCE_COLOR: true
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+    ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/.collections
+  cfg:
+    defaults:
+      deprecation_warnings: false
+      interpreter_python: auto_silent
+      host_key_checking: false
+      # Network modules need longer timeout
+      timeout: 60
+
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    verify: verify.yml
+
+scenario:
+  test_sequence:
+    - create
+    - converge
+    - verify
+    - destroy
+
+verifier:
+  name: ansible

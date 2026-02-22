@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Test script to debug the linter's anchor processing."""
 
+import os
 import re
 from pathlib import Path
 
+# Determine wiki root (env WORKSPACES_WIKI or ~/Workspaces/wiki_pages)
+wiki_root = Path(os.environ.get("WORKSPACES_WIKI", Path.home() / "Workspaces" / "wiki_pages"))
+
 # Read the role file
-role_file = Path('/home/prod/Workspaces/wiki_pages/roles/containers_anubis.md')
+role_file = wiki_root / 'roles' / 'containers_anubis.md'
 role_content = role_file.read_text()
 
 # Extract headings using the same pattern as the linter
@@ -43,7 +47,7 @@ for anchor in test_anchors:
     print(f'  - {anchor}: {"EXISTS" if exists else "MISSING"}')
 
 # Also check the variable reference file
-var_file = Path('/home/prod/Workspaces/wiki_pages/Variable_Reference_Containers.md')
+var_file = wiki_root / 'Variable_Reference_Containers.md'
 var_content = var_file.read_text()
 
 print()

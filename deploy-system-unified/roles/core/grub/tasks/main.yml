@@ -1,0 +1,71 @@
+---
+# Tasks for core/grub - Centralized Bootloader Management
+
+- name: Aggregate Kernel Parameters
+  ansible.builtin.set_fact:
+    _core_grub_all_params: >-
+      {{
+        (
+          (core_grub_base_params | default([])) +
+          (core_grub_security_params | default([])) +
+          (core_grub_hardware_params | default([])) +
+          (core_grub_isolation_params | default([])) +
+          (core_grub_performance_params | default([])) +
+          (core_grub_extra_params | default([]))
+        ) | select('string') | reject('equalto', '') | unique | list
+      }}
+
+- name: Construct GRUB_CMDLINE_LINUX_DEFAULT
+  ansible.builtin.set_fact:
+    _core_grub_cmdline: "{{ _core_grub_all_params | join(' ') }}"
+
+- name: Validate kernel parameters for conflicts
+  ansible.builtin.include_tasks: validate_params.yml
+
+- name: Ensure GRUB configuration exists
+  ansible.builtin.stat:
+    path: "{{ core_grub_config_path }}"
+  register: grub_stat
+
+- name: Warn when GRUB config is missing
+  ansible.builtin.debug:
+    msg: >-
+      core/grub: GRUB config file {{ core_grub_config_path }} not found;
+      skipping GRUB_CMDLINE_LINUX_DEFAULT update.
+<<<<<<< HEAD:projects/deploy-system-unified/roles/core/grub/tasks/main.yml
+    warn: true
+=======
+<<<<<<< HEAD:projects/deploy-system-unified/roles/core/grub/tasks/main.yml
+    warn: true
+=======
+>>>>>>> origin/main:deploy-system-unified/roles/core/grub/tasks/main.yml
+>>>>>>> github/main:deploy-system-unified/roles/core/grub/tasks/main.yml
+  when:
+    - core_grub_enabled
+    - not grub_stat.stat.exists
+
+- name: Update GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub
+  ansible.builtin.lineinfile:
+    path: "{{ core_grub_config_path }}"
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ _core_grub_cmdline }}"'
+    validate: '/bin/grep -q "GRUB_CMDLINE_LINUX_DEFAULT" %s'
+  become: true
+  when:
+    - core_grub_enabled
+    - grub_stat.stat.exists
+  register: grub_config_update
+  notify: update-grub
+
+- name: Manual GRUB Update Trigger
+  ansible.builtin.debug:
+    msg: "Triggering GRUB update due to force flag"
+  changed_when: true
+  notify: update-grub
+  when:
+    - core_grub_enabled
+    - core_grub_force_update
+    - grub_stat.stat.exists
+
+- name: Backup GRUB configuration
+  ansible.builtin.include_tasks: backup.yml

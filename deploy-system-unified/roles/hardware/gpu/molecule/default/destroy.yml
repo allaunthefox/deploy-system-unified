@@ -1,0 +1,11 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove GPU test container
+      containers.podman.podman_container:
+        name: gpu-molecule
+        state: absent
+        force_delete: true

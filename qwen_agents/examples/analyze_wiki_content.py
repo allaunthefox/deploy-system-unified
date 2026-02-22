@@ -23,8 +23,8 @@ def analyze_wiki_content():
     print(f"Available agents: {manager.get_available_agents()}")
     print()
     
-    # Define the wiki pages directory
-    wiki_dir = Path("/home/prod/Workspaces/wiki_pages")
+    # Define the wiki pages directory (env WORKSPACES_WIKI or fallback)
+    wiki_dir = Path(os.environ.get('WORKSPACES_WIKI', Path.home() / 'Workspaces' / 'wiki_pages'))
     
     if not wiki_dir.exists():
         print(f"❌ Wiki directory does not exist: {wiki_dir}")

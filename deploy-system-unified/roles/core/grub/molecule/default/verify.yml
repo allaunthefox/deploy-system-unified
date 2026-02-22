@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    grub_test_path: "/tmp/molecule-grub-default"
+    grub_handler_log: "/tmp/grub_handler.log"
+    grub_expected_cmdline: >-
+      quiet splash console=tty0 slab_nomerge pti=on video=1024x768@60 iommu=pt zswap.enabled=1 console=ttyS0,115200n8
+  tasks:
+    - name: Read GRUB config
+      ansible.builtin.slurp:
+        src: "{{ grub_test_path }}"
+      register: grub_config_raw
+
+    - name: Decode GRUB config
+      ansible.builtin.set_fact:
+        grub_config_content: "{{ grub_config_raw.content | b64decode }}"
+      changed_when: false
+
+    - name: Assert GRUB command line matches expected order
+      ansible.builtin.assert:
+        that:
+          - grub_config_content is search('^GRUB_CMDLINE_LINUX_DEFAULT=\"' ~ grub_expected_cmdline ~ '\"', multiline=True)
+        fail_msg: "GRUB_CMDLINE_LINUX_DEFAULT did not match expected ordered parameters."
+        success_msg: "GRUB_CMDLINE_LINUX_DEFAULT matches expected ordered parameters."
+
+    - name: Check handler log exists
+      ansible.builtin.stat:
+        path: "{{ grub_handler_log }}"
+      register: handler_log_stat
+
+    - name: Assert handler log was written
+      ansible.builtin.assert:
+        that:
+          - handler_log_stat.stat.exists
+        fail_msg: "Expected GRUB handler to run, but no handler log was found."
+        success_msg: "GRUB handler log found."
+
+    - name: Read handler log
+      ansible.builtin.slurp:
+        src: "{{ grub_handler_log }}"
+      register: handler_log_raw
+
+    - name: Decode handler log
+      ansible.builtin.set_fact:
+        handler_log_content: "{{ handler_log_raw.content | b64decode }}"
+      changed_when: false
+
+    - name: Assert update-grub handler was invoked
+      ansible.builtin.assert:
+        that:
+          - handler_log_content is search('update-grub')
+        fail_msg: "Expected update-grub handler to be invoked."
+        success_msg: "update-grub handler invocation recorded."

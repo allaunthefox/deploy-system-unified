@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: kubernetes_master
+  author: deploy-system-unified
+  description: Lightweight Kubernetes (K3s) Control Plane orchestration
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - kubernetes
+    - k3s
+    - cloud
+    - devops
+
+dependencies:
+  - role: core/hardware_support

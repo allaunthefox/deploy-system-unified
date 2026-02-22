@@ -1,0 +1,27 @@
+# Proxy Stack Values
+
+# Caddy
+caddy:
+  enabled: true
+  image:
+    repository: caddy
+    tag: 2.9.0
+  service:
+    type: LoadBalancer
+    httpPort: 80
+    httpsPort: 443
+  adminPort: 2019
+  config:
+    email: ""  # Let's Encrypt email
+    auto_https: true
+
+# Nginx
+nginx:
+  enabled: false
+  image:
+    repository: nginx
+    tag: 1.27.0
+  service:
+    type: LoadBalancer
+    httpPort: 80
+    httpsPort: 443

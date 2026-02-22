@@ -1,0 +1,40 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# GPU Workstation Deployment Template (x86_64)
+# Specialized for Intel/NVIDIA/AMD on x86_64
+
+- ansible.builtin.import_playbook: ../base_hardened.yml
+- name: Deploy GPU Workstation (x86_64)
+  hosts: all
+  become: true
+
+  vars:
+    gpu_stack_arch: "x86_64"
+    gpu_stack_vendor: "intel" # Default for this template
+    gpu_stack_mode: "desktop"
+
+  roles:
+    - core/bootstrap
+    - core/identity
+    - core/logging
+    - role: ops/monitoring
+    - role: networking/desktop
+    - role: networking/physical
+    - networking/firewall
+    - security/hardening
+    - security/access
+    - role: hardware/firmware
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ gpu_stack_vendor }}"
+        gpu_stack_mode: "{{ gpu_stack_mode }}"
+        gpu_battlemage_force_probe: "{{ 'true' if gpu_stack_vendor == 'intel' else 'false' }}"
+
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "{{ gpu_stack_vendor }}"

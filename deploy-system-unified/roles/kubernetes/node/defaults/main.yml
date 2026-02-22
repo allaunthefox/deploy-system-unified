@@ -1,0 +1,21 @@
+---
+# Defaults for kubernetes/node
+kubernetes_k3s_version: "v1.31.2+k3s1"
+
+# Master Connection
+kubernetes_master_api_ip: "" # Must be provided
+kubernetes_master_api_port: 6443
+kubernetes_k3s_token: "" # Must be provided
+
+# K3s Feature Flags (Node)
+kubernetes_node_labels: []
+kubernetes_node_taints: []
+
+# Storage
+kubernetes_data_dir: "/var/lib/rancher/k3s"
+
+# Architecture Binary Mapping
+kubernetes_k3s_bin_url:
+  x86_64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s"
+  aarch64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s-arm64"
+  riscv64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s-riscv64"

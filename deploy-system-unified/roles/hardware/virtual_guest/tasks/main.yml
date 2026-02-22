@@ -1,0 +1,46 @@
+---
+# Tasks for hardware/virtual_guest - Cloud Instance Tuning
+
+- name: Detect Virtualization Environment (Internal)
+  ansible.builtin.set_fact:
+    _vps_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+
+- name: Set I/O scheduler for virtual block devices (none/noop)
+  ansible.builtin.copy:
+    content: |
+      # Set none scheduler for network-backed/virtual disks
+      ACTION=="add|change", KERNEL=="vd[a-z]*|xvd[a-z]*", ATTR{queue/scheduler}="none"
+    dest: /etc/udev/rules.d/60-vps-disk-scheduler.rules
+    mode: '0644'
+  become: true
+  notify: reload_udev
+  when: not _vps_is_container
+
+- name: Optimize Virtual Memory for shared cloud resources
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-vps-optimization.conf
+    reload: true
+  loop:
+    - { name: 'vm.dirty_ratio', value: '10' }
+    - { name: 'vm.dirty_background_ratio', value: '5' }
+  become: true
+  when: not _vps_is_container
+
+- name: Identify VPS Provider for specific optimizations
+  ansible.builtin.set_fact:
+    detected_provider: "{{ vps_provider | default(ansible_system_vendor) | lower }}"
+
+- name: Apply High-Fidelity Provider Optimizations
+  ansible.builtin.include_tasks: "providers/{{ item }}.yml"
+  loop:
+    - "{{ detected_provider }}"
+  when:
+    - not _vps_is_container
+    - detected_provider is defined
+    - query('first_found', 'providers/' + item + '.yml', errors='ignore') | length > 0
+- name: Apply Generic Cloud Optimizations (Fallback)
+  ansible.builtin.include_tasks: "providers/generic_cloud.yml"
+  when: query('first_found', 'providers/' + (vps_provider | default(ansible_system_vendor) | lower) + '.yml', errors='ignore') | length == 0

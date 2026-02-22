@@ -69,10 +69,8 @@ Ensures high-quality random number generation by installing and configuring entr
 Aggregates and applies kernel parameters from various roles into a single GRUB configuration.
 
 ### `core/hardware_support` — [Read details](roles/core_hardware_support.md)
-**Hardware Discovery & Requirements**
-Discovers CPU features (AVX, AES-NI) and handles hardware acceleration requirements.
-
-
+**Hardware Discovery & Requirements (Multi-Arch)**
+Discovers CPU features (AVX, AES-NI) and handles hardware acceleration requirements across x86_64 and aarch64.
 
 ### `core/identity` — [Read details](roles/core_identity.md)
 **Identity & UUID Generation**
@@ -83,8 +81,8 @@ Handles system identity, hostname configuration, and entropy-backed UUID generat
 Ensures mandatory forensic readiness by configuring systemd-journal-remote and log aggregation tools.
 
 ### `core/memory` — [Read details](roles/core_memory.md)
-**Memory Compression & Swap Optimization**
-Handles intelligent memory compression (zRAM/zswap) and swap management based on workload profiles.
+**Memory Compression & Swap Optimization (Multi-Arch)**
+Handles architecture-aware memory compression (zRAM/zswap) and swap management based on workload profiles.
 
 ### `core/repositories` — [Read details](roles/core_repositories.md)
 **Repository Management**
@@ -117,8 +115,8 @@ Configures automated security updates and unattended patching to maintain a secu
 Manages microcode, firmware updates, and low-level system attributes for physical hardware.
 
 ### `hardware/gpu` — [Read details](roles/hardware_gpu.md)
-**Unified GPU Stack**
-Automatic discovery and driver installation for AMD, Intel, and NVIDIA GPUs across architectures.
+**Unified GPU Stack (Integrated Battlemage)**
+Automatic discovery and driver installation for AMD, Intel (including Arc/Battlemage), and NVIDIA GPUs across architectures (x86_64, aarch64, riscv64).
 
 ### `hardware/sas` — [Read details](roles/hardware_sas.md)
 **Hardware SAS Role (`hardware/sas`)**

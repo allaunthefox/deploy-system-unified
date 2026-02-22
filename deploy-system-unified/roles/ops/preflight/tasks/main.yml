@@ -1,0 +1,262 @@
+---
+# Preflight role - Validation and readiness checks ONLY
+# Reason: This file centralized placeholder detection for inventory variables; these
+# values are intentionally listed for validation policy and may include "CHANGE_ME" placeholders.
+# noqa DSU003
+# Package installation has been moved to core/bootstrap
+- name: Gather minimum facts for preflight checks
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - distribution
+      - os_family
+      - pkg_mgr
+      - service_mgr
+      - virtual
+
+- name: Detect virtualization facts (preflight)
+  ansible.builtin.set_fact:
+    detected_virtualization_role: "{{ ansible_facts['virtualization_role'] | default('host') | lower }}"
+    detected_virtualization_type: "{{ ansible_facts['virtualization_type'] | default('none') | lower }}"
+    is_virtualized: "{{ (ansible_facts['virtualization_role'] | default('host') | lower) == 'guest' }}"
+  changed_when: false
+
+- name: Determine virt_type (ontology default)
+  ansible.builtin.set_fact:
+    virt_type: >-
+      {{
+        'bare-metal'
+        if not (is_virtualized | bool)
+        else (
+          'container'
+          if detected_virtualization_type in ['docker', 'podman', 'container', 'lxc']
+          else (
+            'vps'
+            if (deployment_profile | default('') == 'vps')
+            else 'virtual'
+          )
+        )
+      }}
+  when: virt_type is not defined
+  changed_when: false
+
+- name: Assert virt_type is a valid ontology value
+  ansible.builtin.assert:
+    that:
+      - virt_type is defined
+      - virt_type is string
+      - virt_type in ['bare-metal', 'virtual', 'vps', 'container']
+    fail_msg: >-
+      Invalid virt_type '{{ virt_type | default('UNDEFINED') }}'. Expected one of:
+      bare-metal, virtual, vps, container.
+      Detected: virtualization_role={{ detected_virtualization_role | default('unknown') }},
+      virtualization_type={{ detected_virtualization_type | default('unknown') }}.
+
+- name: Validate distribution is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] | lower in ['archlinux', 'debian', 'ubuntu', 'fedora', 'alpine', 'centos', 'rocky', 'almalinux']
+    fail_msg: "Unsupported distribution: {{ ansible_facts['distribution'] }}"
+    success_msg: "Distribution {{ ansible_facts['distribution'] }} is supported"
+- name: Validate systemd is available
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['service_mgr'] == 'systemd'
+    fail_msg: "This deployment requires systemd as the service manager"
+    success_msg: "systemd service manager confirmed"
+  when: preflight_require_systemd | default(true)
+- name: Check for minimum memory
+  ansible.builtin.assert:
+    that:
+      - ansible_memtotal_mb | default(0) >= preflight_min_memory_mb | default(512)
+    fail_msg: "Insufficient memory: {{ ansible_memtotal_mb }}MB < {{ preflight_min_memory_mb | default(512) }}MB"
+    success_msg: "Memory check passed: {{ ansible_memtotal_mb }}MB available"
+  when: preflight_check_memory | default(false)
+- name: Check for required binaries
+  ansible.builtin.shell:
+    cmd: "command -v {{ item }}"
+  loop: "{{ preflight_required_binaries | default([]) }}"
+  register: preflight_binary_check
+  changed_when: false
+  failed_when: false
+  when: preflight_required_binaries is defined and preflight_required_binaries | length > 0
+- name: Validate required binaries exist
+  ansible.builtin.assert:
+    that:
+      - item.rc == 0
+    fail_msg: "Required binary not found: {{ item.item }}"
+  loop: "{{ preflight_binary_check.results | default([]) }}"
+  when: preflight_binary_check.results is defined
+- name: Check network connectivity
+  ansible.builtin.uri:
+    url: "{{ preflight_connectivity_check_url | default('https://1.1.1.1') }}"
+    method: HEAD
+    timeout: 10
+  register: preflight_network_check
+  failed_when: false
+  changed_when: false
+  when: preflight_check_network | default(false)
+- name: Validate network connectivity
+  ansible.builtin.assert:
+    that:
+      - preflight_network_check.status is defined
+      - preflight_network_check.status < 400
+    fail_msg: "Network connectivity check failed"
+    success_msg: "Network connectivity confirmed"
+  when:
+    - preflight_check_network | default(false)
+    - preflight_network_check is defined
+- name: Install KVM checker (Bare Metal only)
+  ansible.builtin.package:
+    name: cpu-checker
+    state: present
+  become: true
+  when: virt_type == "bare-metal"
+- name: Validate KVM Hardware Acceleration (Bare Metal only)
+  ansible.builtin.command: kvm-ok
+  register: kvm_check
+  changed_when: false
+  failed_when: false
+  become: true
+  when: virt_type == "bare-metal"
+- name: Assert KVM is functional
+  ansible.builtin.assert:
+    that:
+      - kvm_check.rc == 0
+    fail_msg: "KVM acceleration is not supported or enabled in BIOS. Virtualization roles will fail."
+  when:
+    - virt_type == "bare-metal"
+    - "'virtual_hypervisor' in ansible_play_name or 'bare_metal' in ansible_play_name"
+- name: Set preflight completion facts
+  ansible.builtin.set_fact:
+    preflight_complete: true
+    preflight_distribution: "{{ ansible_facts['distribution'] }}"
+    preflight_os_family: "{{ ansible_facts['os_family'] }}"
+    preflight_pkg_mgr: "{{ ansible_facts['pkg_mgr'] }}"
+
+- name: Define default secret guards
+  ansible.builtin.set_fact:
+    preflight_secret_guards:
+      - name: "crowdsec_firewall_bouncer_key"
+        value: "{{ vault_crowdsec_firewall_bouncer_key | default('') }}" # noqa DSU003
+        bad_values: ["CHANGE_ME", ""]
+      - name: "vaultwarden_admin_token"
+        value: "{{ vaultwarden_admin_token | default('') }}" # noqa DSU003
+        bad_values: ["CHANGE_ME_IN_VAULT_TO_HASH", ""]
+      - name: "monitoring_grafana_admin_password"
+        value: "{{ monitoring_grafana_admin_password | default('') }}" # noqa DSU003
+        bad_values: ["CHANGE_ME_IN_VAULT", ""]
+      - name: "restic_password"
+        value: "{{ restic_password | default('') }}" # noqa DSU003
+        bad_values: ["CHANGE_ME_IN_VAULT", ""]
+
+- name: Run preflight diagnose (non-failing)
+  ansible.builtin.include_tasks: diagnose.yml
+  when: preflight_diagnose_only | default(false)
+
+- name: Define deployment profile for transfer policy
+  ansible.builtin.set_fact:
+    preflight_deployment_profile: "{{ deployment_profile | default('hardened') }}"
+    preflight_profile_strict: ["ephemeral", "hardened", "production", "vps", "backup"]
+    preflight_profile_lenient: ["workstation", "dev"]
+
+- name: Validate deployment profile is supported
+  ansible.builtin.assert:
+    that:
+      - preflight_deployment_profile in (preflight_profile_strict + preflight_profile_lenient)
+    fail_msg: >-
+      Unsupported deployment_profile: {{ preflight_deployment_profile }}.
+      Valid: {{ (preflight_profile_strict + preflight_profile_lenient) | join(', ') }}
+
+- name: Enforce NFS explicit-allow policy (least privilege)
+  ansible.builtin.assert:
+    that:
+      - storage_nfs_exports | default([]) | length > 0
+      - storage_nfs_mounts | default([]) | length > 0
+    fail_msg: >-
+      NFS is enabled but exports/mounts are not explicitly defined.
+      Define storage_nfs_exports and storage_nfs_mounts in the profile.
+  when: storage_nfs_enable | default(false) | bool
+
+- name: Enforce NFS export scope (no broad exports by default)
+  ansible.builtin.assert:
+    that:
+      - storage_nfs_allow_broad_exports | default(false) | bool or
+        (item is not match(".*(\\b0\\.0\\.0\\.0/0\\b|\\b::/0\\b|\\*).*"))
+    fail_msg: >-
+      Broad NFS export detected: {{ item }}.
+      Set storage_nfs_allow_broad_exports=true to override explicitly.
+  loop: "{{ storage_nfs_exports | default([]) | map(attribute='clients') | list | flatten }}"
+  when: storage_nfs_enable | default(false) | bool
+
+- name: Enforce NFS ephemeral opt-in (strict profiles)
+  ansible.builtin.assert:
+    that:
+      - storage_nfs_ephemeral_allow | default(false) | bool
+    fail_msg: >-
+      NFS is enabled on an ephemeral profile without explicit opt-in.
+      Set storage_nfs_ephemeral_allow=true to proceed.
+  when:
+    - storage_nfs_enable | default(false) | bool
+    - preflight_deployment_profile == "ephemeral"
+
+- name: Enforce rsync explicit-allow policy (least privilege)
+  ansible.builtin.assert:
+    that:
+      - ops_rsync_enable | default(false) | bool
+      - ops_rsync_allowlist | default([]) | length > 0
+      - ssh_rsync_destination | default('') == '' or
+        (ssh_rsync_destination in (ops_rsync_allowlist | map(attribute='dest') | list))
+    fail_msg: >-
+      Rsync is requested but not explicitly allowed or destination is not in allowlist.
+      Set ops_rsync_enable=true and define ops_rsync_allowlist with allowed dest entries.
+  when:
+    - (ssh_rsync_destination | default('')) != "" or (ops_rsync_enable | default(false) | bool)
+
+- name: Enforce rsync ephemeral opt-in (strict profiles)
+  ansible.builtin.assert:
+    that:
+      - ops_rsync_ephemeral_allow | default(false) | bool
+    fail_msg: >-
+      Rsync is enabled on an ephemeral profile without explicit opt-in.
+      Set ops_rsync_ephemeral_allow=true to proceed.
+  when:
+    - (ssh_rsync_destination | default('')) != "" or (ops_rsync_enable | default(false) | bool)
+    - preflight_deployment_profile == "ephemeral"
+
+- name: Validate required secrets are not default placeholders
+  ansible.builtin.assert:
+    that:
+      - item.value not in item.bad_values
+    fail_msg: "Default or empty secret detected: {{ item.name }}. Set this in encrypted inventory."
+  loop: "{{ preflight_secret_guards }}"
+  when:
+    - not preflight_allow_default_secrets | default(false) | bool
+    - core_security_fail_secure | default(true) | bool
+    - not preflight_diagnose_only | default(false) | bool
+
+- name: Scan inventory for placeholder test_key usage (controller)
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/inventory"
+    patterns:
+      - "*.yml"
+      - "*.yaml"
+      - "*.ini"
+    contains: "test_key"
+  register: preflight_test_key_find
+  changed_when: false
+  delegate_to: localhost
+  run_once: true
+  when: not preflight_allow_test_key | default(false) | bool
+
+- name: Fail if placeholder test_key is present in inventory
+  ansible.builtin.assert:
+    that:
+      - (preflight_test_key_find.matched | default(0)) == 0
+    fail_msg: >-
+      Placeholder 'test_key' found in inventory variables. Replace the example
+      key before deployment or set preflight_allow_test_key=true to override.
+  delegate_to: localhost
+  run_once: true
+  when: not preflight_allow_test_key | default(false) | bool

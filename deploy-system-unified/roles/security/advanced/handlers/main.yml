@@ -1,0 +1,7 @@
+---
+# handlers file for advanced_security_hardening role
+- name: restart_sshd
+  ansible.builtin.systemd:
+    name: "{{ ssh_service_name }}"
+    state: restarted
+  listen: "restart sshd"

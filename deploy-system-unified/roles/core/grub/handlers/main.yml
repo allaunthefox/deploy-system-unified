@@ -1,0 +1,28 @@
+---
+# Handlers for core/grub
+
+<<<<<<< HEAD:projects/deploy-system-unified/roles/core/memory/handlers/main.yml
+- name: restart systemd-zram-setup
+  ansible.builtin.systemd:
+    name: systemd-zram-setup@zram0.service
+    state: restarted
+    daemon_reload: true
+  become: true
+=======
+- name: update_grub
+  ansible.builtin.command: update-grub
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: update_grub_redhat
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  become: true
+  when: ansible_os_family == 'RedHat'
+  listen: update-grub
+
+- name: update_grub_arch_alpine
+  ansible.builtin.command: grub-mkconfig -o /boot/grub/grub.cfg
+  become: true
+  when: ansible_os_family in ['Archlinux', 'Alpine']
+  listen: update-grub
+>>>>>>> github/main:deploy-system-unified/roles/core/grub/handlers/main.yml

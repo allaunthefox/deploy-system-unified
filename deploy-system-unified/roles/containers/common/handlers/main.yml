@@ -1,0 +1,38 @@
+---
+# Common handlers for all container-related roles
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: "{{ containers_systemd_scope }}"
+  environment: "{{ containers_systemd_env }}"
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+
+
+- name: restart_caddy
+  block:
+
+    - name: check_if_caddy_unit_exists
+      ansible.builtin.command:
+        cmd: >-
+          {{ containers_systemd_scope == 'user'
+             | ternary('systemctl --user cat caddy.service',
+                       'systemctl cat caddy.service') }}
+      register: caddy_unit_check
+      changed_when: false
+      failed_when: false
+      become: true
+      become_user: "{{ containers_systemd_owner }}"
+
+
+    - name: restart_caddy_service
+      ansible.builtin.systemd:
+        name: caddy
+        state: restarted
+        enabled: true
+        scope: "{{ containers_systemd_scope }}"
+      environment: "{{ containers_systemd_env }}"
+      become: true
+      become_user: "{{ containers_systemd_owner }}"
+      when: caddy_unit_check.rc == 0

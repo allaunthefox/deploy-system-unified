@@ -1,0 +1,20 @@
+---
+# converge.yml - Main playbook execution for network testing
+# This playbook runs network-related tests against cEOS containers
+#
+# Args:
+#     Uses inventory from ansible.executor.args in molecule.yml
+#
+# Returns:
+#     Executes network playbooks against cEOS devices
+#
+# Example:
+#     molecule converge -s network
+
+- name: Network Convergence Test
+  hosts: network_devices
+  gather_facts: false
+  tasks:
+    # Test connectivity to network devices
+    - name: Verify network device is reachable
+      ansible.builtin.ping:

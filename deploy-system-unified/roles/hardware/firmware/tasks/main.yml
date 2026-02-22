@@ -1,0 +1,87 @@
+---
+# Tasks for hardware/firmware - Bare Metal Foundation
+
+- name: Detect Virtualization Environment (Internal)
+  ansible.builtin.set_fact:
+    _hw_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+
+- name: Detect CPU Tier (Server vs Consumer)
+  ansible.builtin.set_fact:
+    hardware_cpu_tier: "{{ 'server' if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else 'consumer' }}"
+    hardware_is_server_cpu: "{{ true if (ansible_processor | join(' ') | regex_search('Xeon|EPYC', ignorecase=True)) else false }}"
+- name: Report CPU Profile
+  ansible.builtin.debug:
+    msg: "Hardware detected as {{ hardware_cpu_tier | upper }} tier CPU."
+- name: Install Hardware Security Tools
+  ansible.builtin.package:
+    name:
+      - tpm2-tools
+      - tpm2-abrmd # TPM2 Access Broker & Resource Manager
+    state: present
+  become: true
+- name: Detect Hardware TPM support
+  ansible.builtin.stat:
+    path: /dev/tpmrm0
+  register: hardware_tpm_stat
+- name: Set TPM fact
+  ansible.builtin.set_fact:
+    has_hardware_tpm: "{{ hardware_tpm_stat.stat.exists }}"
+- name: Report TPM Status
+  ansible.builtin.debug:
+    msg: "Hardware TPM detected: {{ has_hardware_tpm }}"
+- name: Configure Hardware Clock (RTC) to UTC
+  ansible.builtin.command: timedatectl set-local-rtc 0
+  become: true
+  changed_when: false
+  when: not _hw_is_container
+
+- name: Enable NTP-based RTC synchronization
+  ansible.builtin.command: timedatectl set-ntp true
+  become: true
+  changed_when: false
+  when: not _hw_is_container
+
+- name: Report Hardware Clock status
+  ansible.builtin.command: timedatectl status
+  register: timedate_status
+  changed_when: false
+  become: true
+  failed_when: false
+  when: not _hw_is_container
+
+- name: Load Architecture Specific Firmware Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
+- name: Load Architecture Specific Firmware Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
+>>>>>>> origin/main:deploy-system-unified/roles/hardware/firmware/tasks/main.yml
+
+- name: Install hardware monitoring and watchdog tools
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ monitoring_packages | default([]) }}"
+  become: true
+  when: not _hw_is_container
+
+- name: Configure hardware watchdog
+  ansible.builtin.lineinfile:
+    path: /etc/watchdog.conf
+    regexp: "^#?watchdog-device"
+    line: "watchdog-device = /dev/watchdog"
+  become: true
+  notify: restart_watchdog
+  when:
+    - not _hw_is_container
+    - ansible_os_family != 'Archlinux'
+
+- name: Enable and start hardware services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: "{{ ['smartmontools'] + watchdog_service }}"
+  become: true
+  when: not _hw_is_container
+  failed_when: false

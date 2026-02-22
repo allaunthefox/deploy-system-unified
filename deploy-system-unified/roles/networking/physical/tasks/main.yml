@@ -1,0 +1,196 @@
+---
+# Tasks for networking/physical
+
+- name: Install networking tools
+  ansible.builtin.package:
+    name:
+      - ethtool
+      - lshw
+      - irqbalance # Essential for multi-queue NICs (Bare Metal), skipped for VMs
+    state: present
+  when: networking_physical_install_tools
+  become: true
+
+- name: Disable IRQBalance in Virtualized Environments
+  ansible.builtin.systemd:
+    name: irqbalance
+    state: stopped
+    enabled: false
+  when:
+    - is_virtualized
+    - networking_physical_install_tools
+  failed_when: false
+
+- name: Detect physical interfaces
+  ansible.builtin.set_fact:
+    physical_interfaces: >-
+      {{
+        ansible_interfaces
+        | map('regex_replace', '^', 'ansible_')
+        | map('extract', ansible_facts)
+        | select('defined')
+        | selectattr('type', 'defined')
+        | selectattr('type', 'equalto', 'ether')
+        | map(attribute='device')
+        | list
+      }}
+
+- name: Gather ethtool facts for physical interfaces
+  ansible.builtin.command: "ethtool {{ item }}"
+  register: ethtool_output
+  changed_when: false
+  failed_when: false
+  loop: "{{ physical_interfaces }}"
+
+- name: Parse Interface Types and Capabilities
+  vars:
+    # Standardize all speeds to Megabits per second (Mbps)
+    # Supports SI (decimal) and IEC (binary) prefixes, as well as Byte-based units
+    # Scales from Nibble (insane) to Exabit (future-proof)
+    _speed_conversion_map:
+      'b': 0.000001     # Bits
+      'B': 0.000008     # Bytes (x8)
+      'nb': 0.000004    # Nibbles (x4) - The "Insane Admin" Special
+      'Kb': 0.001       # Kilobits
+      'KB': 0.008       # Kilobytes (x8)
+      'Kib': 0.001024   # Kibibits
+      'KiB': 0.008192   # Kibibytes
+      'Mb': 1.0         # Megabits (Base)
+      'MB': 8.0         # Megabytes (x8)
+      'Mib': 1.048576   # Mebibits
+      'MiB': 8.388608   # Mebibytes
+      'Gb': 1000.0      # Gigabits
+      'GB': 8000.0      # Gigabytes (x8)
+      'Gib': 1073.742   # Gibibits
+      'GiB': 8589.935   # Gibibytes
+      'Tb': 1000000.0   # Terabits
+      'TB': 8000000.0   # Terabytes (x8)
+      'Tib': 1099511.6  # Tebibits
+      'TiB': 8796093.0  # Tebibytes
+      'Pb': 1000000000.0      # Petabits
+      'PB': 8000000000.0      # Petabytes (x8)
+      'Pib': 1125899906.84    # Pebibits
+      'PiB': 9007199254.74    # Pebibytes
+      'Eb': 1000000000000.0   # Exabits
+      'EB': 8000000000000.0   # Exabytes (x8)
+      'Eib': 1152921504606.85 # Exbibits
+      'EiB': 9223372036854.78 # Exbibytes
+  ansible.builtin.set_fact:
+    interface_capabilities: "{{ interface_capabilities | default({}) | combine({ item.item: {
+      'port_type': (item.stdout | regex_search('Port: ([a-zA-Z]+)', '\\1') | first | default('Unknown') | trim),
+      'link_detected': (item.stdout | regex_search('Link detected: ([a-zA-Z]+)', '\\1') | first | default('no') | trim),
+      'speed_mbps': ((item.stdout | regex_search('Speed: ([0-9]+)', '\\1') | first | default('0') | int) * (_speed_conversion_map.get((item.stdout | regex_search('Speed: [0-9]+\\s*([a-zA-Z]+)/s', '\\1') | first | default('Mb')), 1.0))) | int,
+      'mtu': (ansible_facts['ansible_' ~ item.item].mtu | default(0))
+    }}) }}"
+  loop: "{{ ethtool_output.results }}"
+  when: item.rc == 0
+
+- name: Debug Interface Capabilities
+  ansible.builtin.debug:
+    var: interface_capabilities
+    verbosity: 1
+
+- name: Gather ring buffer settings
+  ansible.builtin.command: "ethtool -g {{ item }}"
+  register: ethtool_ring_output
+  changed_when: false
+  failed_when: false
+  loop: "{{ physical_interfaces }}"
+  when: networking_physical_ring_tuning_enabled
+
+- name: Parse ring buffer settings
+  ansible.builtin.set_fact:
+    interface_ring_settings: "{{ interface_ring_settings | default({}) | combine({ item.item: {
+      'current_rx': (item.stdout | regex_search('Current hardware settings:[\\s\\S]*?RX:\\s*([0-9]+)', '\\1') | default('-1') | int),
+      'current_tx': (item.stdout | regex_search('Current hardware settings:[\\s\\S]*?TX:\\s*([0-9]+)', '\\1') | default('-1') | int)
+    }}) }}"
+  loop: "{{ ethtool_ring_output.results | default([]) }}"
+  when:
+    - networking_physical_ring_tuning_enabled
+    - item.rc == 0
+
+- name: Gather offload settings
+  ansible.builtin.command: "ethtool -k {{ item }}"
+  register: ethtool_offload_output
+  changed_when: false
+  failed_when: false
+  loop: "{{ physical_interfaces }}"
+  when: networking_physical_offload_tuning_enabled
+
+- name: Parse offload settings
+  ansible.builtin.set_fact:
+    interface_offload_settings: "{{ interface_offload_settings | default({}) | combine({ item.item: {
+      'tso': (item.stdout | regex_search('tcp-segmentation-offload:\\s*(on|off)', '\\1') | default('unknown')),
+      'gso': (item.stdout | regex_search('generic-segmentation-offload:\\s*(on|off)', '\\1') | default('unknown'))
+    }}) }}"
+  loop: "{{ ethtool_offload_output.results | default([]) }}"
+  when:
+    - networking_physical_offload_tuning_enabled
+    - item.rc == 0
+
+# --- System-Wide Kernel Tuning (Based on Fastest Interface) ---
+
+- name: Determine Max Interface Speed
+  ansible.builtin.set_fact:
+    max_interface_speed: "{{ interface_capabilities.values() | map(attribute='speed_mbps') | map('int') | max | default(1000) }}"
+    jumbo_frames_eligible: "{{ interface_capabilities.values() | selectattr('speed_mbps', 'defined') | selectattr('speed_mbps', 'ge', 1000) | list | length > 0 }}"
+
+- name: Select Performance Profile
+  ansible.builtin.set_fact:
+    active_profile: "{{ networking_physical_profiles[max_interface_speed|string] | default(networking_physical_profiles[networking_physical_default_profile]) }}"
+
+- name: Load Architecture Specific Networking Tasks
+  ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
+  ignore_errors: true
+
+# --- Per-Interface Tuning (Jumbo Frames & Ring Buffers) ---
+
+- name: Apply Jumbo Frames to High Speed/Fiber Interfaces
+  ansible.builtin.command: "ip link set dev {{ item.key }} mtu {{ networking_physical_jumbo_mtu }}"
+  loop: "{{ interface_capabilities | dict2items }}"
+  when:
+    - networking_physical_manage_mtu
+    - networking_physical_jumbo_frames_enabled
+    - item.value.link_detected == 'yes'
+    - (item.value.speed_mbps | int) >= 10000 or item.value.port_type in ['FIBRE', 'Direct Attach Copper', 'DA']
+    - item.value.mtu | int != networking_physical_jumbo_mtu | int
+  notify: restart_networkmanager
+
+- name: Tune Ring Buffers (Adaptive per Interface Speed)
+  vars:
+    desired_ring_rx: "{{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_rx }}"
+    desired_ring_tx: "{{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_tx }}"
+  ansible.builtin.command: >-
+    ethtool -G {{ item.key }}
+    rx {{ desired_ring_rx }}
+    tx {{ desired_ring_tx }}
+  loop: "{{ interface_capabilities | dict2items }}"
+  when:
+    - networking_physical_ring_tuning_enabled
+    - item.value.link_detected == 'yes'
+    # Skip Ring Tuning on Virtual Interfaces (VirtIO/VmxNet3 often has fixed rings)
+    - not is_virtualized
+    - interface_ring_settings is defined
+    - interface_ring_settings[item.key] is defined
+    - interface_ring_settings[item.key].current_rx | int != desired_ring_rx | int or interface_ring_settings[item.key].current_tx | int != desired_ring_tx | int
+  failed_when: false # Hardware might not support specific ring sizes
+
+- name: Apply Offload Settings (TSO/GSO)
+  vars:
+    desired_tso: "{{ 'on' if networking_physical_enable_tso else 'off' }}"
+    desired_gso: "{{ 'on' if networking_physical_enable_gso else 'off' }}"
+  ansible.builtin.command: >
+    ethtool -K {{ item.key }}
+    tso {{ desired_tso }}
+    gso {{ desired_gso }}
+  loop: "{{ interface_capabilities | dict2items }}"
+  when:
+    - networking_physical_offload_tuning_enabled
+    - item.value.link_detected == 'yes'
+    - interface_offload_settings is defined
+    - interface_offload_settings[item.key] is defined
+    - interface_offload_settings[item.key].tso in ['on', 'off']
+    - interface_offload_settings[item.key].gso in ['on', 'off']
+    - interface_offload_settings[item.key].tso != desired_tso or interface_offload_settings[item.key].gso != desired_gso
+  become: true
+

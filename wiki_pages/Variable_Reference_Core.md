@@ -35,6 +35,10 @@
 
 ### `core/logging`
 - [`logging_journal_remote_packages`](roles/core_logging.md#loggingjournalremotepackages)
+- [`logging_rate_limit_interval`](roles/core_logging.md#loggingratelimitinterval)
+- [`logging_rate_limit_burst`](roles/core_logging.md#loggingratelimitburst)
+- [`logging_max_file_sec`](roles/core_logging.md#loggingmaxfilesec)
+- [`logging_max_retention_sec`](roles/core_logging.md#loggingmaxretentionsec)
 
 ### `core/memory`
 - [`core_memory_compression_strategy`](roles/core_memory.md#corememorycompressionstrategy)
