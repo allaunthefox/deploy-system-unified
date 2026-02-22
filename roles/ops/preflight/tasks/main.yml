@@ -151,6 +151,10 @@
         value: "{{ restic_password | default('') }}" # noqa DSU003
         bad_values: ["CHANGE_ME_IN_VAULT", ""]
 
+- name: Run license compliance checks
+  ansible.builtin.include_tasks: check_license_compliance.yml
+  when: preflight_check_license | default(true) | bool
+
 - name: Run preflight diagnose (non-failing)
   ansible.builtin.include_tasks: diagnose.yml
   when: preflight_diagnose_only | default(false)
