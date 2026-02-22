@@ -14,12 +14,11 @@ galaxy_info:
       versions: [all]
     - name: Archlinux
       versions: [all]
-  galaxy_tags:
-    - containers
-    - proxy
-    - caddy
-    - crowdsec
-    - security
-    - iso_27001
+    - name: Alpine
+      versions: [all]
+  galaxy_tags: [containers, caddy]
+# 'assumes_permissive' removed: not valid RoleMetadata attribute for Ansible;
+# role behavior for permissive profiles is documented in README or role defaults.
+# Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.
 
 dependencies: []
