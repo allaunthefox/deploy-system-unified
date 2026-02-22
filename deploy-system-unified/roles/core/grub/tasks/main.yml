@@ -35,7 +35,11 @@
 <<<<<<< HEAD:projects/deploy-system-unified/roles/core/grub/tasks/main.yml
     warn: true
 =======
+<<<<<<< HEAD:projects/deploy-system-unified/roles/core/grub/tasks/main.yml
+    warn: true
+=======
 >>>>>>> origin/main:deploy-system-unified/roles/core/grub/tasks/main.yml
+>>>>>>> github/main:deploy-system-unified/roles/core/grub/tasks/main.yml
   when:
     - core_grub_enabled
     - not grub_stat.stat.exists

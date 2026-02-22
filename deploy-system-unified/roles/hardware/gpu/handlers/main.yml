@@ -17,7 +17,6 @@
     msg: "Would restart Display Manager (gdm/lightdm/sddm) if present."
   listen: "Restart Display Manager (Placeholder)"
 
-
 - name: update_initramfs_debian
   ansible.builtin.command: update-initramfs -u
   become: true

@@ -45,10 +45,7 @@
 
 - name: Run Video Hardware Detection
   ansible.builtin.include_tasks: detect_video.yml
-<<<<<<< HEAD:projects/deploy-system-unified/roles/hardware/gpu/tasks/main.yml
-  when: gpu_stack_vendor in ['auto', 'generic']
-=======
->>>>>>> origin/main:deploy-system-unified/roles/hardware/gpu/tasks/main.yml
+
 
 - name: Resolve Driver Conflicts
   ansible.builtin.include_tasks: driver_integrity.yml
