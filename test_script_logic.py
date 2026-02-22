@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Test the exact logic from the script."""
 
+import os
+from pathlib import Path
 import re
 
-# Read the actual content from the file
-with open('/home/prod/Workspaces/wiki_pages/Variable_Reference_Containers.md', 'r') as f:
+# Read the actual content from the file (portable: env WORKSPACES_WIKI or fallback to ~/Workspaces/wiki_pages)
+wiki_file = Path(os.environ.get("WORKSPACES_WIKI", Path.home() / "Workspaces" / "wiki_pages")) / "Variable_Reference_Containers.md"
+with open(wiki_file, 'r') as f:
     content = f.read()
 
 lines = content.splitlines()

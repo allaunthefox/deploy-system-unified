@@ -5,6 +5,7 @@ Comprehensive deficit analysis of the deploy-system-unified project using Qwen s
 
 import sys
 import os
+from pathlib import Path
 # Add the parent directory (qwen_agents) to the path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -23,7 +24,7 @@ def comprehensive_deficit_analysis():
     print()
     
     # Path to the deploy-system-unified project
-    project_path = "/home/prod/Workspaces/projects/deploy-system-unified"
+    project_path = os.environ.get("DEPLOY_SYSTEM_UNIFIED_PROJECT_PATH", str(Path(__file__).resolve().parents[2] / "projects" / "deploy-system-unified"))
     
     # Check if the project exists
     if not os.path.exists(project_path):
