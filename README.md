@@ -1,75 +1,127 @@
-# Workspaces — Quick Overview & Guide 📁
+# Deploy-System-Unified
 
-[![Style Enforcement](https://img.shields.io/github/actions/workflow/status/allaunthefox/deploy-system-unified/style-enforcement.yml?branch=main)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/style-enforcement.yml) [![Detect Secrets](https://img.shields.io/github/actions/workflow/status/allaunthefox/deploy-system-unified/detect-secrets.yml?branch=main)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/detect-secrets.yml) [![License](https://img.shields.io/github/license/allaunthefox/deploy-system-unified)](https://github.com/allaunthefox/deploy-system-unified/blob/main/LICENSE) [![Wiki Lint](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/wiki-lint.yml/badge.svg)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/wiki-lint.yml)
+[![Style Enforcement](https://img.shields.io/github/actions/workflow/status/allaunthefox/deploy-system-unified/style-enforcement.yml?branch=main)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/style-enforcement.yml)
+[![Detect Secrets](https://img.shields.io/github/actions/workflow/status/allaunthefox/deploy-system-unified/detect-secrets.yml?branch=main)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/detect-secrets.yml)
+[![License](https://img.shields.io/github/license/allaunthefox/deploy-system-unified)](https://github.com/allaunthefox/deploy-system-unified/blob/main/LICENSE)
+[![Wiki Lint](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/wiki-lint.yml/badge.svg)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/wiki-lint.yml)
 
-This workspace holds multiple active projects, research, and tooling used across development. The README is organized for quick scanning with deeper links for details.
-
----
-
-## At a glance ✨
-
-- Root purpose: central repository of projects, tooling, and LLM research notes.  
-- Key project: `projects/deploy-system-unified/` — production-focused Ansible base for container infrastructure.  
-- CI & tooling: style enforcement, secret scanning, and helper scripts live under `projects/*/dev_tools` and `.github/workflows`.
+**Modular, security-first infrastructure deployment built on Ansible.**
 
 ---
 
-## Top-level structure 🔍
+## 🚀 Quick Start
 
-- `projects/` — Project folders
-  - `projects/deploy-system-unified/` — Deploy-System-Unified project (Ansible playbooks, roles, templates)
-- `Offline_Research/` — Offline research and documentation
-  - `Offline_Research/LLM_RESEARCH/` — Style guides, research notes, and documentation for LLM-driven docs and processes
-- `ansiblelint/` — Custom Ansible Lint rules and tests (now inside deploy-system-unified)
-- `dev_tools/` — Shared helper scripts, enforcement tools, and utilities used across projects (now inside deploy-system-unified)
+### Production Deployment
 
----
-
-## Notable project: Deploy-System-Unified 🚀
-Path: `projects/deploy-system-unified/`
-
-Short summary:
-- Production-ready base for container infrastructure (Podman + quadlets, Caddy, secure SSH).  
-- Provides `branch_templates/` for deployment variants (production, development, ephemeral).  
-- Main playbook: `main.yml` (kept pristine; CI enforces no top-level `roles:` in main).  
-
-Quick files to check:
-- `main.yml` — pristine base playbook
-- `branch_templates/` — templates to copy and customize for a deployment
-- `roles/` — reusable Ansible roles
-- `dev_tools/tools/style-guide-enforcement/` — enforcement script and reporting
-- `.github/workflows/` — CI checks (style, detect-secrets)
-
----
-
-## Quick start (2 commands) ▶️
-
-1) Generate a style compliance report (no changes):
+Use the canonical entrypoint for production deployments:
 
 ```bash
-bash projects/deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report
+ansible-playbook production_deploy.yml -i inventory/your_inventory.ini
 ```
 
-2) Run detect-secrets locally:
+### Architecture Support
+
+This project is architecture-aware and supports:
+- **x86_64** (Intel/AMD)
+- **aarch64** (ARM64)
+- **riscv64** (RISC-V)
+
+Core roles and GPU drivers adapt automatically to the target architecture.
+
+### Reference Templates
+
+Standard architecture patterns are available in `branch_templates/` for reference. Copy and customize for your deployment variant (production, development, ephemeral).
+
+---
+
+## 📖 Documentation
+
+**Primary documentation hub:** [GitHub Wiki](https://github.com/allaunthefox/deploy-system-unified/wiki)
+
+**Local documentation:** [Documentation Index](./docs/INDEX.md)
+
+### Key Documentation Sections
+
+| Section | Description |
+|---------|-------------|
+| [Architecture](./docs/architecture/README.md) | Core philosophy, virtual networking, backup strategy |
+| [Development](./docs/development/CONTRIBUTING.md) | Contributing guide, style guide, tooling |
+| [Deployment](./docs/deployment/EXAMPLES.md) | Solution stacks, vendor profiles, hardware matrix |
+| [Planning](./docs/planning/) | Roadmaps, migration plans, stability execution |
+
+---
+
+## 📁 Project Structure
+
+```
+Deploy-System-Unified/
+├── site.yml                    # Main playbook
+├── production_deploy.yml       # Production entrypoint
+├── base_hardened.yml           # Base hardening playbook
+├── branch_templates/           # Architecture-specific templates
+├── roles/                      # Ansible roles (categorized)
+│   ├── core/                   # Core system roles
+│   ├── containers/             # Container runtime & services
+│   ├── hardware/               # Hardware-specific roles
+│   ├── networking/             # Network configuration
+│   ├── security/               # Security hardening
+│   └── ...
+├── playbooks/                  # Supporting playbooks
+├── inventory/                  # Inventory files
+├── docs/                       # Documentation
+├── dev_tools/                  # Development tooling
+└── molecule/                   # Test scenarios
+```
+
+---
+
+## 🔧 Quick Commands
+
+### Style Compliance Report
+
+```bash
+bash dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report
+```
+
+### Detect Secrets Scan
 
 ```bash
 pip install detect-secrets
-detect-secrets scan projects/deploy-system-unified --all-files
+detect-secrets scan --all-files
 ```
 
----
+### Pre-commit Setup
 
-## Contributing & support 🤝
-
-- See `projects/deploy-system-unified/CONTRIBUTING.md` for contribution rules and branch template guidance.
-- For security concerns (potential secrets), open an issue and tag `security`. We already run `detect-secrets` in CI.
+See [docs/development/PRE_COMMIT.md](./docs/development/PRE_COMMIT.md) for local enforcement setup.
 
 ---
 
-## Contacts / Maintainers
+## 🤝 Contributing & Support
+
+- **Contribution rules:** See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Security concerns:** See [SECURITY.md](./SECURITY.md) - we run `detect-secrets` in CI
+- **Roadmap:** See [docs/planning/ROADMAP.md](./docs/planning/ROADMAP.md)
+
+---
+
+## 📋 Key Features
+
+- **Security-first**: Default-deny firewall, SOPS/Age secrets, audit integrity
+- **Idempotent**: All roles pass idempotence benchmarks (12/12 core roles)
+- **Multi-arch**: x86_64, aarch64, riscv64 support
+- **Container-native**: Podman quadlets, Caddy reverse proxy
+- **Disaster recovery**: Restic/rclone backups, restore runbooks
+- **CI/CD**: Style enforcement, secret scanning, wiki linting
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](./LICENSE)
+
+---
+
+## 👥 Maintainers
+
 - Repo owner: `@allaunthefox`
-- For quick questions: open an issue in the relevant project folder
-
----
-
-If you'd like, I can add CI badges to this README, include a minimal example inventory + `site.yml` quick-start, or extract a one-line TL;DR summary for console output. Which would you prefer? (badges / example / tl;dr / none)
+- For questions: Open an issue in the relevant category

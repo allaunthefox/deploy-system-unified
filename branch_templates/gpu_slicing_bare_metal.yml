@@ -75,7 +75,7 @@
 
   tasks:
     - name: Execute GPU Roles with Granular Checkpoints
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      ansible.builtin.include_tasks: "tasks/run_role.yml"
       loop: "{{ gpu_roles }}"
       loop_control:
         loop_var: role_item

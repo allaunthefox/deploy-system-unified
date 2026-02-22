@@ -14,7 +14,7 @@
       - ops/cloud_init
   tasks:
     - name: Execute Cloud Sync Roles
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      ansible.builtin.include_tasks: "tasks/run_role.yml"
       loop: "{{ cloud_sync_roles }}"
       loop_control:
         loop_var: role_item
@@ -37,7 +37,7 @@
       - security/scanning
   tasks:
     - name: Execute VPS Roles
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../tasks/run_role.yml"
+      ansible.builtin.include_tasks: "tasks/run_role.yml"
       loop: "{{ vps_roles }}"
       loop_control:
         loop_var: role_item
