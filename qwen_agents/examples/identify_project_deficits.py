@@ -23,7 +23,7 @@ def identify_project_deficits():
     print()
     
     # Path to the deploy-system-unified project
-    project_path = "/home/prod/Workspaces/projects/deploy-system-unified"
+    project_path = Path(os.environ.get('WORKSPACES_PROJECTS', Path.home() / 'Workspaces' / 'projects')) / 'deploy-system-unified'
     
     # Check if the project exists
     if not os.path.exists(project_path):

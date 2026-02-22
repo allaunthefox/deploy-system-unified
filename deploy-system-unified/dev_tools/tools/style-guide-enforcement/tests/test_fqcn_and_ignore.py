@@ -1,7 +1,6 @@
 import os
 import subprocess
 import textwrap
-import tempfile
 
 SCRIPT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'enforce_style_guide.sh'))
 

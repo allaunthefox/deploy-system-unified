@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 # Test the actual format
 line = "- `[anubis_enabled](roles/containers_anubis.md#anubis_enabled)`"
@@ -34,7 +35,8 @@ else:
     
 # Actually, let me look at the actual format again
 print("\nActual format from file:")
-with open('/home/prod/Workspaces/wiki_pages/Variable_Reference_Containers.md', 'r') as f:
+repo_root = Path(__file__).resolve().parent
+with open(repo_root / 'wiki_pages' / 'Variable_Reference_Containers.md', 'r') as f:
     content = f.read()
     import re
     # Find a line with the pattern
