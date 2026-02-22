@@ -29,6 +29,7 @@ molecule/**/molecule_shared/
 molecule/**/__pycache__/
 .Molecule-full-run.log
 .molecule-full-run.pid
+.molecule-full-run.log
 
 # CI/CD artifacts
 .github/workflows/*.log
