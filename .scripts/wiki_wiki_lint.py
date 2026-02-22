@@ -168,6 +168,8 @@ def scan_files(paths, fix_h1=False, create_placeholders=False):
                     elif str(f).startswith('docs/'):
                         # links within docs are not required to be present
                         results['warnings'].append(('docs_missing_page', str(f), target))
+                    elif not pagepart.startswith('wiki_pages/'):
+                        results['warnings'].append(('missing_page', str(f), target))
                     else:
                         results['errors'].append(('missing_page', str(f), target))
                     continue
