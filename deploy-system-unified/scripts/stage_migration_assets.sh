@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BACKUP_FILE="/home/prod/Workspaces/Offline_Research/system-backup-2026-01-13.tar.xz"
+WORKSPACES_ROOT="${WORKSPACES_ROOT:-$HOME/Workspaces}"
+BACKUP_FILE="${WORKSPACES_ROOT}/Offline_Research/system-backup-2026-01-13.tar.xz"
 STAGING_DIR="$(dirname "$0")/../migration_assets"
 
 echo "Starting extraction from $BACKUP_FILE..."
