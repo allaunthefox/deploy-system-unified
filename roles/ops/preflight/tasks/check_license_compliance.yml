@@ -2,17 +2,13 @@
 # License Compliance Preflight Checks
 # Ensures license compliance before deployment proceeds
 
-- name: "ISO 9001 | Action 520010 | Check LICENSE file exists"
+- name: Check LICENSE file exists
   ansible.builtin.stat:
     path: "{{ preflight_repo_root }}/LICENSE"
   register: preflight_license_file
   delegate_to: localhost
   run_once: true
   changed_when: false
-  tags:
-    - iso_9001
-    - preflight
-    - license
 
 - name: Assert LICENSE file is present
   ansible.builtin.assert:
@@ -23,10 +19,6 @@
       This project requires GPL-3.0 license compliance.
   delegate_to: localhost
   run_once: true
-  tags:
-    - iso_9001
-    - preflight
-    - license
   when: preflight_check_license | default(true) | bool
 
 - name: Check license compliance workflow exists
@@ -36,9 +28,6 @@
   delegate_to: localhost
   run_once: true
   changed_when: false
-  tags:
-    - preflight
-    - license
 
 - name: Warn if license compliance workflow is missing
   ansible.builtin.debug:
@@ -48,9 +37,6 @@
       Consider adding .github/workflows/license-compliance.yml
   delegate_to: localhost
   run_once: true
-  tags:
-    - preflight
-    - license
   when:
     - not preflight_license_workflow.stat.exists
     - preflight_check_license | default(true) | bool
@@ -62,9 +48,6 @@
   delegate_to: localhost
   run_once: true
   changed_when: false
-  tags:
-    - preflight
-    - license
 
 - name: Warn if third-party licenses document is missing
   ansible.builtin.debug:
@@ -73,9 +56,6 @@
       This document tracks third-party dependency licenses for compliance.
   delegate_to: localhost
   run_once: true
-  tags:
-    - preflight
-    - license
   when:
     - not preflight_third_party_licenses.stat.exists
     - preflight_check_license | default(true) | bool
@@ -87,9 +67,6 @@
   run_once: true
   changed_when: false
   failed_when: false
-  tags:
-    - preflight
-    - license
 
 - name: Install pip-licenses if not present
   ansible.builtin.pip:
@@ -98,9 +75,6 @@
   delegate_to: localhost
   run_once: true
   become: "{{ preflight_become_pip | default(false) | bool }}"
-  tags:
-    - preflight
-    - license
   when:
     - preflight_pip_licenses_check.rc != 0
     - preflight_check_license | default(true) | bool
@@ -114,9 +88,6 @@
   run_once: true
   changed_when: false
   failed_when: false
-  tags:
-    - preflight
-    - license
   when:
     - preflight_check_license | default(true) | bool
     - preflight_pip_licenses_check.rc == 0 or preflight_install_license_tools | default(false) | bool
@@ -131,9 +102,6 @@
       }}
   delegate_to: localhost
   run_once: true
-  tags:
-    - preflight
-    - license
   when:
     - preflight_license_report.stdout is defined
     - preflight_check_license | default(true) | bool
@@ -151,9 +119,6 @@
       Set preflight_strict_license_check=true to fail on incompatible licenses.
   delegate_to: localhost
   run_once: true
-  tags:
-    - preflight
-    - license
   when:
     - preflight_incompatible_licenses is defined
     - preflight_incompatible_licenses | length > 0
@@ -169,16 +134,13 @@
       Review and remove/replace these dependencies or set preflight_strict_license_check=false.
   delegate_to: localhost
   run_once: true
-  tags:
-    - preflight
-    - license
   when:
     - preflight_incompatible_licenses is defined
     - preflight_incompatible_licenses | length > 0
     - preflight_strict_license_check | default(false) | bool
     - preflight_check_license | default(true) | bool
 
-- name: "ISO 9001 | Action 520011 | Record license compliance status"
+- name: Record license compliance status
   ansible.builtin.set_fact:
     preflight_license_compliant: >-
       {{
@@ -188,8 +150,4 @@
     preflight_license_checked: true
   delegate_to: localhost
   run_once: true
-  tags:
-    - iso_9001
-    - preflight
-    - license
   when: preflight_check_license | default(true) | bool
