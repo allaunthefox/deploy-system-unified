@@ -7,15 +7,6 @@
 
 **Modular, security-first infrastructure deployment built on Ansible.**
 
-## About
-
-This repo serves as a **workspace**, with the primary project situated under
-`projects/deploy-system-unified/`.  All other top-level folders and files are
-ancillary (CI configuration, research notes, tooling, etc.).  The layout keeps
-production code isolated and simplifies navigation when multiple initiatives
-coexist.
-
-
 ---
 
 ## 🚀 Quick Start
@@ -120,13 +111,15 @@ See [docs/development/PRE_COMMIT.md](./docs/development/PRE_COMMIT.md) for local
 - **Multi-arch**: x86_64, aarch64, riscv64 support
 - **Container-native**: Podman quadlets, Caddy reverse proxy
 - **Disaster recovery**: Restic/rclone backups, restore runbooks
-- **CI/CD**: Style enforcement, secret scanning, wiki linting
+- **CI/CD**: Style enforcement, secret scanning, wiki linting, license compliance
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](./LICENSE)
+GPL-3.0 License - see [LICENSE](./LICENSE)
+
+See [LICENSE-COMPLIANCE.md](./LICENSE-COMPLIANCE.md) for dependency license policy.
 
 ---
 
