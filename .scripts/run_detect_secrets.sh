@@ -37,7 +37,6 @@ if [ -n "$BASELINE" ]; then
   base_dir="$(dirname "$BASELINE")"
   tmp_baseline="$(mktemp)"
   cp "$BASELINE" "$tmp_baseline"
-
   # run scan against copy and diff results exactly like CI
   (
     cd "$base_dir"
