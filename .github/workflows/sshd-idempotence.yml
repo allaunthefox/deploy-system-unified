@@ -1,0 +1,43 @@
+name: SSHD Idempotence Test
+
+on:
+  push:
+    branches: [ main, 'chore/*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  idempotence:
+    name: Run idempotence verification in container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run idempotence test on runner
+        run: |
+          set -euo pipefail
+          # Install minimal deps on runner and run the idempotence playbook directly (avoids Docker mount issues)
+          # determine project root (checkout may nest repository directory)
+          PROJECT_ROOT="$GITHUB_WORKSPACE"
+          if [ -d "$GITHUB_WORKSPACE/deploy-system-unified" ]; then
+            PROJECT_ROOT="$GITHUB_WORKSPACE/deploy-system-unified"
+          fi
+          # Build ANSIBLE_ROLES_PATH from any 'roles' directories inside the project root (robust to nesting)
+          ROLES_PATHS=$(find "$PROJECT_ROOT" -type d -name roles -print | paste -sd ':' -)
+          if [ -z "$ROLES_PATHS" ]; then echo "ERROR: no 'roles' directories found in project root ($PROJECT_ROOT)"; find "$PROJECT_ROOT" -maxdepth 3 -type d -name roles -print || true; exit 2; fi
+          export ANSIBLE_ROLES_PATH="$ROLES_PATHS:$PROJECT_ROOT"
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates apt-transport-https gnupg wget
+          curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && sudo chmod +x /usr/local/bin/sops
+          sudo pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"
+          # make sure Ansible has a vault password file (avoids error when no secrets are used)
+          export ANSIBLE_VAULT_PASSWORD_FILE="$PROJECT_ROOT/.vault_pass"
+          touch "$ANSIBLE_VAULT_PASSWORD_FILE" || true
+          # Locate the idempotence playbook anywhere under the workspace
+          PLAYBOOK=$(find "$PROJECT_ROOT" -path '*/roles/security/sshd/tests/idempotence.yml' -print -quit)
+          if [ -z "$PLAYBOOK" ]; then echo "ERROR: idempotence playbook not found in project root"; find "$PROJECT_ROOT" -maxdepth 4 -type f -name idempotence.yml -print || true; exit 2; fi
+          echo "Using playbook: $PLAYBOOK"; ls -la "$(dirname "$PLAYBOOK")" || true
+          ansible-playbook "$PLAYBOOK" --connection=local
