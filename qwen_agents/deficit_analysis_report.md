@@ -9,8 +9,8 @@ The Qwen agent system has analyzed the deploy-system-unified project and identif
 ### 1. Missing Essential Documentation
 - **CONTRIBUTING.md**: Guidelines for contributors are missing
 - **CHANGELOG.md**: No record of changes between versions
-- **ROADMAP.md**: No public roadmap for future development
-- **SECURITY.md**: No security policy or disclosure procedure
+- **docs/planning/ROADMAP.md**: No public roadmap for future development
+- **SECURITY.md**: No security policy or vulnerability disclosure procedure
 - **CODE_OF_CONDUCT.md**: No code of conduct for community interactions
 
 ### 2. Dependency Management
@@ -26,7 +26,7 @@ The Qwen agent system has analyzed the deploy-system-unified project and identif
 
 ### Medium-Term Improvements
 1. **Develop CHANGELOG.md**: Track changes and releases systematically
-2. **Create ROADMAP.md**: Share vision and planned features with the community
+2. **Create docs/planning/ROADMAP.md**: Share vision and planned features with the community
 3. **Add CODE_OF_CONDUCT.md**: Foster a welcoming and inclusive community
 
 ### Long-Term Enhancements
