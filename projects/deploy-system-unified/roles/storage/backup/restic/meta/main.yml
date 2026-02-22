@@ -1,3 +1,0 @@
----
-# 'assumes_permissive' removed: metadata key unsupported by Ansible role metadata.
-# Restic role has default placeholder restic_password values in defaults; consider enforcing via preflight diagnostics.
