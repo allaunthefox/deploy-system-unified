@@ -1,9 +1,3 @@
-import yaml
-from ansiblelint.rules import AnsibleLintRule
-from ansiblelint.rules import RulesCollection
-from ansiblelint.rules import RulesCollection
-from ansiblelint.rules import RulesCollection
-from ansiblelint.rules import RulesCollection
 
 # Import the rule class directly
 # Import the rule module directly from file to ensure tests load the local rule
