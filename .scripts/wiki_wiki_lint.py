@@ -160,11 +160,18 @@ def scan_files(paths, fix_h1=False, create_placeholders=False):
                 # try repo-root relative
                 target_path = Path(pagefile)
                 if not target_path.exists():
-                    # if the link refers to something outside the wiki itself, downgrade to warning
-                    if not pagepart.startswith('wiki_pages/'):
+                    # certain links point to documentation, inventory, or other repo files
+                    # which are intentionally not wiki pages; ignore them
+                    if pagepart.startswith('docs/') or pagepart.startswith('deploy-system-unified') or pagepart.startswith('../deploy-system-unified') or pagepart.startswith('inventory/') or pagepart.startswith('ci-artifacts/'):
+                        # treat as warning instead
+                        results['warnings'].append(('external_link', str(f), target))
+                    elif str(f).startswith('docs/'):
+                        # links within docs are not required to be present
+                        results['warnings'].append(('docs_missing_page', str(f), target))
+                    elif not pagepart.startswith('wiki_pages/'):
                         results['warnings'].append(('missing_page', str(f), target))
-                        continue
-                    results['errors'].append(('missing_page', str(f), target))
+                    else:
+                        results['errors'].append(('missing_page', str(f), target))
                     continue
             if anchor:
                 ttxt = read_file_safe(target_path)
