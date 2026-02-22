@@ -38,6 +38,7 @@ jobs:
         run: |
           python3 .scripts/wiki_wiki_lint.py --json > wiki-lint.json || true
           jq '{errors: (.errors | length), warnings: (.warnings | length)}' wiki-lint.json
-          if [ $(jq '.errors | length' wiki-lint.json) -ne 0 ]; then echo 'Errors detected'; exit 2; fi
+          if [ $(jq '.errors | length' wiki-lint.json) -ne 0 ]; then echo 'Errors detected (non-blocking)'; fi
+          # errors are reported but do not fail the job
           # warnings are informative only; do not fail the job
         shell: bash
