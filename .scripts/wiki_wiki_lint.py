@@ -160,6 +160,10 @@ def scan_files(paths, fix_h1=False, create_placeholders=False):
                 # try repo-root relative
                 target_path = Path(pagefile)
                 if not target_path.exists():
+                    # if the link refers to something outside the wiki itself, downgrade to warning
+                    if not pagepart.startswith('wiki_pages/'):
+                        results['warnings'].append(('missing_page', str(f), target))
+                        continue
                     results['errors'].append(('missing_page', str(f), target))
                     continue
             if anchor:

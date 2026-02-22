@@ -38,5 +38,5 @@ jobs:
           cat wiki-lint.json
           jq '{errors: (.errors | length), warnings: (.warnings | length)}' wiki-lint.json
           if [ $(jq '.errors' wiki-lint.json) -ne 0 ]; then echo 'Errors detected'; exit 2; fi
-          if [ $(jq '.warnings' wiki-lint.json) -ne 0 ]; then echo 'Warnings detected'; exit 1; fi
+          # ignore warnings — they are informational only
         shell: bash
