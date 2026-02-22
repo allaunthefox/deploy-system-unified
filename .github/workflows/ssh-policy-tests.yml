@@ -43,7 +43,7 @@ jobs:
           # override ansible config to disable vault password file and avoid decryption failures
           cat <<'EOF' > "$PROJECT_ROOT/ci-ansible.cfg"
 [defaults]
-vault_password_file = /dev/null
+# vault_password_file disabled for CI
 EOF
           export ANSIBLE_CONFIG="$PROJECT_ROOT/ci-ansible.cfg"
 
