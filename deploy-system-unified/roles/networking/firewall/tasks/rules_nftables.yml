@@ -35,7 +35,7 @@
     mode: '0644'
   become: true
   when: ansible_os_family == 'Alpine'
-  notify: Reload nftables
+  notify: reload_nftables
 
 - name: Enable nftables service (Alpine)
   ansible.builtin.service:

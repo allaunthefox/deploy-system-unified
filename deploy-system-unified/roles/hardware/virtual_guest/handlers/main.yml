@@ -1,12 +1,13 @@
 ---
 # Handlers for hardware/virtual_guest
-- name: reload udev
+- name: reload_udev
   ansible.builtin.command: udevadm control --reload-rules
   become: true
   listen: "reload udev"
   when: not _vps_is_container | default(false)
 
-- name: reload sysctl
+
+- name: reload_sysctl
   ansible.builtin.command: sysctl -p /etc/sysctl.d/99-contabo-networking.conf
   become: true
   listen: "reload sysctl"

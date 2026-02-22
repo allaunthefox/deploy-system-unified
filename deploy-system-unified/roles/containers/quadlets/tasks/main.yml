@@ -70,8 +70,8 @@
   loop: "{{ containers_quadlet_custom_files }}"
   become: true
   when: containers_quadlet_custom_files | length > 0
-  notify: reload systemd
-- name: Reload systemd to pick up quadlets
+  notify: reload_systemd
+- name: reload_systemd to pick up quadlets
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"

@@ -31,7 +31,7 @@
     line: 'DEFAULT_FORWARD_POLICY="{{ firewall_forward_policy }}"'
   when: ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
   become: true
-  notify: Reload UFW
+  notify: reload_ufw
 
 - name: Import UFW Rules
   ansible.builtin.include_tasks: rules_ufw.yml

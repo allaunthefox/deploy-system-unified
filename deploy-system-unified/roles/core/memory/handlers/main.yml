@@ -1,7 +1,7 @@
 ---
 # Handlers for core/memory
 
-- name: restart systemd-zram-setup
+- name: restart_systemd_zram_setup
   ansible.builtin.systemd:
     name: systemd-zram-setup@zram0.service
     state: restarted

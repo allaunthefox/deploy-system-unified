@@ -1,6 +1,6 @@
 ---
 # Handlers for security/ips
-- name: restart fail2ban
+- name: restart_fail2ban
   ansible.builtin.systemd:
     name: fail2ban
     state: restarted

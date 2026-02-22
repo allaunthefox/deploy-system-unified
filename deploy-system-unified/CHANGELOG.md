@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Inventory**: Production profile added to Contabo inventory.
 
 ### Changed
+- **Handlers**: Resolved merge conflicts that prevented Ansible runs; removed legacy handler-name aliases and standardized handler names (see PR #127).
 - **ansiblelint**: Hardened in-repo shim (`ansiblelint/__init__.py`) — activation is now gated, audit-tagged, and prevents import-time side effects.
 - **Docs**: Documented `DSU004` in `docs/development/STYLE_GUIDE.md` and added guidance for shim updates.
 - **CI**: Enforce DSU004 via an additional `ansible-lint` check on the shim during PR CI runs.

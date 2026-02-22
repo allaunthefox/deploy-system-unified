@@ -1,4 +1,16 @@
 ---
+# verify.yml - Verification playbook for molecule tests
+# Validates that deployment was successful by checking directories and flags
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Passes if all required directories and flags exist
+#
+# Example:
+#     molecule verify -s default
+
 - name: Verify
   hosts: all
   gather_facts: false

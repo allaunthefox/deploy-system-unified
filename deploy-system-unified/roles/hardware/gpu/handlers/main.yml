@@ -1,7 +1,7 @@
 ---
 # Handlers for gpu_stack
 
-- name: Update initramfs (placeholder)
+- name: update_initramfs_placeholder
   ansible.builtin.debug:
     msg: "Updating initramfs..."
   listen: "Update initramfs"
@@ -11,12 +11,14 @@
     - Update Initramfs Alpine
     - Update Initramfs Archlinux
 
-- name: Restart Display Manager (Placeholder)
+
+- name: restart_display_manager_placeholder
   ansible.builtin.debug:
     msg: "Would restart Display Manager (gdm/lightdm/sddm) if present."
   listen: "Restart Display Manager (Placeholder)"
 
-- name: Update Initramfs Debian
+
+- name: update_initramfs_debian
   ansible.builtin.command: update-initramfs -u
   become: true
   changed_when: true
@@ -24,7 +26,8 @@
     - ansible_facts['os_family'] == 'Debian'
     - not _gpu_is_container | default(false)
 
-- name: Update Initramfs RedHat
+
+- name: update_initramfs_redhat
   ansible.builtin.command: dracut --force
   become: true
   changed_when: true
@@ -32,7 +35,8 @@
     - ansible_facts['os_family'] == 'RedHat'
     - not _gpu_is_container | default(false)
 
-- name: Update Initramfs Alpine
+
+- name: update_initramfs_alpine
   ansible.builtin.command: mkinitfs
   become: true
   changed_when: true
@@ -40,7 +44,8 @@
     - ansible_facts['os_family'] == 'Alpine'
     - not _gpu_is_container | default(false)
 
-- name: Reload udev
+
+- name: reload_udev
   ansible.builtin.shell: set -o pipefail && udevadm control --reload-rules && udevadm trigger
   args:
     executable: /bin/bash
@@ -48,7 +53,8 @@
   changed_when: true
   when: not _gpu_is_container | default(false)
 
-- name: Update Initramfs Archlinux
+
+- name: update_initramfs_archlinux
   ansible.builtin.command: mkinitcpio -P
   become: true
   changed_when: true

@@ -1,0 +1,36 @@
+---
+# destroy.yml - Ansible-Native container cleanup for network scenario
+# This playbook destroys cEOS containers and networks
+#
+# Args:
+#     None required - uses molecule instance names from create.yml
+#
+# Returns:
+#     Destroys cEOS containers and cleans up networks
+#
+# Example:
+#     molecule destroy -s network
+
+- name: Destroy
+  hosts: localhost
+  gather_facts: false
+  vars:
+    network_devices:
+      - ceos-01
+      - ceos-02
+
+  tasks:
+    # Remove cEOS containers
+    - name: Destroy cEOS network containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ network_devices }}"
+      failed_when: false
+
+    # Remove Podman network
+    - name: Remove molecule network
+      containers.podman.podman_network:
+        name: molecule-network
+        state: absent
+      failed_when: false

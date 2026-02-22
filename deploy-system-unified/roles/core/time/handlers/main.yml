@@ -1,6 +1,6 @@
 ---
 # Handlers for core/time
-- name: restart chrony
+- name: restart_chrony
   ansible.builtin.service:
     name: "{{ time_service_mapping[ansible_distribution | lower].service }}"
     state: restarted

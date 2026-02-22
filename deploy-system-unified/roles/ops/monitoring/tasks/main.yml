@@ -82,7 +82,7 @@
     regexp: '^DEVICESCAN'
     line: 'DEVICESCAN -a -o on -S on -n standby,q -s (S/../.././02|L/../../6/03) -W 4,35,40 -m root'
     create: true
-  notify: restart smartd
+  notify: restart_smartd
   when:
     - monitoring_enable_smartmon
     - ansible_facts['virtualization_type'] != "docker"

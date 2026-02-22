@@ -47,7 +47,7 @@
     dest: /etc/endlessh/config
     mode: '0644'
   become: true
-  notify: restart endlessh
+  notify: restart_endlessh
 - name: Allow Endlessh to bind to privileged ports
   community.general.capabilities:
     path: /usr/bin/endlessh
@@ -76,8 +76,8 @@
     mode: '0644'
   become: true
   notify:
-    - reload systemd
-    - restart endlessh
+    - reload_systemd
+    - restart_endlessh
   when: system_enable_endlessh | default(false)
 
 - name: Manage Endlessh service state

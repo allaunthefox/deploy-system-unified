@@ -1,22 +1,13 @@
 ---
 # Handlers for containers/caddy
-- name: Reload systemd
+- name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
-
-- name: reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
-  become: true
-  become_user: "{{ containers_systemd_owner }}"
-
-- name: Restart Caddy
+- name: restart_caddy
   ansible.builtin.systemd:
     name: caddy
     state: restarted
@@ -26,14 +17,3 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
   failed_when: false # Allow skip if not yet deployed
-
-- name: restart caddy
-  ansible.builtin.systemd:
-    name: caddy
-    state: restarted
-    enabled: true
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
-  become: true
-  become_user: "{{ containers_systemd_owner }}"
-  failed_when: false # compatibility alias for tasks that notify 'restart caddy'

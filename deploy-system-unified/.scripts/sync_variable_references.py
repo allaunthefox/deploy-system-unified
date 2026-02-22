@@ -1,4 +1,3 @@
-import os
 import re
 from pathlib import Path
 
@@ -71,9 +70,7 @@ def process_file(file_path):
         
         i += 1
         
-    file_path.write_text('
-'.join(new_lines) + '
-')
+    file_path.write_text('\n'.join(new_lines) + '\n')
 
 vr_files = [
     'Variable_Reference_Containers.md',

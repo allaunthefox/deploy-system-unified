@@ -4,7 +4,7 @@ import os
 
 try:
     import yaml
-except Exception as e:
+except Exception:
     print("ERROR: PyYAML is required to run this script. Install it with 'pip install PyYAML' or ensure ansible/ansible-lint is installed in CI.")
     sys.exit(2)
 

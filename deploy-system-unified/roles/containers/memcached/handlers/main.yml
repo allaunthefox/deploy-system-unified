@@ -1,7 +1,7 @@
 ---
 # Handlers for containers/memcached
 
-- name: reload systemd
+- name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
@@ -9,7 +9,8 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
 
-- name: restart memcached
+
+- name: restart_memcached
   ansible.builtin.systemd:
     name: memcached.service
     state: restarted

@@ -27,7 +27,7 @@
       register: tcp_forwarding_match_check
       changed_when: false
       failed_when: tcp_forwarding_match_check.rc != 0
-      notify: restart sshd
+      notify: 'restart_sshd'
     - name: Verify agent forwarding is disabled
       ansible.builtin.command:
         cmd: grep -E "AllowAgentForwarding.*no" /etc/ssh/sshd_config

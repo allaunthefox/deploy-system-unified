@@ -1,7 +1,7 @@
 ---
 # Handlers for networking/desktop
 
-- name: restart networkmanager
+- name: restart_networkmanager
   ansible.builtin.service:
     name: "{{ _net_service_name | default('NetworkManager') }}"
     state: restarted

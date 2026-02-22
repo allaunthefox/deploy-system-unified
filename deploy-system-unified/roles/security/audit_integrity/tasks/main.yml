@@ -63,7 +63,7 @@
     - _audit_integrity_is_systemd
     - not _audit_integrity_is_container
     - (journal_fss_stat.matched | default(0) | int) == 0
-  notify: restart journald
+  notify: restart_journald
   no_log: true
 
 - name: Resolve vault password file (controller)
@@ -187,7 +187,7 @@
     regexp: '^#?Seal='
     line: 'Seal=yes'
   become: true
-  notify: restart journald
+  notify: restart_journald
   when:
     - _audit_integrity_is_systemd
     - not _audit_integrity_is_container

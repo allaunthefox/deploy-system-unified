@@ -1,5 +1,5 @@
 ---
-- name: Reload systemd
+- name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"

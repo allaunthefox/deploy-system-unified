@@ -47,7 +47,7 @@
   when:
     - networking_desktop_enable_wifi | bool
     - _net_service_name in ["NetworkManager", "networkmanager"]
-  notify: restart networkmanager
+  notify: restart_networkmanager
 
 - name: Ensure NetworkManager-wait-online is enabled
   ansible.builtin.service:

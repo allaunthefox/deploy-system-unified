@@ -63,7 +63,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Authentik Redis Quadlet
   ansible.builtin.copy:
@@ -92,7 +92,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Authentik Server Quadlet
   ansible.builtin.copy:
@@ -130,7 +130,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Create Authentik Worker Quadlet
   ansible.builtin.copy:
@@ -167,7 +167,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  notify: reload systemd
+  notify: reload_systemd
 
 - name: Deploy Caddy Authentik Configuration
   ansible.builtin.copy:
@@ -192,4 +192,4 @@
   become: true
   # Only deploy if using Caddy as the ingress
   when: true
-  notify: restart caddy
+  notify: restart_caddy

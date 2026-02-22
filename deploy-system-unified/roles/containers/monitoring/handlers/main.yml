@@ -1,5 +1,5 @@
 ---
-- name: Reload systemd
+- name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
@@ -7,16 +7,8 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
 
-- name: reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
-  become: true
-  become_user: "{{ containers_systemd_owner }}"
-  # compatibility alias for tasks that notify lowercase
 
-- name: Restart Monitoring Pod
+- name: restart_monitoring_pod
   ansible.builtin.systemd:
     name: "{{ monitoring_pod_name }}-pod"
     state: restarted

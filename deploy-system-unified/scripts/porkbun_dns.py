@@ -8,7 +8,6 @@ Optional flags: --domain DOMAIN --github-user USER --dry-run
 import os
 import sys
 import argparse
-import time
 import requests
 
 API_BASE = "https://api.porkbun.com/api/json/v3"
