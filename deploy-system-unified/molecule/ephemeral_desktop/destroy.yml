@@ -1,0 +1,24 @@
+---
+# destroy.yml - Ansible-Native container cleanup for ephemeral_desktop
+# This playbook destroys the ephemeral desktop test instance
+#
+# Args:
+#     None required - uses molecule instance name from create.yml
+#
+# Returns:
+#     Destroys the Podman container 'test-ephemeral-desktop' if it exists
+#
+# Example:
+#     molecule destroy -s ephemeral_desktop
+
+- name: Destroy
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    # Remove the Podman container created in create.yml
+    - name: Destroy molecule instance
+      containers.podman.podman_container:
+        name: test-ephemeral-desktop
+        state: absent
+      failed_when: false

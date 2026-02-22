@@ -1,9 +1,0 @@
----
-# Handlers for containers/quadlets role
-- name: Reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
-  become: true
-  become_user: "{{ containers_systemd_owner }}"

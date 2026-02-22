@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: prod
+  description: Common handlers and utilities for container roles
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+dependencies: []

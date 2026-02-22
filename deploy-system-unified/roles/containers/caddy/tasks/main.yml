@@ -1,0 +1,309 @@
+---
+# Container Caddy role - Caddy reverse proxy configuration
+- name: Validate Caddy Secrets (Red Team Hardening)
+  ansible.builtin.assert:
+    that:
+      - crowdsec_firewall_bouncer_key is defined
+      - (crowdsec_firewall_bouncer_key | default('') | length) > 0
+    fail_msg: "Caddy secrets missing or empty. Set crowdsec_firewall_bouncer_key."
+  when:
+    - crowdsec_enable | default(false)
+    - containers_caddy_fail_secure | default(true) | bool
+
+- name: Verify Caddy secret files when fail-secure is enabled
+  ansible.builtin.include_tasks: verify_secrets.yml
+  when:
+    - containers_caddy_fail_secure | default(true) | bool
+
+- name: Validate Porkbun API keys are set
+  ansible.builtin.assert:
+    that:
+      - porkbun_api_key | default('') | length > 0
+      - porkbun_secret_api_key | default('') | length > 0
+    fail_msg: "Porkbun API keys are required. Set porkbun_api_key and porkbun_secret_api_key."
+
+- name: Create Caddy secrets file
+  ansible.builtin.template:
+    src: caddy.env.j2
+    dest: "{{ containers_secrets_dir }}/caddy.env"
+    mode: '0600'
+    owner: "{{ containers_secrets_owner }}"
+    group: "{{ containers_secrets_group }}"
+  become: true
+
+- name: Create Proxy Network Quadlet
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/proxy_net.network"
+    content: |
+      [Network]
+      NetworkName=proxy_net
+      Driver=bridge
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  notify: reload_systemd
+
+- name: Create Caddy directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  loop:
+    - /srv/containers/caddy
+    - /srv/containers/caddy/config
+    - /srv/containers/caddy/data
+    - /srv/containers/caddy/logs
+    - /srv/containers/caddy/conf.d
+  become: true
+- name: Create Caddyfile
+  ansible.builtin.copy:
+    dest: /srv/containers/caddy/Caddyfile
+    content: |
+      # Caddyfile - Managed by Deploy-System-Unified
+      {
+        admin off
+        servers :443 {
+            protocols h1 h2 h3
+        }
+        email {{ caddy_acme_email | default('admin@example.com') }}
+        log {
+          output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+            roll_keep_for 720h
+          }
+          format json
+        }
+      }
+
+      # Import additional configurations
+      import /etc/caddy/conf.d/*.caddy
+
+      # Default catch-all
+      :80 {
+        respond "Hello from Deploy-System-Unified" 200
+      }
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: caddy_generate_config | default(true)
+  notify: restart_caddy
+
+- name: Validate Quadlet GPU capabilities (Linux CAP_* only)
+  ansible.builtin.assert:
+    that:
+      - quadlet_gpu_capabilities | default([]) | reject('match', '^CAP_') | list | length == 0
+    fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
+  when: quadlet_enable_gpu_support | default(false)
+
+- name: Create Caddy container quadlet
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/caddy.container"
+    content: |
+      [Unit]
+      Description=Caddy Reverse Proxy
+      After=network-online.target
+      Wants=network-online.target
+      [Container]
+      # Using serfriz/caddy-porkbun-dockerproxy:2.10.2 for Porkbun DNS support
+      Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2
+      # Override default command to ensure static Caddyfile usage
+      Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+
+      # Environment variables for Porkbun DNS
+      EnvironmentFile={{ containers_secrets_dir }}/caddy.env
+
+      ContainerName=caddy
+      {% if caddy_network == 'host' or (not podman_rootless_enabled | bool) %}
+      # Primary Gateway Network (Host Mode for VPS compatibility)
+      Network=host
+      {% else %}
+      # Rootless networking uses user-defined networks + published ports
+      Network={{ caddy_network }}.network
+      {% for net in caddy_extra_networks | default([]) %}
+      Network={{ net }}.network
+      {% endfor %}
+      PublishPort={{ caddy_http_port }}:80
+      PublishPort={{ caddy_https_port }}:443
+      PublishPort={{ caddy_https_port_udp }}:443/udp
+      {% endif %}
+      Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      Volume=/srv/containers/caddy/data:/data:Z
+      Volume=/srv/containers/caddy/config:/config:Z
+      Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
+      Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro
+      {% if quadlet_enable_gpu_support %}
+      # GPU support configuration
+      {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
+      {% if caps | length > 0 %}
+      Capabilities={{ caps | join(' ') }}
+      {% endif %}
+      {% for device in quadlet_gpu_devices | default(quadlet_gpu_default_configs[quadlet_gpu_vendor]['devices']) %}
+      Device={{ device }}
+      {% endfor %}
+      {% for mount in quadlet_gpu_default_configs[quadlet_gpu_vendor]['mounts'] %}
+      Volume={{ mount }}
+      {% endfor %}
+      {% endif %}
+      [Service]
+      Restart=always
+      TimeoutStartSec=300
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  notify:
+    - reload_systemd
+    - restart_caddy
+
+- name: Set containers caddy completion flag
+  ansible.builtin.set_fact:
+    containers_caddy_complete: true
+
+- name: Create Crowdsec Directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  loop:
+    - /srv/containers/caddy/crowdsec
+    - /srv/containers/caddy/crowdsec/config
+    - /srv/containers/caddy/crowdsec/data
+  become: true
+  when: crowdsec_enable | default(false)
+
+- name: Create Crowdsec Container Quadlet
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/crowdsec.container"
+    content: |
+      [Unit]
+      Description=Crowdsec Security Engine
+      After=network-online.target caddy.service
+
+      [Container]
+      Image={{ crowdsec_image }}
+      ContainerName=crowdsec
+
+      # Networking
+      {% if podman_rootless_enabled | bool %}
+      Network={{ caddy_network }}.network
+      {% else %}
+      Network=host
+      {% endif %}
+
+      # Environment
+      Environment=COLLECTIONS={{ crowdsec_collections | join(' ') }}
+
+      # Volumes
+      # Read Caddy Logs
+      Volume=/srv/containers/caddy/logs:/var/log/caddy:ro,Z
+      # Persistent Data
+      Volume=/srv/containers/caddy/crowdsec/config:/etc/crowdsec:Z
+      Volume=/srv/containers/caddy/crowdsec/data:/var/lib/crowdsec/data:Z
+
+      [Service]
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0600'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: crowdsec_enable | default(false)
+  notify: reload_systemd
+
+- name: Install Crowdsec Bouncer Dependencies
+  community.general.pacman:
+    name: ipset
+    state: present
+  become: true
+  when: crowdsec_enable | default(false)
+
+- name: Create Crowdsec Bouncer Directory (Host)
+  ansible.builtin.file:
+    path: /etc/crowdsec/bouncers
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+
+- name: Create Firewall Bouncer Config (Host)
+  ansible.builtin.template:
+    src: firewall-bouncer.yaml.j2
+    dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    mode: '0600'
+    owner: root
+    group: root
+    force: false # Do not overwrite if exists (key preservation)
+  become: true
+  when: crowdsec_enable | default(false)
+
+- name: Check if Bouncer is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/crowdsec-firewall-bouncer
+  register: containers_bouncer_bin
+  become: true
+
+- name: Install Firewall Bouncer (Host)
+  block:
+    - name: Download Bouncer
+      ansible.builtin.get_url:
+        url: "https://github.com/crowdsecurity/cs-firewall-bouncer/releases/download/v{{ crowdsec_firewall_bouncer_version }}/crowdsec-firewall-bouncer-linux-amd64.tgz"
+        dest: /tmp/crowdsec-firewall-bouncer.tgz
+        mode: '0644'
+        checksum: "sha256:{{ crowdsec_firewall_bouncer_sha256 }}"
+
+    - name: Extract Bouncer
+      ansible.builtin.unarchive:
+        src: /tmp/crowdsec-firewall-bouncer.tgz
+        dest: /tmp/
+        remote_src: true
+        include:
+          - "crowdsec-firewall-bouncer-v{{ crowdsec_firewall_bouncer_version }}/crowdsec-firewall-bouncer"
+        extra_opts: ["--strip-components=1"]
+
+    - name: Copy Binary
+      ansible.builtin.copy:
+        src: /tmp/crowdsec-firewall-bouncer
+        dest: /usr/local/bin/crowdsec-firewall-bouncer
+        mode: '0755'
+        remote_src: true
+
+    - name: Install Service File
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/crowdsec-firewall-bouncer.service
+        content: |
+          [Unit]
+          Description=The firewall bouncer for CrowdSec
+          After=syslog.target network.target remote-fs.target nss-lookup.target crowdsec.service
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/bin/crowdsec-firewall-bouncer -c /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+          Restart=always
+          RestartSec=2
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+  become: true
+  when: (crowdsec_enable | default(false)) and (not containers_bouncer_bin.stat.exists)
+
+- name: Enable and Start Firewall Bouncer
+  ansible.builtin.systemd:
+    name: crowdsec-firewall-bouncer
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: crowdsec_enable | default(false)

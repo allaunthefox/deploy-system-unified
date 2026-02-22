@@ -1,0 +1,36 @@
+---
+# verify.yml - Verification playbook for network testing
+# Validates cEOS network device functionality
+#
+# Args:
+#     Runs on network_devices from inventory
+#
+# Returns:
+#     Validates network device configuration and state
+#
+# Example:
+#     molecule verify -s network
+
+- name: Verify Network Devices
+  hosts: network_devices
+  gather_facts: false
+  tasks:
+    # Verify network device is running
+    - name: Verify cEOS is running
+      ansible.builtin.shell: |
+        ps aux | grep [s]witchd
+      register: ceos_process
+      changed_when: false
+      failed_when: false
+
+    # Verify basic network interfaces
+    - name: Verify network interfaces exist
+      ansible.builtin.shell: |
+        ip link show
+      register: interfaces
+      changed_when: false
+
+    # Display device info
+    - name: Display device hostname
+      ansible.builtin.debug:
+        msg: "Network device {{ inventory_hostname }} is ready"

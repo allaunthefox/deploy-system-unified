@@ -1,0 +1,17 @@
+---
+# Handlers for security/sshd role
+- name: restart sshd
+  block:
+    - name: Check for systemctl presence
+      ansible.builtin.stat:
+        path: /bin/systemctl
+      register: systemctl_check
+      changed_when: false
+      become: true
+
+    - name: Restart sshd via systemd (if available)
+      ansible.builtin.systemd:
+        name: "{{ ssh_service_name }}"
+        state: restarted
+      become: true
+      when: systemctl_check.stat.exists

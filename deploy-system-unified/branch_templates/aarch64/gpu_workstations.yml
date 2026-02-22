@@ -1,0 +1,39 @@
+---
+# WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
+# DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.
+# USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
+
+# GPU Workstation Deployment Template (aarch64)
+# Specialized for Jetson, ARM SBCs, and ARM Servers
+
+- ansible.builtin.import_playbook: ../base_hardened.yml
+- name: Deploy GPU Workstation (aarch64)
+  hosts: all
+  become: true
+
+  vars:
+    gpu_stack_arch: "aarch64"
+    gpu_stack_vendor: "nvidia" # Default for Jetson/ARM
+    gpu_stack_mode: "desktop"
+
+  roles:
+    - core/bootstrap
+    - core/identity
+    - core/logging
+    - role: ops/monitoring
+    - role: networking/desktop
+    - networking/firewall
+    - security/hardening
+    - security/access
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "{{ gpu_stack_vendor }}"
+        gpu_stack_mode: "{{ gpu_stack_mode }}"
+
+    - role: containers/runtime
+      vars:
+        containers_enable_gpu_support: true
+        containers_gpu_vendor: "{{ gpu_stack_vendor }}"
+        containers_gpu_slicing:
+          strategy: "{{ 'time-slicing' if 'tegra' in ansible_kernel else 'auto' }}"

@@ -1,0 +1,108 @@
+---
+# GPU discovery and detection logic - Container Runtime Integration
+
+- name: Normalize container GPU architecture
+  ansible.builtin.set_fact:
+    containers_gpu_arch: "{{ _gpu_norm_arch | default(ansible_architecture) }}"
+  when: containers_enable_gpu_support
+
+- name: Inherit GPU facts from hardware/gpu role
+  ansible.builtin.set_fact:
+    containers_gpu_vendor_detected: "{{ _gpu_primary_detected_vendor | default('none') }}"
+    containers_gpu_count_detected: "{{ _gpu_count | default(0) }}"
+    containers_gpu_device_info: "{{ _gpu_detected_devices | default([]) }}"
+    containers_gpu_vendor_list: "{{ _gpu_detected_vendor_list | default([]) }}"
+  when:
+    - containers_enable_gpu_support
+    - _gpu_primary_detected_vendor is defined
+
+- name: Fallback discovery if hardware/gpu was not run
+  ansible.builtin.include_role:
+    name: hardware/gpu
+    tasks_from: detect_video.yml
+  when:
+    - containers_enable_gpu_support
+    - _gpu_primary_detected_vendor is not defined
+
+- name: Re-apply inherited facts after fallback
+  ansible.builtin.set_fact:
+    containers_gpu_vendor_detected: "{{ _gpu_primary_detected_vendor | default('none') }}"
+    containers_gpu_count_detected: "{{ _gpu_count | default(0) }}"
+    containers_gpu_device_info: "{{ _gpu_detected_devices | default([]) }}"
+    containers_gpu_vendor_list: "{{ _gpu_detected_vendor_list | default([]) }}"
+  when:
+    - containers_enable_gpu_support
+    - _gpu_primary_detected_vendor is defined
+
+- name: Detect NVIDIA Specific Details (Model/MIG)
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_vendor_detected == "nvidia"
+  block:
+    - name: Detect NVIDIA GPU model
+      ansible.builtin.command: nvidia-smi --query-gpu=name --format=csv,noheader
+      register: containers_nvidia_gpu_model
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Set NVIDIA GPU model fact
+      ansible.builtin.set_fact:
+        containers_gpu_nvidia_model: "{{ containers_nvidia_gpu_model.stdout_lines }}"
+      when: containers_nvidia_gpu_model.stdout | length > 0
+
+    - name: Set NVIDIA MIG support fact
+      ansible.builtin.set_fact:
+        containers_gpu_nvidia_mig_supported: "{{ gpu_slicing_mig_supported | default(false) }}"
+
+- name: Process GPU Allocation Map
+  ansible.builtin.set_fact:
+    containers_gpu_allocation_flags: >-
+      {% set results = {} %}
+      {% if gpu_standard_paths_available | default(true) %}
+        {% for alloc in containers_gpu_allocation_map %}
+          {% set dev_list = [] %}
+          {% if alloc.pci_id is defined %}
+            {# Find specific device by PCI ID #}
+            {% for dev in containers_gpu_device_info %}
+              {% if dev.pci_id == alloc.pci_id %}
+                {% set _ = dev_list.append('--device=/dev/dri/by-path/pci-' ~ alloc.pci_id ~ '-render') %}
+              {% endif %}
+            {% endfor %}
+          {% elif alloc.vendor is defined %}
+            {# Find device by vendor and optional index #}
+            {% set vendor_devs = [] %}
+            {% for dev in containers_gpu_device_info %}
+              {% if dev.vendor_name == alloc.vendor %}
+                {% set _ = vendor_devs.append(dev) %}
+              {% endif %}
+            {% endfor %}
+            {% set idx = alloc.index | default(0) %}
+            {% if vendor_devs | length > idx %}
+              {% set target = vendor_devs[idx] %}
+              {% set _ = dev_list.append('--device=/dev/dri/by-path/pci-' ~ target.pci_id ~ '-render') %}
+            {% endif %}
+          {% endif %}
+          {% if dev_list | length > 0 %}
+            {# Append to existing flags for this container if already present #}
+            {% set current_flags = results.get(alloc.container_name, '') %}
+            {% set new_flags = (current_flags + ' ' + dev_list | join(' ')).strip() %}
+            {% set _ = results.update({alloc.container_name: new_flags}) %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {{ results }}
+  when:
+    - containers_enable_gpu_support
+    - containers_gpu_allocation_map | length > 0
+
+- name: Debug GPU discovery results
+  ansible.builtin.debug:
+    msg: |
+      GPU Discovery Results (Runtime):
+        Architecture: {{ containers_gpu_arch }}
+        Vendor: {{ containers_gpu_vendor_detected | upper }}
+        Count: {{ containers_gpu_count_detected }}
+        Multi-Vendor: {{ _gpu_is_multi_vendor | default(false) }}
+        Devices: {{ containers_gpu_device_info }}
+  when: containers_enable_gpu_support

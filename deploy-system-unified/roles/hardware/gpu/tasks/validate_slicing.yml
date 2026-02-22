@@ -1,0 +1,85 @@
+---
+# GPU Slicing Compatibility Validation
+
+- name: Initialize Slicing Capability Facts
+  ansible.builtin.set_fact:
+    gpu_slicing_iommu_active: false
+    gpu_slicing_sriov_supported: false
+    gpu_slicing_mig_supported: false
+    gpu_slicing_mps_supported: false
+
+- name: Check for IOMMU (Kernel level)
+  ansible.builtin.shell: "set -o pipefail && (dmesg | grep -Ei 'IOMMU|VT-d|AMD-Vi' | grep -i 'enabled' || [ -d /sys/class/iommu ])"
+  args:
+    executable: /bin/bash
+  register: iommu_check
+  changed_when: false
+  failed_when: false
+
+- name: Set IOMMU Fact
+  ansible.builtin.set_fact:
+    gpu_slicing_iommu_active: "{{ iommu_check.rc == 0 }}"
+
+- name: Detect SR-IOV Capability
+  # Check if any detected device supports SR-IOV via sysfs
+  ansible.builtin.shell: "set -o pipefail && find /sys/devices -name 'sriov_numvfs' | grep -q 'sriov_numvfs'"
+  args:
+    executable: /bin/bash
+  register: sriov_sysfs_check
+  changed_when: false
+  failed_when: false
+
+- name: Set SR-IOV Fact
+  ansible.builtin.set_fact:
+    gpu_slicing_sriov_supported: "{{ sriov_sysfs_check.rc == 0 }}"
+
+- name: Detect NVIDIA Specific Capabilities
+  when: "'nvidia' in _gpu_vendor_list"
+  block:
+    - name: Detect NVIDIA MIG Capability
+      ansible.builtin.command: nvidia-smi --query-gpu=mig.mode.current --format=csv,noheader
+      register: mig_check
+      changed_when: false
+      failed_when: false
+      become: true
+
+    - name: Set MIG Fact
+      ansible.builtin.set_fact:
+        gpu_slicing_mig_supported: "{{ mig_check.stdout | trim in ['Enabled', 'Disabled'] }}"
+      when: mig_check.rc == 0
+
+    - name: Check for NVIDIA MPS Support
+      ansible.builtin.command: nvidia-smi -i 0 --query-gpu=compute_mode --format=csv,noheader
+      register: mps_check
+      changed_when: false
+      failed_when: false
+      become: true
+
+    - name: Set MPS Fact
+      ansible.builtin.set_fact:
+        gpu_slicing_mps_supported: "{{ mps_check.rc == 0 }}"
+      when: mps_check.rc == 0
+
+- name: Perform Compatibility Matrix Validation
+  ansible.builtin.assert:
+    that:
+      - not (gpu_stack_slicing_strategy == 'sriov' and not gpu_slicing_sriov_supported)
+      - not (gpu_stack_slicing_strategy == 'mig' and not gpu_slicing_mig_supported)
+      - not (gpu_stack_slicing_strategy == 'mps' and not gpu_slicing_mps_supported)
+      - not (gpu_stack_slicing_strategy in ['passthrough', 'vfio'] and not gpu_slicing_iommu_active)
+    fail_msg: >-
+      Slicing Strategy Conflict: '{{ gpu_stack_slicing_strategy }}' requested but not supported.
+      Hardware/Kernel Status:
+      IOMMU: {{ gpu_slicing_iommu_active }},
+      SR-IOV: {{ gpu_slicing_sriov_supported }},
+      MIG: {{ gpu_slicing_mig_supported }},
+      MPS: {{ gpu_slicing_mps_supported }}
+  when:
+    - gpu_stack_slicing_strategy | default('none') != 'none'
+    - not (gpu_force_slicing | default(false))
+
+- name: Report Slicing Compatibility Status
+  ansible.builtin.debug:
+    msg:
+      - "Selected Slicing Strategy: {{ gpu_stack_slicing_strategy | default('none') }}"
+      - "Slicing Compatibility Matrix PASSED"

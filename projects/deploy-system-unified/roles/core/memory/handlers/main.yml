@@ -1,9 +1,0 @@
----
-# Handlers for core/memory
-
-- name: restart systemd-zram-setup
-  ansible.builtin.systemd:
-    name: systemd-zram-setup@zram0.service
-    state: restarted
-    daemon_reload: true
-  become: true

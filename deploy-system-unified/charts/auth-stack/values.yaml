@@ -1,0 +1,33 @@
+# Auth Stack Values (Authentik)
+# SECURITY: Do not store credentials here. Use SOPS or external secrets management.
+
+# Global settings
+global:
+  timezone: UTC
+
+authentik:
+  enabled: true
+  image:
+    repository: authentik/server
+    tag: "2025.12"
+  service:
+    type: ClusterIP
+    port: 9000
+  # SECURITY: adminPassword must be provided via external secrets or SOPS-encrypted values
+  # Do not use default passwords in production
+  adminPassword: ""  # REQUIRED: Set via --set-file or external secret
+  email:
+    host: ""
+    port: 587
+    username: ""
+    password: ""
+    useTls: true
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# Ingress Configuration
+ingress:
+  enabled: false
+  className: ""
+  host: ""

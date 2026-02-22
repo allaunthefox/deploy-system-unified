@@ -1,0 +1,52 @@
+---
+- name: Test SSH forwarding configuration
+  hosts: localhost
+  become: true
+  gather_facts: true
+  vars:
+    # By default forwarding is disabled; enable a trusted group and verify Match block
+    sshd_allow_tcp_forwarding: false
+    sshd_allow_agent_forwarding: false
+    sshd_allow_x11_forwarding: false
+    sshd_enable_trusted_group_exceptions: true
+    sshd_trusted_groups: ['ssh-trusted']
+  roles:
+    - role: security/sshd
+  tasks:
+    - name: Verify global TCP forwarding is disabled
+      ansible.builtin.command:
+        cmd: grep -E "AllowTcpForwarding.*no" /etc/ssh/sshd_config
+      register: tcp_forwarding_global_check
+      changed_when: false
+      failed_when: tcp_forwarding_global_check.rc != 0
+
+    - name: Verify trusted group Match block enables TCP forwarding
+      ansible.builtin.command:
+        cmd: |
+          awk '/^Match[[:space:]]+Group[[:space:]]+ssh-trusted/{in=1;next} in && /^[[:space:]]*AllowTcpForwarding/ { if ($2=="yes") { print "ok"; exit 0 } } END { exit 1 }' /etc/ssh/sshd_config
+      register: tcp_forwarding_match_check
+      changed_when: false
+      failed_when: tcp_forwarding_match_check.rc != 0
+      notify: 'restart_sshd'
+    - name: Verify agent forwarding is disabled
+      ansible.builtin.command:
+        cmd: grep -E "AllowAgentForwarding.*no" /etc/ssh/sshd_config
+      register: agent_forwarding_check
+      changed_when: false
+      failed_when: agent_forwarding_check.rc != 0
+    - name: Verify X11 forwarding is disabled
+      ansible.builtin.command:
+        cmd: grep -E "X11Forwarding.*no" /etc/ssh/sshd_config
+      register: x11_forwarding_check
+      changed_when: false
+      failed_when: x11_forwarding_check.rc != 0
+    - name: Test sshd configuration validity
+      ansible.builtin.command:
+        cmd: sshd -t
+      register: sshd_test
+      changed_when: false
+      failed_when: sshd_test.rc != 0
+    - name: Verify sshd is running
+      ansible.builtin.systemd:
+        name: sshd
+        state: started

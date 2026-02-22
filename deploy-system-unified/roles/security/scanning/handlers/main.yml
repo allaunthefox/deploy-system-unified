@@ -1,0 +1,7 @@
+---
+# Handlers for security_framework role
+- name: restart_sshd
+  ansible.builtin.systemd:
+    name: "{{ ssh_service_name }}"
+    state: restarted
+  become: true

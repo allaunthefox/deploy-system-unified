@@ -1,0 +1,24 @@
+{
+  "run_id": "20260213T001941Z",
+  "started_at_utc": "2026-02-13T00:19:41.938895+00:00",
+  "ended_at_utc": "2026-02-13T00:19:44.610992+00:00",
+  "roles_benchmarked": 1,
+  "summary_counts": {
+    "failed": 1
+  },
+  "results": [
+    {
+      "role": "bootstrap",
+      "status": "failed",
+      "duration_seconds": 2.67,
+      "changed_second_run": null,
+      "failed_second_run": null,
+      "unreachable_second_run": null,
+      "recap_line_second_run": null,
+      "failure_excerpt": "ERROR! couldn't resolve module/action 'community.general.pacman'. This often indicates a misspelling, missing collection, or incorrect module path.",
+      "log_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T001941Z/logs/core_bootstrap.log",
+      "playbook_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T001941Z/playbooks/core_bootstrap.yml"
+    }
+  ],
+  "summary_markdown_path": "deploy-system-unified/ci-artifacts/idempotence/20260213T001941Z/summary.md"
+}

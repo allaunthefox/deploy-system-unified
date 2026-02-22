@@ -2,8 +2,8 @@
 
 **role**: `hardware/gpu`
 
-**Unified GPU Stack**
-Automatic discovery and driver installation for AMD, Intel, and NVIDIA GPUs across architectures.
+**Unified GPU Stack (Integrated Battlemage)**
+Automatic discovery and driver installation for AMD, Intel (including Arc/Battlemage), and NVIDIA GPUs across architectures (x86_64, aarch64, riscv64).
 
 ## Variables
 
@@ -37,11 +37,17 @@ Automatic discovery and driver installation for AMD, Intel, and NVIDIA GPUs acro
 ### `gpu_stack_enable_oneapi`
 - `gpu_stack_enable_oneapi` — Enable Intel OneAPI Base Toolkit (or runtime)
 
+### `gpu_stack_enable_level_zero`
+- `gpu_stack_enable_level_zero` — Enable Intel Level Zero (compute) support
+
 ### `gpu_stack_enable_cuda`
 - `gpu_stack_enable_cuda` — Enable NVIDIA CUDA Toolkit (compiler/dev tools)
 
 ### `gpu_stack_enable_rocm`
 - `gpu_stack_enable_rocm` — Enable AMD ROCm SDK
+
+### `gpu_battlemage_force_probe`
+- `gpu_battlemage_force_probe` — Force probe for Intel Xe2 (Battlemage) GPUs
 
 ### `intel_oneapi_gpg_key_url`
 - `intel_oneapi_gpg_key_url`
@@ -99,5 +105,11 @@ Automatic discovery and driver installation for AMD, Intel, and NVIDIA GPUs acro
 
 ### `gpu_desktop_grant_user_access`
 - `gpu_desktop_grant_user_access` — Grant 'video'/'render' group access to standard users
+
+### `dsu_encrypt_evidence`
+- `dsu_encrypt_evidence`
+
+### `dsu_encrypt_checkpoints`
+- `dsu_encrypt_checkpoints`
 
 
