@@ -5,6 +5,7 @@ on:
     branches: [ "chore/ssh-policy-hardening", "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch: {}
 
 jobs:
   idempotence:
@@ -34,6 +35,12 @@ jobs:
           sudo apt-get install -y --no-install-recommends openssh-server python3 python3-pip ca-certificates gnupg wget
           curl -sL https://github.com/mozilla/sops/releases/download/v3.9.1/sops-v3.9.1.linux -o /usr/local/bin/sops && sudo chmod +x /usr/local/bin/sops
           sudo pip3 install --no-cache-dir "ansible-core>=2.15,<2.16"
+          # override ansible config to disable vault password file
+          cat <<'EOF' > "$PROJECT_ROOT/ci-ansible.cfg"
+[defaults]
+# vault_password_file disabled for CI
+EOF
+          export ANSIBLE_CONFIG="$PROJECT_ROOT/ci-ansible.cfg"
 
           # Locate the idempotence playbook anywhere under the workspace
           PLAYBOOK=$(find "$GITHUB_WORKSPACE" -path '*/roles/security/sshd/tests/idempotence.yml' -print -quit)
