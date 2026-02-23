@@ -2,9 +2,8 @@
 galaxy_info:
   role_name: physical
   author: deploy-system-unified
-  description: Physical network interface optimization for SFP+, Fiber, and High-Speed Ethernet.
-  company: "Deploy System Unified"
-  license: "MIT"
+  description: Physical network interface tuning and optimization (Jumbo frames, Ring buffers, Offloading)
+  license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
@@ -19,9 +18,10 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - networking
-    - ethtool
-    - sfp
+    - physical
+    - performance
+    - tuning
     - fiber
-    - optimization
+    - iso_27001
 
 dependencies: []

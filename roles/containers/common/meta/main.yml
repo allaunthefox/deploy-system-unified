@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: prod
-  description: Common handlers and utilities for container roles
+  description: "WI-CONT | Common handlers and utilities for container roles"
   license: MIT
   min_ansible_version: "2.10"
   platforms:

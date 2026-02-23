@@ -1,0 +1,26 @@
+---
+argument_specs:
+  main:
+    short_description: Desktop networking role
+    description:
+      - Installs and configures NetworkManager for desktop environments
+      - Manages Wi-Fi backends (wpa_supplicant or iwd)
+      - Aligns with ISO 27001 §9.4 access control for local networks
+    options:
+      networking_desktop_enable_wifi:
+        type: bool
+        description: Enable Wi-Fi support
+        default: true
+      networking_desktop_wifi_backend:
+        type: str
+        description: Wi-Fi backend to use
+        choices: [wpa_supplicant, iwd]
+        default: wpa_supplicant
+      networking_desktop_manager:
+        type: str
+        description: Network manager to use
+        default: NetworkManager
+      networking_desktop_install_gui_tools:
+        type: bool
+        description: Whether to install GUI management tools
+        default: true

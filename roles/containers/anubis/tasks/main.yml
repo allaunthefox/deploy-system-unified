@@ -1,6 +1,6 @@
 ---
 # Tasks for containers/anubis - Web AI Firewall
-- name: Create Anubis Network Quadlet
+- name: "ISO 27001 §8.26 | Action 700030 | Create Anubis Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/anubis_net.network"
     content: |
@@ -13,6 +13,11 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - anubis
+    - remediate
   notify: reload_systemd
 
 - name: Validate Quadlet GPU capabilities (Linux CAP_* only)
@@ -21,8 +26,11 @@
       - quadlet_gpu_capabilities | default([]) | reject('match', '^CAP_') | list | length == 0
     fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
   when: quadlet_enable_gpu_support | default(false)
+  tags:
+    - security
+    - containers
 
-- name: Create Anubis container quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Anubis container quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/anubis.container"
     content: |
@@ -68,11 +76,17 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - anubis
+    - remediate
   notify:
     - reload_systemd
     - restart anubis
   when: anubis_enabled | bool
-- name: Enable and start Anubis service (if systemd is available and running)
+
+- name: "ISO 27001 §8.26 | Action 700001 | Enable and start Anubis service"
   ansible.builtin.systemd:
     name: anubis
     enabled: true
@@ -81,5 +95,9 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
+  tags:
+    - iso_27001_8_26
+    - containers
+    - anubis
   when: anubis_enabled | bool and ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
   failed_when: false  # Ignore failures if systemd isn't available

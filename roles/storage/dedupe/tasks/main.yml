@@ -1,0 +1,64 @@
+---
+# Tasks for storage/dedupe - NoDupeLabs Archival Standards
+
+- name: "ISO 9001 | Action 600030 | Validate Archival Eligibility (Ephemeral Guard)"
+  ansible.builtin.assert:
+    that:
+      - not storage_dedupe_ephemeral_skip | bool
+    fail_msg: "CRITICAL: Archival/Deduplication operations are forbidden in ephemeral profiles without 'system_storage_archival_ephemeral_allow: true'."
+  tags: [storage, dedupe, audit, profile_guard, iso_9001]
+  when: storage_dedupe_btrfs_enable | bool
+
+- name: "ISO 27040 §13 | Action 600032 | Validate Forensic Audit Requirement (Hardened Profile)"
+  ansible.builtin.assert:
+    that:
+      - not (deployment_profile | default('') == 'hardened' and not storage_dedupe_btrfs_audit_mandatory | default(true))
+    fail_msg: "CRITICAL: Hardened profiles require mandatory deduplication auditing (ISO 27040 §13)."
+  tags: [storage, dedupe, audit, hardened_archival, iso_27040]
+  when: storage_dedupe_btrfs_enable | bool
+
+- name: "ISO 27040 | Action 530001 | Install duperemove (Btrfs)"
+  ansible.builtin.package:
+    name: duperemove
+    state: present
+  become: true
+  when: storage_dedupe_btrfs_enable | bool
+  tags: [storage, dedupe, btrfs, iso_27040]
+
+- name: "ISO 27040 | Action 500060 | Create Btrplication Hash Directory"
+  ansible.builtin.file:
+    path: /var/lib/duperemove
+    state: directory
+    mode: '0700'
+  become: true
+  when: storage_dedupe_btrfs_enable | bool
+  tags: [storage, dedupe, btrfs, iso_27040]
+
+- name: "ISO 27040 | Action 500060 | Schedule Weekly Btrfs Deduplication"
+  ansible.builtin.cron:
+    name: "Btrfs offline deduplication (duperemove)"
+    minute: "0"
+    hour: "3"
+    weekday: "0"
+    job: "/usr/bin/duperemove -dr --hashfile /var/lib/duperemove/hash.db {{ storage_dedupe_btrfs_paths | join(' ') }} > /var/log/duperemove.log 2>&1"
+  become: true
+  when: storage_dedupe_btrfs_enable | bool
+  tags: [storage, dedupe, btrfs, remediate, iso_27040]
+
+- name: "ISO 27040 | Action 500023 | Audit Deduplication Potential (Dry Run)"
+  ansible.builtin.shell: |
+    duperemove -Ar {{ item }} | grep "Comparison of" | tail -n 1
+  loop: "{{ storage_dedupe_btrfs_paths }}"
+  register: dedupe_audit
+  become: true
+  changed_when: false
+  failed_when: false
+  tags: [storage, dedupe, btrfs, audit, iso_27040]
+  when: storage_dedupe_btrfs_enable | bool
+
+- name: Report Deduplication Audit
+  ansible.builtin.debug:
+    msg: "Dedupe Audit for {{ item.item }}: {{ item.stdout | default('N/A') }}"
+  loop: "{{ dedupe_audit.results }}"
+  when: storage_dedupe_btrfs_enable | bool
+  tags: [storage, dedupe, btrfs, audit, iso_27040]

@@ -1,0 +1,7 @@
+---
+argument_specs:
+  main:
+    short_description: connection_info role
+    description:
+      - Formally documented connection_info management
+    options: {}

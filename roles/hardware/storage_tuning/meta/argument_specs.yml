@@ -1,0 +1,9 @@
+---
+argument_specs:
+  main:
+    short_description: Storage tuning role
+    description:
+      - Automatically detects block device capabilities and alignment
+      - Applies performance tuning (I/O scheduler, read-ahead) based on device type
+      - Aligns with ISO 27040 requirements for high-fidelity storage management
+    options: {}

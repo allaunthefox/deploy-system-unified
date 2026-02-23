@@ -29,14 +29,18 @@
   become: true
   register: _net_install
 
-- name: Enable NetworkManager Service
+- name: "ISO 27001 §9.4 | Action 810202 | Enable NetworkManager Service"
   ansible.builtin.service:
     name: "{{ _net_service_name }}"
     enabled: true
     state: started
   become: true
+  tags:
+    - iso_27001_9_4
+    - networking
+    - desktop
 
-- name: Configure Wi-Fi Backend (NetworkManager.conf)
+- name: "ISO 27001 §9.4 | Action 810201 | Configure Wi-Fi Backend (NetworkManager.conf)"
   ansible.builtin.ini_file:
     path: /etc/NetworkManager/NetworkManager.conf
     section: device
@@ -44,6 +48,11 @@
     value: "{{ networking_desktop_wifi_backend }}"
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_9_4
+    - networking
+    - desktop
+    - remediate
   when:
     - networking_desktop_enable_wifi | bool
     - _net_service_name in ["NetworkManager", "networkmanager"]

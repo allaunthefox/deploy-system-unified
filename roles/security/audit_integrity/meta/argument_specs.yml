@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Cryptographic log integrity role
+    description:
+      - Implements systemd Forward Secure Sealing (FSS)
+      - Ensures audit logs are immutable and tamper-evident
+      - Aligns with ISO 27037 and NIST AU-2
+    options:
+      audit_integrity_store_keys:
+        type: bool
+        description: Whether to store FSS keys on the controller
+        default: true
+      audit_integrity_output_dir:
+        type: str
+        description: Directory to store sealed audit keys
+        default: "{{ playbook_dir }}/ci-artifacts/audit_keys"

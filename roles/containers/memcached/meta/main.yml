@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: memcached
+  author: deploy-system-unified
+  description: "WI-CONT | memcached management and configuration"
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - memcached
+    - iso_27001
+dependencies: []

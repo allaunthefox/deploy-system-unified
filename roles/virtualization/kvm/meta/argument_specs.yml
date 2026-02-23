@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: Virtualization KVM role
+    description:
+      - Installs KVM, QEMU, and libvirt stack
+      - Configures restrictive security settings for the hypervisor
+      - Ensures necessary kernel modules are loaded for virtualization
+    options:
+      virtualization_kvm_enabled:
+        type: bool
+        description: Enable or disable the KVM role
+        default: true

@@ -104,7 +104,7 @@
   when: media_pod_enable
   notify: reload_systemd
 
-- name: Deploy Media Caddy Configuration
+- name: "ISO 27001 §9.4 | Action 540001 | Deploy Media Caddy Configuration"
   ansible.builtin.copy:
     dest: "/srv/containers/caddy/conf.d/media_stack_{{ containers_media_instance_name }}.caddy"
     content: |
@@ -229,10 +229,15 @@
       }
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_9_4
+    - containers
+    - media
+    - remediate
   when: media_gatekeeper_mode
   notify: restart_caddy
 
-- name: Create Jellyfin Container Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Jellyfin Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/jellyfin-{{ media_instance_name }}.container"
     content: |
@@ -280,6 +285,11 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - media
+    - remediate
   when: containers_jellyfin_enable
   notify: reload_systemd
 

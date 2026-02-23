@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: bootstrap
   author: deploy-system-unified
-  description: Core system initialization and base configuration
+  description: "STD-CORE | System initialization and base configuration with virtualization awareness"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -18,7 +18,10 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - core
-    - system
-    - init
+    - bootstrap
+    - initialization
+    - iso_9001
+    - iso_27001
+    - iso_8000
 
 dependencies: []

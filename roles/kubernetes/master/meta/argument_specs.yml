@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: K8s master role
+    description:
+      - Installs and configures the Kubernetes control plane using K3s
+      - Manages API server settings, networking, and cluster tokens
+      - Aligns with ISO 27001 §8.26 for orchestration cluster security
+    options:
+      kubernetes_k3s_enable:
+        type: bool
+        description: Enable or disable K3s master
+        default: true
+      kubernetes_k3s_version:
+        type: str
+        description: Version of K3s to install
+        default: "v1.31.2+k3s1"
+      kubernetes_pod_cidr:
+        type: str
+        description: Pod CIDR for the cluster
+        default: "10.42.0.0/16"
+      kubernetes_encryption_enabled:
+        type: bool
+        description: Enable encryption at rest for K8s secrets
+        default: true

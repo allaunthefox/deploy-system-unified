@@ -18,7 +18,7 @@
   when: hardware_sas_install_tools
   become: true
 
-- name: Load SAS Kernel Modules
+- name: "ISO 27001 §8.9 | Action 800001 | Load SAS Kernel Modules"
   community.general.modprobe:
     name: "{{ item }}"
     state: present
@@ -27,6 +27,10 @@
   become: true
   register: sas_modprobe
   failed_when: false
+  tags:
+    - iso_27001_8_9
+    - hardware
+    - sas
 
 - name: Read kernel module lockdown state
   ansible.builtin.slurp:
@@ -34,11 +38,17 @@
   register: sas_modules_disabled
   changed_when: false
   failed_when: false
+  tags:
+    - hardware
+    - sas
   when: hardware_sas_load_drivers
 
 - name: Warn when kernel modules are locked down
   ansible.builtin.debug:
     msg: "Kernel modules are locked down (kernel.modules_disabled=1); skipping SAS module load."
+  tags:
+    - hardware
+    - sas
   when:
     - hardware_sas_load_drivers
     - (sas_modules_disabled.content | default('MA==') | b64decode | trim) == '1'
@@ -53,17 +63,28 @@
     mode: '0644'
   when: hardware_sas_load_drivers
   become: true
+  tags:
+    - iso_27001_8_9
+    - hardware
+    - sas
+    - remediate
 
 - name: Detect SAS Devices
   ansible.builtin.shell: lsscsi -g
   register: sas_devices_output
   changed_when: false
   failed_when: false
+  tags:
+    - hardware
+    - sas
   when: hardware_sas_install_tools
 
 - name: Display Detected SAS Devices
   ansible.builtin.debug:
     var: sas_devices_output.stdout_lines
+  tags:
+    - hardware
+    - sas
   when: hardware_sas_install_tools and not sas_devices_output.failed
 
 # HBA Specific Tuning
@@ -93,6 +114,10 @@
   register: sas_queue_tuning
   changed_when: "'tuned' in sas_queue_tuning.stdout"
   become: true
+  tags:
+    - hardware
+    - sas
+    - performance
   when: hardware_sas_install_tools
 
 - name: Check Write Caching (WCE) status on SAS SSDs
@@ -104,11 +129,14 @@
   args:
     pipefail: true
   become: true
+  tags:
+    - hardware
+    - sas
   when:
     - hardware_sas_install_tools
     - hardware_sas_enable_write_cache | default(false)
 
-- name: Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)
+- name: "ISO 27040 | Action 500051 | Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)"
   ansible.builtin.command: "sdparm --set=WCE --save /dev/{{ item.item }}"
   loop: "{{ sas_wce_check.results }}"
   when:
@@ -116,3 +144,8 @@
     - hardware_sas_enable_write_cache | default(false)
     - item.rc != 0 # rc != 0 meant grep failed to find WCE 1 (so it's 0 or off)
   become: true
+  tags:
+    - iso_27040
+    - hardware
+    - sas
+    - remediate

@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: sbom
+  author: deploy-system-unified
+  description: "POL-SEC | Software Bill of Materials (SBOM) generation and supply-chain auditing"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - security
+    - sbom
+    - supply_chain
+    - iso_27001
+    - audit
+
+dependencies: []

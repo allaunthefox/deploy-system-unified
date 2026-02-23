@@ -1,0 +1,9 @@
+---
+argument_specs:
+  main:
+    short_description: Cloud-init sync role
+    description:
+      - Waits for cloud-init to finish its tasks before proceeding
+      - Ensures system is in a stable state for further configuration
+      - Aligns with ISO 9001 requirements for process synchronization
+    options: {}

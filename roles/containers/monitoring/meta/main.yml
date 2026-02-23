@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: container_monitoring
   author: deploy-system-unified
-  description: Containerized monitoring stack (Prometheus, Grafana)
+  description: "WI-CONT | Containerized monitoring stack (Prometheus, Grafana)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -21,6 +21,10 @@ galaxy_info:
     - monitoring
     - prometheus
     - grafana
+    - loki
+    - forensic
+    - iso_27001
+    - nist_800_53
 
 dependencies: []
 

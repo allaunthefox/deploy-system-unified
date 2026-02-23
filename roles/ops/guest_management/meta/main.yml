@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: guest_management
+  author: deploy-system-unified
+  description: "SOP-OPS | guest_management management and configuration"
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - guest_management
+    - iso_27001
+dependencies: []

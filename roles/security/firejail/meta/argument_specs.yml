@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: Application sandboxing role
+    description:
+      - Installs and configures Firejail for application isolation
+      - Manages global sandbox settings and GPU access
+      - Aligns with ISO 27001 §8.26 application security requirements
+    options:
+      firejail_enable_gpu:
+        type: bool
+        description: Enable GPU access within Firejail sandboxes
+        default: false

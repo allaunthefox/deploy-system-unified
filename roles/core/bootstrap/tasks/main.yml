@@ -1,6 +1,6 @@
 ---
 # Core bootstrap role - System initialization and base configuration
-- name: Gather system facts
+- name: "ISO 9001 | Action 300010 | Gather system facts"
   ansible.builtin.setup:
     gather_subset:
       - '!all'
@@ -10,16 +10,27 @@
       - os_family
       - pkg_mgr
       - virtual
+  tags:
+    - iso_9001
+    - bootstrap
+    - initialization
+
 - name: Set distribution-specific variables
   ansible.builtin.set_fact:
     core_pkg_manager: "{{ ansible_facts['pkg_mgr'] }}"
     core_os_family: "{{ ansible_facts['os_family'] }}"
     core_distribution: "{{ ansible_facts['distribution'] | lower }}"
+  tags:
+    - bootstrap
+    - initialization
 
 - name: Load Architecture Specific Variables
   ansible.builtin.include_vars:
     file: "arch_{{ ansible_architecture }}.yml"
   failed_when: false
+  tags:
+    - bootstrap
+    - initialization
 
 - name: Construct Base Package List
   ansible.builtin.set_fact:
@@ -29,8 +40,11 @@
         + (system_base_packages[core_os_family] | default([]))
         + (bootstrap_arch_packages[core_os_family] | default([]))
       }}
+  tags:
+    - bootstrap
+    - initialization
 
-- name: Ensure base packages are installed (Debian/Ubuntu)
+- name: "ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (Debian/Ubuntu)"
   ansible.builtin.apt:
     name: "{{ _bootstrap_packages }}"
     state: present
@@ -41,8 +55,12 @@
   until: apt_install_result is success
   retries: 5
   delay: 10
+  tags:
+    - iso_27001_8_9
+    - bootstrap
+    - packages
 
-- name: Ensure base packages are installed (RedHat/CentOS)
+- name: "ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (RedHat/CentOS)"
   ansible.builtin.dnf:
     name: "{{ _bootstrap_packages }}"
     state: present
@@ -52,20 +70,33 @@
   until: dnf_install_result is success
   retries: 5
   delay: 10
+  tags:
+    - iso_27001_8_9
+    - bootstrap
+    - packages
 
-- name: Ensure base packages are installed (Arch)
+- name: "ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (Arch)"
   community.general.pacman:
     name: "{{ _bootstrap_packages }}"
     state: present
   when: core_distribution == 'archlinux'
   become: true
+  tags:
+    - iso_27001_8_9
+    - bootstrap
+    - packages
 
-- name: Ensure base packages are installed (Alpine)
+- name: "ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (Alpine)"
   community.general.apk:
     name: "{{ _bootstrap_packages }}"
     state: present
   when: core_os_family == 'Alpine'
   become: true
+  tags:
+    - iso_27001_8_9
+    - bootstrap
+    - packages
+
 - name: Create standard system directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -73,6 +104,9 @@
     mode: '0755'
   loop: "{{ system_standard_directories }}"
   become: true
+  tags:
+    - bootstrap
+    - initialization
 
 - name: Detect Virtualization Environment
   ansible.builtin.set_fact:
@@ -80,6 +114,9 @@
     detected_virtualization_type: "{{ ansible_facts['virtualization_type'] | default('none') | lower }}"
     is_virtualized: "{{ (ansible_facts['virtualization_role'] | default('host') | lower) == 'guest' }}"
   changed_when: false
+  tags:
+    - bootstrap
+    - initialization
 
 - name: Determine virt_type (bootstrap fallback)
   ansible.builtin.set_fact:
@@ -99,6 +136,9 @@
       }}
   when: virt_type is not defined
   changed_when: false
+  tags:
+    - bootstrap
+    - initialization
 
 - name: Assert virt_type is a valid ontology value
   ansible.builtin.assert:
@@ -111,16 +151,26 @@
       bare-metal, virtual, vps, container.
       Detected: virtualization_role={{ detected_virtualization_role | default('unknown') }},
       virtualization_type={{ detected_virtualization_type | default('unknown') }}.
+  tags:
+    - bootstrap
+    - initialization
 
 - name: Report Virtualization Profile
   ansible.builtin.debug:
     msg: >-
       Environment detected as {{ virt_type | upper }}
       (Guest: {{ is_virtualized }}, Detected: {{ detected_virtualization_type | default('unknown') }}).
+  tags:
+    - bootstrap
+    - initialization
 
-- name: Generate high-entropy Deployment ID (Forensic Primary Key)
+- name: "ISO 8000-110 | Action 300011 | Generate high-entropy Deployment ID (Forensic Primary Key)"
   ansible.builtin.set_fact:
     deployment_id: "{{ ansible_facts['date_time'].iso8601_micro | hash('sha256') | truncate(16, True, '') }}"
+  tags:
+    - iso_8000
+    - bootstrap
+    - forensics
 
 - name: Set bootstrap completion flag
   ansible.builtin.set_fact:

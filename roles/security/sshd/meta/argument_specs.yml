@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: SSH daemon hardening role
+    description:
+      - Enhanced SSH configuration with PQC hybrid support
+      - Implements CIS Level 1 and ISO 27001 §10.1 controls
+      - Focuses on strong ciphers and key exchange algorithms
+    options:
+      sshd_pqc_enabled:
+        type: bool
+        description: Enable Post-Quantum Hybrid key exchange
+        default: true
+      sshd_permit_root_login:
+        type: str
+        description: Permit root login setting
+        default: "no"
+      sshd_password_authentication:
+        type: str
+        description: Enable password authentication
+        default: "no"

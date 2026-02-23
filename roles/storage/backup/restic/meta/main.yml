@@ -1,8 +1,8 @@
 ---
 galaxy_info:
-  role_name: restic_backup
+  role_name: restic
   author: deploy-system-unified
-  description: Automated, deduplicated, and encrypted system backups using Restic
+  description: Deduplicated encrypted backups using Restic
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -17,12 +17,11 @@ galaxy_info:
     - name: Alpine
       versions: [all]
   galaxy_tags:
+    - storage
     - backup
     - restic
-    - security
-    - storage
+    - encryption
+    - iso_27040
+    - iso_27001
 
 dependencies: []
-
-assumes_permissive: true
-# Restic role has default placeholder restic_password values in defaults; consider enforcing via preflight diagnostics.

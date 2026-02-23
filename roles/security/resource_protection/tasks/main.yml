@@ -7,7 +7,7 @@
     fail_msg: |-
       Insufficient RAM for {{ virt_type | upper }} environment.
       Required: {{ resource_min_ram_mb[virt_type] | default(resource_min_ram_mb['default']) }}MB
-- name: Configure system-wide ulimits for process isolation
+- name: "ISO 27001 §8.26 | Action 400003 | Configure system-wide ulimits for process isolation"
   ansible.builtin.copy:
     content: |
       * soft core 0
@@ -19,7 +19,13 @@
     dest: /etc/security/limits.d/99-resource-protection.conf
     mode: '0644'
   become: true
-- name: Enforce Systemd global resource limits
+  tags:
+    - iso_27001_8_26
+    - security
+    - resources
+    - remediate
+
+- name: "ISO 27001 §8.26 | Action 400003 | Enforce Systemd global resource limits"
   ansible.builtin.lineinfile:
     path: /etc/systemd/system.conf
     regexp: "^#?Default{{ item.key }}="
@@ -31,3 +37,8 @@
     - { key: 'CPUAccounting', value: 'yes' }
   become: true
   notify: reload_systemd
+  tags:
+    - iso_27001_8_26
+    - security
+    - resources
+    - remediate

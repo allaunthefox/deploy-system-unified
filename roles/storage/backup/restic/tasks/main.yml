@@ -6,12 +6,30 @@
   when:
     - restic_enable | bool
 
-# Legacy behavior (fail) replaced by gated verify task above
+- name: "ISO 9001 | Action 600030 | Validate Archival Eligibility (Ephemeral Guard)"
+  ansible.builtin.assert:
+    that:
+      - not (deployment_profile | default('') == 'ephemeral' and restic_archival_mode | bool and not system_storage_archival_ephemeral_allow | default(false) | bool)
+    fail_msg: "CRITICAL: Archival-grade compression is restricted in ephemeral profiles. Use standard mode or set system_storage_archival_ephemeral_allow: true."
+  tags: [backup, restic, audit, profile_guard, iso_9001]
+  when: restic_enable | bool and restic_archival_mode | bool
+
+- name: "ISO 27040 §13 | Action 600032 | Validate Integrity Testing Requirement (Hardened Profile)"
+  ansible.builtin.assert:
+    that:
+      - not (deployment_profile | default('') == 'hardened' and not restic_restore_test_enabled | bool)
+    fail_msg: "CRITICAL: Hardened profiles require mandatory restore testing (ISO 27040 §13). Set restic_restore_test_enabled: true."
+  tags: [backup, restic, audit, hardened_archival, iso_27040]
+  when: restic_enable | bool and restic_archival_mode | bool
 
 - name: Install Restic
   ansible.builtin.package:
     name: restic
     state: present
+  tags:
+    - backup
+    - restic
+    - iso_27040
   when: restic_enable | bool
 
 - name: Create Restic configuration directories
@@ -25,15 +43,25 @@
     - "{{ restic_config_dir }}"
     - "{{ restic_log_dir }}"
     - "/var/cache/restic"
+  tags:
+    - backup
+    - restic
+    - iso_27040
   when: restic_enable | bool
 
-- name: Deploy Restic password file
+- name: "ISO 27040 | ISO 27001 §10.1 | Action 500070 | Deploy Restic password file"
   ansible.builtin.copy:
     content: "{{ restic_password }}"
     dest: "{{ restic_config_dir }}/password"
     owner: "{{ restic_user }}"
     group: "{{ restic_group }}"
     mode: '0600'
+  tags:
+    - iso_27040
+    - iso_27001_10_1
+    - backup
+    - archival
+    - remediate
   when: restic_enable | bool
 
 - name: Deploy Restic wrapper script
@@ -43,6 +71,10 @@
     owner: "{{ restic_user }}"
     group: "{{ restic_group }}"
     mode: '0750'
+  tags:
+    - backup
+    - restic
+    - iso_27040
   when: restic_enable | bool
 
 - name: Deploy Restic Systemd Service
@@ -52,6 +84,10 @@
     owner: root
     group: root
     mode: '0644'
+  tags:
+    - backup
+    - restic
+    - iso_27040
   notify: reload_systemd
   when: restic_enable | bool
 
@@ -62,12 +98,27 @@
     owner: root
     group: root
     mode: '0644'
+  tags:
+    - backup
+    - restic
+    - iso_27040
   notify: reload_systemd
   when: restic_enable | bool
 
-- name: Enable and Start Restic Timer
+- name: "ISO 27040 | Action 900000 | Enable and Start Restic Timer"
   ansible.builtin.systemd:
     name: restic-backup.timer
     state: started
     enabled: true
+  tags:
+    - iso_27040
+    - backup
+    - restic
   when: restic_enable | bool
+
+- name: Perform Automated Restore Testing
+  ansible.builtin.include_tasks: restore_test.yml
+  when:
+    - restic_enable | bool
+    - restic_restore_test_enabled | bool
+  tags: [backup, restic, restore_test, iso_27040]

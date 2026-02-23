@@ -13,7 +13,7 @@
     - /srv/containers/configs
     - /var/lib/containers
   become: true
-- name: Configure container storage
+- name: "ISO 27001 §8.26 | Action 500000 | Configure container storage"
   ansible.builtin.copy:
     dest: /etc/containers/storage.conf
     content: |
@@ -28,6 +28,12 @@
       mountopt = "nodev,metacopy=on"
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - configuration
+    - remediate
+
 - name: Check container lingering status
   ansible.builtin.command:
     cmd: "loginctl show-user {{ item }} -p Linger"
@@ -35,8 +41,11 @@
   register: linger_status
   changed_when: false
   failed_when: false
+  tags:
+    - containers
+    - configuration
 
-- name: Enable container lingering for service users
+- name: "ISO 27001 §9.2 | Action 510002 | Enable container lingering for service users"
   ansible.builtin.command:
     cmd: "loginctl enable-linger {{ item.item }}"
   loop: "{{ linger_status.results }}"
@@ -46,6 +55,11 @@
     - "'Linger=no' in item.stdout"
   become: true
   changed_when: true
+  tags:
+    - iso_27001_9_2
+    - containers
+    - configuration
+    - remediate
 - name: Set containers config completion flag
   ansible.builtin.set_fact:
     containers_config_complete: true

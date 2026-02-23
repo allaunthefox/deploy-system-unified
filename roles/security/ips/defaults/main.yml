@@ -5,6 +5,10 @@ ips_fail2ban_sshd_bantime: 24h # Increased from 1h for persistent offenders
 ips_fail2ban_sshd_findtime: 5m # Shortened from 10m to catch rapid bursts faster
 ips_fail2ban_sshd_enabled: true
 
+# Ephemeral Profile Guard
+# Skip IPS in short-lived environments unless explicitly requested
+ips_ephemeral_skip: "{{ true if (deployment_profile | default('') == 'ephemeral' and not system_security_ips_ephemeral_allow | default(false) | bool) else false }}"
+
 # Defaults for Caddy Fail2Ban Integration
 ips_fail2ban_caddy_enabled: true
 ips_fail2ban_caddy_maxretry: 5

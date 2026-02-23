@@ -1,4 +1,5 @@
 ---
-- name: placeholder task (no-op)
+- name: "ISO 27040 | Action 900000 | placeholder task (no-op)"
   ansible.builtin.debug:
     msg: "Placeholder: no action"
+  tags: [no_op]

@@ -1,0 +1,33 @@
+---
+argument_specs:
+  main:
+    short_description: Advanced security hardening role
+    description:
+      - Implements advanced security techniques beyond standard hardening
+      - Manages SSH port randomization and automated host key rotation
+      - Aligns with ISO 27001 §9.2 and §10.1 standards
+    options:
+      advanced_security_hardening_enabled:
+        type: bool
+        description: Enable or disable advanced security hardening
+        default: false
+      ssh_randomize_port:
+        type: bool
+        description: Enable SSH port randomization
+        default: false
+      ssh_random_port_range_start:
+        type: int
+        description: Starting port for randomization
+        default: 10000
+      ssh_random_port_range_end:
+        type: int
+        description: Ending port for randomization
+        default: 65535
+      ssh_key_rotation_enabled:
+        type: bool
+        description: Enable automated SSH host key rotation
+        default: false
+      ssh_key_rotation_interval_days:
+        type: int
+        description: Interval in days between key rotations
+        default: 90

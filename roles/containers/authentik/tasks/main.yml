@@ -23,7 +23,7 @@
     - "{{ authentik_data_dir }}/redis"
   become: true
 
-- name: Create Authentik secrets file
+- name: "ISO 27001 §10.1 | Action 400011 | Create Authentik secrets file"
   ansible.builtin.template:
     src: authentik.env.j2
     dest: "{{ containers_secrets_dir }}/authentik.env"
@@ -31,8 +31,13 @@
     owner: "{{ containers_secrets_owner }}"
     group: "{{ containers_secrets_group }}"
   become: true
+  tags:
+    - iso_27001_10_1
+    - containers
+    - authentik
+    - remediate
 
-- name: Create Authentik Postgres Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Authentik Postgres Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-postgres.container"
     content: |
@@ -63,9 +68,14 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - authentik
+    - remediate
   notify: reload_systemd
 
-- name: Create Authentik Redis Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Authentik Redis Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-redis.container"
     content: |
@@ -92,9 +102,14 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - authentik
+    - remediate
   notify: reload_systemd
 
-- name: Create Authentik Server Quadlet
+- name: "ISO 27001 §8.26 | NIST IA-2 | Action 700000 | Create Authentik Server Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-server.container"
     content: |
@@ -130,9 +145,15 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - nist_ia_2
+    - containers
+    - authentik
+    - remediate
   notify: reload_systemd
 
-- name: Create Authentik Worker Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Authentik Worker Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-worker.container"
     content: |
@@ -167,9 +188,14 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - authentik
+    - remediate
   notify: reload_systemd
 
-- name: Deploy Caddy Authentik Configuration
+- name: "ISO 27001 §9.2 | Action 540001 | Deploy Caddy Authentik Configuration"
   ansible.builtin.copy:
     dest: /srv/containers/caddy/conf.d/authentik.caddy
     content: |
@@ -190,6 +216,11 @@
       }
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_9_2
+    - containers
+    - authentik
+    - remediate
   # Only deploy if using Caddy as the ingress
   when: true
   notify: restart_caddy

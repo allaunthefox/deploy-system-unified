@@ -1,5 +1,13 @@
 ---
 # Security/Scanning role - Focused on system validation and vulnerability scanning
+- name: "ISO 9001 | Action 600030 | Validate Scanning Eligibility (Ephemeral Guard)"
+  ansible.builtin.assert:
+    that:
+      - not security_scanning_ephemeral_skip | bool
+    fail_msg: "Heavy security scanning is skipped in ephemeral profiles. Use standard validation or set system_security_scanning_ephemeral_allow: true."
+  tags: [security, scanning, profile_guard]
+  when: security_scanning_enable | bool and (deployment_profile | default('') == 'ephemeral')
+
 - name: Validate preflight requirements (idempotent)
   ansible.builtin.include_role:
     name: ops/preflight
@@ -45,15 +53,24 @@
          | list
          | length > 0)
       )
-- name: Configure security tools (idempotent)
+- name: "ISO 27001 §12.2 | Action 520010 | Configure security tools (idempotent)"
   ansible.builtin.include_tasks: enhanced_security_with_required_tools.yml
   loop: [1]
   loop_control:
     loop_var: _tools_include
   register: security_tools_result
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+
 - name: Mark security tools configured
   ansible.builtin.set_fact:
     enhanced_security_tools_configured: true
+  tags:
+    - security
+    - scanning
+
 - name: Checkpoint security tools configuration (only when no changes)
   ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
@@ -70,6 +87,10 @@
          | list
          | length > 0)
       )
+  tags:
+    - security
+    - scanning
+
 - name: Verify Forensic Clock Synchronization (Chrony)
   ansible.builtin.shell: |
     set -o pipefail
@@ -80,28 +101,51 @@
   changed_when: false
   become: true
   failed_when: false
+  tags:
+    - security
+    - scanning
+    - time
+
 - name: Validate clock precision
   ansible.builtin.assert:
     that:
       - chrony_sync_check.rc == 0
     fail_msg: "System clock is not synchronized. Forensic logs and certificate validation may fail."
   register: chrony_validation_result
+  tags:
+    - security
+    - scanning
+    - time
+
 - name: Checkpoint chrony validation (only when no changes)
   ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases:
       - "security/scanning:chrony_validated"
   when: not (chrony_validation_result.changed | default(false))
-- name: Run enhanced security scanning (idempotent)
+  tags:
+    - security
+    - scanning
+
+- name: "ISO 27001 §12.2 | Action 520010 | Run enhanced security scanning (idempotent)"
   ansible.builtin.include_tasks: enhanced_scanning.yml
   loop: [1]
   loop_control:
     loop_var: _scanning_include
   register: enhanced_scanning_result
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+
 - name: Mark security scanning configured
   ansible.builtin.set_fact:
     security_scanning_configured: true
     enhanced_security_scanning_complete: true
+  tags:
+    - security
+    - scanning
+
 - name: Checkpoint enhanced scanning completion (only when no changes)
   ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
@@ -118,15 +162,28 @@
          | list
          | length > 0)
       )
+  tags:
+    - security
+    - scanning
+
 - name: Set security framework applied flag
   ansible.builtin.set_fact:
     security_framework_applied: true
-- name: Validate final security state (idempotent)
+  tags:
+    - security
+    - scanning
+
+- name: "ISO 27001 §12.2 | Action 520011 | Validate final security state (idempotent)"
   ansible.builtin.include_tasks: validation.yml
   loop: [1]
   loop_control:
     loop_var: _validation_include
   register: security_validation_result
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+    - audit
 - name: Checkpoint final validation (only when no changes)
   ansible.builtin.include_tasks: save_checkpoint.yml
   vars:

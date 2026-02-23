@@ -48,7 +48,7 @@
     - ansible_facts['service_mgr'] == 'systemd'
     - not (is_virtualized | default(false))
 
-- name: Harden file system permissions
+- name: "CIS 1.1.1 | ISO 27001 §8.8 | NIST CM-2 | Action 600113 | Harden file system permissions"
   block:
     - name: Set secure permissions on sensitive files
       ansible.builtin.file:
@@ -75,9 +75,14 @@
       register: sticky_result
       changed_when: (sticky_result.stdout | default('0') | trim | int) > 0
       failed_when: false
-      args:
-        pipefail: true
-- name: Harden user accounts
+  tags:
+    - cis_1_1_1
+    - iso_27001_8_8
+    - nist_cm_2
+    - remediate
+    - high_severity
+    - security
+- name: "CIS 5.4.1 | ISO 27001 §9.2 | NIST IA-2 | Action 510003 | Harden user accounts"
   block:
     - name: Lock system accounts that should not login
       ansible.builtin.user:
@@ -103,6 +108,13 @@
         - { regex: 'PASS_MIN_DAYS', line: 'PASS_MIN_DAYS   7' }
         - { regex: 'PASS_MAX_DAYS', line: 'PASS_MAX_DAYS   90' }
         - { regex: 'PASS_WARN_AGE', line: 'PASS_WARN_AGE   14' }
+  tags:
+    - cis_5_4_1
+    - iso_27001_9_2
+    - nist_ia_2
+    - remediate
+    - medium_severity
+    - security
 - name: Harden PAM configuration (Debian)
   ansible.builtin.lineinfile:
     path: "{{ item.path }}"

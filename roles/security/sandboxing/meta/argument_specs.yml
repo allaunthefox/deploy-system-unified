@@ -1,0 +1,33 @@
+---
+argument_specs:
+  main:
+    short_description: Application sandboxing role
+    description:
+      - Implements user-space isolation using Bubblewrap and Landlock
+      - Deploys custom sandbox profiles for restricted application execution
+      - Aligns with ISO 27001 §8.26 requirements for isolated environments
+    options:
+      sandboxing_enabled:
+        type: bool
+        description: Enable or disable sandboxing features
+        default: true
+      sandboxing_install_bubblewrap:
+        type: bool
+        description: Whether to install Bubblewrap (bwrap)
+        default: true
+      sandboxing_policy_dir:
+        type: str
+        description: Directory to store sandbox policies
+        default: /etc/sandboxing/policies
+      sandboxing_use_seccomp:
+        type: bool
+        description: Enforce seccomp filters where available
+        default: true
+      sandboxing_use_landlock:
+        type: bool
+        description: Utilize Landlock security module
+        default: true
+      sandboxing_profiles:
+        type: list
+        elements: dict
+        description: Collection of sandbox profiles to deploy

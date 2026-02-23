@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: container_networks
+  author: deploy-system-unified
+  description: Container network isolation and Quadlet network management
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+  galaxy_tags:
+    - networking
+    - containers
+    - podman
+    - quadlet
+    - isolation
+    - iso_27001
+
+dependencies: []

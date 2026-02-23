@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Post-deploy health check role
+    description:
+      - Runs comprehensive health checks after system deployment
+      - Verifies systemd services, container runtime, disk usage, and endpoints
+      - Generates machine-readable health summary artifacts (JSON)
+    options:
+      health_check_enabled:
+        type: bool
+        description: Enable or disable health checks
+        default: true
+      health_check_fail_on_mandatory:
+        type: bool
+        description: Fail the playbook if mandatory checks fail
+        default: true
+      health_check_systemd_mandatory_units:
+        type: list
+        elements: str
+        description: List of systemd units that MUST be running
+      health_check_disk_checks:
+        type: list
+        elements: dict
+        description: List of disk usage thresholds to verify

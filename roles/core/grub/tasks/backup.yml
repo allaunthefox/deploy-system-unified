@@ -39,6 +39,11 @@
     state: directory
     mode: '0700'
   become: true
+  tags:
+    - core
+    - grub
+    - backup
+    - iso_27040
   when: _grub_backup_enabled | bool
 
 - name: Compute SHA256 hash of GRUB config

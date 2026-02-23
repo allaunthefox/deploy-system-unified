@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: authentik
   author: prod
-  description: Authentik container role with negative tests
+  description: "WI-CONT | Authentik container role with negative tests"
   license: MIT
   min_ansible_version: "2.15"
   platforms:

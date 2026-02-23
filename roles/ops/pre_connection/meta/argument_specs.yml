@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: Pre-connection diagnostics role
+    description:
+      - Determines the current SSH port on the target host
+      - Manages SSH port randomization bounds and generation
+      - Verifies connectivity before the main deployment begins
+    options:
+      ssh_randomize_port:
+        type: bool
+        description: Enable SSH port randomization
+        default: false
+      ssh_random_port_range_start:
+        type: int
+        description: Start of the random port range
+        default: 10000
+      ssh_random_port_range_end:
+        type: int
+        description: End of the random port range
+        default: 20000

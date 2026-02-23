@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: ops
-  author: prod
-  description: Ops container role with negative tests
+  author: deploy-system-unified
+  description: "WI-CONT | Deployment of operational tools (Dashboard, Password Manager, Wiki)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -16,7 +16,12 @@ galaxy_info:
       versions: [all]
     - name: Alpine
       versions: [all]
-  galaxy_tags: [containers, ops]
-# assumes_permissive: true
-# This role configures services that may assume permissive defaults (placeholder secrets, Host networking).
-# See docs/deployment/PERMISSIVE_ROLES.md for details and mitigation steps.
+  galaxy_tags:
+    - containers
+    - ops
+    - dashboard
+    - vaultwarden
+    - wikijs
+    - iso_27001
+
+dependencies: []

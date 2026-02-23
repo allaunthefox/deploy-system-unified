@@ -1,0 +1,40 @@
+---
+argument_specs:
+  main:
+    short_description: Core memory optimization role
+    description:
+      - Automatically selects and configures memory compression (ZRAM or ZSwap)
+      - Tunes virtual memory parameters (swappiness, cache pressure)
+      - Manages Transparent Huge Pages (THP) for database workloads
+    options:
+      core_memory_compression_strategy:
+        type: str
+        description: Optimization strategy (auto, zram, zswap, none)
+        choices: [auto, zram, zswap, none]
+        default: auto
+      core_memory_shared_vram:
+        type: str
+        description: Handle systems with shared video memory
+        default: auto
+      core_memory_workload_profile:
+        type: str
+        description: Performance profile (standard, database, latency-sensitive)
+        choices: [standard, database, latency-sensitive]
+        default: standard
+      core_memory_thp_state:
+        type: str
+        description: Transparent Huge Pages state (always, madvise, never)
+        choices: [always, madvise, never]
+        default: always
+      core_memory_zram_size_percent:
+        type: int
+        description: Percentage of RAM to use for ZRAM
+        default: 50
+      core_memory_zram_algorithm:
+        type: str
+        description: ZRAM compression algorithm
+        default: zstd
+      core_memory_zswap_compressor:
+        type: str
+        description: ZSwap compression algorithm
+        default: zstd

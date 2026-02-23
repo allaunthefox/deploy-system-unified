@@ -1,6 +1,6 @@
 ---
 # Tasks for ops/session role
-- name: Ensure TMUX session is available for deployment (idempotent)
+- name: "ISO 9001 | Action 400006 | Ensure TMUX session is available for deployment (idempotent)"
   ansible.builtin.shell: |
     if command -v tmux >/dev/null 2>&1; then
       if ! tmux has-session -t "{{ tmux_session_name }}" 2>/dev/null; then
@@ -15,19 +15,31 @@
   register: tmux_session_check
   changed_when: "'SESSION_CREATED:true' in tmux_session_check.stdout"
   failed_when: false
+  tags:
+    - iso_9001
+    - ops
+    - session
   when: tmux_session_for_deployment | bool
+
 - name: Set TMUX session validity fact (idempotent)
   ansible.builtin.set_fact:
     tmux_session_ok: >-
       {{ ('SESSION_CREATED:true' in tmux_session_check.stdout)
          or ('SESSION_EXISTS:true' in tmux_session_check.stdout)
          or ('TMUX_AVAILABLE:false' in tmux_session_check.stdout) }}
+  tags:
+    - ops
+    - session
   when: tmux_session_for_deployment | bool
+
 - name: Validate TMUX session creation (idempotent)
   ansible.builtin.assert:
     that:
       - tmux_session_ok | bool
     msg: "TMUX session creation failed - deployment may have reduced functionality"
+  tags:
+    - ops
+    - session
   when:
     - tmux_session_for_deployment | bool
     - not ansible_check_mode

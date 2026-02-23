@@ -1,0 +1,26 @@
+---
+argument_specs:
+  main:
+    short_description: Kernel security hardening role
+    description:
+      - Implements comprehensive kernel-level security hardening
+      - Configures sysctl parameters for network and system protection
+      - Manages IOMMU and DMA protection for bare-metal targets
+    options:
+      kernel_profile:
+        type: str
+        description: Hardening profile (generic or bare_metal)
+        choices: [generic, bare_metal]
+        default: generic
+      kernel_enable_iommu:
+        type: bool
+        description: Enable IOMMU/VT-d protection (bare_metal only)
+        default: true
+      kernel_restrict_dma:
+        type: bool
+        description: Enable DMA protection (bare_metal only)
+        default: true
+      kernel_hugepages_enabled:
+        type: bool
+        description: Enable or disable hugepages support
+        default: false

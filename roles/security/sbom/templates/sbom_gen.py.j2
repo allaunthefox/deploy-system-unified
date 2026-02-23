@@ -1,0 +1,87 @@
+import os
+import re
+import json
+import yaml
+from datetime import datetime
+
+def scan_dependencies(root_dir):
+    sbom = {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.5",
+        "serialNumber": f"urn:uuid:{os.urandom(16).hex()}",
+        "version": 1,
+        "metadata": {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "component": {
+                "name": "Deploy-System-Unified",
+                "type": "application"
+            }
+        },
+        "components": []
+    }
+
+    seen_components = set()
+
+    # Regex patterns
+    image_pattern = re.compile(r"image:\s*['\"]?([^'\"\s}]+)['\"]?")
+    
+    for root, dirs, files in os.walk(root_dir):
+        if ".git" in root or "molecule" in root:
+            continue
+            
+        for file in files:
+            if file.endswith(".yml") or file.endswith(".yaml"):
+                path = os.path.join(root, file)
+                try:
+                    with open(path, 'r') as f:
+                        content = f.read()
+                        
+                        # Find container images
+                        for match in image_pattern.finditer(content):
+                            img = match.group(1)
+                            if img and img not in seen_components and "{{" not in img:
+                                parts = img.split(':')
+                                name = parts[0]
+                                version = parts[1] if len(parts) > 1 else "latest"
+                                sbom["components"].append({
+                                    "name": name,
+                                    "version": version,
+                                    "type": "container",
+                                    "purl": f"pkg:docker/{name}@{version}"
+                                })
+                                seen_components.add(img)
+                except Exception:
+                    pass
+                    
+            if file == "requirements.txt":
+                path = os.path.join(root, file)
+                try:
+                    with open(path, 'r') as f:
+                        for line in f:
+                            line = line.strip()
+                            if line and not line.startswith('#'):
+                                if '>=' in line:
+                                    name, version = line.split('>=', 1)
+                                elif '==' in line:
+                                    name, version = line.split('==', 1)
+                                else:
+                                    name, version = line, "unknown"
+                                
+                                name = name.strip()
+                                if name not in seen_components:
+                                    sbom["components"].append({
+                                        "name": name,
+                                        "version": version.strip(),
+                                        "type": "library",
+                                        "purl": f"pkg:pypi/{name}@{version.strip()}"
+                                    })
+                                    seen_components.add(name)
+                except Exception:
+                    pass
+
+    return sbom
+
+if __name__ == "__main__":
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+    sbom_data = scan_dependencies(repo_root)
+    print(json.dumps(sbom_data, indent=2))

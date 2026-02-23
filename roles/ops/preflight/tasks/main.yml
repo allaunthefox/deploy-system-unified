@@ -4,7 +4,7 @@
 # values are intentionally listed for validation policy and may include "CHANGE_ME" placeholders.
 # noqa DSU003
 # Package installation has been moved to core/bootstrap
-- name: Gather minimum facts for preflight checks
+- name: "ISO 9001 | Action 600013 | Gather minimum facts for preflight checks"
   ansible.builtin.setup:
     gather_subset:
       - '!all'
@@ -14,6 +14,9 @@
       - pkg_mgr
       - service_mgr
       - virtual
+  tags:
+    - iso_9001
+    - preflight
 
 - name: Detect virtualization facts (preflight)
   ansible.builtin.set_fact:
@@ -53,12 +56,15 @@
       Detected: virtualization_role={{ detected_virtualization_role | default('unknown') }},
       virtualization_type={{ detected_virtualization_type | default('unknown') }}.
 
-- name: Validate distribution is supported
+- name: "ISO 9001 | Action 520010 | Validate distribution is supported"
   ansible.builtin.assert:
     that:
       - ansible_facts['distribution'] | lower in ['archlinux', 'debian', 'ubuntu', 'fedora', 'alpine', 'centos', 'rocky', 'almalinux']
     fail_msg: "Unsupported distribution: {{ ansible_facts['distribution'] }}"
     success_msg: "Distribution {{ ansible_facts['distribution'] }} is supported"
+  tags:
+    - iso_9001
+    - preflight
 - name: Validate systemd is available
   ansible.builtin.assert:
     that:

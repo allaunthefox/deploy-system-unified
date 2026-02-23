@@ -1,6 +1,6 @@
 ---
 # Tasks for core/updates - Automatic Security Patching
-- name: Configure Unattended-Upgrades (Debian/Ubuntu)
+- name: "ISO 27001 §8.9 | Action 530020 | Configure Unattended-Upgrades (Debian/Ubuntu)"
   block:
     - name: Install unattended-upgrades
       ansible.builtin.apt:
@@ -20,7 +20,12 @@
         mode: '0644'
   when: ansible_os_family == 'Debian'
   become: true
-- name: Configure DNF-Automatic (RedHat/Fedora)
+  tags:
+    - iso_27001_8_9
+    - updates
+    - remediate
+
+- name: "ISO 27001 §8.9 | Action 530020 | Configure DNF-Automatic (RedHat/Fedora)"
   block:
     - name: Install dnf-automatic
       ansible.builtin.package:
@@ -37,6 +42,10 @@
         state: started
   when: ansible_os_family == 'RedHat'
   become: true
+  tags:
+    - iso_27001_8_9
+    - updates
+    - remediate
 - name: Configure Updates (Arch Linux)
   block:
     - name: Ensure keyring is up to date (Arch)

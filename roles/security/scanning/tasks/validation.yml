@@ -1,6 +1,6 @@
 ---
 # Complete system validation for Deploy-System-Unified
-- name: Verify all security components are configured (idempotent)
+- name: "ISO 27001 §12.2 | Action 520011 | Verify all security components are configured (idempotent)"
   ansible.builtin.assert:
     that:
       - security_framework_applied | default(false)
@@ -8,11 +8,21 @@
       - enhanced_security_tools_configured | default(false)
       - security_scanning_configured | default(false)
     fail_msg: "Not all security scanning components properly configured - deployment incomplete"
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+    - audit
+
 - name: Verify directory precreation was successful (idempotent)
   ansible.builtin.assert:
     that:
       - directories_precreated | default(false)
     fail_msg: "Directory precreation failed - system may be in inconsistent state"
+  tags:
+    - security
+    - scanning
+
 - name: Verify scanning tool directories exist (idempotent)
   ansible.builtin.stat:
     path: "{{ item }}"
@@ -20,6 +30,10 @@
   loop:
     - /var/lib/deploy-system/checkpoints
     - /var/lib/deploy-system/backups
+  tags:
+    - security
+    - scanning
+
 - name: Validate all required directories exist (idempotent)
   ansible.builtin.assert:
     that:
@@ -27,6 +41,15 @@
       - item.stat.isdir
     fail_msg: "Required directory {{ item.item }} does not exist"
   loop: "{{ final_dir_check.results }}"
-- name: Set final security compliance flag (idempotent)
+  tags:
+    - security
+    - scanning
+
+- name: "ISO 27001 §12.2 | Action 520011 | Set final security compliance flag (idempotent)"
   ansible.builtin.set_fact:
     security_compliance_verified: true
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+    - audit

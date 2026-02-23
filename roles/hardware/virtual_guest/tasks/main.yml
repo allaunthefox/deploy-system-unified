@@ -16,7 +16,7 @@
   notify: reload_udev
   when: not _vps_is_container
 
-- name: Optimize Virtual Memory for shared cloud resources
+- name: "ISO 27001 §8.26 | Action 450002 | Optimize Virtual Memory for shared cloud resources"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -27,6 +27,11 @@
     - { name: 'vm.dirty_ratio', value: '10' }
     - { name: 'vm.dirty_background_ratio', value: '5' }
   become: true
+  tags:
+    - iso_27001_8_26
+    - hardware
+    - virtualization
+    - remediate
   when: not _vps_is_container
 
 - name: Identify VPS Provider for specific optimizations

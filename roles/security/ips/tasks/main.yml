@@ -1,11 +1,25 @@
 ---
 # Tasks for security/ips - Intrusion Prevention System (Fail2Ban)
-- name: Install Fail2Ban
+- name: "ISO 9001 | Action 600030 | Validate IPS Eligibility (Ephemeral Guard)"
+  ansible.builtin.assert:
+    that:
+      - not ips_ephemeral_skip | bool
+    fail_msg: "IPS (Fail2Ban) is skipped in ephemeral profiles. Set system_security_ips_ephemeral_allow: true to override."
+  tags: [security, ips, profile_guard]
+  when: (deployment_profile | default('') == 'ephemeral')
+
+- name: "ISO 27001 §16.1 | Action 460002 | Install Fail2Ban"
   ansible.builtin.package:
     name: fail2ban
     state: present
   become: true
-- name: Configure Fail2Ban for SSH protection
+  tags:
+    - iso_27001_16_1
+    - security
+    - ips
+    - forensic
+
+- name: "ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for SSH protection"
   ansible.builtin.copy:
     content: |
       [sshd]
@@ -19,6 +33,12 @@
     dest: /etc/fail2ban/jail.d/99-sshd-hardened.local
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_16_1
+    - security
+    - ips
+    - forensic
+    - remediate
   notify: restart_fail2ban
 
 - name: Install Caddy Filter
@@ -27,9 +47,12 @@
     dest: /etc/fail2ban/filter.d/caddy.conf
     mode: '0644'
   become: true
+  tags:
+    - security
+    - ips
   notify: restart_fail2ban
 
-- name: Configure Fail2Ban for Caddy (Web Protection)
+- name: "ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for Caddy (Web Protection)"
   ansible.builtin.copy:
     content: |
       [caddy]
@@ -43,6 +66,12 @@
     dest: /etc/fail2ban/jail.d/99-caddy-hardened.local
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_16_1
+    - security
+    - ips
+    - forensic
+    - remediate
   notify: restart_fail2ban
 
 - name: Enable and start Fail2Ban
@@ -51,3 +80,6 @@
     enabled: true
     state: started
   become: true
+  tags:
+    - security
+    - ips

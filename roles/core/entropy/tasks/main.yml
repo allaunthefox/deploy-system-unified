@@ -7,15 +7,19 @@
   become: true
   when: ansible_os_family == 'Debian'
 
-- name: Install entropy enhancement services (idempotent)
+- name: "ISO 27001 §10.1 | Action 530001 | Install entropy enhancement services (idempotent)"
   ansible.builtin.package:
     name:
       - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_package }}"
       - "{{ entropy_service_mapping[ansible_distribution | lower].rng_package }}"
     state: present
   become: true
+  tags:
+    - iso_27001_10_1
+    - core
+    - entropy
   when: ansible_distribution | lower in entropy_service_mapping.keys()
-- name: Enable and start entropy enhancement services (idempotent)
+- name: "ISO 27001 §10.1 | Action 300014 | Enable and start entropy enhancement services (idempotent)"
   ansible.builtin.systemd:
     name: "{{ item }}"
     enabled: true
@@ -24,6 +28,10 @@
     - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_service }}"
     - "{{ entropy_service_mapping[ansible_distribution | lower].rng_service }}"
   become: true
+  tags:
+    - iso_27001_10_1
+    - core
+    - entropy
   ignore_errors: "{{ is_virtualized | default(false) }}"
   when:
     - ansible_service_mgr == 'systemd'

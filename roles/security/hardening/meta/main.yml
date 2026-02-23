@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: hardening
+  author: deploy-system-unified
+  description: "POL-SEC | Core system security hardening (Permissions, PAM, User accounts)"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - security
+    - hardening
+    - cis
+    - iso_27001
+    - nist_800_53
+
+dependencies: []

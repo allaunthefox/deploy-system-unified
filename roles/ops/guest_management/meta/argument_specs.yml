@@ -1,0 +1,7 @@
+---
+argument_specs:
+  main:
+    short_description: guest_management role
+    description:
+      - Formally documented guest_management management
+    options: {}

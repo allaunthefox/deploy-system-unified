@@ -1,0 +1,33 @@
+---
+argument_specs:
+  main:
+    short_description: Core hardware support role
+    description:
+      - Discovers CPU features (AVX, AES-NI, SHA) and hardware accelerators
+      - Configures the hardware clock (RTC) and NTP synchronization
+      - Validates system requirements for specialized workloads (Media, DB, Secure Nodes)
+    options:
+      enable_hardware_discovery:
+        type: bool
+        description: Whether to enable hardware discovery tasks
+        default: true
+      require_avx:
+        type: bool
+        description: Strictly require AVX support
+        default: false
+      require_aes_ni:
+        type: bool
+        description: Strictly require AES-NI support
+        default: false
+      require_crypto_extensions:
+        type: bool
+        description: Strictly require cryptographic extensions
+        default: false
+      warn_on_missing_avx:
+        type: bool
+        description: Warn if AVX is missing
+        default: true
+      warn_on_missing_crypto:
+        type: bool
+        description: Warn if cryptographic extensions are missing
+        default: true

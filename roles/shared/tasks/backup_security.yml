@@ -29,6 +29,10 @@
     state: directory
     mode: '0700'
   become: true
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool
 
 - name: Compute SHA256 hash of backup
@@ -41,6 +45,10 @@
   register: _backup_hash_sha256
   changed_when: false
   become: true
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool
 
 - name: Compute SHA512 hash of backup
@@ -53,6 +61,10 @@
   register: _backup_hash_sha512
   changed_when: false
   become: true
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool
 
 - name: Compute BLAKE3 hash of backup
@@ -66,6 +78,10 @@
   changed_when: false
   become: true
   failed_when: false
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool
 
 - name: Create backup hash manifest
@@ -88,6 +104,10 @@
       blake3:{{ backup_name | default('backup') }} {{ _backup_timestamp }} {{ _backup_hash_b3.stdout }}
       {% endif %}
   become: true
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool
 
 - name: Create self-contained hash verification script
@@ -133,6 +153,10 @@
           exit 1
       fi
   become: true
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool
 
 - name: Store precomputed hashes in backup for offline verification
@@ -147,6 +171,10 @@
       sha512 {{ _backup_timestamp }} {{ _backup_hash_sha512.stdout | default('N/A') }}
       blake3 {{ _backup_timestamp }} {{ _backup_hash_b3.stdout | default('N/A') }}
   become: true
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: 
     - _backup_security_enabled | bool
     - _backup_hash_sha256.stdout is defined
@@ -154,4 +182,8 @@
 - name: Verify backup hash integrity
   ansible.builtin.debug:
     msg: "Backup security applied - SHA256: {{ _backup_hash_sha256.stdout | default('N/A')[:16] }}..."
+  tags:
+    - storage
+    - backup
+    - iso_27040
   when: _backup_security_enabled | bool

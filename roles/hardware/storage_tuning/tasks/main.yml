@@ -7,7 +7,7 @@
     state: started
   become: true
   failed_when: false
-- name: Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)
+- name: "ISO 27040 | Action 500024 | Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)"
   ansible.builtin.copy:
     content: |
       # Physical Flash (SSD/NVMe/SD/eMMC/USB-Flash) - Low Latency
@@ -22,12 +22,22 @@
     mode: '0644'
   become: true
   notify: reload_udev
+  tags:
+    - iso_27040
+    - hardware
+    - storage
+    - remediate
 
-- name: Gather storage device facts (Robust & Aligned)
+- name: "ISO 9001 | Action 500050 | Gather storage device facts (Robust & Aligned)"
   ansible.builtin.command: lsblk -d -o NAME,SIZE,ROTA,PHY-SEC,OPT-IO -n --bytes
   register: lsblk_output
   changed_when: false
   become: true
+  tags:
+    - iso_9001
+    - hardware
+    - storage
+    - discovery
 
 - name: Normalize Storage Device Capacities & Alignment
   vars:

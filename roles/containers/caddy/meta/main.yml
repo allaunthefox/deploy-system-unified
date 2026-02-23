@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: caddy
-  author: prod
-  description: Caddy web server role with negative tests
+  author: deploy-system-unified
+  description: "WI-CONT | Caddy reverse proxy with automatic HTTPS and CrowdSec integration"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -14,24 +14,12 @@ galaxy_info:
       versions: [all]
     - name: Archlinux
       versions: [all]
-    - name: Alpine
-      versions: [all]
-  galaxy_tags: [containers, caddy]
-# 'assumes_permissive' removed: not valid RoleMetadata attribute for Ansible;
-# role behavior for permissive profiles is documented in README or role defaults.
-# Caddy may rely on CrowdSec keys and host-networked services in permissive profiles.
+  galaxy_tags:
+    - containers
+    - proxy
+    - caddy
+    - crowdsec
+    - security
+    - iso_27001
 
-# Negative Testing
-# This role includes comprehensive negative testing to ensure secret validation works correctly.
-# Test files are located in: molecule/negative/
-#
-# Test scenarios cover:
-# - Missing Caddyfile
-# - Wrong file permissions (should be 0600)
-# - Placeholder values in configuration
-# - Wrong file ownership
-# - Missing SSL certificate directory
-# - Wrong SSL directory permissions
-#
-# To run negative tests locally:
-# cd roles/containers/caddy && molecule test --scenario-name negative
+dependencies: []

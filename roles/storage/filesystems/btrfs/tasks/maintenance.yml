@@ -9,3 +9,8 @@
     weekday: "0"
   loop: "{{ btrfs_scrub_mounts | default(['/']) }}"
   become: true
+  tags:
+    - storage
+    - btrfs
+    - maintenance
+    - iso_27040

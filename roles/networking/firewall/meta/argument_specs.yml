@@ -1,0 +1,18 @@
+---
+argument_specs:
+  main:
+    short_description: Multi-distro firewall management role
+    description:
+      - Unified interface for UFW, Firewalld, and Nftables
+      - Implements forensic logging for blocked traffic
+      - Aligns with ISO 27001 §9.4 and NIST AC-3
+    options:
+      firewall_enabled:
+        type: bool
+        description: Enable the firewall service
+        default: true
+      firewall_allowed_tcp_ports:
+        type: list
+        elements: str
+        description: List of allowed TCP ports
+        default: ["22", "80", "443"]

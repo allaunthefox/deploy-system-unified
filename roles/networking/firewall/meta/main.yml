@@ -20,5 +20,6 @@ galaxy_info:
     - networking
     - security
     - firewall
+    - iso_27001
 
 dependencies: []

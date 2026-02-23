@@ -1,8 +1,8 @@
 ---
 galaxy_info:
-  role_name: container_runtime
+  role_name: runtime
   author: deploy-system-unified
-  description: Multi-distro Podman runtime installation and configuration
+  description: "WI-CONT | Container runtime installation and GPU acceleration support (Podman)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -20,5 +20,12 @@ galaxy_info:
     - containers
     - podman
     - runtime
+    - gpu
+    - nvidia
+    - rocm
+    - oneapi
+    - iso_27001
+    - supply_chain
+    - cosign
 
 dependencies: []

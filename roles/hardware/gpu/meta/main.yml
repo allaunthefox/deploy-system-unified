@@ -1,8 +1,8 @@
 ---
 galaxy_info:
-  role_name: gpu_stack
+  role_name: gpu
   author: deploy-system-unified
-  description: Universal GPU stack deployment for x86_64, aarch64, and riscv64
+  description: Universal GPU driver orchestration and compute stack management (NVIDIA, AMD, Intel)
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -14,14 +14,14 @@ galaxy_info:
       versions: [all]
     - name: Archlinux
       versions: [all]
-    - name: Alpine
-      versions: [all]
   galaxy_tags:
+    - hardware
     - gpu
     - nvidia
     - amd
     - intel
-    - drivers
+    - compute
+    - iso_27001
+    - pqc
 
-dependencies:
-  - role: core/hardware_support
+dependencies: []

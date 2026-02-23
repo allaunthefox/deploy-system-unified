@@ -1,0 +1,45 @@
+---
+argument_specs:
+  main:
+    short_description: Container runtime role
+    description:
+      - Installs Podman and its core dependencies
+      - Configures GPU acceleration support for NVIDIA, AMD, and Intel
+      - Implements rootless Podman mode and container security policies
+    options:
+      containers_install_podman:
+        type: bool
+        description: Whether to install Podman
+        default: true
+      containers_enable_socket:
+        type: bool
+        description: Whether to enable the Podman API socket
+        default: true
+      podman_rootless_enabled:
+        type: bool
+        description: Enable rootless Podman mode
+        default: false
+      containers_enable_gpu_support:
+        type: bool
+        description: Enable GPU support for containers
+        default: false
+      containers_gpu_vendor:
+        type: str
+        description: GPU vendor (nvidia, amd, intel)
+        choices: [nvidia, amd, intel]
+        default: nvidia
+      containers_gpu_slicing:
+        type: dict
+        description: GPU slicing strategy and configuration
+      containers_cosign_enable:
+        type: bool
+        description: Enable mandatory container image signature verification
+        default: true
+      containers_cosign_version:
+        type: str
+        description: Version of Cosign to install
+        default: 2.4.1
+      containers_cosign_public_key:
+        type: str
+        description: Optional public key for Cosign verification (defaults to keyless)
+        default: ""

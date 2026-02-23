@@ -32,3 +32,8 @@
     - item.stdout == "absent"
     - item.item.stdout == "btrfs"
   become: true
+  tags:
+    - storage
+    - btrfs
+    - subvolumes
+    - iso_27040

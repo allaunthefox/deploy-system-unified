@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: MAC AppArmor role
+    description:
+      - Installs and configures AppArmor for mandatory access control
+      - Ensures AppArmor is enabled at the bootloader level
+      - Aligns with ISO 27001 §8.26 application isolation requirements
+    options:
+      security_apparmor_enabled:
+        type: bool
+        description: Enable or disable AppArmor
+        default: true

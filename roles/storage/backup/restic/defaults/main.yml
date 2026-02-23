@@ -37,6 +37,22 @@ restic_keep_monthly: 6
 # Schedule (Systemd Timer)
 restic_schedule_on_calendar: "daily"
 
+# Automated Restore Testing (ISO 27040 Alignment)
+# Periodically verify backup integrity by performing a sample restore.
+restic_restore_test_enabled: false
+restic_restore_test_path: "/tmp/restic-restore-test"
+restic_restore_test_subset: "*" # Subset of files to restore for speed (e.g. "secrets/*")
+restic_restore_test_cleanup: true # Shred and delete restore data after test
+
+# Archival Standards (NoDupeLabs Alignment)
+# If enabled, uses --compression max and optimized chunking
+# Strict Logic: Archival mode is always 'false' in ephemeral unless explicitly allowed.
+restic_archival_mode_effective: >-
+  {{ false if (deployment_profile | default('') == 'ephemeral' and not system_storage_archival_ephemeral_allow | default(false) | bool) else system_storage_restic_archival | default(false) | bool }}
+
+restic_archival_mode: "{{ restic_archival_mode_effective }}"
+restic_compression_level: "{{ 'max' if restic_archival_mode | bool else 'auto' }}"
+
 # Hash verification and backup security
 # Enable: Include shared/tasks/backup_security.yml in your playbook
 backup_security_enabled: true

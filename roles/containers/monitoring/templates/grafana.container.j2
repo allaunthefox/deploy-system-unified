@@ -12,6 +12,8 @@ UserNS=auto
 {% endif %}
 EnvironmentFile={{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env
 Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:Z
+Volume={{ monitoring_config_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+Volume={{ monitoring_config_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
 
 [Install]
 WantedBy=multi-user.target
