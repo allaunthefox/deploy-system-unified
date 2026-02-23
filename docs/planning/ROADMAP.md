@@ -107,17 +107,37 @@ This roadmap provides a high-level view of project direction. For detailed execu
 
 **Status:** **Complete** (February 2026)
 
-### Q2 2026: Security Enhancement 🟡
+### Q2 2026: Security Enhancement & Role Excellence 🟡
 
-**Theme:** Compliance & monitoring
+**Theme:** Compliance, monitoring, and role implementation standards
 
 **Goals:**
-- 🟡 CIS Level 1 mapping complete
+- 🟡 CIS Level 1 mapping complete (95% coverage)
 - 🟡 Goss validation operational
 - 🟡 Vault integration tested
 - 🟡 Security dashboard alpha
+- 🟡 Role implementation score: 80/100 → 90/100
+- 🟡 All 81 roles: meta/main.yml enhanced
+- 🟡 Testinfra tests for all roles
+- 🟡 Molecule scenarios: 3+ platforms
+
+**Key Initiatives:**
+1. **Role Enhancement Execution** (12 weeks)
+   - Metadata standardization (Weeks 1-4)
+   - Testing framework expansion (Weeks 5-8)
+   - Compliance integration (Weeks 9-12)
+   
+2. **Security Enhancement Plan** (Ongoing)
+   - CIS/STIG/NIST mapping
+   - Continuous monitoring
+   - Enterprise secrets management
 
 **Status:** **Proposed** (pending approval)
+
+**Documentation:**
+- [ROLE_ENHANCEMENT_EXECUTION_PLAN_2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md)
+- [COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN.md)
+- [SECURITY_ENHANCEMENT_PLAN_2026](SECURITY_ENHANCEMENT_PLAN_2026.md)
 
 ### Q3-Q4 2026: Enterprise Features 🔵
 
@@ -153,8 +173,11 @@ This roadmap provides a high-level view of project direction. For detailed execu
 |--------|---------|----------------|----------------|
 | **Core Role Idempotence** | 100% (12/12) | 100% | 100% |
 | **Security Score** | 80/100 | 85/100 | 92/100 |
+| **Role Implementation Score** | 73/100 | 90/100 | 95/100 |
 | **CIS Compliance** | 0% | 80% (Level 1) | 95% (Level 1+2) |
+| **STIG Compliance** | 0% | 70% | 90% |
 | **Test Coverage** | ~60% | 75% | 90% |
+| **Molecule Platforms/Role** | 1 | 3+ | 5+ |
 | **Documentation Coverage** | ~70% | 85% | 95% |
 
 ### Community Metrics
