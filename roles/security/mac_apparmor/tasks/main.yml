@@ -19,7 +19,7 @@
   when: ansible_os_family == 'Alpine'
   become: true
 
-- name: Enable and start AppArmor service
+- name: "ISO 27001 §8.26 | Action 440001 | Enable and start AppArmor service"
   ansible.builtin.service:
     name: apparmor
     enabled: true
@@ -28,14 +28,23 @@
     - ansible_os_family in ['Debian', 'Alpine']
     - not (is_virtualized | default(false))
   become: true
+  tags:
+    - iso_27001_8_26
+    - security
+    - apparmor
 
-- name: Register AppArmor Security Parameters for GRUB
+- name: "ISO 27001 §8.26 | Action 450001 | Register AppArmor Security Parameters for GRUB"
   ansible.builtin.set_fact:
     core_grub_security_params: >-
       {{
         core_grub_security_params | default([]) +
         ['apparmor=1', 'security=apparmor']
       }}
+  tags:
+    - iso_27001_8_26
+    - security
+    - apparmor
+    - remediate
   when:
     - ansible_os_family in ['Debian', 'Alpine']
     - not (is_virtualized | default(false))

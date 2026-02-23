@@ -1,0 +1,12 @@
+---
+# Defaults for storage/dedupe
+storage_dedupe_btrfs_enable: "{{ system_storage_dedupe_btrfs | default(false) | bool }}"
+storage_dedupe_btrfs_paths:
+  - "/srv/containers"
+  - "/srv/media"
+storage_dedupe_schedule: "0 3 * * 0"
+
+# Governance override for ephemeral safety
+# Even if role is called, it will skip if in ephemeral profile without explicit allow
+storage_dedupe_ephemeral_skip: "{{ true if (deployment_profile | default('') == 'ephemeral' and not system_storage_archival_ephemeral_allow | default(false) | bool) else false }}"
+

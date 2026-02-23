@@ -1,0 +1,57 @@
+---
+galaxy_info:
+  role_name: sshd
+  author: deploy-system-unified
+  description: "POL-SEC | SSH daemon hardening with strong cryptography and access control"
+  company: Deploy-System-Unified Project
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Fedora
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+    - name: Alpine
+      versions:
+        - '3.18'
+        - '3.19'
+    - name: RockyLinux
+      versions:
+        - '9'
+    - name: AlmaLinux
+      versions:
+        - '9'
+  galaxy_tags:
+    - security
+    - ssh
+    - sshd
+    - hardening
+    - access_control
+    - cryptography
+    - cis
+    - cis_level_1
+    - iso_27001
+    - nist_800_53
+    - pqc
+    - linux
+    - network
+    - deploy-system-unified
+
+collections:
+  - ansible.builtin
+  - community.general
+  - community.crypto
+
+dependencies: []

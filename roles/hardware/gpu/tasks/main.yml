@@ -43,12 +43,19 @@
       - gpu_stack_mode in ['server', 'desktop', 'hybrid']
     fail_msg: "Invalid GPU mode: {{ gpu_stack_mode }}"
 
-- name: Run Video Hardware Detection
+- name: "ISO 9001 | Action 800400 | Run Video Hardware Detection"
   ansible.builtin.include_tasks: detect_video.yml
-
+  tags:
+    - iso_9001
+    - hardware
+    - gpu
+    - discovery
 
 - name: Resolve Driver Conflicts
   ansible.builtin.include_tasks: driver_integrity.yml
+  tags:
+    - hardware
+    - gpu
 
 - name: Resolve and Validate GPU Vendor
   block:
@@ -65,32 +72,57 @@
       when:
         - gpu_stack_vendor not in ['auto', 'generic']
         - not (gpu_force_vendor | default(false))
+  tags:
+    - hardware
+    - gpu
 
 - name: Normalize Vendor List (Final)
   ansible.builtin.set_fact:
     _gpu_vendor_list: "{{ [gpu_stack_vendor] if gpu_stack_vendor is string else gpu_stack_vendor }}"
+  tags:
+    - hardware
+    - gpu
 
-- name: Iterate over defined vendors
+- name: "ISO 27001 §8.9 | Action 800410 | Iterate over defined vendors"
   ansible.builtin.include_tasks: vendor_setup.yml
   loop: "{{ _gpu_vendor_list }}"
   loop_control:
     loop_var: current_vendor
+  tags:
+    - iso_27001_8_9
+    - hardware
+    - gpu
+    - remediate
 
 - name: Optional - Configure Hybrid Graphics (Prime/Optimus)
   ansible.builtin.include_tasks: features/hybrid_setup.yml
   when: gpu_stack_mode in ['hybrid', 'desktop'] and _gpu_vendor_list | length > 1
+  tags:
+    - hardware
+    - gpu
 
 - name: Optional - Configure Desktop Environment Features
   ansible.builtin.include_tasks: features/desktop_setup.yml
   when: gpu_stack_mode in ['desktop', 'hybrid']
+  tags:
+    - hardware
+    - gpu
 
 - name: Optional - Configure eGPU Support
   ansible.builtin.include_tasks: features/egpu.yml
   when: gpu_stack_enable_egpu | default(false)
+  tags:
+    - hardware
+    - gpu
 
-- name: Optional - Configure GPU Slicing Support
+- name: "ISO 27001 §8.26 | Action 800420 | Optional - Configure GPU Slicing Support"
   ansible.builtin.include_tasks: features/gpu_slicing.yml
   when: gpu_stack_enable_slicing | default(false) or gpu_stack_slicing_strategy | default('none') != 'none'
+  tags:
+    - iso_27001_8_26
+    - hardware
+    - gpu
+    - remediate
 
 - name: Optional - Configure RDMA Support
   ansible.builtin.include_tasks: features/rdma.yml

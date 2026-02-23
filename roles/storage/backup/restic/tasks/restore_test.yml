@@ -1,0 +1,56 @@
+---
+# Tasks for automated restore testing (ISO 27040 Compliance)
+
+- name: "ISO 27040 | Action 900003 | Initialize Restore Test Environment"
+  ansible.builtin.file:
+    path: "{{ restic_restore_test_path }}"
+    state: directory
+    mode: '0700'
+    owner: "{{ restic_user }}"
+    group: "{{ restic_group }}"
+  become: true
+  tags: [backup, restic, restore_test, iso_27040]
+
+- name: "ISO 27040 | Action 900003 | Perform Sample Restore (Latest Snapshot)"
+  ansible.builtin.shell: |
+    set -o pipefail
+    restic -r "{{ restic_repo }}" -p "{{ restic_config_dir }}/password" restore latest \
+      --target "{{ restic_restore_test_path }}" \
+      --include "{{ restic_restore_test_subset }}"
+  args:
+    executable: /bin/bash
+  become: true
+  register: restic_restore_result
+  changed_when: false
+  tags: [backup, restic, restore_test, iso_27040]
+
+- name: "ISO 27040 | Action 900003 | Verify Repository Integrity (Restic Check)"
+  ansible.builtin.command:
+    cmd: restic -r "{{ restic_repo }}" -p "{{ restic_config_dir }}/password" check
+  become: true
+  register: restic_check_result
+  changed_when: false
+  tags: [backup, restic, restore_test, iso_27040]
+
+- name: "ISO 27040 | Action 900004 | Validate Restore Success"
+  ansible.builtin.assert:
+    that:
+      - restic_restore_result.rc == 0
+      - restic_check_result.rc == 0
+    fail_msg: |-
+      CRITICAL: Automated restore test failed for {{ inventory_hostname }}.
+      Restore RC: {{ restic_restore_result.rc }}
+      Check RC: {{ restic_check_result.rc }}
+    success_msg: "ISO 27040: Backup integrity verified successfully via sample restore."
+  tags: [backup, restic, restore_test, audit, iso_27040]
+
+- name: "ISO 27040 | Action 900031 | Shred and Remove Restore Test Data"
+  ansible.builtin.shell: |
+    find "{{ restic_restore_test_path }}" -type f -exec shred -u {} \;
+    rm -rf "{{ restic_restore_test_path }}"
+  args:
+    executable: /bin/bash
+  become: true
+  when: restic_restore_test_cleanup | bool
+  changed_when: false
+  tags: [backup, restic, restore_test, cleanup, iso_27040]

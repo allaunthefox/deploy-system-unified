@@ -1,0 +1,20 @@
+---
+argument_specs:
+  main:
+    short_description: Resource protection role
+    description:
+      - Implements system-wide limits to prevent resource exhaustion
+      - Configures PAM ulimits and global systemd resource accounting
+      - Aligns with ISO 27001 requirements for service availability and isolation
+    options:
+      resource_min_ram_mb:
+        type: dict
+        description: Minimum RAM requirements per virtualization type
+      resource_default_tasks_max:
+        type: int
+        description: Default maximum number of tasks per service
+        default: 4096
+      resource_default_memory_max:
+        type: str
+        description: Default maximum memory per service
+        default: "80%"

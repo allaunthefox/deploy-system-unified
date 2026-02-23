@@ -1,0 +1,40 @@
+---
+argument_specs:
+  main:
+    short_description: Restic backup role
+    description:
+      - Installs and configures Restic for deduplicated encrypted backups
+      - Manages backup passwords and wrapper scripts
+      - Sets up systemd timers for automated periodic backups
+    options:
+      restic_enable:
+        type: bool
+        description: Enable or disable Restic backups
+        default: true
+      restic_password:
+        type: str
+        description: Password for Restic repository
+      restic_config_dir:
+        type: str
+        description: Directory for Restic configuration
+        default: /etc/restic
+      restic_user:
+        type: str
+        description: User to run Restic backups
+        default: root
+      restic_restore_test_enabled:
+        type: bool
+        description: Enable automated integrity verification via sample restore
+        default: false
+      restic_restore_test_path:
+        type: str
+        description: Path to perform sample restore into
+        default: /tmp/restic-restore-test
+      restic_restore_test_subset:
+        type: str
+        description: File pattern to include in the sample restore
+        default: "*"
+      restic_restore_test_cleanup:
+        type: bool
+        description: Whether to shred and remove restore data after test
+        default: true

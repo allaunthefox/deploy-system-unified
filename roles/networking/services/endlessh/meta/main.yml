@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: endlessh
+  author: deploy-system-unified
+  description: Endlessh SSH tarpit for access control and intruder delay
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - networking
+    - security
+    - tarpit
+    - ssh
+    - iso_27001
+
+dependencies: []

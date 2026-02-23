@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: repositories
   author: deploy-system-unified
-  description: Package repository management
+  description: "STD-CORE | System repository management and supply-chain hardening"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -18,7 +18,8 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - core
-    - system
-    - repository
+    - repositories
+    - supply_chain
+    - iso_27001
 
 dependencies: []

@@ -16,7 +16,16 @@
       {% endif %}
   when: lxc_enable_gpu_support
 
-- name: Configure LXC container for GPU passthrough
+- name: "ISO 27001 §8.26 | Action 800410 | Configure LXC container for GPU passthrough"
+  when:
+    - lxc_enable_gpu_support
+    - lxc_gpu_slicing_strategy == "passthrough"
+  tags:
+    - iso_27001_8_26
+    - containers
+    - lxc
+    - gpu
+    - remediate
   block:
     - name: Include Vendor Specific Passthrough Config
       ansible.builtin.include_tasks: "vendor/{{ lxc_gpu_vendor }}.yml"
@@ -29,7 +38,7 @@
         mode: '0644'
       become: true
 
-    - name: Apply GPU configuration to existing LXC containers
+    - name: "ISO 27001 §8.26 | Action 700000 | Apply GPU configuration to existing LXC containers"
       ansible.builtin.shell: |
         EXISTING_CONFIG=$(lxc config show {{ item }} 2>/dev/null || true)
         DESIRED_DEVICES="{{ lxc_gpu_passthrough_devices | default([]) | map('regex_replace', '^', 'lxc.cgroup2.devices.allow = c ') | join(\"\n\") }}"
@@ -60,9 +69,6 @@
       failed_when: false
       loop: "{{ lxc_container_gpu_config.keys() | list }}"
       when: lxc_container_gpu_config | length > 0 and lxc_gpu_config_result.changed
-  when:
-    - lxc_enable_gpu_support
-    - lxc_gpu_slicing_strategy == "passthrough"
 
 - name: Load Vendor Specific Strategy Config
   ansible.builtin.include_tasks: "vendor/{{ item }}"

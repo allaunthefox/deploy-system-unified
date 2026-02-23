@@ -145,9 +145,14 @@
 
 # --- Per-Interface Tuning (Jumbo Frames & Ring Buffers) ---
 
-- name: Apply Jumbo Frames to High Speed/Fiber Interfaces
+- name: "ISO 27001 §9.4 | Action 810201 | Apply Jumbo Frames to High Speed/Fiber Interfaces"
   ansible.builtin.command: "ip link set dev {{ item.key }} mtu {{ networking_physical_jumbo_mtu }}"
   loop: "{{ interface_capabilities | dict2items }}"
+  tags:
+    - iso_27001_9_4
+    - networking
+    - physical
+    - remediate
   when:
     - networking_physical_manage_mtu
     - networking_physical_jumbo_frames_enabled
@@ -156,15 +161,20 @@
     - item.value.mtu | int != networking_physical_jumbo_mtu | int
   notify: restart_networkmanager
 
-- name: Tune Ring Buffers (Adaptive per Interface Speed)
+- name: "ISO 27001 §9.4 | Action 810201 | Tune Ring Buffers (Adaptive per Interface Speed)"
   vars:
-    desired_ring_rx: "{{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_rx }}"
+    desired_ring_rx: "{{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile]) Worthing).ring_rx }}"
     desired_ring_tx: "{{ (networking_physical_profiles[item.value.speed_mbps|string] | default(networking_physical_profiles[networking_physical_default_profile])).ring_tx }}"
   ansible.builtin.command: >-
     ethtool -G {{ item.key }}
     rx {{ desired_ring_rx }}
     tx {{ desired_ring_tx }}
   loop: "{{ interface_capabilities | dict2items }}"
+  tags:
+    - iso_27001_9_4
+    - networking
+    - physical
+    - remediate
   when:
     - networking_physical_ring_tuning_enabled
     - item.value.link_detected == 'yes'
@@ -175,7 +185,7 @@
     - interface_ring_settings[item.key].current_rx | int != desired_ring_rx | int or interface_ring_settings[item.key].current_tx | int != desired_ring_tx | int
   failed_when: false # Hardware might not support specific ring sizes
 
-- name: Apply Offload Settings (TSO/GSO)
+- name: "ISO 27001 §9.4 | Action 810201 | Apply Offload Settings (TSO/GSO)"
   vars:
     desired_tso: "{{ 'on' if networking_physical_enable_tso else 'off' }}"
     desired_gso: "{{ 'on' if networking_physical_enable_gso else 'off' }}"
@@ -184,6 +194,11 @@
     tso {{ desired_tso }}
     gso {{ desired_gso }}
   loop: "{{ interface_capabilities | dict2items }}"
+  tags:
+    - iso_27001_9_4
+    - networking
+    - physical
+    - remediate
   when:
     - networking_physical_offload_tuning_enabled
     - item.value.link_detected == 'yes'

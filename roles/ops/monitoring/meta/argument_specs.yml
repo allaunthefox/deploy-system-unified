@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: Host monitoring role
+    description:
+      - Installs and configures monitoring agents for system metrics and hardware health
+      - Manages Prometheus Node Exporter and Smartmontools (smartd)
+      - Aligns with ISO 27001 §12.4 monitoring requirements
+    options:
+      monitoring_enable_node_exporter:
+        type: bool
+        description: Enable Prometheus Node Exporter
+        default: true
+      monitoring_enable_smartmon:
+        type: bool
+        description: Enable S.M.A.R.T. hardware monitoring
+        default: true
+      monitoring_node_exporter_port:
+        type: int
+        description: Listen port for Node Exporter
+        default: 9100

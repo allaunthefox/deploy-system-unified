@@ -1,0 +1,12 @@
+---
+argument_specs:
+  main:
+    short_description: Virtual guest tuning role
+    description:
+      - Detects and applies optimizations for specific VPS providers (Contabo, etc.)
+      - Tunes virtual memory and I/O for shared cloud resources
+      - Aligns with ISO 27001 §8.26 requirements for cloud environment security
+    options:
+      vps_provider:
+        type: str
+        description: Manually specify VPS provider for optimizations

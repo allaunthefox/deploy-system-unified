@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: VPN mesh readiness role
+    description:
+      - Prepares the system for inter-node VPN mesh connectivity
+      - Ensures necessary kernel modules (WireGuard, IPsec) are available
+      - Aligns with ISO 27001 §9.3 requirements
+    options:
+      vpn_mesh_type:
+        type: str
+        description: Type of VPN mesh to prepare for (wireguard or ipsec)
+        choices: [wireguard, ipsec, both]
+        default: wireguard

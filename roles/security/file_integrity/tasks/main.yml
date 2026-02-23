@@ -23,76 +23,48 @@
       register: aide_db_stat
       become: true
 
-    - name: Initialize AIDE database (Baseline - Debian/Ubuntu)
-      ansible.builtin.command: aideinit
-      become: true
-      when:
-        - not aide_db_stat.stat.exists
-        - not ansible_check_mode
-        - ansible_facts['os_family'] == 'Debian'
-        - not (is_virtualized | default(false))
-      async: 600 # AIDE init can take a long time
-      poll: 10
+- name: "CIS 1.3.1 | ISO 27001 §12.2 | Action 52030 | Initialize AIDE database (Baseline - Debian/Ubuntu)"
+  ansible.builtin.command: aideinit
+  become: true
+  tags:
+    - cis_1_3_1
+    - iso_27001_12_2
+    - remediate
+  when:
+    - not aide_db_stat.stat.exists
+    - not ansible_check_mode
+    - ansible_facts['os_family'] == 'Debian'
+    - not (is_virtualized | default(false))
+  async: 600 # AIDE init can take a long time
+  poll: 10
 
-    - name: Initialize AIDE database (Baseline - RedHat/Arch)
-      ansible.builtin.command: aide --init
-      become: true
-      when:
-        - not aide_db_stat.stat.exists
-        - not ansible_check_mode
-        - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
-        - not (is_virtualized | default(false))
-      async: 600 # AIDE init can take a long time
-      poll: 10
+- name: "CIS 1.3.1 | ISO 27001 §12.2 | Action 52030 | Initialize AIDE database (Baseline - RedHat/Arch)"
+  ansible.builtin.command: aide --init
+  become: true
+  tags:
+    - cis_1_3_1
+    - iso_27001_12_2
+    - remediate
+  when:
+    - not aide_db_stat.stat.exists
+    - not ansible_check_mode
+    - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
+    - not (is_virtualized | default(false))
+  async: 600 # AIDE init can take a long time
+  poll: 10
 
-    - name: Ensure AIDE database is in place (Debian/Ubuntu)
-      ansible.builtin.copy:
-        src: /var/lib/aide/aide.db.new.gz
-        dest: /var/lib/aide/aide.db.gz
-        remote_src: true
-        mode: '0600'
-      become: true
-      when:
-        - not aide_db_stat.stat.exists
-        - not ansible_check_mode
-        - ansible_facts['os_family'] == 'Debian'
-        - not (is_virtualized | default(false))
-
-    - name: Ensure AIDE database is in place (RedHat/Arch)
-      ansible.builtin.copy:
-        src: /var/lib/aide/aide.db.new.gz
-        dest: /var/lib/aide/aide.db.gz
-        remote_src: true
-        mode: '0600'
-      become: true
-      when:
-        - not aide_db_stat.stat.exists
-        - not ansible_check_mode
-        - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
-        - not (is_virtualized | default(false))
-
-    - name: Skip AIDE database initialization in check mode
-      ansible.builtin.debug:
-        msg: "Skipping AIDE database initialization in check mode"
-      when: ansible_check_mode and not aide_db_stat.stat.exists
-
-    - name: Create AIDE log directory
-      ansible.builtin.file:
-        path: /var/log/aide
-        state: directory
-        mode: '0755'
-        owner: root
-        group: root
-      become: true
-
-    - name: Configure AIDE cron job for daily checks
-      ansible.builtin.cron:
-        name: "Daily AIDE integrity check"
-        minute: "0"
-        hour: "2"
-        job: "aide --check | tee -a /var/log/aide/check_$(date +\\%Y\\%m\\%d).log"
-        user: root
-      become: true
+- name: "CIS 1.3.2 | ISO 27001 §12.2 | Action 52030 | Configure AIDE cron job for daily checks"
+  ansible.builtin.cron:
+    name: "Daily AIDE integrity check"
+    minute: "0"
+    hour: "2"
+    job: "aide --check | tee -a /var/log/aide/check_$(date +\\%Y\\%m\\%d).log"
+    user: root
+  become: true
+  tags:
+    - cis_1_3_2
+    - iso_27001_12_2
+    - remediate
 
     - name: Configure AIDE to check for changes on boot
       ansible.builtin.template:

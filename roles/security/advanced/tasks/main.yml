@@ -11,7 +11,7 @@
   when:
     - ssh_randomize_port | bool
     - advanced_security_hardening_random_ssh_port is defined
-- name: Update SSH configuration with random port (idempotent)
+- name: "ISO 27001 §9.2 | Action 400001 | Update SSH configuration with random port (idempotent)"
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^Port '
@@ -23,11 +23,22 @@
   become: true
   notify: 'restart_sshd'
   no_log: true
+  tags:
+    - iso_27001_9_2
+    - security
+    - advanced
+    - ssh
+    - remediate
+
 - name: Enable SSH key rotation if enabled (idempotent)
   ansible.builtin.debug:
     msg: "SSH key rotation is enabled and will rotate keys every {{ ssh_key_rotation_interval_days }} days"
   when: ssh_key_rotation_enabled | bool
-- name: Schedule SSH key rotation task (idempotent)
+  tags:
+    - security
+    - advanced
+
+- name: "ISO 27001 §10.1 | Action 540202 | Schedule SSH key rotation task (idempotent)"
   ansible.builtin.cron:
     name: "Rotate SSH host keys"
     minute: "0"
@@ -36,7 +47,13 @@
     job: "/usr/local/bin/rotate_ssh_keys.sh"
     state: present
   when: ssh_key_rotation_enabled | bool
-- name: Create SSH key rotation script with secure permissions (idempotent)
+  tags:
+    - iso_27001_10_1
+    - security
+    - advanced
+    - remediate
+
+- name: "ISO 27001 §10.1 | Create SSH key rotation script with secure permissions (idempotent)"
   ansible.builtin.copy:
     content: |
       #!/bin/bash
@@ -69,3 +86,8 @@
     owner: root
     group: root
   when: ssh_key_rotation_enabled | bool
+  tags:
+    - iso_27001_10_1
+    - security
+    - advanced
+    - remediate

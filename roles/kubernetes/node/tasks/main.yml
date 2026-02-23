@@ -27,17 +27,26 @@
     name: kubernetes/master
     tasks_from: install.yml
 
-- name: Configure K3s Agent
+- name: "ISO 27001 §8.26 | Action 820003 | Configure K3s Agent"
   ansible.builtin.template:
     src: k3s-agent.service.j2
     dest: /etc/systemd/system/k3s-agent.service
     mode: '0644'
   become: true
   notify: reload_systemd
+  tags:
+    - iso_27001_8_26
+    - kubernetes
+    - node
+    - remediate
 
-- name: Start K3s Agent
+- name: "ISO 27001 §8.26 | Action 820004 | Start K3s Agent"
   ansible.builtin.systemd:
     name: k3s-agent
     state: started
     enabled: true
   become: true
+  tags:
+    - iso_27001_8_26
+    - kubernetes
+    - node

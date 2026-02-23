@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: entropy
   author: deploy-system-unified
-  description: Entropy and RNG management
+  description: "STD-CORE | Entropy enhancement and RNG management (haveged, rng-tools)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -18,7 +18,8 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - core
-    - system
-    - security
+    - entropy
+    - rng
+    - iso_27001
 
 dependencies: []

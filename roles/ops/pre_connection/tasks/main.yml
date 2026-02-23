@@ -60,7 +60,7 @@
     - ssh_randomize_port | default(false) | bool
     - system_enable_endlessh | default(false) | bool
   changed_when: false
-- name: Check connectivity to target SSH port
+- name: "ISO 9001 | Action 600013 | Check connectivity to target SSH port"
   ansible.builtin.wait_for:
     host: "{{ inventory_hostname }}"
     port: "{{ ssh_effective_port | default(22) }}"
@@ -69,6 +69,10 @@
   delegate_to: localhost
   register: ssh_port_check
   failed_when: false
+  tags:
+    - iso_9001
+    - ops
+    - connection
 - name: Inform operator if SSH port is closed (Anticipating Knocking)
   ansible.builtin.debug:
     msg: "SSH port appears closed. If Port Knocking is enabled, ensure you have knocked before running this playbook."

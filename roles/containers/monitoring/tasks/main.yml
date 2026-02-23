@@ -26,7 +26,7 @@
         bad_values: ["CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
   when: monitoring_enable | bool
 
-- name: Create Monitoring Network Quadlet
+- name: "ISO 27001 §8.26 | Action 700030 | Create Monitoring Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ monitoring_network }}.network"
     content: |
@@ -37,6 +37,11 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - monitoring
+    - remediate
   when:
     - monitoring_enable | bool
     - monitoring_network != "host"
@@ -56,9 +61,12 @@
     - "{{ monitoring_config_dir }}"
     - "{{ monitoring_config_dir }}/prometheus"
   become: true
+  tags:
+    - containers
+    - monitoring
   when: monitoring_enable | bool
 
-- name: Create Grafana secrets file
+- name: "ISO 27001 §10.1 | Action 400011 | Create Grafana secrets file"
   ansible.builtin.template:
     src: grafana.env.j2
     dest: "{{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env"
@@ -66,18 +74,28 @@
     owner: "{{ containers_secrets_owner }}"
     group: "{{ containers_secrets_group }}"
   become: true
+  tags:
+    - iso_27001_10_1
+    - containers
+    - monitoring
+    - remediate
   when: monitoring_enable | bool
 
-- name: Deploy Prometheus Config
+- name: "ISO 27001 §12.4 | Action 840000 | Deploy Prometheus Config"
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: "{{ monitoring_config_dir }}/prometheus/prometheus.yml"
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_12_4
+    - containers
+    - monitoring
+    - remediate
   notify: restart_monitoring_pod
   when: monitoring_enable | bool
 
-- name: Deploy Monitoring Pod Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Deploy Monitoring Pod Quadlet"
   ansible.builtin.template:
     src: mon_pod.pod.j2
     dest: "{{ containers_systemd_dir }}/{{ monitoring_pod_name }}.pod"
@@ -85,10 +103,15 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - monitoring
+    - remediate
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: Deploy Prometheus Container Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Deploy Prometheus Container Quadlet"
   ansible.builtin.template:
     src: prometheus.container.j2
     dest: "{{ containers_systemd_dir }}/prometheus-{{ monitoring_instance }}.container"
@@ -96,10 +119,15 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - monitoring
+    - remediate
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: Deploy Grafana Container Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Deploy Grafana Container Quadlet"
   ansible.builtin.template:
     src: grafana.container.j2
     dest: "{{ containers_systemd_dir }}/grafana-{{ monitoring_instance }}.container"
@@ -107,8 +135,27 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - monitoring
+    - remediate
   notify: reload_systemd
   when: monitoring_enable | bool
+
+- name: Deploy Forensic Intelligence Stack
+  ansible.builtin.include_tasks: forensic_stack.yml
+  when:
+    - monitoring_enable | bool
+    - monitoring_loki_enable | bool
+  tags: [monitoring, loki, forensic]
+
+- name: Provision Grafana Dashboard Framework
+  ansible.builtin.include_tasks: grafana_provisioning.yml
+  when:
+    - monitoring_enable | bool
+    - monitoring_forensic_dashboard_enabled | bool
+  tags: [monitoring, grafana, forensic]
 
 - name: Remove legacy generated systemd units (rootless)
   ansible.builtin.file:
@@ -118,6 +165,9 @@
     - "container-prometheus-{{ monitoring_instance }}.service"
     - "container-grafana-{{ monitoring_instance }}.service"
   become: true
+  tags:
+    - containers
+    - monitoring
   when:
     - monitoring_enable | bool
     - podman_rootless_enabled | bool
@@ -129,11 +179,14 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
+  tags:
+    - containers
+    - monitoring
   when:
     - monitoring_enable | bool
     - not ansible_check_mode
 
-- name: Start monitoring pod and services (quadlet units)
+- name: "ISO 27001 §12.4 | Action 840000 | Start monitoring pod and services (quadlet units)"
   ansible.builtin.systemd:
     name: "{{ item }}"
     state: started
@@ -145,6 +198,10 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
+  tags:
+    - iso_27001_12_4
+    - containers
+    - monitoring
   when:
     - monitoring_enable | bool
     - not ansible_check_mode

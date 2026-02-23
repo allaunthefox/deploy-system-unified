@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Core repository management role
+    description:
+      - Configures system repositories (Contrib, Non-Free, RPMFusion, etc.)
+      - Implements supply-chain hardening via checksum pinning
+      - Ensures repository management tools are installed
+    options:
+      rpmfusion_free_url:
+        type: str
+        description: URL for RPMFusion Free Release
+      rpmfusion_nonfree_url:
+        type: str
+        description: URL for RPMFusion NonFree Release
+      rpmfusion_free_sha256:
+        type: str
+        description: SHA256 checksum for RPMFusion Free Release
+      rpmfusion_nonfree_sha256:
+        type: str
+        description: SHA256 checksum for RPMFusion NonFree Release
+      rpmfusion_verify_checksum:
+        type: bool
+        description: Whether to verify RPMFusion checksums
+        default: false

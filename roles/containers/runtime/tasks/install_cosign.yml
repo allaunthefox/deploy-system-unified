@@ -1,0 +1,18 @@
+---
+# Install Cosign for supply chain integrity (ISO 27001 §14.2)
+
+- name: "ISO 27001 §14.2 | Action 530000 | Download Cosign binary"
+  ansible.builtin.get_url:
+    url: "https://github.com/sigstore/cosign/releases/download/v{{ containers_cosign_version }}/cosign-linux-{{ containers_cosign_arch }}"
+    dest: "/usr/local/bin/cosign"
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  tags: [containers, runtime, supply_chain]
+
+- name: "Action 700014 | Verify Cosign Installation"
+  ansible.builtin.command: cosign version
+  register: cosign_verify
+  changed_when: false
+  tags: [containers, runtime, supply_chain, audit]

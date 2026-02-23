@@ -247,6 +247,10 @@ Implements resource limits (tasks, memory, descriptors) to mitigate denial-of-se
 Provides user-space isolation and additional sandboxing layers for untrusted workloads.
 
 ### `security/scanning` — [Read details](roles/security_scanning.md)
+
+### `security/sbom` — [Read details](roles/security_sbom.md)
+**Supply Chain Audit**
+Generates and signs CycloneDX SBOM reports for all project dependencies.
 **Vulnerability Scanning**
 Comprehensive system validation and vulnerability scanning (Lyinis, Trivy, Checkov).
 
@@ -257,6 +261,10 @@ Enhanced SSH daemon configuration focusing on strong ciphers, key exchange, and 
 ## Storage Roles
 
 ### `storage/backup` — [Read details](roles/storage_backup.md)
+
+### `storage/dedupe` — [Read details](roles/storage_dedupe.md)
+**Archival Deduplication**
+Implements NoDupeLabs standards for offline Btrfs deduplication and archival optimization.
 **System Backup (restic/rclone)**
 Comprehensive system backup strategy using restic for encrypted snapshots and rclone for cloud synchronization.
 

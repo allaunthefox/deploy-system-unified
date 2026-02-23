@@ -1,0 +1,29 @@
+---
+argument_specs:
+  main:
+    short_description: Container media role
+    description:
+      - Deploys a full containerized media stack using Quadlets
+      - Manages a Media Pod with shared storage and networking
+      - Configures Caddy ingress and hardware acceleration (DRI)
+    options:
+      containers_media_instance_name:
+        type: str
+        description: Unique instance identifier for multi-tenancy
+        default: default
+      containers_media_network:
+        type: str
+        description: Network name for the media stack
+        default: media_net
+      containers_media_hw_accel:
+        type: bool
+        description: Enable hardware acceleration (DRI)
+        default: false
+      containers_jellyfin_enable:
+        type: bool
+        description: Enable Jellyfin media server
+        default: true
+      containers_radarr_enable:
+        type: bool
+        description: Enable Radarr movie manager
+        default: true

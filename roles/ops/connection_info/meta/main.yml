@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: connection_info
+  author: deploy-system-unified
+  description: "SOP-OPS | connection_info management and configuration"
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - connection_info
+    - iso_27001
+dependencies: []

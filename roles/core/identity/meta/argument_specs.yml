@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Core identity management role
+    description:
+      - Generates high-entropy UUIDs for system objects
+      - Manages system hostname and domain
+      - Ensures consistent identification across the infrastructure
+    options:
+      identity_set_hostname:
+        type: bool
+        description: Whether to set the system hostname
+        default: true
+      identity_domain:
+        type: str
+        description: Domain name for the system
+        default: local

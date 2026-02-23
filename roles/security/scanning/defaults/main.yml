@@ -6,6 +6,10 @@ security_scanning_enable: true
 # Tool Configuration
 security_scanning_install_tools: true
 
+# Ephemeral Profile Guard
+# If true, skips heavy vulnerability scans in ephemeral environments
+security_scanning_ephemeral_skip: "{{ true if (deployment_profile | default('') == 'ephemeral' and not system_security_scanning_ephemeral_allow | default(false) | bool) else false }}"
+
 # Mapping of supported distributions to their security package names
 # Note: Tools like trivy/checkov/trufflehog usually require external repos or binary installs.
 # We include standard available tools here.

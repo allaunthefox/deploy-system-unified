@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: anubis
+  author: deploy-system-unified
+  description: "WI-CONT | anubis management and configuration"
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - anubis
+    - iso_27001
+dependencies: []

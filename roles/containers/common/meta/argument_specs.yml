@@ -1,0 +1,8 @@
+---
+argument_specs:
+  main:
+    short_description: Shared container logic role
+    description:
+      - Common placeholders and utility tasks for container workloads
+      - Aligns with ISO 27001 §8.26
+    options: {}

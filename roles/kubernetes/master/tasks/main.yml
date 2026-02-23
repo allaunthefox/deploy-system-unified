@@ -19,18 +19,36 @@
 
 - name: Run K3s Pre-flight Checks
   ansible.builtin.include_tasks: preflight.yml
+  tags:
+    - kubernetes
+    - master
 
-- name: Install K3s Binary
+- name: "ISO 27001 §8.26 | Action 820000 | Install K3s Binary"
   ansible.builtin.include_tasks: install.yml
+  tags:
+    - iso_27001_8_26
+    - kubernetes
+    - master
 
-- name: Configure K3s Master
+- name: "ISO 27001 §8.26 | Action 820000 | Configure K3s Master"
   ansible.builtin.include_tasks: configure.yml
+  tags:
+    - iso_27001_8_26
+    - kubernetes
+    - master
+    - remediate
 
 - name: Manage K3s Service
   ansible.builtin.include_tasks: service.yml
+  tags:
+    - kubernetes
+    - master
 
 - name: Export Kubeconfig
   ansible.builtin.include_tasks: kubeconfig.yml
+  tags:
+    - kubernetes
+    - master
 
 - name: Save Role Checkpoint
   ansible.builtin.include_tasks: save_checkpoint.yml

@@ -1,0 +1,27 @@
+---
+galaxy_info:
+  role_name: advanced
+  author: deploy-system-unified
+  description: "POL-SEC | Advanced security measures (Port randomization, SSH key rotation)"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - security
+    - advanced
+    - ssh
+    - randomization
+    - rotation
+    - iso_27001
+
+dependencies: []

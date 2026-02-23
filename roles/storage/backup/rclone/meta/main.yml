@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: rclone
+  author: deploy-system-unified
+  description: rclone management and configuration
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - rclone
+    - backup
+    - iso_27040
+dependencies: []

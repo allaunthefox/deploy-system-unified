@@ -44,7 +44,7 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-- name: Create quadlet network configuration
+- name: "ISO 27001 §8.26 | Action 700030 | Create quadlet network configuration"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ containers_quadlet_network_name }}.network"
     content: |
@@ -59,8 +59,15 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - nist_sc_8
+    - containers
+    - quadlets
+    - remediate
   when: containers_quadlet_create_network | bool
-- name: Deploy custom quadlet files
+
+- name: "ISO 27001 §8.26 | Action 700000 | Deploy custom quadlet files"
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ containers_systemd_dir }}/{{ item | basename }}"
@@ -69,6 +76,12 @@
     group: "{{ containers_systemd_group }}"
   loop: "{{ containers_quadlet_custom_files }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - nist_cm_2
+    - containers
+    - quadlets
+    - remediate
   when: containers_quadlet_custom_files | length > 0
   notify: reload_systemd
 - name: reload_systemd to pick up quadlets

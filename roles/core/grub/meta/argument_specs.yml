@@ -1,0 +1,49 @@
+---
+argument_specs:
+  main:
+    short_description: Core GRUB management role
+    description:
+      - Manages kernel parameters in /etc/default/grub
+      - Aggregates parameters from security, hardware, and performance roles
+      - Provides automated backup and validation of GRUB configuration
+    options:
+      core_grub_enabled:
+        type: bool
+        description: Enable or disable GRUB management
+        default: true
+      core_grub_base_params:
+        type: list
+        elements: str
+        description: Base kernel parameters applied to all systems
+      core_grub_security_params:
+        type: list
+        elements: str
+        description: Security-focused kernel parameters
+      core_grub_hardware_params:
+        type: list
+        elements: str
+        description: Hardware-specific kernel parameters
+      core_grub_isolation_params:
+        type: list
+        elements: str
+        description: Core/memory isolation parameters
+      core_grub_performance_params:
+        type: list
+        elements: str
+        description: Performance-focused kernel parameters
+      core_grub_extra_params:
+        type: list
+        elements: str
+        description: Raw parameters for manual overrides
+      core_grub_config_path:
+        type: str
+        description: Path to the GRUB configuration file
+        default: /etc/default/grub
+      core_grub_force_update:
+        type: bool
+        description: Force update-grub execution
+        default: false
+      core_grub_backup_enabled:
+        type: bool
+        description: Enable GRUB configuration backups
+        default: true

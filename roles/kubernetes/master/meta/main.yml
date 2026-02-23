@@ -1,8 +1,8 @@
 ---
 galaxy_info:
-  role_name: kubernetes_master
+  role_name: master
   author: deploy-system-unified
-  description: Lightweight Kubernetes (K3s) Control Plane orchestration
+  description: Kubernetes control plane installation and management (K3s)
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -18,9 +18,10 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - kubernetes
+    - k8s
+    - master
+    - control_plane
     - k3s
-    - cloud
-    - devops
+    - iso_27001
 
-dependencies:
-  - role: core/hardware_support
+dependencies: []

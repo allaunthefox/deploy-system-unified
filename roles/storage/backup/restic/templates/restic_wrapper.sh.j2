@@ -25,6 +25,7 @@ restic backup \
 {% for source in restic_backup_sources %}
   "{{ source }}" \
 {% endfor %}
+  --compression {{ restic_compression_level }} \
   --verbose \
   >> "$LOG_FILE" 2>&1
 

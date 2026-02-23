@@ -1,0 +1,24 @@
+---
+argument_specs:
+  main:
+    short_description: Container Caddy role
+    description:
+      - Deploys Caddy as a containerized reverse proxy using Quadlets
+      - Integrates with CrowdSec for automated threat mitigation
+      - Manages TLS certificates via ACME (Porkbun support included)
+    options:
+      containers_caddy_http_port:
+        type: int
+        description: Host port for HTTP
+        default: 80
+      containers_caddy_https_port:
+        type: int
+        description: Host port for HTTPS
+        default: 443
+      containers_porkbun_api_key:
+        type: str
+        description: Porkbun API key for DNS challenge
+      containers_crowdsec_enable:
+        type: bool
+        description: Enable CrowdSec security integration
+        default: true

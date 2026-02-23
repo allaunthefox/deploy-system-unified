@@ -3,9 +3,9 @@
 - name: Assign Network UUID
   ansible.builtin.import_role:
     name: core/identity
-- name: Import VLAN tasks
+- name: "ISO 27001 §9.4 | Action 810205 | Import VLAN tasks"
   ansible.builtin.import_tasks: vlan.yml
-  tags: [virt, networking, vlan]
-- name: Import VXLAN tasks
+  tags: [virt, networking, vlan, iso_27001_9_4]
+- name: "ISO 27001 §9.4 | Action 810205 | Import VXLAN tasks"
   ansible.builtin.import_tasks: vxlan.yml
-  tags: [virt, networking, vxlan]
+  tags: [virt, networking, vxlan, iso_27001_9_4]

@@ -100,7 +100,7 @@
     fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
   when: quadlet_enable_gpu_support | default(false)
 
-- name: Create Caddy container quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Caddy container quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/caddy.container"
     content: |
@@ -158,6 +158,12 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - nist_ia_2
+    - containers
+    - caddy
+    - remediate
   notify:
     - reload_systemd
     - restart_caddy
@@ -165,6 +171,9 @@
 - name: Set containers caddy completion flag
   ansible.builtin.set_fact:
     containers_caddy_complete: true
+  tags:
+    - containers
+    - caddy
 
 - name: Create Crowdsec Directories
   ansible.builtin.file:
@@ -178,9 +187,13 @@
     - /srv/containers/caddy/crowdsec/config
     - /srv/containers/caddy/crowdsec/data
   become: true
+  tags:
+    - containers
+    - caddy
+    - crowdsec
   when: crowdsec_enable | default(false)
 
-- name: Create Crowdsec Container Quadlet
+- name: "ISO 27001 §16.1 | Action 460002 | Create Crowdsec Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/crowdsec.container"
     content: |
@@ -218,6 +231,12 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_16_1
+    - nist_sc_8
+    - containers
+    - crowdsec
+    - remediate
   when: crowdsec_enable | default(false)
   notify: reload_systemd
 

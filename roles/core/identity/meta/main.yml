@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: identity
   author: deploy-system-unified
-  description: System identity and UUID generation
+  description: "STD-CORE | System and object identity management (UUID generation, Hostname)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -19,6 +19,7 @@ galaxy_info:
   galaxy_tags:
     - core
     - identity
-    - uuid
+    - iso_27001
+    - iso_8000
 
 dependencies: []

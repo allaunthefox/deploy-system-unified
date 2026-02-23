@@ -41,13 +41,19 @@
     state: directory
     mode: '0755'
   become: true
-- name: Configure Endlessh
+- name: "ISO 27001 §9.4 | Action 540001 | Configure Endlessh"
   ansible.builtin.template:
     src: config.j2
     dest: /etc/endlessh/config
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_9_4
+    - networking
+    - security
+    - remediate
   notify: restart_endlessh
+
 - name: Allow Endlessh to bind to privileged ports
   community.general.capabilities:
     path: /usr/bin/endlessh
@@ -55,7 +61,11 @@
     state: present
   become: true
   failed_when: false
+  tags:
+    - networking
+    - security
   when: not (is_virtualized | default(false))
+
 - name: Ensure Endlessh systemd override directory exists
   ansible.builtin.file:
     path: /etc/systemd/system/endlessh.service.d
@@ -65,7 +75,11 @@
     group: root
   become: true
   changed_when: false
-- name: Configure Endlessh to run on port {{ endlessh_port }} (systemd override)
+  tags:
+    - networking
+    - security
+
+- name: "ISO 27001 §9.4 | Configure Endlessh to run on port {{ endlessh_port }} (systemd override)"
   ansible.builtin.copy:
     content: |
       [Service]
@@ -75,14 +89,23 @@
     dest: /etc/systemd/system/endlessh.service.d/override.conf
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_9_4
+    - networking
+    - security
+    - remediate
   notify:
     - reload_systemd
     - restart_endlessh
   when: system_enable_endlessh | default(false)
 
-- name: Manage Endlessh service state
+- name: "ISO 27001 §9.4 | Action 540000 | Manage Endlessh service state"
   ansible.builtin.systemd:
     name: endlessh
     enabled: "{{ system_enable_endlessh | default(false) }}"
     state: "{{ 'started' if system_enable_endlessh | default(false) else 'stopped' }}"
   become: true
+  tags:
+    - iso_27001_9_4
+    - networking
+    - security

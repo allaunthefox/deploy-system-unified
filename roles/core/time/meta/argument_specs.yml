@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: Core time synchronization role
+    description:
+      - Ensures accurate system time via Chrony
+      - Critical for forensic log integrity and certificate validation
+      - Aligns with ISO 27001 §8.17
+    options:
+      core_time_ntp_servers:
+        type: list
+        elements: str
+        description: List of NTP servers to use
+        default: ["0.pool.ntp.org", "1.pool.ntp.org"]

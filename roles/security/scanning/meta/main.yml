@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: scanning
+  author: deploy-system-unified
+  description: "POL-SEC | Vulnerability scanning and security baseline verification (Lynis, ClamAV, etc.)"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - security
+    - scanning
+    - vulnerability
+    - audit
+    - iso_27001
+
+dependencies: []

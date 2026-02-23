@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: time
   author: deploy-system-unified
-  description: Time synchronization and NTP configuration
+  description: "STD-CORE | Time synchronization and NTP configuration"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -20,5 +20,6 @@ galaxy_info:
     - core
     - system
     - time
+    - iso_27001
 
 dependencies: []

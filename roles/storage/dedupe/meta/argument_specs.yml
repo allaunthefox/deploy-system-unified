@@ -1,0 +1,22 @@
+---
+argument_specs:
+  main:
+    short_description: Deduplication management role
+    description:
+      - Implements archival-grade deduplication using Btrfs and Restic
+      - Uses duperemove for offline Btrfs deduplication
+      - Enforces high-compression archival standards
+    options:
+      storage_dedupe_btrfs_enable:
+        type: bool
+        description: Enable offline Btrfs deduplication
+        default: false
+      storage_dedupe_btrfs_paths:
+        type: list
+        elements: str
+        description: Paths to scan for Btrfs deduplication
+        default: ["/srv/media", "/srv/containers"]
+      storage_dedupe_schedule:
+        type: str
+        description: Cron schedule for deduplication runs
+        default: "0 3 * * 0" # Weekly at 3 AM

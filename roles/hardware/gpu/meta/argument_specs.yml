@@ -1,0 +1,28 @@
+---
+argument_specs:
+  main:
+    short_description: Hardware GPU role
+    description:
+      - Automatically detects and installs appropriate GPU drivers
+      - Configures compute stacks (CUDA, ROCm, OneAPI)
+      - Supports advanced features like GPU slicing, eGPU, and RDMA
+    options:
+      gpu_stack_enable:
+        type: bool
+        description: Enable or disable the GPU role
+        default: false
+      gpu_stack_vendor:
+        type: str
+        description: GPU vendor (nvidia, amd, intel, generic)
+        default: generic
+      gpu_stack_mode:
+        type: str
+        description: GPU operational mode (server, desktop, hybrid)
+        default: server
+      gpu_stack_arch:
+        type: str
+        description: Target architecture
+      gpu_stack_enable_slicing:
+        type: bool
+        description: Enable GPU hardware slicing (MIG, SR-IOV)
+        default: false

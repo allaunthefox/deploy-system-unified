@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Container networking role
+    description:
+      - Manages Podman Quadlet .network files for isolated container traffic
+      - Configures tiered network segments (frontend, backend, management)
+      - Ensures kernel prerequisites for container networking are met
+    options:
+      container_networks_enable:
+        type: bool
+        description: Enable or disable container network management
+        default: true
+      container_networks_list:
+        type: list
+        elements: dict
+        description: List of Quadlet network definitions to deploy
+      podman_rootless_enabled:
+        type: bool
+        description: Whether to use rootless Podman configuration
+        default: false
+      podman_rootless_user:
+        type: str
+        description: User for rootless Podman
+        default: prod

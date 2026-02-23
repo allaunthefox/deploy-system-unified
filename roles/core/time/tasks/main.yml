@@ -13,7 +13,7 @@
     state: present
   become: true
   when: ansible_distribution | lower in time_service_mapping.keys()
-- name: Configure secure time synchronization (idempotent)
+- name: "ISO 27001 §8.17 | Action 300001 | Configure secure time synchronization (idempotent)"
   ansible.builtin.template:
     src: chrony.conf.j2
     dest: "{{ time_service_mapping[ansible_distribution | lower].conf_dir }}/chrony.conf"
@@ -21,16 +21,24 @@
     owner: root
     group: root
   become: true
+  tags:
+    - iso_27001_8_17
+    - core
+    - time
   notify: restart_chrony
   when:
     - ansible_distribution | lower in time_service_mapping.keys()
     - (virt_type | default('container')) != "container" # Containers typically share host clock
-- name: Enable and start time synchronization service (idempotent)
+- name: "ISO 27001 §8.17 | Action 300006 | Enable and start time synchronization service (idempotent)"
   ansible.builtin.service:
     name: "{{ time_service_mapping[ansible_distribution | lower].service }}"
     enabled: true
     state: started
   become: true
+  tags:
+    - iso_27001_8_17
+    - core
+    - time
   when:
     - ansible_distribution | lower in time_service_mapping.keys()
     - (virt_type | default('container')) != "container"

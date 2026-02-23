@@ -1,6 +1,6 @@
 ---
 # Enhanced security scanning for Deploy-System-Unified
-- name: Run comprehensive security scan (idempotent)
+- name: "ISO 27001 §12.2 | Action 520010 | Run comprehensive security scan (idempotent)"
   ansible.builtin.shell: |
     scan_results=""
     # Run Trivy vulnerability scan
@@ -31,20 +31,32 @@
   register: comprehensive_scan
   changed_when: false
   no_log: true
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+    - audit
   args:
+    executable: /bin/bash
     pipefail: true
+  when: not security_scanning_ephemeral_skip | bool
+
 - name: Parse security scan results (idempotent)
   ansible.builtin.set_fact:
     trivy_critical_vulns: >-
       {{ comprehensive_scan.stdout | regex_search('TRIVY_CRITICAL:([0-9]+)', '\1') | first | default('0') | int
-         if 'TRIVY_CRITICAL:' in comprehensive_scan.stdout else 0 }}
+         if 'TRIVY_CRITICAL:' in (comprehensive_scan.stdout | default('')) else 0 }}
     checkov_critical_issues: >-
       {{ comprehensive_scan.stdout | regex_search('CHECKOV_CRITICAL:([0-9]+)', '\1') | first | default('0') | int
-         if 'CHECKOV_CRITICAL:' in comprehensive_scan.stdout else 0 }}
+         if 'CHECKOV_CRITICAL:' in (comprehensive_scan.stdout | default('')) else 0 }}
     trufflehog_secrets_found: >-
       {{ comprehensive_scan.stdout | regex_search('TRUFFLEHOG_SECRETS:([0-9]+)', '\1') | first | default('0') | int
-         if 'TRUFFLEHOG_SECRETS:' in comprehensive_scan.stdout else 0 }}
-- name: Validate security scan results (idempotent)
+         if 'TRUFFLEHOG_SECRETS:' in (comprehensive_scan.stdout | default('')) else 0 }}
+  tags:
+    - security
+    - scanning
+
+- name: "ISO 27001 §12.2 | Action 520011 | Validate security scan results (idempotent)"
   ansible.builtin.assert:
     that:
       - trivy_critical_vulns == 0
@@ -56,3 +68,20 @@
       - Checkov critical issues: {{ checkov_critical_issues }}
       - TruffleHog secrets found: {{ trufflehog_secrets_found }}
       - Deployment halted for security review
+  tags:
+    - iso_27001_12_2
+    - security
+    - scanning
+    - audit
+
+- name: "ISO 27001 §5.37 | Action 520046 | Check for SBOM-driven Vulnerabilities"
+  ansible.builtin.shell: |
+    if [ -f "{{ playbook_dir }}/ci-artifacts/sbom/sbom.json" ]; then
+      if command -v trivy >/dev/null 2>&1; then
+        trivy sbom "{{ playbook_dir }}/ci-artifacts/sbom/sbom.json" --severity CRITICAL --exit-code 1
+      fi
+    fi
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+  tags: [security, scanning, sbom, audit]

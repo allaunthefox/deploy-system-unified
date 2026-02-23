@@ -1,0 +1,12 @@
+---
+argument_specs:
+  main:
+    short_description: Core entropy enhancement role
+    description:
+      - Installs and configures haveged and rng-tools to ensure sufficient system entropy
+      - Critical for cryptographic operations and secure identity generation
+      - Aligns with ISO 27001 §10.1 cryptographic requirements
+    options:
+      entropy_service_mapping:
+        type: dict
+        description: Mapping of OS families to service and package names

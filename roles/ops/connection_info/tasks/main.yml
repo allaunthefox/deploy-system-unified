@@ -29,14 +29,18 @@
   run_once: true
   changed_when: false
   when: not ansible_check_mode
-- name: Cache SSH port for host (controller)
+- name: "ISO 9001 | Action 600014 | Cache SSH port for host (controller)"
   ansible.builtin.copy:
     dest: "{{ ssh_port_cache_dir_effective }}/{{ inventory_hostname | regex_replace('[^A-Za-z0-9_.-]', '_') }}.port"
     content: "{{ connection_info_port }}"
     mode: '0600'
   delegate_to: localhost
   changed_when: false
+  tags:
+    - iso_9001
+    - connection_info
   when: not ansible_check_mode
+
 - name: Create secure temporary file on controller for SSH connection info (idempotent)
   ansible.builtin.tempfile:
     state: file
@@ -47,44 +51,42 @@
   run_once: true
   no_log: true
   changed_when: false
+  tags:
+    - security
+    - connection_info
   when: not ansible_check_mode
+
 - name: Set secure permissions on temporary file (idempotent)
   ansible.builtin.file:
     path: "{{ connection_info_temp_file.path }}"
     mode: '0600'
   delegate_to: localhost
+  tags:
+    - security
+    - connection_info
   when:
     - connection_info_temp_file.path is defined
     - not ansible_check_mode
   run_once: true
-- name: Copy SSH connection info to secure temp file (idempotent)
-  ansible.builtin.copy:
-    dest: "{{ connection_info_temp_file.path }}"
-    content: |
-      ---
-      ssh_connection:
-        hostname: "{{ ssh_connection_info.hostname }}"
-        port: "{{ ssh_connection_info.port }}"
-        username: "{{ ssh_connection_info.username }}"
-        timestamp: "{{ ssh_connection_info.timestamp }}"
-    mode: '0600'
-    owner: root
-    group: root
-  delegate_to: localhost
-  register: temp_file_written
-  changed_when: false
-  no_log: true
-  run_once: true
-  when: not ansible_check_mode
 
-- name: Handle SOPS Encryption
+- name: "ISO 27001 §10.1 | Action 400011 | Handle SOPS Encryption"
   ansible.builtin.include_tasks: encryption/sops.yml
+  tags:
+    - iso_27001_10_1
+    - security
+    - connection_info
+    - remediate
   when:
     - encryption_method == 'sops'
     - not ansible_check_mode
 
-- name: Handle Ansible Vault Encryption
+- name: "ISO 27001 §10.1 | Action 400011 | Handle Ansible Vault Encryption"
   ansible.builtin.include_tasks: encryption/vault.yml
+  tags:
+    - iso_27001_10_1
+    - security
+    - connection_info
+    - remediate
   when:
     - encryption_method == 'vault'
     - not ansible_check_mode

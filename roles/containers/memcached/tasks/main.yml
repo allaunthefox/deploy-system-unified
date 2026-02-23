@@ -11,8 +11,11 @@
   loop:
     - /srv/containers/memcached
   become: true
+  tags:
+    - containers
+    - memcached
 
-- name: Create Memcached Quadlet
+- name: "ISO 27001 §8.26 | Action 700000 | Create Memcached Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/memcached.container"
     content: |
@@ -45,4 +48,9 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - memcached
+    - remediate
   notify: reload_systemd

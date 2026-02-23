@@ -1,0 +1,29 @@
+---
+argument_specs:
+  main:
+    short_description: Pre-deployment validation role
+    description:
+      - Validates system requirements (OS, memory, binaries)
+      - Verifies inventory for "CHANGE_ME" placeholders and insecure defaults
+      - Enforces least-privilege policies for NFS and Rsync
+    options:
+      preflight_require_systemd:
+        type: bool
+        description: Require systemd as the service manager
+        default: true
+      preflight_check_memory:
+        type: bool
+        description: Whether to check minimum memory requirements
+        default: false
+      preflight_min_memory_mb:
+        type: int
+        description: Minimum required memory in MB
+        default: 512
+      preflight_check_network:
+        type: bool
+        description: Whether to check network connectivity
+        default: false
+      preflight_check_license:
+        type: bool
+        description: Whether to run license compliance checks
+        default: true

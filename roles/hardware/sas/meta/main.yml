@@ -2,9 +2,8 @@
 galaxy_info:
   role_name: sas
   author: deploy-system-unified
-  description: Support for Serial Attached SCSI (SAS) HBAs and RAID controllers (LSI/Broadcom).
-  company: "Deploy System Unified"
-  license: "MIT"
+  description: SAS HBA management and storage controller tuning
+  license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
@@ -15,14 +14,11 @@ galaxy_info:
       versions: [all]
     - name: Archlinux
       versions: [all]
-    - name: Alpine
-      versions: [all]
   galaxy_tags:
     - hardware
     - sas
-    - raid
-    - lsi
-    - broadcom
-    - driver
+    - storage
+    - tuning
+    - iso_27040
 
 dependencies: []

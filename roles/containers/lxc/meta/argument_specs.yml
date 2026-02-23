@@ -1,0 +1,27 @@
+---
+argument_specs:
+  main:
+    short_description: Container LXC role
+    description:
+      - Configures LXC containers for GPU acceleration and hardware isolation
+      - Supports multiple GPU vendors (NVIDIA, AMD, Intel)
+      - Implements complex slicing strategies (MIG, SR-IOV, Level Zero)
+    options:
+      lxc_enable_gpu_support:
+        type: bool
+        description: Enable GPU support for LXC
+        default: false
+      lxc_gpu_vendor:
+        type: str
+        description: GPU vendor
+        choices: [nvidia, amd, intel]
+        default: nvidia
+      lxc_gpu_slicing:
+        type: dict
+        description: GPU slicing strategy and configuration
+      lxc_gpu_security:
+        type: dict
+        description: Security settings for GPU-enabled LXC containers
+      lxc_gpu_resource_limits:
+        type: dict
+        description: Resource limits for LXC containers

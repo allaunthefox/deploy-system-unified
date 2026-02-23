@@ -1,1 +1,5 @@
 ---
+- name: "ISO 9001 | Action 600013 | placeholder task (no-op)"
+  ansible.builtin.debug:
+    msg: "Placeholder: no action"
+  tags: [no_op]

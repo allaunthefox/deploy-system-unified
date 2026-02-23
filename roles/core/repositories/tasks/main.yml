@@ -24,17 +24,21 @@
   register: legacy_sources_list
   when: ansible_os_family == 'Debian'
 
-- name: Enable Contrib and Non-Free repositories (Legacy Debian)
+- name: "ISO 27001 §8.9 | Action 530010 | Enable Contrib and Non-Free repositories (Legacy Debian)"
   ansible.builtin.replace:
     path: /etc/apt/sources.list
     regexp: '^(deb(?:-src)?\s+http://\S+\s+\w+)((\s+main)(?:\s+contrib)?(?:\s+non-free)?(?:\s+non-free-firmware)?)$'
     replace: '\1\2 contrib non-free non-free-firmware'
   become: true
+  tags:
+    - iso_27001_8_9
+    - repositories
+    - remediate
   when:
     - ansible_distribution == 'Debian'
     - legacy_sources_list.stat.exists
 
-- name: Enable Ubuntu Universe/Multiverse
+- name: "ISO 27001 §8.9 | Action 530010 | Enable Ubuntu Universe/Multiverse"
   ansible.builtin.apt_repository:
     repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} {{ item }}"
     state: present
@@ -44,37 +48,51 @@
     - multiverse
     - restricted
   become: true
+  tags:
+    - iso_27001_8_9
+    - repositories
+    - remediate
   when: ansible_distribution == 'Ubuntu'
 
 - name: Check if RPMFusion is installed (RedHat/Fedora)
   ansible.builtin.command: dnf repolist
   register: dnf_repolist
   changed_when: false
+  tags:
+    - repositories
   when: ansible_os_family == 'RedHat'
 
-- name: Securely download RPMFusion Free Release (Fedora)
+- name: "ISO 27001 §8.9 | Action 530010 | Securely download RPMFusion Free Release (Fedora)"
   ansible.builtin.get_url:
     url: "{{ rpmfusion_free_url }}"
     dest: "/tmp/rpmfusion-free-release.rpm"
     mode: '0644'
     checksum: "{{ 'sha256:' + rpmfusion_free_sha256 if (rpmfusion_verify_checksum and rpmfusion_free_sha256 | length > 0) else omit }}"
   become: true
+  tags:
+    - iso_27001_8_9
+    - repositories
+    - supply_chain
   when:
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-free' not in dnf_repolist.stdout"
 
-- name: Securely download RPMFusion NonFree Release (Fedora)
+- name: "ISO 27001 §8.9 | Action 530010 | Securely download RPMFusion NonFree Release (Fedora)"
   ansible.builtin.get_url:
     url: "{{ rpmfusion_nonfree_url }}"
     dest: "/tmp/rpmfusion-nonfree-release.rpm"
     mode: '0644'
     checksum: "{{ 'sha256:' + rpmfusion_nonfree_sha256 if (rpmfusion_verify_checksum and rpmfusion_nonfree_sha256 | length > 0) else omit }}"
   become: true
+  tags:
+    - iso_27001_8_9
+    - repositories
+    - supply_chain
   when:
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
 
-- name: Install RPMFusion Free/NonFree from verified local files (Fedora)
+- name: "ISO 27001 §8.9 | Action 530010 | Install RPMFusion Free/NonFree from verified local files (Fedora)"
   ansible.builtin.dnf:
     name:
       - "/tmp/rpmfusion-free-release.rpm"
@@ -82,38 +100,57 @@
     state: present
     disable_gpg_check: true # Release packages are self-signed, we verified the file checksum
   become: true
+  tags:
+    - iso_27001_8_9
+    - repositories
+    - remediate
   when:
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
 
-- name: Enable Community Repository (Alpine)
+- name: "ISO 27001 §8.9 | Action 530010 | Enable Community Repository (Alpine)"
   ansible.builtin.replace:
     path: /etc/apk/repositories
     regexp: '^#\s*(http.*/community)$'
     replace: '\1'
   become: true
+  tags:
+    - iso_27001_8_9
+    - repositories
+    - remediate
   when: ansible_os_family == 'Alpine'
 
-- name: Update package cache (Debian/Ubuntu)
+- name: "ISO 27001 §8.9 | Action 530012 | Update package cache (Debian/Ubuntu)"
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
   become: true
-- name: Update package cache (RedHat/Fedora)
+  tags:
+    - repositories
+
+- name: "ISO 27001 §8.9 | Action 530012 | Update package cache (RedHat/Fedora)"
   ansible.builtin.dnf:
     update_cache: true
   when: ansible_os_family == 'RedHat'
   become: true
-- name: Update package cache (Arch)
+  tags:
+    - repositories
+
+- name: "ISO 27001 §8.9 | Action 530012 | Update package cache (Arch)"
   community.general.pacman:
     update_cache: true
   when:
     - ansible_distribution | lower == 'archlinux'
     - not ansible_check_mode
   become: true
-- name: Update package cache (Alpine)
+  tags:
+    - repositories
+
+- name: "ISO 27001 §8.9 | Action 530012 | Update package cache (Alpine)"
   community.general.apk:
     update_cache: true
   when: ansible_os_family == 'Alpine'
   become: true
+  tags:
+    - repositories

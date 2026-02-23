@@ -11,7 +11,7 @@
     regexp: '^([^#].*?\sswap\s+.*)$'
     replace: '# \1'
   become: true
-- name: Load Kubernetes required kernel modules
+- name: "ISO 27001 §8.26 | Action 820000 | Load Kubernetes required kernel modules"
   community.general.modprobe:
     name: "{{ item }}"
     state: present
@@ -19,7 +19,12 @@
     - overlay
     - br_netfilter
   become: true
-- name: Configure sysctl for Kubernetes networking
+  tags:
+    - iso_27001_8_26
+    - kubernetes
+    - orchestration
+
+- name: "ISO 27001 §8.26 | Action 820000 | Configure sysctl for Kubernetes networking"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -31,12 +36,25 @@
     - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
     - { name: 'net.ipv4.ip_forward', value: '1' }
   become: true
+  tags:
+    - iso_27001_8_26
+    - kubernetes
+    - orchestration
+    - remediate
+
 - name: Create directory for Kubernetes manifests
   ansible.builtin.file:
     path: /etc/kubernetes/manifests
     state: directory
     mode: '0755'
   become: true
+  tags:
+    - kubernetes
+    - orchestration
+
 - name: Deploy GPU device plugins
   ansible.builtin.include_tasks: gpu.yml
+  tags:
+    - kubernetes
+    - gpu
   when: k8s_gpu_device_plugins_enabled | default(false)

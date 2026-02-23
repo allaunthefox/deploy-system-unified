@@ -28,6 +28,9 @@ ssh_effective_port: "{{ advanced_security_hardening_random_ssh_port | default(sy
 ssh_service_name: "{{ 'ssh' if ((ansible_facts | default({})).get('os_family', '') == 'Debian') else 'sshd' }}"
 
 system_ssh_permit_root_login: false   # Global override for security
+# Post-Quantum Cryptography (PQC)
+# Enables hybrid quantum-resistant key exchanges (ML-KEM, sntrup761)
+system_ssh_pqc_enabled: true
 
 # -----------------------------------------------------------------------------
 # Networking
@@ -99,3 +102,43 @@ ops_rsync_enable: false
 ops_rsync_allowlist: []
 # Extra guard: ephemeral profiles must explicitly opt in
 ops_rsync_ephemeral_allow: false
+
+# -----------------------------------------------------------------------------
+# Observability & Forensic Intelligence
+# -----------------------------------------------------------------------------
+# Enables centralized log aggregation and forensic dashboards.
+# Uses Loki/Promtail for Action Code traceability.
+system_monitoring_forensics_enabled: true
+system_monitoring_loki_enabled: true
+system_monitoring_dashboard_forensic: true
+
+# Storage & Archival (NoDupeLabs Standards)
+# Extra guard: ephemeral profiles must explicitly opt in
+system_storage_archival_ephemeral_allow: false
+# Extra guard: security scans in ephemeral must explicitly opt in
+system_security_scanning_ephemeral_allow: false
+# Extra guard: IPS in ephemeral must explicitly opt in
+system_security_ips_ephemeral_allow: false
+
+# -----------------------------------------------------------------------------
+# Supply Chain Security (ISO 27001 §14.2)
+# -----------------------------------------------------------------------------
+# Enables mandatory signature verification for container images via Cosign.
+system_container_cosign_verify: true
+
+
+# Extra guard: hardened profiles require integrity verification (ISO 27040 §13)
+system_storage_hardened_integrity_mandatory: true
+
+# Enables offline Btrfs deduplication (weekly scan)
+# Strict Logic: False in ephemeral, Optional in dev/vps, Recommended in hardened/prod.
+system_storage_dedupe_btrfs: >-
+  {{ true if (deployment_profile | default('hardened') in ['hardened', 'production']) else false }}
+
+# Enables Restic archival grade compression (max)
+system_storage_restic_archival: >-
+  {{ true if (deployment_profile | default('hardened') in ['hardened', 'production']) else false }}
+
+
+
+

@@ -3,7 +3,7 @@
 - name: Assign Hypervisor Instance UUID
   ansible.builtin.import_role:
     name: core/identity
-- name: Install QEMU and KVM virtualization packages
+- name: "ISO 27001 §8.26 | Action 830100 | Install QEMU and KVM virtualization packages"
   ansible.builtin.package:
     name:
       - qemu-kvm
@@ -18,6 +18,11 @@
       - swtpm-tools
     state: present
   become: true
+  tags:
+    - iso_27001_8_26
+    - virtualization
+    - kvm
+
 - name: Report TPM Status
   ansible.builtin.debug:
     msg: |
@@ -26,12 +31,20 @@
       {% else %}
       Hardware TPM not detected. QEMU will use software emulation (swtpm) for guests.
       {% endif %}
+  tags:
+    - virtualization
+    - kvm
+
 - name: Ensure NBD kernel module is loaded (Disk Mounting)
   community.general.modprobe:
     name: nbd
     params: 'max_part=8'
     state: present
   become: true
+  tags:
+    - virtualization
+    - kvm
+
 - name: Ensure KVM kernel modules are loaded
   community.general.modprobe:
     name: "{{ item }}"
@@ -42,13 +55,22 @@
     - vhost_net
   become: true
   failed_when: false
-- name: Enable and start libvirtd service
+  tags:
+    - virtualization
+    - kvm
+
+- name: "ISO 27001 §8.26 | Action 830200 | Enable and start libvirtd service"
   ansible.builtin.systemd:
     name: libvirtd
     enabled: true
     state: started
   become: true
-- name: Configure QEMU security settings (Restrictive)
+  tags:
+    - iso_27001_8_26
+    - virtualization
+    - kvm
+
+- name: "ISO 27001 §8.26 | Action 830000 | Configure QEMU security settings (Restrictive)"
   ansible.builtin.lineinfile:
     path: /etc/libvirt/qemu.conf
     regexp: "^#?{{ item.key }} ="
@@ -59,3 +81,8 @@
     - { key: 'dynamic_ownership', value: '0' }
   become: true
   notify: restart_libvirtd
+  tags:
+    - iso_27001_8_26
+    - virtualization
+    - kvm
+    - remediate
