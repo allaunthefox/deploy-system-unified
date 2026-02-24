@@ -9,16 +9,16 @@ Comprehensive system backup strategy using restic for encrypted snapshots and rc
 
 ## Variables
 
-<a id="storage-dedupe-btrfs-enable"></a>### `storage_dedupe_btrfs_enable`
+### `storage_dedupe_btrfs_enable` {#storage-dedupe-btrfs-enable}
 - `storage_dedupe_btrfs_enable`
 
-<a id="storage-dedupe-btrfs-paths"></a>### `storage_dedupe_btrfs_paths`
+### `storage_dedupe_btrfs_paths` {#storage-dedupe-btrfs-paths}
 - `storage_dedupe_btrfs_paths`
 
-<a id="storage-dedupe-schedule"></a>### `storage_dedupe_schedule`
+### `storage_dedupe_schedule` {#storage-dedupe-schedule}
 - `storage_dedupe_schedule`
 
-<a id="storage-dedupe-ephemeral-skip"></a>### `storage_dedupe_ephemeral_skip`
+### `storage_dedupe_ephemeral_skip` {#storage-dedupe-ephemeral-skip}
 - `storage_dedupe_ephemeral_skip`
 
 

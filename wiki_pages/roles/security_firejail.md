@@ -7,7 +7,7 @@ Configures Firejail profiles for isolating vulnerable applications in restricted
 
 ## Variables
 
-<a id="firejail-enable-gpu"></a>### `firejail_enable_gpu`
+### `firejail_enable_gpu` {#firejail-enable-gpu}
 - `firejail_enable_gpu`
 
 
