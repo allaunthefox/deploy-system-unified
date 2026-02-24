@@ -7,13 +7,13 @@ System initialization and base configuration.
 
 ## Variables
 
-### `core_install_base_packages`
+### `core_install_base_packages`{#coreinstallbasepackages}
 - `core_install_base_packages`
 
-### `system_base_packages`
+### `system_base_packages`{#systembasepackages}
 - `system_base_packages`
 
-### `system_standard_directories`
+### `system_standard_directories`{#systemstandarddirectories}
 - `system_standard_directories`
 
 
