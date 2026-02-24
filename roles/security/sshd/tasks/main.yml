@@ -83,38 +83,6 @@
     - sshd
     - internal
 
-- name: Get OpenSSH version
-  ansible.builtin.shell: sshd -V 2>&1 | grep -oP 'OpenSSH_\K[0-9.]+'
-  register: sshd_version_raw
-  changed_when: false
-  become: true
-  ignore_errors: true
-
-- name: Set OpenSSH version fact
-  ansible.builtin.set_fact:
-    sshd_version: "{{ sshd_version_raw.stdout | default('0.0') }}"
-
-- name: Define supported PQC KEX algorithms
-  ansible.builtin.set_fact:
-    sshd_kex_algorithms_pqc: >-
-      {% set kex = [] %}
-      {% if sshd_pqc_enabled | bool %}
-      {%   if sshd_version is version('9.9', '>=') %}
-      {%     set _ = kex.append('mlkem768x25519-sha256') %}
-      {%   endif %}
-      {%   if sshd_version is version('9.8', '>=') %}
-      {%     set _ = kex.append('sntrup761x25519-sha512@openssh.com') %}
-      {%   endif %}
-      {% endif %}
-      {{ kex }}
-  changed_when: false
-
-- name: Define final KEX algorithms list
-  ansible.builtin.set_fact:
-    sshd_kex_algorithms_final: >-
-      {{ (sshd_kex_algorithms_pqc + ['curve25519-sha256', 'curve25519-sha256@libssh.org', 'diffie-hellman-group16-sha512']) | join(',') }}
-  changed_when: false
-
 - name: Ensure SSH privilege separation directory exists (for validation in containers)
   ansible.builtin.file:
     path: /run/sshd
