@@ -42,7 +42,7 @@ helm install monitoring-stack ./charts/monitoring-stack
 Choose your ingress controller:
 
 - [Ingress Controller Setup](./INGRESS_CONTROLLER_SETUP.md)
-- [Variable Reference: Ingress](../wiki_pages/Variable_Reference_Ingress.md)
+- [Variable Reference: Ingress]()
 
 ## Benchmarking
 
@@ -69,4 +69,4 @@ ingress:
 ## Related Documentation
 
 - [PHASE3_SECRETS_K8S_PLAN](../planning/PHASE3_SECRETS_K8S_PLAN.md)
-- [Media Stack V2](../wiki_pages/MEDIA_STACK_V2.md)
+- [Media Stack V2]()

@@ -176,6 +176,6 @@ amdconfig --initial
 
 ## Related Links
 
-- [eGPU Setup](roles/hardware/gpu/tasks/features/egpu.yml)
+- 
 - [Vulkan Examples](VULKAN_EXAMPLES.md)
-- [GPU Discovery](../roles/hardware/gpu/files/gpu_discovery.py)
+- 
