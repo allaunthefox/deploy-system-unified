@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: caddy
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "WI-CONT | Caddy reverse proxy with automatic HTTPS and CrowdSec integration"
   license: MIT
   min_ansible_version: "2.15"
@@ -17,9 +17,19 @@ galaxy_info:
   galaxy_tags:
     - containers
     - proxy
+    - reverseproxy
     - caddy
     - crowdsec
     - security
-    - iso_27001
+    - https
+    - tls
+    - hardening
+    - podman
+    - quadlet
+    - iso27001
+    - supplychain
+
+collections:
+  - ansible.builtin
 
 dependencies: []

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: dedupe
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "NoDupeLabs-inspired deduplication and archival optimization"
   license: MIT
   min_ansible_version: "2.15"
@@ -18,6 +18,18 @@ galaxy_info:
     - btrfs
     - restic
     - optimization
-    - iso_27040
+    - iso27040
+    - data-reduction
+    - archival
+    - backup
+    - efficiency
+    - cis
+    - nist80053
+    - automation
+    - linux
+    - storage-management
+
+collections:
+  - ansible.builtin
 
 dependencies: []

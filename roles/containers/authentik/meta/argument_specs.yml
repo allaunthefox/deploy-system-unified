@@ -7,11 +7,11 @@ argument_specs:
       - Implements forensic log analysis and secure secret management
       - Aligns with ISO 27001 §9.2 and §10.1
     options:
-      authentik_image:
+      containers_authentik_image:
         type: str
         description: Authentik server image
         default: ghcr.io/goauthentik/server:2024.2.1
-      authentik_network_name:
+      containers_authentik_network_name:
         type: str
         description: Name of the podman network
         default: bridge

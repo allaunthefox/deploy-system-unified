@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: connection_info
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "SOP-OPS | connection_info management and configuration"
   license: MIT
   min_ansible_version: '2.15'
@@ -9,6 +9,21 @@ galaxy_info:
     - name: Ubuntu
       versions: [all]
   galaxy_tags:
-    - connection_info
-    - iso_27001
+    - ops
+    - connection
+    - info
+    - metadata
+    - rsync
+    - secrets
+    - ssh
+    - connectivity
+    - isolation
+    - forensic
+    - security
+    - iso27001
+
+collections:
+  - ansible.builtin
+  - ansible.posix
+
 dependencies: []

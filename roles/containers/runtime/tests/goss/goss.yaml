@@ -1,0 +1,46 @@
+# Goss tests for containers/runtime role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+  buildah:
+    installed: true
+  skopeo:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify runtime configuration
+# =============================================================================
+file:
+  /etc/containers:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+  /etc/containers/containers.conf:
+    exists: true
+
+  /etc/containers/policy.json:
+    exists: true
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  podman_version:
+    exec: 'podman --version'
+    exit-status: 0
+    timeout: 10000
+
+  buildah_version:
+    exec: 'buildah --version'
+    exit-status: 0
+    timeout: 10000
+
+  skopeo_version:
+    exec: 'skopeo --version'
+    exit-status: 0
+    timeout: 10000

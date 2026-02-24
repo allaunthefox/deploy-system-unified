@@ -1,12 +1,20 @@
 ---
 # Tasks for containers/authentik
+# Compliance: CIS Docker Benchmark 4.x, STIG V-230490, NIST IA-2/IA-3/IA-4, ISO 27001 §9.2/§9.3
 
-- name: Verify Authentik secrets when fail-secure is enabled
+- name: "CIS 4.1 | STIG V-230490 | NIST IA-2 | Verify Authentik secrets when fail-secure is enabled"
   ansible.builtin.include_tasks: verify_secrets.yml
   when:
-    - containers_authentik_fail_secure | default(true) | bool
+    - containers_containers_authentik_fail_secure | default(true) | bool
+  tags:
+    - cis_4_1
+    - stg_v230490
+    - nist_ia_2
+    - containers
+    - authentik
+    - security
 
-- name: Create Authentik Directories
+- name: "CIS 4.2 | STIG V-230490 | NIST AC-3 | Create Authentik Directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -14,16 +22,22 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   loop:
-    - "{{ authentik_base_dir }}"
-    - "{{ authentik_data_dir }}"
-    - "{{ authentik_config_dir }}"
-    - "{{ authentik_data_dir }}/media"
-    - "{{ authentik_data_dir }}/custom-templates"
-    - "{{ authentik_data_dir }}/postgres"
-    - "{{ authentik_data_dir }}/redis"
+    - "{{ containers_authentik_base_dir }}"
+    - "{{ containers_authentik_data_dir }}"
+    - "{{ containers_authentik_config_dir }}"
+    - "{{ containers_authentik_data_dir }}/media"
+    - "{{ containers_authentik_data_dir }}/custom-templates"
+    - "{{ containers_authentik_data_dir }}/postgres"
+    - "{{ containers_authentik_data_dir }}/redis"
   become: true
+  tags:
+    - cis_4_2
+    - stg_v230490
+    - nist_ac_3
+    - containers
+    - authentik
 
-- name: "ISO 27001 §10.1 | Action 400011 | Create Authentik secrets file"
+- name: "CIS 4.3 | STIG V-230490 | NIST IA-2 | ISO 27001 §10.1 | Action 400011 | Create Authentik secrets file"
   ansible.builtin.template:
     src: authentik.env.j2
     dest: "{{ containers_secrets_dir }}/authentik.env"
@@ -32,12 +46,15 @@
     group: "{{ containers_secrets_group }}"
   become: true
   tags:
+    - cis_4_3
+    - stg_v230490
+    - nist_ia_2
     - iso_27001_10_1
     - containers
     - authentik
     - remediate
 
-- name: "ISO 27001 §8.26 | Action 700000 | Create Authentik Postgres Quadlet"
+- name: "CIS 4.4 | STIG V-230490 | NIST SC-8 | ISO 27001 §8.20 | Action 700000 | Create Authentik Postgres Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-postgres.container"
     content: |
@@ -46,18 +63,18 @@
       After=network-online.target
 
       [Container]
-      Image={{ authentik_postgres_image }}
+      Image={{ containers_authentik_postgres_image }}
       ContainerName=authentik-postgres
 
-      {% if authentik_network_name == 'host' %}
+      {% if containers_authentik_network_name == 'host' %}
       Network=host
       {% else %}
-      Network={{ authentik_network_name }}.network
+      Network={{ containers_authentik_network_name }}.network
       {% endif %}
 
       EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
-      Volume={{ authentik_data_dir }}/postgres:/var/lib/postgresql/data:Z
+      Volume={{ containers_authentik_data_dir }}/postgres:/var/lib/postgresql/data:Z
 
       [Service]
       Restart=always
@@ -69,13 +86,17 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
+    - cis_4_4
+    - stg_v230490
+    - nist_sc_8
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - authentik
     - remediate
   notify: reload_systemd
 
-- name: "ISO 27001 §8.26 | Action 700000 | Create Authentik Redis Quadlet"
+- name: "CIS 4.5 | STIG V-230490 | NIST SC-8 | ISO 27001 §8.20 | Action 700000 | Create Authentik Redis Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-redis.container"
     content: |
@@ -84,13 +105,13 @@
       After=network-online.target
 
       [Container]
-      Image={{ authentik_redis_image }}
+      Image={{ containers_authentik_redis_image }}
       ContainerName=authentik-redis
 
-      {% if authentik_network_name == 'host' %}
+      {% if containers_authentik_network_name == 'host' %}
       Network=host
       {% else %}
-      Network={{ authentik_network_name }}.network
+      Network={{ containers_authentik_network_name }}.network
       {% endif %}
 
       [Service]
@@ -103,13 +124,17 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
+    - cis_4_5
+    - stg_v230490
+    - nist_sc_8
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - authentik
     - remediate
   notify: reload_systemd
 
-- name: "ISO 27001 §8.26 | NIST IA-2 | Action 700000 | Create Authentik Server Quadlet"
+- name: "CIS 4.6 | STIG V-230490 | NIST IA-2 | ISO 27001 §8.20 | Action 700000 | Create Authentik Server Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-server.container"
     content: |
@@ -119,13 +144,13 @@
       Requires=authentik-postgres.service authentik-redis.service
 
       [Container]
-      Image={{ authentik_image }}
+      Image={{ containers_authentik_image }}
       ContainerName=authentik-server
 
-      {% if authentik_network_name == 'host' %}
+      {% if containers_authentik_network_name == 'host' %}
       Network=host
       {% else %}
-      Network={{ authentik_network_name }}.network
+      Network={{ containers_authentik_network_name }}.network
       {% endif %}
       # Internal port 9000, exposed to Caddy via bridge
 
@@ -133,8 +158,8 @@
 
       EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
-      Volume={{ authentik_data_dir }}/media:/media:Z
-      Volume={{ authentik_data_dir }}/custom-templates:/templates:Z
+      Volume={{ containers_authentik_data_dir }}/media:/media:Z
+      Volume={{ containers_authentik_data_dir }}/custom-templates:/templates:Z
 
       [Service]
       Restart=always
@@ -146,14 +171,17 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
-    - iso_27001_8_26
+    - cis_4_6
+    - stg_v230490
     - nist_ia_2
+    - iso_27001_8_20
+    - iso_27001_8_26
     - containers
     - authentik
     - remediate
   notify: reload_systemd
 
-- name: "ISO 27001 §8.26 | Action 700000 | Create Authentik Worker Quadlet"
+- name: "CIS 4.7 | STIG V-230490 | NIST IA-3 | ISO 27001 §8.20 | Action 700000 | Create Authentik Worker Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/authentik-worker.container"
     content: |
@@ -163,21 +191,21 @@
       Requires=authentik-postgres.service authentik-redis.service
 
       [Container]
-      Image={{ authentik_image }}
+      Image={{ containers_authentik_image }}
       ContainerName=authentik-worker
 
-      {% if authentik_network_name == 'host' %}
+      {% if containers_authentik_network_name == 'host' %}
       Network=host
       {% else %}
-      Network={{ authentik_network_name }}.network
+      Network={{ containers_authentik_network_name }}.network
       {% endif %}
 
       Exec=worker
 
       EnvironmentFile={{ containers_secrets_dir }}/authentik.env
 
-      Volume={{ authentik_data_dir }}/media:/media:Z
-      Volume={{ authentik_data_dir }}/custom-templates:/templates:Z
+      Volume={{ containers_authentik_data_dir }}/media:/media:Z
+      Volume={{ containers_authentik_data_dir }}/custom-templates:/templates:Z
 
       [Service]
       Restart=always
@@ -189,24 +217,28 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
+    - cis_4_7
+    - stg_v230490
+    - nist_ia_3
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - authentik
     - remediate
   notify: reload_systemd
 
-- name: "ISO 27001 §9.2 | Action 540001 | Deploy Caddy Authentik Configuration"
+- name: "CIS 4.8 | STIG V-230490 | NIST IA-2 | ISO 27001 §9.2 | Action 540001 | Deploy Caddy Authentik Configuration"
   ansible.builtin.copy:
     dest: /srv/containers/caddy/conf.d/authentik.caddy
     content: |
       # Authentik Config
       auth.example.com {
-        reverse_proxy {{ 'localhost' if (authentik_network_name == 'host' or not podman_rootless_enabled | default(true) | bool) else 'authentik-server' }}:9000
+        reverse_proxy {{ 'localhost' if (containers_authentik_network_name == 'host' or not podman_rootless_enabled | default(true) | bool) else 'authentik-server' }}:9000
       }
 
       # Reusable snippet for other sites to protect themselves
-      (authentik_protect) {
-        forward_auth {{ 'localhost' if (authentik_network_name == 'host' or not podman_rootless_enabled | default(true) | bool) else 'authentik-server' }}:9000 {
+      (containers_authentik_protect) {
+        forward_auth {{ 'localhost' if (containers_authentik_network_name == 'host' or not podman_rootless_enabled | default(true) | bool) else 'authentik-server' }}:9000 {
             uri /outpost.goauthentik.io/auth/caddy
             copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name
             copy_headers X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks
@@ -217,6 +249,9 @@
     mode: '0644'
   become: true
   tags:
+    - cis_4_8
+    - stg_v230490
+    - nist_ia_2
     - iso_27001_9_2
     - containers
     - authentik

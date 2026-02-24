@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Verify falco directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /etc/falco
+        - /var/log/falco
+
+    - name: Verify falco integration is complete
+      ansible.builtin.assert:
+        that:
+          - falco_integration_complete | default(false) == true
+        fail_msg: "Falco integration was not completed"

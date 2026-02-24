@@ -1,1 +1,76 @@
 ---
+# Internal variables for ops/health_check role
+# Health Check Configuration
+
+# Health check paths and directories
+health_check_base_dir: "/var/lib/deploy-system/health"
+health_check_state_dir: "{{ health_check_base_dir }}/state"
+health_check_history_dir: "{{ health_check_base_dir }}/history"
+health_check_reports_dir: "{{ health_check_base_dir }}/reports"
+
+# Health check output files
+health_check_summary_filename: "health_summary.json"
+health_check_detail_filename: "health_detail.json"
+health_check_history_filename: "health_history.json"
+
+# Health check timing configuration
+health_check_timeout_default: 30
+health_check_timeout_systemd: 10
+health_check_timeout_container: 30
+health_check_timeout_disk: 5
+health_check_timeout_endpoint: 10
+
+# Health check retry configuration
+health_check_retries: 2
+health_check_retry_delay: 5
+
+# Systemd health check configuration
+health_check_systemd_state_dir: "/run/systemd/system"
+health_check_systemd_timeout: 30
+health_check_systemd_unit_states:
+  - "running"
+  - "exited"
+
+# Container runtime health check configuration
+health_check_container_runtimes:
+  podman:
+    binary: "/usr/bin/podman"
+    info_command: ["podman", "info"]
+    health_command: ["podman", "system", "info"]
+  docker:
+    binary: "/usr/bin/docker"
+    info_command: ["docker", "info"]
+    health_command: ["docker", "system", "info"]
+
+# Disk health check configuration
+health_check_disk_default_warn_percent: 80
+health_check_disk_default_critical_percent: 90
+health_check_disk_exclude_mounts:
+  - "/proc"
+  - "/sys"
+  - "/dev"
+  - "/run"
+
+# Endpoint health check configuration
+health_check_endpoint_default_method: "GET"
+health_check_endpoint_default_timeout: 10
+health_check_endpoint_default_validate_certs: false
+health_check_endpoint_user_agent: "deploy-system-health-check/1.0"
+
+# Health check severity levels
+health_check_severity_pass: "pass"
+health_check_severity_warning: "warning"
+health_check_severity_critical: "critical"
+
+# Health check result aggregation
+health_check_aggregation_enabled: true
+health_check_aggregation_interval: 60
+health_check_history_retention_days: 30
+
+# Health check notification configuration
+health_check_notify_on_failure: true
+health_check_notify_on_recovery: true
+health_check_notification_channels: []
+
+# Health check schema version
+health_check_schema_version: "deploy-system-unified/health-check/v1"

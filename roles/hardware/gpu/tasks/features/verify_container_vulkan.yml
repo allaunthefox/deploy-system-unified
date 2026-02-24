@@ -2,10 +2,12 @@
 # Container-Native Vulkan Capability Verification
 
 - name: Initialize Container Vulkan Fact
+  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     gpu_container_vulkan_verified: false
 
 - name: Determine Verification Image
+  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     _vulkan_test_image: >-
       {{
@@ -15,6 +17,7 @@
       }}
 
 - name: Run Vulkan Smoke Test Container
+  tags: [hardware, gpu, remediate]
   ansible.builtin.shell: |
     set -o pipefail
     {% set pkg_cmd = "apk add --no-cache vulkan-utils" if ansible_facts['os_family'] == 'Alpine' else "apt-get update && apt-get install -y vulkan-tools" %}
@@ -33,11 +36,13 @@
     - containers_runtime_complete | default(false) | bool
 
 - name: Set Container Vulkan Verification Fact
+  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     gpu_container_vulkan_verified: "{{ _container_vulkan_probe.rc == 0 and 'GPU' in _container_vulkan_probe.stdout }}"
   when: _container_vulkan_probe.rc is defined and _container_vulkan_probe.rc == 0
 
 - name: Validate Container Vulkan Projection (Hardened)
+  tags: [hardware, gpu, remediate]
   ansible.builtin.assert:
     that:
       - gpu_container_vulkan_verified | bool
@@ -49,6 +54,7 @@
     - containers_runtime_complete | default(false) | bool
 
 - name: Report Container Vulkan Status
+  tags: [hardware, gpu, remediate]
   ansible.builtin.debug:
     msg:
       - "Host Vulkan Support: {{ gpu_vulkan_supported }}"

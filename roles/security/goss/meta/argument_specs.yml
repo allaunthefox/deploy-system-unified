@@ -1,0 +1,33 @@
+---
+argument_specs:
+  main:
+    short_description: goss role for server validation and testing
+    description:
+      - Deploys and configures Goss for server validation
+      - Manages health checks and compliance testing
+      - Aligns with ISO 27001 requirements
+    options:
+      goss_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable goss role execution
+      goss_install_dir:
+        type: str
+        required: false
+        default: "/usr/local/bin"
+        description:
+          - Installation directory for goss binary
+      goss_port:
+        type: int
+        required: false
+        default: 8080
+        description:
+          - Port for goss server to listen on
+      goss_test_file:
+        type: str
+        required: false
+        default: ""
+        description:
+          - Path to goss test definition file

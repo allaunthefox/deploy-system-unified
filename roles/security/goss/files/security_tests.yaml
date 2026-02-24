@@ -1,0 +1,60 @@
+# Security Tests for Goss
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+# File permission checks
+file:
+  /etc/passwd:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+  /etc/shadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+  /etc/group:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+  /etc/sudoers:
+    exists: true
+    mode: "0440"
+    owner: root
+    group: root
+  /etc/ssh/sshd_config:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+# User checks
+user:
+  root:
+    exists: true
+    uid: 0
+    home: /root
+    shell: /bin/bash
+
+# SSH configuration checks
+command:
+  sshd -t:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+
+# Package checks (security packages)
+package:
+  openssh-server:
+    installed: true
+  sudo:
+    installed: true
+  fail2ban:
+    installed: "{{ goss_check_fail2ban | default(false) }}"
+
+# Service checks
+service:
+  sshd:
+    enabled: true
+    running: true

@@ -1,1 +1,27 @@
 ---
+# Handlers for ops/session role
+# ISO 9001 Structural Consistency - Handler definitions for session management
+# Note: This role manages TMUX sessions which do not require service restarts
+
+- name: restart_tmux_session
+  ansible.builtin.shell: |
+    if command -v tmux >/dev/null 2>&1; then
+      tmux kill-session -t "{{ tmux_session_name }}" 2>/dev/null || true
+      tmux new-session -d -s "{{ tmux_session_name }}"
+    fi
+  register: tmux_restart_result
+  failed_when: false
+  changed_when: true
+  tags:
+    - ops
+    - session
+
+- name: reload_tmux_config
+  ansible.builtin.shell: |
+    if command -v tmux >/dev/null 2>&1; then
+      tmux source-file ~/.tmux.conf 2>/dev/null || true
+    fi
+  failed_when: false
+  tags:
+    - ops
+    - session

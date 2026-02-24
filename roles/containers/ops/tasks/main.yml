@@ -1,13 +1,27 @@
 ---
 # Tasks for containers/ops
+# Compliance: CIS Docker Benchmark 5.x, STIG V-230440, NIST IA-2/SC-8/AC-3, ISO 27001 §9.2/§10.1
 
-- name: Run ops secret verifications
+- name: "CIS 5.1 | STIG V-230440 | NIST IA-2 | Run ops secret verifications"
   ansible.builtin.include_tasks: verify_secrets.yml
+  tags:
+    - cis_5_1
+    - stg_v230440
+    - nist_ia_2
+    - containers
+    - ops
+    - security
 
-- name: Pull Ops Images
+- name: "CIS 5.2 | STIG V-230440 | NIST SC-8 | Pull Ops Images"
   ansible.builtin.include_tasks: pull_images.yml
+  tags:
+    - cis_5_2
+    - stg_v230440
+    - nist_sc_8
+    - containers
+    - ops
 
-- name: Validate Vaultwarden admin token is set
+- name: "CIS 5.3 | STIG V-230440 | NIST IA-2 | Validate Vaultwarden admin token is set"
   ansible.builtin.assert:
     that:
       - vaultwarden_admin_token is defined
@@ -17,8 +31,15 @@
   when:
     - vaultwarden_enable | bool
     - containers_fail_secure | default(true) | bool
+  tags:
+    - cis_5_3
+    - stg_v230440
+    - nist_ia_2
+    - containers
+    - ops
+    - security
 
-- name: Create Ops Network Quadlet
+- name: "CIS 5.4 | STIG V-230440 | NIST SC-8 | Create Ops Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/ops_net.network"
     content: |
@@ -30,8 +51,14 @@
     group: "{{ containers_systemd_group }}"
   become: true
   notify: reload_systemd
+  tags:
+    - cis_5_4
+    - stg_v230440
+    - nist_sc_8
+    - containers
+    - ops
 
-- name: Create Ops Directories
+- name: "CIS 5.5 | STIG V-230440 | NIST AC-3 | Create Ops Directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -49,8 +76,14 @@
     - "{{ ops_config_dir }}/wiki/data"
   become: true
   when: ops_enable
+  tags:
+    - cis_5_5
+    - stg_v230440
+    - nist_ac_3
+    - containers
+    - ops
 
-- name: Create Ops Pod Quadlet
+- name: "CIS 5.6 | STIG V-230440 | NIST SC-8 | Create Ops Pod Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ ops_pod_name }}.pod"
     content: |
@@ -96,8 +129,14 @@
   become: true
   when: ops_enable
   notify: reload_systemd
+  tags:
+    - cis_5_6
+    - stg_v230440
+    - nist_sc_8
+    - containers
+    - ops
 
-- name: Set Ops proxy hosts
+- name: "CIS 5.7 | STIG V-230440 | NIST AC-3 | Set Ops proxy hosts"
   ansible.builtin.set_fact:
     containers_ops_homarr_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'homarr' }}"
     containers_ops_vaultwarden_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}"
@@ -106,8 +145,14 @@
     containers_ops_wastebin_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'wastebin' }}"
     containers_ops_filebrowser_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'filebrowser' }}"
   when: ops_enable
+  tags:
+    - cis_5_7
+    - stg_v230440
+    - nist_ac_3
+    - containers
+    - ops
 
-- name: "ISO 27001 §9.4 | Action 540001 | Deploy Ops Caddy Configuration"
+- name: "CIS 5.8 | STIG V-230440 | NIST SC-8 | ISO 27001 §9.4 | Action 540001 | Deploy Ops Caddy Configuration"
   ansible.builtin.copy:
     dest: "/srv/containers/caddy/conf.d/ops_stack.caddy"
     content: |
@@ -149,14 +194,18 @@
     mode: '0644'
   become: true
   tags:
+    - cis_5_8
+    - stg_v230440
+    - nist_sc_8
     - iso_27001_9_4
+    - iso_27001_8_26
     - containers
     - ops
     - remediate
   when: ops_enable
   notify: restart_caddy
 
-- name: "ISO 27001 §8.26 | Action 700000 | Create Homarr Container Quadlet"
+- name: "CIS 5.9 | STIG V-230440 | NIST AC-3 | ISO 27001 §8.20 | Action 700000 | Create Homarr Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/homarr.container"
     content: |
@@ -187,6 +236,10 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
+    - cis_5_9
+    - stg_v230440
+    - nist_ac_3
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - ops
@@ -194,7 +247,7 @@
   when: homarr_enable
   notify: reload_systemd
 
-- name: Create Vaultwarden Secrets File
+- name: "CIS 5.10 | STIG V-230440 | NIST IA-2 | Create Vaultwarden Secrets File"
   ansible.builtin.copy:
     dest: "{{ containers_secrets_dir }}/vaultwarden.env"
     content: |
@@ -205,13 +258,16 @@
     group: "{{ containers_secrets_group }}"
   become: true
   tags:
+    - cis_5_10
+    - stg_v230440
+    - nist_ia_2
     - security
     - containers
     - ops
   when: vaultwarden_enable
   notify: reload_systemd
 
-- name: "ISO 27001 §8.26 | Action 700000 | Create Vaultwarden Container Quadlet"
+- name: "CIS 5.11 | STIG V-230440 | NIST IA-2 | ISO 27001 §8.20 | Action 700000 | Create Vaultwarden Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/vaultwarden.container"
     content: |
@@ -244,6 +300,10 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
+    - cis_5_11
+    - stg_v230440
+    - nist_ia_2
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - ops
@@ -251,7 +311,7 @@
   when: vaultwarden_enable
   notify: reload_systemd
 
-- name: Create Wiki.js Container Quadlet
+- name: "CIS 5.12 | STIG V-230440 | NIST AC-3 | Create Wiki.js Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/wiki.container"
     content: |
@@ -287,8 +347,14 @@
   become: true
   when: wiki_enable
   notify: reload_systemd
+  tags:
+    - cis_5_12
+    - stg_v230440
+    - nist_ac_3
+    - containers
+    - ops
 
-- name: Create Wiki.js Postgres Quadlet
+- name: "CIS 5.13 | STIG V-230440 | NIST SC-8 | Create Wiki.js Postgres Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/wikijs-db.container"
     content: |
@@ -328,8 +394,14 @@
   become: true
   when: wiki_enable
   notify: reload_systemd
+  tags:
+    - cis_5_13
+    - stg_v230440
+    - nist_sc_8
+    - containers
+    - ops
 
-- name: Create Wastebin Container Quadlet
+- name: "CIS 5.14 | STIG V-230440 | NIST AC-3 | Create Wastebin Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/wastebin.container"
     content: |
@@ -359,8 +431,14 @@
   become: true
   when: wastebin_enable
   notify: reload_systemd
+  tags:
+    - cis_5_14
+    - stg_v230440
+    - nist_ac_3
+    - containers
+    - ops
 
-- name: Create Filebrowser Container Quadlet
+- name: "CIS 5.15 | STIG V-230440 | NIST AC-3 | Create Filebrowser Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/filebrowser.container"
     content: |
@@ -391,3 +469,9 @@
   become: true
   when: filebrowser_enable | default(false)
   notify: reload_systemd
+  tags:
+    - cis_5_15
+    - stg_v230440
+    - nist_ac_3
+    - containers
+    - ops

@@ -1,0 +1,31 @@
+---
+galaxy_info:
+  role_name: shared
+  author: deploysystemunified
+  description: Shared tasks and utilities for other roles
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - shared
+    - utilities
+    - helpers
+    - common
+    - reusable
+    - multiarch
+    - automation
+
+collections:
+  - ansible.builtin
+
+dependencies: []

@@ -1,0 +1,40 @@
+---
+# Goss-based Continuous Monitoring Role - Default Variables
+
+# Goss version
+goss_version: "v0.4.4"
+
+# Architecture
+goss_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' }}"
+
+# Installation type: static (default), go
+goss_install_type: "static"
+
+# Output format: json, rspecish, documentation, junit, tap, nagios
+goss_output_format: "json"
+
+# Drift detection settings
+goss_enable_drift_detection: true
+goss_drift_check_interval: 3600
+
+# Auto remediation settings
+goss_enable_auto_remediation: false
+
+# Cron settings
+goss_enable_cron: true
+goss_cron_minute: "0"
+goss_cron_hour: "*/6"
+
+# Log settings
+goss_log_dir: /var/log/goss
+
+# Goss tags
+goss_tags:
+  - security
+  - monitoring
+  - goss
+  - testing
+  - hardening
+  - linux
+  - iso27001
+  - nist80053

@@ -1,0 +1,272 @@
+# Goss tests for security/audit_integrity role
+# Auditd Configuration, Log Integrity
+# CIS Benchmark: 4.x - Logging and Auditing
+# ISO 27001 §8.15, §8.16 | STIG V-23027x | NIST AU-2/AU-3/AU-12
+
+# =============================================================================
+# PACKAGE TESTS - Verify audit packages are installed
+# =============================================================================
+package:
+  # CIS 4.1.1 - Ensure auditd is installed
+  auditd:
+    installed: true
+  audispd-plugins:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify audit services are running
+# =============================================================================
+service:
+  # CIS 4.1.2 - Ensure auditd service is enabled
+  auditd:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify audit configuration files
+# =============================================================================
+file:
+  # CIS 4.1.x - Main auditd configuration
+  /etc/audit/auditd.conf:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+    contains:
+      - /^log_file = \/var\/log\/audit\/audit.log/
+      - /^log_format = ENRICHED/
+      - /^max_log_file = 10/
+      - /^num_logs = 5/
+      - /^max_log_file_action = keep_logs/
+      - /^space_left_action = email/
+      - /^action_mailacct = root/
+      - /^admin_space_left_action = halt/
+
+  # CIS 4.2.x - Audit rules configuration
+  /etc/audit/rules.d/audit.rules:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    contains:
+      # CIS 4.2.1 - Boot time audit
+      - /^-w \/var\/log\/faillog -p wa -k logins/
+      # CIS 4.2.2 - Time change events
+      - /^-w \/etc\/localtime -p wa -k time-change/
+      - /^-w \/etc\/timezone -p wa -k time-change/
+      # CIS 4.2.3 - User/group changes
+      - /^-w \/etc\/group -p wa -k identity/
+      - /^-w \/etc\/passwd -p wa -k identity/
+      - /^-w \/etc\/gshadow -p wa -k identity/
+      - /^-w \/etc\/shadow -p wa -k identity/
+      # CIS 4.2.4 - Network environment changes
+      - /^-w \/etc\/hosts -p wa -k network/
+      - /^-w \/etc\/network -p wa -k network/
+      # CIS 4.2.5 - System administration scope
+      - /^-w \/etc\/sudoers -p wa -k scope/
+      - /^-w \/etc\/sudoers.d -p wa -k scope/
+      # CIS 4.2.6 - Login/logout events
+      - /^-w \/var\/log\/lastlog -p wa -k logins/
+      # CIS 4.2.8 - DAC permission changes
+      - /^-a always,exit -F arch=b64 -S chmod -S chown -S fchmod -S fchown -k perm_mod/
+      # CIS 4.2.13 - Kernel module loading
+      - /^-w \/sbin\/insmod -p x -k modules/
+      - /^-w \/sbin\/rmmod -p x -k modules/
+      - /^-w \/sbin\/modprobe -p x -k modules/
+      # CIS 4.2.14 - Immutable configuration
+      - /^-e 2/
+
+  # CIS 4.2.x - Audit rules directory
+  /etc/audit/rules.d:
+    exists: true
+    filetype: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+  # CIS 4.2.x - Audit log directory
+  /var/log/audit:
+    exists: true
+    filetype: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+  # CIS 4.2.x - Journald configuration for audit
+  /etc/systemd/journald.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^Storage=persistent/
+      - /^Compress=yes/
+      - /^Seal=yes/
+      - /^ForwardToSyslog=no/
+
+  # CIS 4.x - Journal log directory
+  /var/log/journal:
+    exists: true
+    filetype: directory
+    mode: "2755"
+    owner: root
+    group: systemd-journal
+
+  # CIS 4.x - Logrotate configuration for audit logs
+  /etc/logrotate.d/audit:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 4.x - Audisp configuration
+  /etc/audit/audispd.conf:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  # CIS 4.x - Audisp plugins configuration
+  /etc/audit/plugins.d:
+    exists: true
+    filetype: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify audit configuration and operation
+# =============================================================================
+command:
+  # CIS 4.1.2 - Ensure auditd service is running
+  auditd_status:
+    exec: 'systemctl is-active auditd'
+    exit-status: 0
+    stdout:
+      - /^active$/
+    timeout: 5000
+
+  # CIS 4.2.1 - Ensure auditing for processes before auditd is enabled
+  audit_boot_param:
+    exec: 'grep -E "^\s*linux" /boot/grub/grub.cfg | grep -o "audit=1" | head -1'
+    exit-status: 0
+    stdout:
+      - /audit=1/
+    timeout: 5000
+
+  # CIS 4.2.2 - Verify time change auditing
+  audit_time_change:
+    exec: 'auditctl -l 2>/dev/null | grep -c "time-change" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.3 - Verify identity file auditing
+  audit_identity:
+    exec: 'auditctl -l 2>/dev/null | grep -c "identity" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.4 - Verify network environment auditing
+  audit_network:
+    exec: 'auditctl -l 2>/dev/null | grep -c "network" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.5 - Verify scope auditing
+  audit_scope:
+    exec: 'auditctl -l 2>/dev/null | grep -c "scope" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.6 - Verify login/logout auditing
+  audit_logins:
+    exec: 'auditctl -l 2>/dev/null | grep -c "logins" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.8 - Verify permission modification auditing
+  audit_perm_mod:
+    exec: 'auditctl -l 2>/dev/null | grep -c "perm_mod" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.13 - Verify kernel module auditing
+  audit_modules:
+    exec: 'auditctl -l 2>/dev/null | grep -c "modules" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.14 - Verify audit configuration is immutable
+  audit_immutable:
+    exec: 'auditctl -s 2>/dev/null | grep -c "enabled 2" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 4.2.15 - Ensure audit logs are not automatically deleted
+  audit_log_retention:
+    exec: 'grep "^max_log_file_action" /etc/audit/auditd.conf | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^keep_logs$/
+    timeout: 5000
+
+  # CIS 4.2.16 - Ensure system is disabled when audit logs are full
+  audit_space_action:
+    exec: 'grep "^admin_space_left_action" /etc/audit/auditd.conf | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^halt$/
+    timeout: 5000
+
+  # CIS 4.2.17 - Verify audit log directory permissions
+  audit_log_permissions:
+    exec: 'stat -c "%a" /var/log/audit'
+    exit-status: 0
+    stdout:
+      - /^700$/
+    timeout: 5000
+
+  # CIS 4.x - Verify auditd is collecting events
+  audit_event_count:
+    exec: 'ausearch -ts today 2>/dev/null | grep -c "type=" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 10000
+
+  # CIS 4.x - Verify journald persistent storage
+  journald_storage:
+    exec: 'grep "^Storage" /etc/systemd/journald.conf | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^persistent$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Verify audit processes
+# =============================================================================
+process:
+  # CIS 4.1.2 - Ensure auditd is running
+  auditd:
+    running: true
+
+# =============================================================================
+# PORT TESTS - Not applicable for audit/integrity
+# =============================================================================
+# Note: Audit and integrity monitoring does not involve network ports

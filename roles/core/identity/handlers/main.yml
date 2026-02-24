@@ -1,1 +1,4 @@
 ---
+# Handlers for core/identity role
+# Note: This role generates high-entropy UUIDs for virtualization objects
+# No service restarts are required as UUID generation is a one-time fact operation

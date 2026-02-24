@@ -7,12 +7,35 @@ argument_specs:
       - Implements forensic logging for blocked traffic
       - Aligns with ISO 27001 §9.4 and NIST AC-3
     options:
-      firewall_enabled:
+      networking_firewall_enabled:
         type: bool
-        description: Enable the firewall service
+        description: Enable or disable the firewall service
         default: true
-      firewall_allowed_tcp_ports:
+      networking_firewall_allowed_tcp_ports:
         type: list
         elements: str
-        description: List of allowed TCP ports
+        description: List of TCP ports to allow
         default: ["22", "80", "443"]
+      networking_firewall_allow_endlessh:
+        type: bool
+        description: Automatically open port for Endlessh tarpit
+        default: false
+      networking_firewall_endlessh_port:
+        type: int
+        description: Port number used by Endlessh
+        default: 22
+      networking_firewall_allowed_udp_ports:
+        type: list
+        elements: str
+        description: List of UDP ports to allow
+        default: []
+      networking_firewall_additional_rules:
+        type: list
+        elements: dict
+        description: Granular firewall rules (port, proto, src, comment)
+        default: []
+      networking_firewall_forward_policy:
+        type: str
+        description: Default forward policy (DROP, ACCEPT)
+        choices: ["DROP", "ACCEPT"]
+        default: "DROP"

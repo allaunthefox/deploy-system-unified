@@ -1,0 +1,65 @@
+---
+# Internal variables for kubernetes/ingress role
+
+# Ingress controller internal names
+_ingress_controller_names:
+  nginx-ingress: "ingress-nginx"
+  traefik: "traefik"
+  ambassador: "ambassador"
+
+# Controller package names
+_ingress_controller_package:
+  nginx-ingress: "ingress-nginx-controller"
+  traefik: "traefik"
+  ambassador: "ambassador"
+
+# Controller service names
+_ingress_controller_service:
+  nginx-ingress: "ingress-nginx-controller"
+  traefik: "traefik"
+  ambassador: "ambassador"
+
+# Default namespace
+_ingress_default_namespace: "ingress-nginx"
+
+# Default class names
+_ingress_default_class:
+  nginx-ingress: "nginx"
+  traefik: "traefik"
+  ambassador: "ambassador"
+
+# Prometheus metrics ports
+_ingress_metrics_port:
+  nginx-ingress: 10254
+  traefik: 9100
+  ambassador: 8877
+
+# Default TLS secret name
+_ingress_default_tls_secret: "ingress-tls"
+
+# Helm release names
+_ingress_helm_release:
+  nginx-ingress: "ingress-nginx"
+  traefik: "traefik"
+  ambassador: "ambassador"
+
+# Valid service types
+_ingress_valid_service_types:
+  - LoadBalancer
+  - NodePort
+  - ClusterIP
+
+# Valid controller types
+_ingress_valid_controllers:
+  - nginx-ingress
+  - traefik
+  - ambassador
+
+# Resource requirement defaults
+_ingress_default_resources:
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"

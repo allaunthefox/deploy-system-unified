@@ -1,0 +1,48 @@
+---
+# Role metadata for kubernetes/ingress
+galaxy_info:
+  role_name: ingress
+  author: "deploy-system-unified"
+  description: "Kubernetes Ingress Controller (nginx-ingress, Traefik, Ambassador)"
+  company: "deploy-system-unified"
+  license: "MIT"
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "20.04"
+        - "22.04"
+    - name: Debian
+      versions:
+        - "11"
+        - "12"
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+  galaxy_tags:
+    - kubernetes
+    - ingress
+    - networking
+    - nginx
+    - traefik
+    - ambassador
+    - loadbalancing
+    - helm
+    - cloud
+    - cloudnative
+    - kubernetes
+    - networking
+    - web
+    - api
+    - proxy
+    - ssl
+    - tls
+
+collections:
+  - ansible.builtin
+  - kubernetes.core
+
+dependencies:
+  - role: kubernetes.common
+    when: false  # Optional dependency

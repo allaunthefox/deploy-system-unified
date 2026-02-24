@@ -1,0 +1,69 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: default
+  options:
+    managed: false
+    ansible_connection_options:
+      ansible_connection: containers.podman.podman
+platforms:
+  - name: mac-apparmor-ubuntu-2204
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+  - name: mac-apparmor-ubuntu-2404
+    image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+  - name: mac-apparmor-debian-12
+    image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  - name: mac-apparmor-alpine-319
+    image: docker.io/geerlingguy/docker-alpine319-ansible:latest
+  - name: mac-apparmor-rockylinux-9
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+  - name: mac-apparmor-amazonlinux-2023
+    image: docker.io/geerlingguy/docker-amazonlinux2023-ansible:latest
+prerun: false
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      deprecation_warnings: false
+  inventory:
+    host_vars:
+      mac-apparmor-ubuntu-2204:
+        ansible_connection: containers.podman.podman
+        ansible_host: mac-apparmor-ubuntu-2204
+      mac-apparmor-ubuntu-2404:
+        ansible_connection: containers.podman.podman
+        ansible_host: mac-apparmor-ubuntu-2404
+      mac-apparmor-debian-12:
+        ansible_connection: containers.podman.podman
+        ansible_host: mac-apparmor-debian-12
+      mac-apparmor-alpine-319:
+        ansible_connection: containers.podman.podman
+        ansible_host: mac-apparmor-alpine-319
+      mac-apparmor-rockylinux-9:
+        ansible_connection: containers.podman.podman
+        ansible_host: mac-apparmor-rockylinux-9
+      mac-apparmor-amazonlinux-2023:
+        ansible_connection: containers.podman.podman
+        ansible_host: mac-apparmor-amazonlinux-2023
+  env:
+    ANSIBLE_ROLES_PATH: ../../../../
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    prepare: prepare.yml
+    cleanup: cleanup.yml
+    side_effect: side_effect.yml
+    verify: verify.yml
+verifier:
+  name: ansible
+scenario:
+  test_sequence:
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy

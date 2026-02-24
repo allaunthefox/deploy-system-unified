@@ -1,7 +1,8 @@
 ---
 galaxy_info:
+  role_name: common
   author: prod
-  description: "WI-CONT | Common handlers and utilities for container roles"
+  description: "WI-CONT | Common handlers and utilities for container roles - ISO 27001 §8.26 compliant"
   license: MIT
   min_ansible_version: "2.10"
   platforms:
@@ -15,4 +16,26 @@ galaxy_info:
       versions: [all]
     - name: Alpine
       versions: [all]
+  galaxy_tags:
+    - containers
+    - common
+    - utilities
+    - handlers
+    - podman
+    - quadlet
+    - systems
+    - linux
+    - automation
+    - iso9001
+    - iso27001
+    - cis
+    - nist
+    - security
+    - compliance
+    - hardening
+    - container_security
+
+collections:
+  - ansible.builtin
+
 dependencies: []

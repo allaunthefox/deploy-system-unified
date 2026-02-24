@@ -12,3 +12,16 @@ preflight_check_license: true
 preflight_strict_license_check: false
 preflight_install_license_tools: false
 preflight_become_pip: false
+
+# GPU vendor validation
+preflight_check_gpu_vendor: false
+preflight_strict_gpu_vendor: true
+
+# Container runtime validation
+preflight_check_container_runtime: false
+preflight_required_container_runtime: "podman"
+
+# Kubernetes connectivity validation
+preflight_check_kubernetes: false
+preflight_require_kubectl: true
+preflight_require_cluster_connectivity: false

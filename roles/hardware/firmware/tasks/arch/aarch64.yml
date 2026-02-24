@@ -2,6 +2,7 @@
 # aarch64 specific firmware tasks
 
 - name: Set distribution-specific hardware package names (aarch64)
+  tags: [hardware, firmware, remediate]
   ansible.builtin.set_fact:
     microcode_packages: [] # ARM uses different firmware mechanisms
     monitoring_packages: >-

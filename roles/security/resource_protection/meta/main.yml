@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: resource_protection
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Mitigation of DoS and resource exhaustion attacks (ulimits, systemd limits)"
   license: MIT
   min_ansible_version: "2.15"
@@ -19,9 +19,18 @@ galaxy_info:
   galaxy_tags:
     - security
     - resource
+    - protection
     - dos
+    - mitigation
     - limits
+    - ulimits
     - systemd
-    - iso_27001
+    - tuning
+    - optimization
+    - iso27001
+    - availability
+
+collections:
+  - ansible.builtin
 
 dependencies: []

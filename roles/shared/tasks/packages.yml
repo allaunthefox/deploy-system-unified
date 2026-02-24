@@ -3,41 +3,51 @@
 # Use: ansible.builtin.include_tasks: roles/shared/tasks/packages.yml
 
 - name: Set package name fact
+  tags: [shared, remediate]
   ansible.builtin.set_fact:
     _package_list: "{{ package_list | default([package_name]) }}"
 
 - name: Install packages (Debian)
+  tags: [shared, remediate]
   ansible.builtin.apt:
     name: "{{ _package_list }}"
+  tags: [shared, remediate]
     state: present
   become: true
   register: _apt_result
   when: ansible_facts['os_family'] == 'Debian'
 
 - name: Install packages (RedHat)
+  tags: [shared, remediate]
   ansible.builtin.yum:
     name: "{{ _package_list }}"
+  tags: [shared, remediate]
     state: present
   become: true
   register: _yum_result
   when: ansible_facts['os_family'] == 'RedHat'
 
 - name: Install packages (Alpine)
+  tags: [shared, remediate]
   ansible.builtin.apk:
     name: "{{ _package_list }}"
+  tags: [shared, remediate]
     state: present
   become: true
   register: _apk_result
   when: ansible_facts['os_family'] == 'Alpine'
 
 - name: Install packages (Arch Linux)
+  tags: [shared, remediate]
   ansible.builtin.pacman:
     name: "{{ _package_list }}"
+  tags: [shared, remediate]
     state: present
   become: true
   register: _pacman_result
   when: ansible_facts['os_family'] == 'Archlinux'
 
 - name: Report package installation result
+  tags: [shared, remediate]
   ansible.builtin.debug:
     msg: "Package {{ _package_list }} installation complete"

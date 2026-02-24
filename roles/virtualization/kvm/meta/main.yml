@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: kvm
-  author: deploy-system-unified
+  author: deploysystemunified
   description: KVM/QEMU hypervisor installation and secure configuration
   license: MIT
   min_ansible_version: "2.15"
@@ -20,6 +20,18 @@ galaxy_info:
     - qemu
     - libvirt
     - isolation
-    - iso_27001
+    - iso27001
+    - hypervisor
+    - vm
+    - cloud
+    - infrastructure
+    - cis
+    - nist80053
+    - linux
+    - automation
+    - compute
+
+collections:
+  - ansible.builtin
 
 dependencies: []

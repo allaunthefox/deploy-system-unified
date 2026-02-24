@@ -1,3 +1,48 @@
 ---
-# Vars for advanced_security_hardening role
-# Role-specific variables that override defaults
+# Internal variables for security/advanced role
+security_advanced_hardening_level: "high"
+security_advanced_monitoring_enabled: true
+
+# Advanced Security Standards
+security_advanced_standard: "CIS-Hardening-Level-2"
+security_advanced_nist_control: "CM-2"
+
+# =============================================================================
+# COMPLIANCE FRAMEWORK MAPPINGS
+# =============================================================================
+
+# CIS Benchmark Controls covered by Advanced Security
+security_advanced_cis_controls:
+  - id: "5.2.1"
+    title: "Ensure SSH Protocol is configured"
+    severity: "high"
+  - id: "5.2.4"
+    title: "Ensure SSH HostKey is configured"
+    severity: "high"
+
+# STIG Controls covered by Advanced Security
+security_advanced_stig_controls:
+  - id: "V-230220"
+    title: "SSH Server must be configured"
+    severity: "high"
+  - id: "V-230221"
+    title: "SSH Server cryptographic configuration"
+    severity: "high"
+
+# NIST 800-53 Controls covered by Advanced Security
+security_advanced_nist_controls:
+  - id: "IA-5"
+    title: "Authenticator Management"
+    family: "Identification and Authentication"
+  - id: "AC-17"
+    title: "Remote Access"
+    family: "Access Control"
+
+# ISO 27001:2022 Controls covered by Advanced Security
+security_advanced_iso_27001_controls:
+  - id: "9.2"
+    title: "User access management"
+    category: "Organizational controls"
+  - id: "10.1"
+    title: "Cryptographic controls"
+    category: "Technological controls"

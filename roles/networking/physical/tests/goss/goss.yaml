@@ -1,0 +1,37 @@
+# Goss tests for networking/physical role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  ethtool:
+    installed: true
+  iproute2:
+    installed: true
+
+# =============================================================================
+# FILE TESTS
+# =============================================================================
+file:
+  /sys/class/net:
+    exists: true
+    filetype: directory
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  ip_link:
+    exec: 'ip link show'
+    exit-status: 0
+    timeout: 10000
+
+  ip_addr:
+    exec: 'ip addr show'
+    exit-status: 0
+    timeout: 10000
+
+  ethtool:
+    exec: 'ethtool --version'
+    exit-status: 0
+    timeout: 10000

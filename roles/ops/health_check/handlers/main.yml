@@ -1,1 +1,34 @@
 ---
+# Handlers for ops/health_check role
+# ISO 9001 Structural Consistency - Handler definitions for health check operations
+# Note: This role performs health checks and does not typically require service restarts
+
+- name: restart_health_monitor
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - prometheus-node-exporter
+    - telegraf
+    - datadog-agent
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - health
+    - monitoring
+
+- name: reload_health_check_config
+  ansible.builtin.debug:
+    msg: "Health check configuration reloaded - run health checks again to verify"
+  tags:
+    - ops
+    - health
+
+- name: trigger_health reassessment
+  ansible.builtin.meta: end_host
+  when: health_check_fail_on_mandatory | bool
+  tags:
+    - ops
+    - health

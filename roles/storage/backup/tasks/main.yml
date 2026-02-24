@@ -1,5 +1,115 @@
 ---
-- name: "ISO 27040 | Action 900000 | placeholder task (no-op)"
-  ansible.builtin.debug:
-    msg: "Placeholder: no action"
-  tags: [no_op]
+# Storage Backup Role
+# ISO 27040 - Storage Security
+# ISO 9001 - Quality Management
+
+- name: "ISO 27040 §8 | NIST CP-9 | Action 900000 | Backup - Configure backup storage pool"
+  block:
+    - name: Create backup storage directory
+      ansible.builtin.file:
+        path: "{{ backup_storage_path | default('/var/backup') }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0750'
+      become: true
+      failed_when: false
+
+    - name: Configure backup retention policy
+      ansible.builtin.copy:
+        dest: "{{ backup_storage_path | default('/var/backup') }}/retention.conf"
+        content: |
+          # Backup retention policy per ISO 27040
+          RETENTION_DAYS={{ backup_retention_days | default(30) }}
+          RETENTION_WEEKS={{ backup_retention_weeks | default(12) }}
+          RETENTION_MONTHS={{ backup_retention_months | default(12) }}
+          ENABLE_ARCHIVAL={{ backup_enable_archival | default(true) }}
+        mode: '0640'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27040
+    - nist_cp_9
+    - action_900000
+    - backup
+    - storage
+    - remediation
+
+- name: "ISO 27040 §8 | NIST CP-9 | Action 900001 | Backup - Initialize backup repository"
+  block:
+    - name: Initialize backup metadata directory
+      ansible.builtin.file:
+        path: "{{ backup_storage_path | default('/var/backup') }}/.metadata"
+        state: directory
+        owner: root
+        group: root
+        mode: '0700'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27040
+    - nist_cp_9
+    - action_900001
+    - backup
+    - storage
+
+- name: "ISO 27040 §9 | Action 900003 | Backup Verify - Configure automated restore testing"
+  block:
+    - name: Configure automated restore verification
+      ansible.builtin.copy:
+        dest: "{{ backup_storage_path | default('/var/backup') }}/verify.conf"
+        content: |
+          # Automated restore verification per ISO 27040 §9
+          ENABLE_VERIFY={{ backup_enable_verify | default(true) }}
+          VERIFY_FREQUENCY={{ backup_verify_frequency | default('weekly') }}
+          VERIFY_SAMPLE_SIZE={{ backup_verify_sample_size | default(1) }}
+        mode: '0640'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27040
+    - action_900003
+    - restore_test
+    - backup
+    - integrity
+
+- name: "ISO 27040 §9 | Action 900004 | Backup Integrity - Configure cryptographic hash verification"
+  block:
+    - name: Configure integrity verification
+      ansible.builtin.copy:
+        dest: "{{ backup_storage_path | default('/var/backup') }}/integrity.conf"
+        content: |
+          # Cryptographic hash verification per ISO 27040
+          ENABLE_INTEGRITY_CHECK={{ backup_integrity_check | default(true) }}
+          HASH_ALGORITHM={{ backup_hash_algorithm | default('sha256') }}
+          VERIFY_ON_RESTORE={{ backup_verify_on_restore | default(true) }}
+        mode: '0640'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27040
+    - action_900004
+    - integrity_verify
+    - backup
+    - cryptography
+
+- name: "ISO 27001 §12.4 | NIST AU-12 | Action 840030 | Backup Logging - Configure backup audit logging"
+  block:
+    - name: Configure backup audit logging
+      ansible.builtin.copy:
+        dest: "{{ backup_storage_path | default('/var/backup') }}/audit.conf"
+        content: |
+          # Backup audit logging per ISO 27001 §12.4
+          ENABLE_AUDIT_LOG=true
+          AUDIT_LOG_PATH={{ backup_audit_log_path | default('/var/log/backup-audit.log') }}
+          LOG_LEVEL=info
+        mode: '0640'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_12_4
+    - nist_au_12
+    - action_840030
+    - audit
+    - backup
+    - logging

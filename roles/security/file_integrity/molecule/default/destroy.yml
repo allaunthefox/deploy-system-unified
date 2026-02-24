@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove file_integrity test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - file-integrity-ubuntu-2204
+        - file-integrity-debian-12
+        - file-integrity-alpine-319
+        - file-integrity-rockylinux-9

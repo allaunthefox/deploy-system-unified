@@ -3,6 +3,7 @@
 # Implements: Kernel Modules + Sysctls per user requirement
 
 - name: Read kernel module lockdown state
+  tags: [networking, containers, remediate]
   ansible.builtin.command:
     cmd: cat /proc/sys/kernel/modules_disabled
   register: _kernel_modules_disabled
@@ -12,6 +13,7 @@
   become: true
 
 - name: Detect bridge sysctl availability
+  tags: [networking, containers, remediate]
   ansible.builtin.stat:
     path: /proc/sys/net/bridge/bridge-nf-call-iptables
   register: _bridge_sysctl_stat
@@ -20,8 +22,10 @@
   become: true
 
 - name: Load required kernel modules (runtime)
+  tags: [networking, containers, remediate]
   community.general.modprobe:
     name: "{{ item }}"
+  tags: [networking, containers, remediate]
     state: present
   loop:
     - bridge
@@ -34,8 +38,10 @@
     - _kernel_modules_disabled.stdout | default('0') | trim != '1'
 
 - name: Load optional kernel modules (runtime)
+  tags: [networking, containers, remediate]
   community.general.modprobe:
     name: "{{ item }}"
+  tags: [networking, containers, remediate]
     state: present
   loop:
     - macvlan
@@ -47,6 +53,7 @@
     - _kernel_modules_disabled.stdout | default('0') | trim != '1'
 
 - name: Persist kernel modules (boot)
+  tags: [networking, containers, remediate]
   ansible.builtin.copy:
     dest: /etc/modules-load.d/containers-networking.conf
     content: |
@@ -59,8 +66,10 @@
   become: true
 
 - name: Configure ip_forward sysctl (runtime & boot)
+  tags: [networking, containers, remediate]
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
+  tags: [networking, containers, remediate]
     value: '1'
     sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
     state: present
@@ -72,8 +81,10 @@
     - not ansible_check_mode
 
 - name: Configure bridge sysctls (runtime & boot)
+  tags: [networking, containers, remediate]
   ansible.posix.sysctl:
     name: "{{ item }}"
+  tags: [networking, containers, remediate]
     value: '1'
     sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
     state: present
@@ -89,6 +100,7 @@
     - _bridge_sysctl_stat.stat.exists | default(false)
 
 - name: Verify Podman network backend
+  tags: [networking, containers, remediate]
   ansible.builtin.command:
     cmd: podman info --format '{{ "{{" }}.Host.NetworkBackend{{ "}}" }}'
   register: podman_backend
@@ -99,6 +111,7 @@
   environment: "{{ podman_rootless_enabled | bool | ternary(containers_systemd_env, {}) }}"
 
 - name: Assert Netavark backend
+  tags: [networking, containers, remediate]
   ansible.builtin.assert:
     that:
       - "'netavark' in podman_backend.stdout"

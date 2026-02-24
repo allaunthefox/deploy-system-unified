@@ -1,0 +1,314 @@
+# Goss tests for security/scanning role
+# Lynis, Trivy, RKHunter - Security Scanning Tools
+# CIS Benchmark: 4.x - Logging and Auditing (Security Assessment)
+# ISO 27001 §8.8, §8.26 | STIG V-23033x | NIST RA-5/CA-2
+
+# =============================================================================
+# PACKAGE TESTS - Verify security scanning packages
+# =============================================================================
+package:
+  # CIS 4.x - Lynis security auditing tool
+  lynis:
+    installed: true
+  # CIS 4.x - Rootkit Hunter
+  rkhunter:
+    installed: true
+  # CIS 4.x - ClamAV antivirus (for Trivy alternative)
+  clamav:
+    installed: true
+  # CIS 4.x - chkrootkit alternative
+  chkrootkit:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Scanning services
+# =============================================================================
+service:
+  # CIS 4.x - ClamAV daemon for on-access scanning
+  clamav-daemon:
+    enabled: true
+    running: true
+  # CIS 4.x - Freshclam for signature updates
+  clamav-freshclam:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify scanning configuration files
+# =============================================================================
+file:
+  # CIS 4.x - Trivy binary
+  /usr/local/bin/trivy:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Lynis installation directory
+  /usr/share/lynis:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Lynis custom rules directory
+  /etc/lynis:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Lynis default configuration
+  /etc/lynis/default.prf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^SHOW_REPORT=1/
+      - /^QUICK_MODE=0/
+
+  # CIS 4.x - RKHunter configuration
+  /etc/rkhunter.conf:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+    contains:
+      - /^UPDATE_MIRRORS=1/
+      - /^MIRRORS_MODE=0/
+      - /^SCRIPTWHING=1/
+      - /^WEB_CMD=/
+
+  # CIS 4.x - RKHunter data directory
+  /var/lib/rkhunter:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - RKHunter log file
+  /var/log/rkhunter.log:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  # CIS 4.x - ClamAV configuration
+  /etc/clamav/clamd.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^ScanPE yes/
+      - /^ScanELF yes/
+      - /^DetectBrokenExecutables yes/
+
+  # CIS 4.x - ClamAV freshclam configuration
+  /etc/clamav/freshclam.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^Checks 24/
+      - /^DatabaseDirectory/
+
+  # CIS 4.x - ClamAV virus database directory
+  /var/lib/clamav:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: clamav
+    group: clamav
+
+  # CIS 4.x - Security scanning reports directory
+  /var/log/security-scans:
+    exists: true
+    filetype: directory
+    mode: "0750"
+    owner: root
+    group: root
+
+  # CIS 4.x - chkrootkit installation
+  /usr/sbin/chkrootkit:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Cron job for security scans
+  /etc/cron.daily/security-scan:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    contains:
+      - /lynis audit system/
+      - /rkhunter --check/
+
+# =============================================================================
+# COMMAND TESTS - Verify scanning tools configuration and operation
+# =============================================================================
+command:
+  # CIS 4.x - Verify Trivy is installed and working
+  trivy_version:
+    exec: 'trivy --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /Version:/
+    timeout: 5000
+
+  # CIS 4.x - Verify Lynis is installed and working
+  lynis_version:
+    exec: 'lynis --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /Lynis/
+    timeout: 5000
+
+  # CIS 4.x - Verify RKHunter is installed
+  rkhunter_version:
+    exec: 'rkhunter --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /Rootkit Hunter/
+    timeout: 5000
+
+  # CIS 4.x - Verify chkrootkit is installed
+  chkrootkit_exists:
+    exec: 'test -x /usr/sbin/chkrootkit && echo "installed" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^installed$/
+    timeout: 5000
+
+  # CIS 4.x - Verify ClamAV daemon is running
+  clamav_daemon_status:
+    exec: 'systemctl is-active clamav-daemon'
+    exit-status: 0
+    stdout:
+      - /^active$/
+    timeout: 5000
+
+  # CIS 4.x - Verify Freshclam is running
+  freshclam_status:
+    exec: 'systemctl is-active clamav-freshclam'
+    exit-status: 0
+    stdout:
+      - /^active$/
+    timeout: 5000
+
+  # CIS 4.x - Verify ClamAV database is updated
+  clamav_db_updated:
+    exec: 'freshclam --stdout 2>&1 | grep -c "Database updated" || test -f /var/lib/clamav/main.cvd && echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 10000
+
+  # CIS 4.x - Verify RKHunter configuration is valid
+  rkhunter_config_valid:
+    exec: 'rkhunter --check --skip-keypress 2>&1 | head -1'
+    exit-status: 0
+    timeout: 30000
+
+  # CIS 4.x - Verify Lynis can run audit
+  lynis_audit_ready:
+    exec: 'lynis show version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /Lynis/
+    timeout: 5000
+
+  # CIS 4.x - Verify RKHunter update mirrors configured
+  rkhunter_mirrors:
+    exec: 'grep "^UPDATE_MIRRORS=1" /etc/rkhunter.conf | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify RKHunter scriptwhing enabled
+  rkhunter_scriptwhing:
+    exec: 'grep "^SCRIPTWHING=1" /etc/rkhunter.conf | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify ClamAV scan configuration
+  clamav_scan_config:
+    exec: 'grep "^ScanPE yes" /etc/clamav/clamd.conf | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify freshclam check frequency
+  freshclam_checks:
+    exec: 'grep "^Checks" /etc/clamav/freshclam.conf | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^[1-9][0-9]*$/
+    timeout: 5000
+
+  # CIS 4.x - Verify security scan cron job exists
+  security_scan_cron:
+    exec: 'test -x /etc/cron.daily/security-scan && echo "configured" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^configured$/
+    timeout: 5000
+
+  # CIS 4.x - Verify scanning reports directory permissions
+  scan_reports_perms:
+    exec: 'stat -c "%a" /var/log/security-scans'
+    exit-status: 0
+    stdout:
+      - /^750$/
+    timeout: 5000
+
+  # CIS 4.x - Verify Trivy can scan filesystem
+  trivy_fs_scan_ready:
+    exec: 'trivy filesystem --help 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /trivy/
+    timeout: 5000
+
+  # CIS 4.x - Verify Lynis custom rules directory
+  lynis_custom_rules:
+    exec: 'test -d /etc/lynis && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 4.x - Verify RKHunter log file exists
+  rkhunter_log_exists:
+    exec: 'test -f /var/log/rkhunter.log && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Verify scanning processes
+# =============================================================================
+process:
+  # CIS 4.x - Ensure ClamAV daemon is running
+  clamd:
+    running: true
+  # CIS 4.x - Ensure Freshclam is running
+  freshclam:
+    running: true
+
+# =============================================================================
+# PORT TESTS - ClamAV may listen on local socket
+# =============================================================================
+# Note: ClamAV daemon may listen on a local socket for on-access scanning

@@ -1,0 +1,84 @@
+---
+argument_specs:
+  main:
+    short_description: Cosign container image signing role
+    description:
+      - Deploys Cosign for container image signing and verification
+      - Supports both keypair and keyless signing modes
+      - Aligns with ISO 27001 §8.26 and NIST 800-53 requirements
+    options:
+      cosign_version:
+        type: str
+        required: false
+        default: "2.3.0"
+        description:
+          - Cosign version to install
+      cosign_arch:
+        type: str
+        required: false
+        default: "amd64"
+        description:
+          - Architecture for Cosign binary
+      cosign_key_mode:
+        type: str
+        required: false
+        default: "keypair"
+        choices:
+          - keypair
+          - keyless
+        description:
+          - Signing mode for Cosign
+      cosign_skip_keygen:
+        type: bool
+        required: false
+        default: false
+        description:
+          - Skip key generation if keys already exist
+      cosign_keyless_mode:
+        type: bool
+        required: false
+        default: false
+        description:
+          - Enable keyless mode with Fulcio
+      cosign_fulcio_url:
+        type: str
+        required: false
+        default: "https://fulcio.sigstore.dev"
+        description:
+          - Fulcio server URL for keyless signing
+      cosign_rekor_url:
+        type: str
+        required: false
+        default: "https://rekor.sigstore.dev"
+        description:
+          - Rekor server URL for transparency log
+      cosign_enable_verification:
+        type: bool
+        required: false
+        default: false
+        description:
+          - Enable image signature verification
+      cosign_policy_name:
+        type: str
+        required: false
+        default: "default-policy"
+        description:
+          - Name for verification policy
+      cosign_verify_image:
+        type: str
+        required: false
+        default: ""
+        description:
+          - Image to verify (optional)
+      cosign_root_cert:
+        type: str
+        required: false
+        default: ""
+        description:
+          - Root certificate for verification
+      cosign_log_level:
+        type: str
+        required: false
+        default: "info"
+        description:
+          - Logging level for Cosign

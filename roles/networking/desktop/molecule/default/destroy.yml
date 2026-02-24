@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove desktop test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - desktop-ubuntu-2204
+        - desktop-debian-12
+        - desktop-alpine-319
+        - desktop-rockylinux-9

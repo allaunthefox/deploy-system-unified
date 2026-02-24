@@ -1,0 +1,46 @@
+---
+# Verify Ingress Controller deployment
+
+- name: "Wait for ingress controller pods to be ready"
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ kubernetes_ingress_namespace }}"
+    label_selectors:
+      - "app.kubernetes.io/name={{ 'ingress-nginx' if kubernetes_ingress_controller == 'nginx-ingress' else kubernetes_ingress_controller }}"
+  register: _ingress_pods
+  until: >-
+    {{ 
+      (resources | selectattr('status.phase', 'eq', 'Running') | list | length > 0)
+      if resources is defined else false
+    }}
+  retries: 30
+  delay: 10
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Get ingress controller service"
+  kubernetes.core.k8s_info:
+    kind: Service
+    namespace: "{{ kubernetes_ingress_namespace }}"
+    name: "{{ 'ingress-nginx-controller' if kubernetes_ingress_controller == 'nginx-ingress' else kubernetes_ingress_controller }}"
+  register: _ingress_service
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Display ingress controller endpoint"
+  ansible.builtin.debug:
+    msg: |
+      Ingress Controller deployed successfully!
+      Controller: {{ kubernetes_ingress_controller }}
+      Namespace: {{ kubernetes_ingress_namespace }}
+      Service: {{ _ingress_service.resources[0].metadata.name | default('N/A') }}
+      External IP: {{ _ingress_service.resources[0].spec.externalIPs | default(_ingress_service.resources[0].status.loadBalancer.ingress | default([{}])[0].ip | default('Pending')) }}
+      HTTP Port: {{ kubernetes_ingress_http_port }}
+      HTTPS Port: {{ kubernetes_ingress_https_port }}
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Fail if ingress controller failed to deploy"
+  ansible.builtin.fail:
+    msg: "Ingress controller deployment failed. Check logs for details."
+  when: 
+    - kubernetes_ingress_enabled | bool
+    - _ingress_pods.resources is defined
+    - (resources | selectattr('status.phase', 'eq', 'Running') | list | length) == 0

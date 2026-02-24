@@ -1,0 +1,276 @@
+---
+# verify.yml - Verification playbook for security/sshd role
+# Validates SSH daemon hardening including configuration, host keys, and security settings
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Passes if SSH is properly hardened
+#
+# Example:
+#     molecule verify -s default
+
+- name: Verify SSH hardening
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    # =========================================================================
+    # SSHD Service Verification
+    # =========================================================================
+    - name: Check SSH service exists
+      ansible.builtin.command: which sshd
+      register: sshd_which
+      changed_when: false
+      failed_when: false
+
+    - name: Check SSH service status
+      ansible.builtin.service_facts:
+      register: services_state
+
+    - name: Get SSH service name
+      ansible.builtin.set_fact:
+        ssh_service_name: "{{ 'sshd' if services_state.ansible_facts.services['sshd'] is defined else 'ssh' if services_state.ansible_facts.services['ssh'] is defined else '' }}"
+
+    - name: Verify SSH service is running
+      ansible.builtin.assert:
+        that:
+          - "ssh_service_name != ''"
+          - "services_state.ansible_facts.services[ssh_service_name] is defined"
+          - "services_state.ansible_facts.services[ssh_service_name].state == 'running'"
+        fail_msg: "SSH service should be running"
+        success_msg: "SSH service is running"
+
+    - name: Verify SSH service is enabled
+      ansible.builtin.assert:
+        that:
+          - "services_state.ansible_facts.services[ssh_service_name].status == 'enabled'"
+        fail_msg: "SSH service should be enabled"
+        success_msg: "SSH service is enabled"
+      when: "services_state.ansible_facts.services[ssh_service_name] is defined"
+
+    # =========================================================================
+    # SSHD Configuration File Verification
+    # =========================================================================
+    - name: Verify SSHD config exists
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config
+      register: sshd_config
+
+    - name: Assert SSHD config exists
+      ansible.builtin.assert:
+        that:
+          - "sshd_config.stat.exists"
+          - "sshd_config.stat.isfile"
+        fail_msg: "SSHD config file should exist"
+
+    - name: Verify SSHD config permissions
+      ansible.builtin.assert:
+        that:
+          - "sshd_config.stat.mode | oct | int | abs == 0o644"
+        fail_msg: "SSHD config should have mode 0644"
+
+    - name: Test SSHD config syntax
+      ansible.builtin.command: sshd -t -f /etc/ssh/sshd_config 2>&1
+      register: sshd_syntax
+      changed_when: false
+      failed_when: false
+
+    - name: Assert SSHD config syntax is valid
+      ansible.builtin.assert:
+        that:
+          - "sshd_syntax.rc == 0"
+        fail_msg: "SSHD config syntax should be valid"
+
+    # =========================================================================
+    # SSHD Security Settings Verification
+    # =========================================================================
+    - name: Get SSHD configuration
+      ansible.builtin.command: sshd -T -f /etc/ssh/sshd_config 2>/dev/null
+      register: sshd_settings
+      changed_when: false
+      failed_when: false
+
+    - name: Verify PermitRootLogin is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^permitrootlogin') | first | regex_search('no$')"
+        fail_msg: "PermitRootLogin should be disabled"
+        success_msg: "Root login is disabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify PasswordAuthentication is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^passwordauthentication') | first | regex_search('no$')"
+        fail_msg: "PasswordAuthentication should be disabled"
+        success_msg: "Password authentication is disabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify PubkeyAuthentication is enabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^pubkeyauthentication') | first | regex_search('yes$')"
+        fail_msg: "PubkeyAuthentication should be enabled"
+        success_msg: "Public key authentication is enabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify X11Forwarding is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^x11forwarding') | first | regex_search('no$')"
+        fail_msg: "X11Forwarding should be disabled"
+        success_msg: "X11 forwarding is disabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify AllowTcpForwarding is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^allowtcpforwarding') | first | regex_search('no$')"
+        fail_msg: "AllowTcpForwarding should be disabled"
+        success_msg: "TCP forwarding is disabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify PermitEmptyPasswords is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^permitemptypasswords') | first | regex_search('no$')"
+        fail_msg: "PermitEmptyPasswords should be disabled"
+        success_msg: "Empty passwords are not permitted"
+      when: sshd_settings.rc == 0
+
+    - name: Verify UsePAM is enabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout_lines | select('search', '^usepam') | first | regex_search('yes$')"
+        fail_msg: "UsePAM should be enabled"
+        success_msg: "PAM is enabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify MaxAuthTries is limited
+      ansible.builtin.set_fact:
+        max_auth_tries: "{{ sshd_settings.stdout_lines | select('search', '^maxauthtries') | first | regex_replace('.*?(\\d+).*', '\\1') | int }}"
+
+    - name: Assert MaxAuthTries is 4 or less
+      ansible.builtin.assert:
+        that:
+          - "max_auth_tries <= 4"
+        fail_msg: "MaxAuthTries should be 4 or less"
+        success_msg: "MaxAuthTries is properly limited"
+
+    # =========================================================================
+    # SSH Host Keys Verification
+    # =========================================================================
+    - name: Verify SSH directory exists
+      ansible.builtin.stat:
+        path: /etc/ssh
+      register: ssh_dir
+
+    - name: Assert SSH directory exists
+      ansible.builtin.assert:
+        that:
+          - "ssh_dir.stat.exists"
+          - "ssh_dir.stat.isdir"
+          - "ssh_dir.stat.mode | oct | int | abs == 0o755"
+        fail_msg: "SSH directory should exist with correct permissions"
+
+    - name: Verify Ed25519 host key exists
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_ed25519_key
+      register: ed25519_key
+
+    - name: Verify Ed25519 key permissions
+      ansible.builtin.assert:
+        that:
+          - "ed25519_key.stat.exists"
+          - "ed25519_key.stat.mode | oct | int | abs == 0o600"
+        fail_msg: "Ed25519 private key should have mode 0600"
+        success_msg: "Ed25519 host key is properly secured"
+
+    - name: Verify RSA host key exists
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_rsa_key
+      register: rsa_key
+
+    - name: Verify RSA key permissions
+      ansible.builtin.assert:
+        that:
+          - "rsa_key.stat.exists"
+          - "rsa_key.stat.mode | oct | int | abs == 0o600"
+        fail_msg: "RSA private key should have mode 0600"
+        success_msg: "RSA host key is properly secured"
+
+    - name: Check for weak DSA keys
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_dsa_key
+      register: dsa_key
+
+    - name: Verify weak DSA keys are removed
+      ansible.builtin.assert:
+        that:
+          - "not dsa_key.stat.exists"
+        fail_msg: "Weak DSA host keys should be removed"
+        success_msg: "Weak DSA keys have been removed"
+
+    # =========================================================================
+    # SSH Port Verification
+    # =========================================================================
+    - name: Verify SSH is listening on port
+      ansible.builtin.shell: ss -tlnp | grep -E ':22\s' || true
+      register: ssh_listening
+      changed_when: false
+      failed_when: false
+
+    - name: Assert SSH is listening
+      ansible.builtin.assert:
+        that:
+          - "ssh_listening.stdout | length > 0"
+        fail_msg: "SSH should be listening on port 22"
+        success_msg: "SSH is listening on port 22"
+
+    # =========================================================================
+    # Privilege Separation Verification
+    # =========================================================================
+    - name: Verify privilege separation directory exists
+      ansible.builtin.stat:
+        path: /run/sshd
+      register: privsep_dir
+
+    - name: Assert privilege separation directory exists
+      ansible.builtin.assert:
+        that:
+          - "privsep_dir.stat.exists"
+          - "privsep_dir.stat.isdir"
+        fail_msg: "SSH privilege separation directory should exist"
+
+    # =========================================================================
+    # Banner Verification
+    # =========================================================================
+    - name: Verify SSH banner is configured
+      ansible.builtin.stat:
+        path: /etc/issue.net
+      register: banner_file
+
+    - name: Verify banner file permissions
+      ansible.builtin.assert:
+        that:
+          - "banner_file.stat.exists"
+          - "banner_file.stat.mode | oct | int | abs == 0o644"
+        fail_msg: "SSH banner should exist with correct permissions"
+      when: banner_file.stat.exists
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display SSH hardening verification summary
+      ansible.builtin.debug:
+        msg: |
+          SSH Hardening Verification Complete:
+          - Service: Running and enabled
+          - Configuration: Valid syntax with secure permissions
+          - Security Settings: Root login disabled, password auth disabled
+          - Host Keys: Ed25519 and RSA keys present with mode 0600
+          - Weak Keys: DSA keys removed
+          - Port: SSH listening on port 22
+          - Privilege Separation: Configured

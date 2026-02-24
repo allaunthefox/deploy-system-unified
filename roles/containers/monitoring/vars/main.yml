@@ -1,2 +1,104 @@
 ---
 # vars file for containers/monitoring
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/monitoring
+# Standards: CIS Docker Benchmark 6.x, STIG V-230450,
+#            NIST AU-2/AU-6/CA-7, ISO 27001 §8.15/§8.16
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "6.x"
+    description: "Container Monitoring Security"
+    controls:
+      - id: "6.1"
+        name: "Monitoring Enable Check"
+        stig: "V-230450"
+        nist: ["CA-7"]
+      - id: "6.2"
+        name: "Monitoring secrets verification"
+        stig: "V-230450"
+        nist: ["AU-2"]
+      - id: "6.3"
+        name: "Grafana admin password validation"
+        stig: "V-230450"
+        nist: ["IA-2"]
+      - id: "6.4"
+        name: "CHANGE_ME policy enforcement"
+        stig: "V-230450"
+        nist: ["CM-6"]
+      - id: "6.5"
+        name: "Monitoring Network Quadlet"
+        stig: "V-230450"
+        nist: ["SC-8"]
+        iso: "8.20"
+      - id: "6.6"
+        name: "Monitoring Directories"
+        stig: "V-230450"
+        nist: ["AU-2"]
+      - id: "6.7"
+        name: "Grafana secrets file"
+        stig: "V-230450"
+        nist: ["IA-2"]
+        iso: "10.1"
+      - id: "6.8"
+        name: "Prometheus Config"
+        stig: "V-230450"
+        nist: ["AU-6"]
+        iso: "12.4"
+      - id: "6.9"
+        name: "Monitoring Pod Quadlet"
+        stig: "V-230450"
+        nist: ["CA-7"]
+        iso: "8.20"
+      - id: "6.10"
+        name: "Prometheus Container Quadlet"
+        stig: "V-230450"
+        nist: ["AU-2"]
+        iso: "8.20"
+      - id: "6.11"
+        name: "Grafana Container Quadlet"
+        stig: "V-230450"
+        nist: ["AU-6"]
+        iso: "8.20"
+      - id: "6.12"
+        name: "Forensic Intelligence Stack"
+        stig: "V-230450"
+        nist: ["AU-2"]
+      - id: "6.13"
+        name: "Grafana Dashboard Framework"
+        stig: "V-230450"
+        nist: ["AU-6"]
+      - id: "6.14"
+        name: "Remove legacy systemd units"
+        stig: "V-230450"
+        nist: ["CM-7"]
+      - id: "6.15"
+        name: "Reload rootless systemd"
+        stig: "V-230450"
+        nist: ["CM-7"]
+      - id: "6.16"
+        name: "Start monitoring services"
+        stig: "V-230450"
+        nist: ["CA-7"]
+        iso: "12.4"
+  stig:
+    container_monitoring:
+      - id: "V-230450"
+        title: "Container Monitoring Security"
+        severity: "medium"
+  nist:
+    au_2: "Audit Events"
+    au_6: "Audit Review, Analysis, and Reporting"
+    ca_7: "Continuous Monitoring"
+    ia_2: "Identification and Authentication"
+    cm_6: "Configuration Settings"
+    cm_7: "Least Functionality"
+  iso_27001:
+    "8.15": "Logging"
+    "8.16": "Monitoring Activities"
+    "10.1": "Cryptographic Controls"
+    "12.4": "Logging and Monitoring"

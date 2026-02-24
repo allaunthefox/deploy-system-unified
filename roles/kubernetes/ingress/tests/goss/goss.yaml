@@ -1,0 +1,101 @@
+---
+# Goss tests for kubernetes/ingress role
+# Tests nginx/traefik installation (ingress controller)
+
+# Helm availability (required for ingress installation)
+command:
+  helm version --short:
+    exit-status: 0
+    stdout:
+      - "v"
+    stderr: []
+
+# Kubernetes namespace for ingress-nginx (when using nginx-ingress)
+command:
+  kubectl get namespace ingress-nginx:
+    exit-status: 0
+    stdout:
+      - "ingress-nginx"
+
+# Ingress class configuration
+command:
+  # Check ingress class exists
+  kubectl get ingressclass nginx:
+    exit-status: 0
+    stdout:
+      - "nginx"
+
+# Nginx Ingress Controller tests
+command:
+  # Check nginx-ingress controller deployment
+  kubectl get deployment -n ingress-nginx ingress-nginx-controller:
+    exit-status: 0
+    stdout:
+      - "ingress-nginx-controller"
+
+  # Check nginx-ingress controller pod is running
+  kubectl get pods -n ingress-nginx -l app.kubernetes.io/component=controller -o jsonpath='{.items[0].status.phase}':
+    exit-status: 0
+    stdout:
+      - "Running"
+
+  # Check nginx-ingress controller service exists
+  kubectl get svc -n ingress-nginx ingress-nginx-controller:
+    exit-status: 0
+    stdout:
+      - "ingress-nginx-controller"
+
+# RBAC - ServiceAccount for nginx-ingress
+command:
+  kubectl get serviceaccount -n ingress-nginx ingress-nginx:
+    exit-status: 0
+    stdout:
+      - "ingress-nginx"
+
+# RBAC - ClusterRole for nginx-ingress
+command:
+  kubectl get clusterrole | grep ingress-nginx:
+    exit-status: 0
+    stdout:
+      - "ingress-nginx"
+
+# Check ingress controller is ready
+command:
+  # Check controller readiness probe
+  kubectl get pods -n ingress-nginx -l app.kubernetes.io/component=controller -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}':
+    exit-status: 0
+    stdout:
+      - "True"
+
+# Traefik tests (if traefik is used instead of nginx-ingress)
+command:
+  # Check if traefik is installed
+  kubectl get deployment -n kube-system traefik:
+    exit-status: 0
+    stdout:
+      - "traefik"
+
+  # Traefik pod is running
+  kubectl get pods -n kube-system -l app.kubernetes.io/name=traefik -o jsonpath='{.items[0].status.phase}':
+    exit-status: 0
+    stdout:
+      - "Running"
+
+  # Traefik service exists
+  kubectl get svc -n kube-system traefik:
+    exit-status: 0
+    stdout:
+      - "traefik"
+
+# Traefik ingress class
+command:
+  kubectl get ingressclass traefik:
+    exit-status: 0
+    stdout:
+      - "traefik"
+
+# Check for ingress resources (informational)
+command:
+  # List all ingress resources
+  kubectl get ingress --all-namespaces:
+    exit-status: 0

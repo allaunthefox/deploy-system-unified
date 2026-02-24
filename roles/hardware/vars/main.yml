@@ -1,0 +1,51 @@
+---
+# Internal variables for hardware role
+# Part of ISO 9001 Structural Consistency
+
+# Hardware device paths
+_hw_device_base_path: /dev
+_hw_disk_device_pattern: sd[a-z]*
+_hw_nvme_device_pattern: nvme[0-9]*n[0-9]+
+_hw_virtual_device_pattern: vd[a-z]*|xvd[a-z]*
+_hw_ram_device_pattern: ram[0-9]*|zram[0-9]*
+_hw_mmc_device_pattern: mmcblk[0-9]*
+
+# Hardware monitoring paths
+_hw_monitor_base_dir: /var/lib/hardware
+_hw_monitor_temp_path: /sys/class/thermal
+_hw_monitor_hwmon_path: /sys/class/hwmon
+_hw_sensors_config_path: /etc/sensors3.conf
+
+# Hardware security paths
+_hw_tpm_device_path: /dev/tpmrm0
+_hw_tpm_alt_device_path: /dev/tpm0
+_hw_secure_boot_path: /sys/firmware/efi/efivars
+_hw_secure_boot_status_cmd: mokutil --sb-state
+
+# Hardware watchdog paths
+_hw_watchdog_device: /dev/watchdog
+_hw_watchdog_config_path: /etc/watchdog.conf
+_hw_watchdog_service_name: watchdog
+
+# Hardware firmware paths
+_hw_firmware_path: /sys/firmware
+_hw_dmi_path: /sys/class/dmi
+_hw_acpi_path: /sys/firmware/acpi
+
+# Hardware tuning defaults
+_hw_io_scheduler_ssd: mq-deadline
+_hw_io_scheduler_hdd: mq-deadline
+_hw_io_scheduler_virtual: none
+_hw_io_scheduler_ram: none
+
+# Hardware read-ahead settings
+_hw_readahead_default_sectors: 4096
+_hw_readahead_large_disk_sectors: 8192
+_hw_readahead_threshold_mb: 1000000
+
+# Hardware packages
+_hw_monitoring_packages:
+  - smartmontools
+  - lm-sensors
+  - hdparm
+  - nvme-cli

@@ -1,2 +1,19 @@
 ---
-# handlers file for core/hardware_support
+# Handlers for core/hardware_support role
+
+- name: restart_systemd_timedate
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: restarted
+  become: true
+  listen: "restart timesyncd"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: reload_timedatectl
+  ansible.builtin.command: timedatectl set-ntp false && timedatectl set-ntp true
+  become: true
+  listen: "reload timedatectl"
+  changed_when: true
+  failed_when: false
+  when: ansible_service_mgr == 'systemd'

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: systemd
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "STD-CORE | Core systemd configuration and hardening (journald, resolved)"
   license: MIT
   min_ansible_version: "2.15"
@@ -17,8 +17,18 @@ galaxy_info:
   galaxy_tags:
     - core
     - systemd
+    - journald
+    - resolved
     - logging
     - dns
-    - iso_27001
+    - hardening
+    - security
+    - linux
+    - iso27001
+    - nist80053
+    - automation
+
+collections:
+  - ansible.builtin
 
 dependencies: []

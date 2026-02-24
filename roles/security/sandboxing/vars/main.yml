@@ -1,1 +1,54 @@
 ---
+# Internal variables for security/sandboxing role
+security_sandboxing_enabled: true
+security_sandboxing_default_profile: "default.profile"
+
+# Sandboxing Standards
+security_sandboxing_standard: "CIS-4.1"
+security_sandboxing_nist_control: "SC-3"
+
+# =============================================================================
+# COMPLIANCE FRAMEWORK MAPPINGS
+# =============================================================================
+
+# CIS Benchmark Controls covered by Sandboxing
+security_sandboxing_cis_controls:
+  - id: "5.1.1"
+    title: "Ensure bubblewrap is installed"
+    severity: "high"
+  - id: "5.1.2"
+    title: "Ensure Landlock is enabled"
+    severity: "high"
+  - id: "5.1.3"
+    title: "Ensure sandbox profiles are configured"
+    severity: "high"
+
+# STIG Controls covered by Sandboxing
+security_sandboxing_stig_controls:
+  - id: "V-230220"
+    title: "Sandboxing must be installed"
+    severity: "high"
+  - id: "V-230221"
+    title: "Sandboxing must be configured"
+    severity: "high"
+
+# NIST 800-53 Controls covered by Sandboxing
+security_sandboxing_nist_controls:
+  - id: "CM-7"
+    title: "Least Functionality"
+    family: "Configuration Management"
+  - id: "SC-39"
+    title: "Process Isolation"
+    family: "System and Communications Protection"
+  - id: "AC-6"
+    title: "Least Privilege"
+    family: "Access Control"
+
+# ISO 27001:2022 Controls covered by Sandboxing
+security_sandboxing_iso_27001_controls:
+  - id: "8.26"
+    title: "Application security requirements"
+    category: "Technological controls"
+  - id: "8.23"
+    title: "Web filtering"
+    category: "Technological controls"

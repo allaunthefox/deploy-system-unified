@@ -1,0 +1,19 @@
+# Goss tests for storage/filesystems/btrfs role
+
+package:
+  btrfs-progs:
+    installed: true
+
+command:
+  btrfs:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  mkfs.btrfs:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /usr/bin/btrfs:
+    exists: true

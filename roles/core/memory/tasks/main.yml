@@ -1,15 +1,22 @@
 ---
 # Tasks for core/memory - Intelligent Memory Compression
+# CIS 3.4.x | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20
 
-- name: Detect Physical Swap
+- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Detect Physical Swap"
   ansible.builtin.shell: swapon --show=NAME --noheadings | wc -l
   register: physical_swap_count
   changed_when: false
   args:
     pipefail: true
   become: true
+  tags:
+    - cis_3_4_1
+    - stig_v_230310
+    - nist_sc_4
+    - memory
+    - detect
 
-- name: Determine Memory Strategy (Auto-Selection)
+- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Determine Memory Strategy (Auto-Selection)"
   ansible.builtin.set_fact:
     active_memory_strategy: >-
       {{
@@ -26,12 +33,23 @@
         ) else
         'none'
       }}
+  tags:
+    - cis_3_4_1
+    - stig_v_230310
+    - nist_sc_4
+    - memory
+    - strategy
 
-- name: Report Selected Strategy
+- name: "CIS 3.4.1 | STIG V-230310 | Report Selected Strategy"
   ansible.builtin.debug:
     msg: "System Memory: {{ ansible_memtotal_mb }}MB. Strategy Selected: {{ active_memory_strategy | upper }}"
+  tags:
+    - cis_3_4_1
+    - stig_v_230310
+    - memory
+    - info
 
-- name: Resolve Configuration Conflicts (Intelligent Resolution)
+- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Resolve Configuration Conflicts (Intelligent Resolution)"
   ansible.builtin.set_fact:
     # Danger: ZRAM requires high swappiness to actually compress. If using database profile (swappiness=10),
     # ZRAM becomes useless unless we bump it up. However, if physical swap exists, 10 is fine.
@@ -47,26 +65,44 @@
         'madvise' if (core_memory_workload_profile == 'database' and core_memory_thp_state == 'always')
         else core_memory_thp_state
       }}
+  tags:
+    - cis_3_4_1
+    - stig_v_230310
+    - nist_sc_4
+    - memory
+    - configuration
 
-- name: Validate Final Configuration
+- name: "CIS 3.4.1 | STIG V-230310 | Validate Final Configuration"
   ansible.builtin.debug:
     msg: >-
       Conflict Resolution Applied:
       Swappiness set to {{ core_memory_swappiness }} (Reason: {{ 'ZRAM-OOM-Protection' if active_memory_strategy == 'zram' and physical_swap_count.stdout|int == 0 else 'Profile-Default' }}).
       THP set to {{ core_memory_thp_state }} (Reason: {{ 'Database-Latency-Protection' if core_memory_workload_profile == 'database' else 'User-Configured' }}).
+  tags:
+    - cis_3_4_1
+    - stig_v_230310
+    - memory
+    - validate
 
-- name: "ISO 27001 §8.8 | Action 450002 | Configure ZRAM (zram-generator)"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Action 450002 | Configure ZRAM (zram-generator)"
   when:
     - active_memory_strategy == 'zram'
     - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
   block:
-    - name: Install zram-generator
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Install zram-generator"
       ansible.builtin.package:
         name: zram-generator
         state: present
       become: true
+      tags:
+        - cis_3_4_2
+        - stig_v_230310
+        - nist_sc_4
+        - memory
+        - zram
+        - remediate
 
-    - name: Configure zram-generator.conf
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-28 | ISO 27001 §8.20 | Configure zram-generator.conf"
       ansible.builtin.copy:
         content: |
           [zram0]
@@ -78,17 +114,29 @@
         mode: '0644'
       become: true
       notify: restart_systemd_zram_setup
+      tags:
+        - cis_3_4_2
+        - stig_v_230310
+        - nist_sc_28
+        - iso_27001_8_20
+        - memory
+        - zram
+        - remediate
   tags:
-    - iso_27001_8_8
+    - cis_3_4_2
+    - stig_v_230310
+    - nist_sc_4
+    - nist_sc_28
+    - iso_27001_8_20
     - memory
     - remediate
 
-- name: "ISO 27001 §8.8 | Action 450002 | Configure ZSwap (Kernel Modules)"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Action 450002 | Configure ZSwap (Kernel Modules)"
   when:
     - active_memory_strategy == 'zswap'
     - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
   block:
-    - name: Enable ZSwap Kernel Parameters
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Enable ZSwap Kernel Parameters"
       ansible.builtin.set_fact:
         core_grub_performance_params: >-
           {{
@@ -99,20 +147,36 @@
               'zswap.max_pool_percent=' ~ core_memory_zswap_max_pool_percent
             ]
           }}
+      tags:
+        - cis_3_4_2
+        - stig_v_230310
+        - nist_sc_4
+        - memory
+        - zswap
 
-    - name: Disable ZRAM (Conflict Avoidance)
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Disable ZRAM (Conflict Avoidance)"
       ansible.builtin.systemd:
         name: systemd-zram-setup@zram0.service
         state: stopped
         enabled: false
       failed_when: false
       become: true
+      tags:
+        - cis_3_4_2
+        - stig_v_230310
+        - nist_sc_4
+        - memory
+        - zram
   tags:
-    - iso_27001_8_8
+    - cis_3_4_2
+    - stig_v_230310
+    - nist_sc_4
+    - nist_sc_28
+    - iso_27001_8_20
     - memory
     - remediate
 
-- name: "ISO 27001 §8.8 | Action 450002 | Tune Virtual Memory for Compression"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Action 450002 | Tune Virtual Memory for Compression"
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
@@ -130,11 +194,15 @@
     - active_memory_strategy != 'none' or core_memory_workload_profile == 'database'
   become: true
   tags:
-    - iso_27001_8_8
+    - cis_3_4_2
+    - stig_v_230310
+    - nist_sc_4
+    - nist_sc_28
+    - iso_27001_8_20
     - memory
     - remediate
 
-- name: Configure Transparent Huge Pages (THP)
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Configure Transparent Huge Pages (THP)"
   ansible.builtin.shell: |
     if ! grep -q '\[{{ core_memory_thp_state }}\]' /sys/kernel/mm/transparent_hugepage/enabled; then
       echo {{ core_memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
@@ -147,3 +215,10 @@
   when:
     - core_memory_workload_profile != 'standard'
     - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
+  tags:
+    - cis_3_4_2
+    - stig_v_230310
+    - nist_sc_4
+    - memory
+    - thp
+    - remediate

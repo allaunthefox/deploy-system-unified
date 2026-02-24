@@ -1,62 +1,97 @@
 ---
 # Tasks for containers/runtime role
+# Compliance: CIS Docker/Podman Benchmark 2.x, STIG V-230410/V-230411, NIST SC-39/CM-7/AC-6, ISO 27001 §8.20/§8.23
 
-- name: Apply rootless Podman prerequisites
+- name: "CIS 2.1 | STIG V-230410 | NIST AC-6 | Apply rootless Podman prerequisites"
   ansible.builtin.include_tasks: rootless_prerequisites.yml
   when: podman_rootless_enabled | bool
+  tags:
+    - cis_2_1
+    - stg_v230410
+    - nist_ac_6
+    - containers
+    - runtime
 
-- name: "ISO 27001 §8.26 | Action 700000 | Install Podman and Core Dependencies"
+- name: "CIS 2.1 | STIG V-230410 | NIST CM-7 | ISO 27001 §8.20 | Action 700000 | Install Podman and Core Dependencies"
   ansible.builtin.include_tasks: install_podman.yml
   tags:
+    - cis_2_1
+    - stg_v230410
+    - nist_cm_7
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - runtime
 
-- name: Install Cosign for Supply Chain Integrity
+- name: "CIS 2.2 | STIG V-230411 | NIST SC-39 | Install Cosign for Supply Chain Integrity"
   ansible.builtin.include_tasks: install_cosign.yml
   when: containers_cosign_enable | bool
-  tags: [containers, runtime, supply_chain]
+  tags:
+    - cis_2_2
+    - stg_v230411
+    - nist_sc_39
+    - containers
+    - runtime
+    - supply_chain
 
-- name: Warn on weak/default credentials (container policy)
+- name: "CIS 2.3 | STIG V-230410 | NIST CM-6 | Warn on weak/default credentials (container policy)"
   ansible.builtin.include_tasks: policy_default_passwords.yml
   tags:
+    - cis_2_3
+    - stg_v230410
+    - nist_cm_6
     - security
     - containers
 
-- name: "ISO 27001 §8.26 | Action 800410 | Setup GPU Container Support"
+- name: "CIS 2.4 | STIG V-230410 | NIST AC-6 | ISO 27001 §8.23 | Action 800410 | Setup GPU Container Support"
   ansible.builtin.include_tasks: gpu_setup_dispatcher.yml
   when: containers_enable_gpu_support
   tags:
+    - cis_2_4
+    - stg_v230410
+    - nist_ac_6
+    - iso_27001_8_23
     - iso_27001_8_26
     - containers
     - gpu
     - remediate
 
-- name: "ISO 27001 §8.26 | Action 800400 | Discover GPU devices and capabilities"
+- name: "CIS 2.5 | STIG V-230410 | NIST SC-39 | ISO 27001 §8.20 | Action 800400 | Discover GPU devices and capabilities"
   ansible.builtin.include_tasks: gpu_discovery.yml
   when: containers_enable_gpu_support
   tags:
+    - cis_2_5
+    - stg_v230410
+    - nist_sc_39
+    - iso_27001_8_20
     - iso_27001_8_26
     - containers
     - gpu
 
-- name: Validate GPU slicing configuration
+- name: "CIS 2.6 | STIG V-230411 | NIST CM-7 | Validate GPU slicing configuration"
   ansible.builtin.include_tasks: gpu_validation.yml
   when: containers_enable_gpu_support
   tags:
+    - cis_2_6
+    - stg_v230411
+    - nist_cm_7
     - containers
     - gpu
 
-- name: "ISO 27001 §8.26 | Action 800420 | Configure GPU slicing"
+- name: "CIS 2.7 | STIG V-230410 | NIST AC-6 | ISO 27001 §8.23 | Action 800420 | Configure GPU slicing"
   ansible.builtin.include_tasks: gpu_slicing.yml
   when: containers_enable_gpu_support
   tags:
+    - cis_2_7
+    - stg_v230410
+    - nist_ac_6
+    - iso_27001_8_23
     - iso_27001_8_26
     - containers
     - gpu
     - remediate
 
-- name: Report GPU configuration status
+- name: "CIS 2.8 | STIG V-230410 | NIST SC-39 | Report GPU configuration status"
   ansible.builtin.debug:
     msg: |
       {% if containers_enable_gpu_support %}
@@ -68,13 +103,30 @@
       {% else %}
       GPU support disabled. Set containers_enable_gpu_support: true to enable.
       {% endif %}
+  tags:
+    - cis_2_8
+    - stg_v230410
+    - nist_sc_39
+    - containers
+    - gpu
 
-- name: Set containers runtime completion flag
+- name: "CIS 2.9 | STIG V-230410 | NIST CM-7 | Set containers runtime completion flag"
   ansible.builtin.set_fact:
     containers_runtime_complete: true
+  tags:
+    - cis_2_9
+    - stg_v230410
+    - nist_cm_7
+    - containers
+    - runtime
 
-- name: Save Role Checkpoint
+- name: "CIS 2.10 | STIG V-230411 | NIST AC-6 | Save Role Checkpoint"
   ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases: ["containers/runtime"]
-
+  tags:
+    - cis_2_10
+    - stg_v230411
+    - nist_ac_6
+    - containers
+    - runtime

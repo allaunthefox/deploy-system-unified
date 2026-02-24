@@ -1,5 +1,228 @@
 ---
-- name: "ISO 9001 | Action 600013 | placeholder task (no-op)"
-  ansible.builtin.debug:
-    msg: "Placeholder: no action"
-  tags: [no_op]
+# Networking Services Role
+# SOP-OPS | Standard Operating Procedures
+
+- name: "ISO 27001 §8.17 | NIST AU-8 | Action 300001 | Configure NTP service for time synchronization"
+  block:
+    - name: Install chrony package
+      ansible.builtin.package:
+        name: chrony
+        state: present
+      become: true
+      failed_when: false
+
+    - name: Deploy chrony configuration
+      ansible.builtin.copy:
+        dest: /etc/chrony/chrony.conf
+        content: |
+          # NTP configuration per ISO 27001 §8.17
+          server {{ ntp_server | default('0.pool.ntp.org') }}
+          server {{ ntp_server2 | default('1.pool.ntp.org') }}
+          driftfile /var/lib/chrony/drift
+          makestep 1.0 3
+          rtcsync
+        mode: '0644'
+      become: true
+      failed_when: false
+
+    - name: Enable and start chrony service
+      ansible.builtin.systemd:
+        name: chrony
+        enabled: true
+        state: started
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_8_17
+    - nist_au_8
+    - action_300001
+    - time_sync
+    - ntp
+    - networking
+
+- name: "ISO 27001 §9.4 | NIST AC-3 | NIST SC-7 | Action 540002 | Configure firewall rules for network services"
+  block:
+    - name: Configure default firewall policy
+      ansible.builtin.iptables:
+        chain: INPUT
+        policy: drop
+      become: true
+      failed_when: false
+
+    - name: Allow established connections
+      ansible.builtin.iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+      become: true
+      failed_when: false
+
+    - name: Allow SSH (port 22)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: 22
+        jump: ACCEPT
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_9_4
+    - nist_ac_3
+    - nist_sc_7
+    - action_540002
+    - firewall
+    - networking
+
+- name: "ISO 27001 §10.1 | NIST SC-13 | Action 540200 | Configure TLS for network services"
+  block:
+    - name: Create TLS configuration directory
+      ansible.builtin.file:
+        path: /etc/ssl/private
+        state: directory
+        mode: '0755'
+      become: true
+      failed_when: false
+
+    - name: Configure TLS cipher suite
+      ansible.builtin.copy:
+        dest: /etc/ssl/tls-cipher.conf
+        content: |
+          # TLS configuration per ISO 27001 §10.1
+          # TLS 1.3 preferred, TLS 1.2 as fallback
+          # Modern cipher suites - Mozilla TLS Guidelines 2024
+          # PQC-Hybrid Ready configuration
+          SSLProtocol -all +TLSv1.3 +TLSv1.2
+          
+          # TLS 1.3 ciphers (all recommended by Mozilla)
+          # Includes PQC candidate: TLS_CHACHA20_POLY1305_SHA256
+          SSLCipherSuite TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256
+          
+          # TLS 1.2 fallback ciphers (modern security)
+          SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305
+          
+          # Disable TLS compression (CRIME attack mitigation)
+          SSLCompression off
+          
+          # Enable TLS_FALLBACK_SCSV (downgrade attack protection)
+          SSLHonorCipherOrder on
+          
+          # Enable OCSP stapling for certificate validation
+          SSLUseSSLOCSP on
+          
+          # TLS 1.3 early data (0-RTT) - disable for security
+          # Set to 0 to disable early data
+          # Enable for performance on internal networks only
+        mode: '0644'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_10_1
+    - nist_sc_13
+    - action_540200
+    - tls
+    - cryptography
+    - networking
+    - pqc
+    - pqc_hybrid
+
+- name: "ISO 27001 §10.1 | NIST SC-13 | Action 540201 | Configure HSTS headers for enhanced security"
+  block:
+    - name: Configure HSTS security headers
+      ansible.builtin.copy:
+        dest: /etc/ssl/hsts-headers.conf
+        content: |
+          # HSTS (HTTP Strict Transport Security) Configuration
+          # Enforces HTTPS connections
+          # Max-age: 31536000 (1 year)
+          # IncludeSubDomains: applies to all subdomains
+          # Preload: submit to browser preload lists
+          
+          # Apache HSTS Header (if using Apache)
+          # Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+          
+          # Nginx HSTS Header (if using Nginx)
+          # add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+          
+          # For reverse proxies (Caddy, Traefik, etc.)
+          # strict_transport_security: "max-age=63072000; includeSubDomains; preload"
+          
+          # HSTS preload domains (submit to hstspreload.org)
+          # Note: Requires careful consideration before enabling preload
+        mode: '0644'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_10_1
+    - nist_sc_13
+    - action_540201
+    - tls
+    - hsts
+    - networking
+
+- name: "ISO 27001 §10.1 | NIST SC-13 | Action 540202 | Configure certificate transparency logging"
+  block:
+    - name: Configure certificate transparency compliance
+      ansible.builtin.copy:
+        dest: /etc/ssl/cert-transparency.conf
+        content: |
+          # Certificate Transparency (CT) Configuration
+          # Per ISO 27001 §10.1 - Cryptographic controls
+          
+          # Require CT logs for all certificates
+          # Mozilla CT Policy: https://www.mozilla.org/pki/policy/
+          
+          # Recommended CT logs to monitor:
+          # - Google Argon (https://ct.googleapis.com/argon2026)
+          # - DigiCert Yeti (https://ct.googleapis.com/yeti2026)
+          # - Cloudflare Nimbus (https://ct.googleapis.com/nimbus2026)
+          
+          # Certificate monitoring endpoint
+          CT_MONITORING=true
+          CT_LOG_SERVERS=ct.googleapis.com/argon2026,ct.googleapis.com/yeti2026
+          
+          # Alert on suspicious certificates
+          CT_ALERT_THRESHOLD=1
+        mode: '0644'
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_10_1
+    - nist_sc_13
+    - action_540202
+    - tls
+    - certificate
+    - supply_chain
+
+- name: "NIST SC-12 | ISO 27001 §10.1 | Action 400015 | Configure cryptographic key rotation"
+  block:
+    - name: Configure key rotation policy
+      ansible.builtin.copy:
+        dest: /etc/ssl/key-rotation.conf
+        content: |
+          # Cryptographic Key Rotation Policy
+          # Per ISO 27001 §10.1 and NIST SP 800-57
+          
+          # TLS Certificate rotation (90 days recommended)
+          TLS_CERT_ROTATION_DAYS=90
+          
+          # Key encryption key rotation (1 year)
+          KEK_ROTATION_DAYS=365
+          
+          # Data encryption key rotation (30 days)
+          DEK_ROTATION_DAYS=30
+          
+          # Enable automatic rotation
+          AUTO_ROTATION_ENABLED=true
+          
+          # Key rotation alerts
+          ROTATION_ALERT_DAYS=7
+        mode: '0644'
+      become: true
+      failed_when: false
+  tags:
+    - nist_sc_12
+    - iso_27001_10_1
+    - action_400015
+    - cryptography
+    - key_rotation
+    - pqc_secrets

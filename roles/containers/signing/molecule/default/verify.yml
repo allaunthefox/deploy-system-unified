@@ -1,0 +1,20 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Verify cosign directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /etc/cosign
+        - /etc/cosign/keys
+        - /etc/cosign/policies
+
+    - name: Verify cosign integration is complete
+      ansible.builtin.assert:
+        that:
+          - cosign_signing_complete | default(false) == true
+        fail_msg: "Cosign signing was not completed"

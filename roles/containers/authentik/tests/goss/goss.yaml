@@ -1,0 +1,60 @@
+# Goss tests for containers/authentik role
+# ISO 27001 §8.26 - Container security
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+  docker:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify authentik configuration
+# =============================================================================
+file:
+  /etc/containers/systemd/authentik.container:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - "/Description=authentik/"
+      - "/Image=/"
+      - "/ContainerName=authentik/"
+      - "/Restart=always/"
+
+  /srv/containers/authentik:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+# =============================================================================
+# SERVICE TESTS
+# =============================================================================
+service:
+  authentik:
+    enabled: true
+    running: true
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  authentik_container:
+    exec: 'podman ps -a | grep authentik || docker ps -a | grep authentik || true'
+    exit-status: 0
+    timeout: 10000
+
+  authentik_network:
+    exec: 'podman network ls | grep authentik || true'
+    exit-status: 0
+    timeout: 10000
+
+# =============================================================================
+# PROCESS TESTS
+# =============================================================================
+process:
+  authentik:
+    running: true

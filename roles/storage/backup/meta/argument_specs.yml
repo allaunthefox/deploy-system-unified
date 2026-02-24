@@ -1,7 +1,21 @@
 ---
 argument_specs:
   main:
-    short_description: backup role
+    short_description: backup role for centralized backup management
     description:
-      - Formally documented backup management
-    options: {}
+      - Manages shared backup settings and security configurations
+      - Provides centralized backup security settings
+      - Aligns with ISO 27040 requirements for backup management
+    options:
+      backup_security_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable backup security features
+      backup_security_dir:
+        type: str
+        required: false
+        default: "/var/backups/security"
+        description:
+          - Directory for backup security metadata and hashes

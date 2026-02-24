@@ -1,13 +1,23 @@
 ---
 # Alpine/Nftables rules for networking/firewall
-- name: Ensure nftables is installed (Alpine)
+# Compliance: CIS 4.4.x | STIG V-230271 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.23
+
+- name: "CIS 4.4.1.5 | STIG V-230271 | Ensure nftables is installed (Alpine)"
+  tags:
+    - cis_4_4_1_5
+    - stig_v_230271
+    - nist_sc_7
+    - iso_27001_8_20
+    - networking
+    - firewall
+    - remediate
   ansible.builtin.package:
     name: nftables
     state: present
   when: ansible_os_family == 'Alpine'
   become: true
 
-- name: Configure basic nftables rules (Alpine)
+- name: "CIS 4.4.1.5 | STIG V-230271 | ISO 27001 §8.23 | Configure basic nftables rules (Alpine)"
   ansible.builtin.copy:
     dest: /etc/nftables.nft
     content: |
@@ -18,15 +28,15 @@
           type filter hook input priority 0; policy drop;
           ct state established,related accept
           iif lo accept
-          {% for port in firewall_allowed_tcp_ports_effective %}
+          {% for port in networking_firewall_allowed_tcp_ports_effective %}
           tcp dport {{ port }} accept
           {% endfor %}
-          {% for port in firewall_allowed_udp_ports %}
+          {% for port in networking_firewall_allowed_udp_ports %}
           udp dport {{ port }} accept
           {% endfor %}
         }
         chain forward {
-          type filter hook forward priority 0; policy {{ firewall_forward_policy | lower }};
+          type filter hook forward priority 0; policy {{ networking_firewall_forward_policy | lower }};
         }
         chain output {
           type filter hook output priority 0; policy accept;
@@ -36,11 +46,27 @@
   become: true
   when: ansible_os_family == 'Alpine'
   notify: reload_nftables
+  tags:
+    - cis_4_4_1_5
+    - stig_v_230271
+    - nist_ac_4
+    - iso_27001_8_23
+    - networking
+    - firewall
+    - remediate
 
-- name: Enable nftables service (Alpine)
+- name: "CIS 4.4.1.6 | STIG V-230271 | Enable nftables service (Alpine)"
+  tags:
+    - cis_4_4_1_6
+    - stig_v_230271
+    - nist_sc_7
+    - networking
+    - firewall
+    - remediate
   ansible.builtin.service:
     name: nftables
     enabled: true
     state: started
   when: ansible_os_family == 'Alpine'
   become: true
+

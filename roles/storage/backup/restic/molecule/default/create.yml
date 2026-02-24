@@ -1,0 +1,9 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: "Create molecule instance"
+      ansible.builtin.debug:
+        msg: "Creating molecule instance"

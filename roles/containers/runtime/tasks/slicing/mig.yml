@@ -1,5 +1,6 @@
 ---
 - name: Enable NVIDIA MIG mode
+  tags: [containers, runtime, gpu, mig]
   ansible.builtin.command:
     cmd: nvidia-smi -mig 1
   register: nvidia_mig_enable
@@ -8,6 +9,7 @@
   become: true
 
 - name: Create MIG profiles
+  tags: [containers, runtime, gpu, mig]
   ansible.builtin.command:
     cmd: nvidia-smi mig -cgi {{ item }} -C
   register: nvidia_mig_create

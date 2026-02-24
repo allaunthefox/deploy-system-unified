@@ -1,1 +1,46 @@
 ---
+# Internal variables for hardware/virtual_guest role
+# Part of ISO 9001 Structural Consistency
+
+# Virtual device paths
+_vps_virtual_disk_pattern: vd[a-z]*|xvd[a-z]*
+_vps_container_check_paths:
+  - /.dockerenv
+  - /run/.containerenv
+_vps_hypervisor_check_path: /sys/class/dmi/id
+
+# Virtual I/O scheduler settings
+_vps_io_scheduler_none: none
+_vps_io_scheduler_deadline: mq-deadline
+_vps_udev_scheduler_rules_path: /etc/udev/rules.d/60-vps-disk-scheduler.rules
+
+# Virtual memory tuning paths
+_vps_sysctl_optimization_path: /etc/sysctl.d/99-vps-optimization.conf
+_vps_sysctl_reload_cmd: sysctl -p /etc/sysctl.d/99-vps-optimization.conf
+
+# VPS Provider detection
+_vps_provider_detection_cmd: dmidecode -s system-product-name
+_vps_provider_aws_pattern: amazon|aws
+_vps_provider_azure_pattern: microsoft|azure
+_vps_provider_gcp_pattern: google|gcp
+_vps_provider_digitalocean_pattern: digitalocean
+_vps_provider_linode_pattern: linode
+_vps_provider_vultr_pattern: vultr
+_vps_provider_contabo_pattern: contabo
+_vps_provider_hetzner_pattern: hetzner
+_vps_provider_ovh_pattern: ovh
+
+# Virtual memory tuning defaults
+_vps_dirty_ratio: 10
+_vps_dirty_background_ratio: 5
+_vps_swappiness: 10
+_vps_vfs_cache_pressure: 50
+
+# Virtual network tuning
+_vps_netdev_max_backlog: 5000
+_vps_somaxconn: 4096
+_vps_tcp_max_syn_backlog: 4096
+
+# Provider-specific config paths
+_vps_provider_config_dir: /etc/hardware/virtual_guest/providers
+_vps_provider_generic_config: generic_cloud.yml

@@ -1,0 +1,40 @@
+---
+# Main entry point for kubernetes/ingress role
+# Installs and configures an ingress controller (nginx-ingress, traefik, or ambassador)
+
+- name: "Validate ingress controller selection"
+  ansible.builtin.assert:
+    that:
+      - kubernetes_ingress_controller in ['nginx-ingress', 'traefik', 'ambassador']
+    fail_msg: "Invalid ingress controller. Must be one of: nginx-ingress, traefik, ambassador"
+
+- name: "Set ingress namespace facts"
+  ansible.builtin.set_fact:
+    _ingress_namespace: "{{ kubernetes_ingress_namespace }}"
+    _ingress_class: "{{ kubernetes_ingress_class_name }}"
+
+- name: "Install Nginx Ingress Controller"
+  ansible.builtin.include_tasks: install_nginx.yml
+  when: kubernetes_ingress_controller == "nginx-ingress"
+
+- name: "Install Traefik Ingress Controller"
+  ansible.builtin.include_tasks: install_traefik.yml
+  when: kubernetes_ingress_controller == "traefik"
+
+- name: "Install Ambassador Ingress Controller"
+  ansible.builtin.include_tasks: install_ambassador.yml
+  when: kubernetes_ingress_controller == "ambassador"
+
+- name: "Configure Ingress Class"
+  ansible.builtin.include_tasks: configure_ingress_class.yml
+
+- name: "Deploy TLS configuration"
+  ansible.builtin.include_tasks: configure_tls.yml
+  when: kubernetes_ingress_tls_enabled | bool
+
+- name: "Configure rate limiting"
+  ansible.builtin.include_tasks: configure_rate_limiting.yml
+  when: kubernetes_ingress_rate_limit_enabled | bool
+
+- name: "Verify ingress controller deployment"
+  ansible.builtin.include_tasks: verify_deployment.yml

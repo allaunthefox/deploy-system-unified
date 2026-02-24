@@ -1,0 +1,50 @@
+---
+# Goss tests for security/falco role
+# Tests Falco runtime security rules
+
+package:
+  falco:
+    installed: true
+
+service:
+  falco:
+    enabled: true
+    running: true
+
+file:
+  /etc/falco:
+    exists: true
+    mode: "0750"
+    owner: root
+  /etc/falco/falco.yaml:
+    exists: true
+    mode: "0644"
+  /etc/falco/rules.d:
+    exists: true
+    mode: "0755"
+  /etc/falco/falco-rules.yaml:
+    exists: true
+    mode: "0644"
+
+command:
+  # Check falco version
+  falco --version:
+    exit-status: 0
+  # Check falco is running
+  falco:
+    exit-status: 0
+    timeout: 5000
+  # Verify rules are loaded
+  falco -L:
+    exit-status: 0
+    stdout:
+      - "Rule"
+
+port:
+  8765:  # falco metrics port (if enabled)
+    listening: false
+
+process:
+  falco:
+    running: true
+

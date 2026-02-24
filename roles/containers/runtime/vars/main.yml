@@ -1,1 +1,191 @@
----
+# Internal variables for containers/runtime role
+# Podman runtime configuration and package management
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/runtime
+# Standards: CIS Docker/Podman Benchmark 2.x, STIG V-230410/V-230411,
+#            NIST SC-39/CM-7/AC-6, ISO 27001 §8.20/§8.23
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "2.x"
+    description: "Container Runtime Security"
+    controls:
+      - id: "2.1"
+        name: "Rootless Podman prerequisites"
+        stig: "V-230410"
+        nist: ["AC-6"]
+      - id: "2.2"
+        name: "Cosign for supply chain integrity"
+        stig: "V-230411"
+        nist: ["SC-39"]
+      - id: "2.3"
+        name: "Weak/default credentials policy"
+        stig: "V-230410"
+        nist: ["CM-6"]
+      - id: "2.4"
+        name: "GPU container support setup"
+        stig: "V-230410"
+        nist: ["AC-6"]
+        iso: "8.23"
+      - id: "2.5"
+        name: "GPU device discovery"
+        stig: "V-230410"
+        nist: ["SC-39"]
+      - id: "2.6"
+        name: "GPU slicing validation"
+        stig: "V-230411"
+        nist: ["CM-7"]
+      - id: "2.7"
+        name: "GPU slicing configuration"
+        stig: "V-230410"
+        nist: ["AC-6"]
+        iso: "8.23"
+  stig:
+    container_runtime:
+      - id: "V-230410"
+        title: "Container Runtime Security Configuration"
+        severity: "medium"
+      - id: "V-230411"
+        title: "Container Image Integrity"
+        severity: "high"
+  nist:
+    sc_39: "Protection of Information at Rest"
+    cm_7: "Least Functionality"
+    ac_6: "Least Privilege"
+    cm_6: "Configuration Settings"
+  iso_27001:
+    "8.20": "Networks Security"
+    "8.23": "Web Filtering"
+
+# Package names by distribution
+_runtime_packages_debian:
+  - podman
+  - podman-docker
+  - crun
+  - uidmap
+  - slirp4netns
+  - fuse-overlayfs
+  - containers-storage
+  - containernetworking-plugins
+  - netavark
+  - aardvark-dns
+
+_runtime_packages_redhat:
+  - podman
+  - podman-docker
+  - crun
+  - uidmap
+  - slirp4netns
+  - fuse-overlayfs
+  - containers-common
+  - containernetworking-plugins
+
+_runtime_packages_arch:
+  - podman
+  - crun
+  - uidmap
+  - slirp4netns
+  - fuse-overlayfs
+  - containers-common
+  - containernetworking-plugins
+  - netavark
+  - aardvark-dns
+
+# GPU support packages by vendor
+_gpu_packages_nvidia_debian:
+  - nvidia-driver
+  - nvidia-container-toolkit
+  - nvidia-container-runtime
+
+_gpu_packages_nvidia_redhat:
+  - nvidia-driver
+  - nvidia-container-toolkit
+  - nvidia-container-runtime
+
+_gpu_packages_nvidia_arch:
+  - nvidia
+  - nvidia-container-toolkit
+  - nvidia-container-runtime
+
+_gpu_packages_amd_debian:
+  - mesa-utils
+  - rocm-smi-lib
+  - libdrm-amdgpu1
+
+_gpu_packages_amd_redhat:
+  - mesa-utils
+  - libdrm
+  - rocm-smi
+
+_gpu_packages_amd_arch:
+  - mesa
+  - rocm-smi
+
+_gpu_packages_intel_debian:
+  - intel-gpu-tools
+  - intel-media-va-driver
+  - libmfx1
+
+_gpu_packages_intel_redhat:
+  - intel-gpu-tools
+  - intel-media-driver
+  - libmfx
+
+_gpu_packages_intel_arch:
+  - intel-media-driver
+  - libva-intel-driver
+  - intel-compute-runtime
+
+# Runtime configuration paths
+_runtime_config_dir: /etc/containers
+_runtime_registry_config: /etc/containers/registries.conf
+_runtime_storage_config: /etc/containers/storage.conf
+_runtime_policy_config: /etc/containers/policy.json
+_runtime_containers_conf: /etc/containers/containers.conf
+
+# Systemd integration paths
+_systemd_user_dir: /etc/systemd/user
+_systemd_system_dir: /etc/systemd/system
+_systemd_quadlet_dir_system: /etc/containers/systemd
+_systemd_quadlet_dir_user: .config/containers/systemd
+
+# Cosign installation paths
+_cosign_install_dir: /usr/local/bin
+_cosign_binary: /usr/local/bin/cosign
+_cosign_config_dir: /etc/cosign
+
+# Rootless Podman internal paths
+_rootless_config_dir: .config/containers
+_rootless_network_dir: .config/cni/net.d
+_rootless_registry_dir: .config/containers/registries.conf.d
+
+# Service names
+_podman_socket_service_system: podman.socket
+_podman_socket_service_user: podman-user.socket
+_podman_cleanup_service: podman-auto-update.timer
+
+# GPU detection paths
+_gpu_device_dir: /dev
+_gpu_nvidia_devices:
+  - /dev/nvidia0
+  - /dev/nvidiactl
+  - /dev/nvidia-uvm
+_gpu_amd_devices:
+  - /dev/dri/card0
+  - /dev/dri/renderD128
+  - /dev/kfd
+_gpu_intel_devices:
+  - /dev/dri/card0
+  - /dev/dri/renderD128
+
+# NVIDIA Container Toolkit config
+_nvidia_toolkit_config: /etc/nvidia-container-runtime/config.toml
+_nvidia_runtime_class: nvidia
+
+# Network backend selection
+_network_backend_rootless: slirp4netns
+_network_backend_root: netavark

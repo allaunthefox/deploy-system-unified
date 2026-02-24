@@ -1,7 +1,69 @@
 ---
 argument_specs:
   main:
-    short_description: rclone role
+    short_description: rclone role for cloud storage synchronization
     description:
-      - Formally documented rclone management
-    options: {}
+      - Manages rclone configuration for cloud storage sync
+      - Supports multiple cloud providers (S3, Google Drive, etc.)
+      - Aligns with ISO 27040 requirements for data transfer
+    options:
+      rclone_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable rclone role execution
+      rclone_config_dir:
+        type: str
+        required: false
+        default: "/etc/rclone"
+        description:
+          - Directory for rclone configuration
+      rclone_conf_file:
+        type: str
+        required: false
+        default: "/etc/rclone/rclone.conf"
+        description:
+          - Path to rclone configuration file
+      rclone_user:
+        type: str
+        required: false
+        default: "root"
+        description:
+          - User for rclone configuration ownership
+      rclone_group:
+        type: str
+        required: false
+        default: "root"
+        description:
+          - Group for rclone configuration ownership
+      rclone_config_content:
+        type: str
+        required: false
+        default: ""
+        description:
+          - Raw rclone.conf content (should be populated via encrypted variables)
+      restic_script_dir:
+        type: str
+        required: false
+        default: "/usr/local/bin"
+        description:
+          - Directory for rclone helper scripts
+      backup_security_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable backup security features
+      backup_security_dir:
+        type: str
+        required: false
+        default: "/var/backups/security"
+        description:
+          - Directory for backup security metadata
+      backup_name:
+        type: str
+        required: false
+        default: "rclone"
+        description:
+          - Name identifier for backup

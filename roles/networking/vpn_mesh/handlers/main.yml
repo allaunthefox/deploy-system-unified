@@ -1,1 +1,85 @@
 ---
+# Handlers for vpn_mesh role - VPN and Mesh Network Services
+# ISO 9001 Structural Consistency - Handler definitions for WireGuard and IPsec
+
+- name: restart_wireguard
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - wg-quick@wg0
+    - wg-quick@wg-mesh
+    - systemd-networkd
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - vpn
+    - wireguard
+
+- name: restart_ipsec
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - strongswan
+    - ipsec
+    - libreswan
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - vpn
+    - ipsec
+
+- name: reload_wireguard_config
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: reloaded
+  become: true
+  tags:
+    - networking
+    - vpn
+    - wireguard
+
+- name: restart_vpn_services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - wg-quick@wg0
+    - strongswan
+    - ipsec
+    - systemd-networkd
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - vpn
+
+- name: reload_ipsec_config
+  ansible.builtin.command:
+    cmd: ipsec reload
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - vpn
+    - ipsec
+
+- name: restart_kernel_modules
+  ansible.builtin.command:
+    cmd: modprobe -r {{ item }} && modprobe {{ item }}
+  loop:
+    - wireguard
+    - af_key
+    - xfrm_user
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - vpn
+    - kernel

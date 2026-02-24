@@ -1,1 +1,12 @@
 ---
+# Internal variables for core/bootstrap role
+core_bootstrap_version: "1.1.0"
+core_bootstrap_compliance_level: "High"
+core_bootstrap_supported_engines: ["ansible-core", "ansible-community"]
+
+# Mapping for package manager names
+package_manager_map:
+  Debian: apt
+  RedHat: dnf
+  Alpine: apk
+  Archlinux: pacman

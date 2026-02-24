@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: storage_tuning
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Physical storage performance optimization and discovery
   license: MIT
   min_ansible_version: "2.15"
@@ -21,6 +21,16 @@ galaxy_info:
     - storage
     - performance
     - tuning
-    - iso_27040
+    - optimization
+    - disk
+    - scheduler
+    - iopriority
+    - udev
+    - baremetal
+    - infrastructure
+    - iso27040
+
+collections:
+  - ansible.builtin
 
 dependencies: []

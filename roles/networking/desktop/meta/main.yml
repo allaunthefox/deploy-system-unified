@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: desktop
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Desktop networking and Wi-Fi management (NetworkManager)
   license: MIT
   min_ansible_version: "2.15"
@@ -20,7 +20,18 @@ galaxy_info:
     - networking
     - desktop
     - wifi
+    - wireless
     - networkmanager
-    - iso_27001
+    - connectivity
+    - linux
+    - client
+    - workstation
+    - iso27001
+    - nist80053
+    - security
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: services
-  author: deploy-system-unified
+  author: deploysystemunified
   description: services management and configuration
   license: MIT
   min_ansible_version: '2.15'
@@ -9,6 +9,20 @@ galaxy_info:
     - name: Ubuntu
       versions: [all]
   galaxy_tags:
+    - networking
     - services
-    - iso_27001
+    - monitoring
+    - utility
+    - systems
+    - linux
+    - automation
+    - network
+    - connectivity
+    - deployment
+    - iso9001
+    - iso27001
+
+collections:
+  - ansible.builtin
+
 dependencies: []

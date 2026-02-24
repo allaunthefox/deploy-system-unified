@@ -2,6 +2,18 @@
 
 We welcome contributions to Deploy-System-Unified! This document outlines the process for contributing code, documentation, and other improvements.
 
+## AI/LLM Assistance
+
+This project leverages AI-assisted development tools (including Claude, CodeGPT, and similar assistants) to accelerate development and maintain consistency. When using AI tools to contribute:
+
+- **Review all AI-generated code thoroughly** before submitting
+- **Ensure you understand** what the code does—don't submit code you cannot explain
+- **Test changes** in a safe environment before submitting pull requests
+- **Maintain project standards** — AI should follow existing patterns, not create new ones
+- **Document unexpected behavior** if AI assistance produces anything unusual
+
+> **Important:** You remain responsible for any code you submit, regardless of how it was generated. Contributors using AI tools should have the same level of understanding and accountability as with manually-written code.
+
 ## Code of Conduct
 
 By participating in this project, you agree to abide by our Code of Conduct.

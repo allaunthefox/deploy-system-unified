@@ -1,0 +1,51 @@
+---
+# Goss tests for orchestration/k8s_node role
+# Tests Kubernetes node configuration
+
+package:
+  kubelet:
+    installed: true
+  containerd:
+    installed: true
+
+service:
+  kubelet:
+    enabled: true
+    running: true
+  containerd:
+    enabled: true
+    running: true
+
+file:
+  /etc/kubernetes/kubelet.conf:
+    exists: true
+    mode: "0600"
+  /var/lib/kubelet:
+    exists: true
+    mode: "0750"
+    owner: root
+  /etc/cni/net.d:
+    exists: true
+
+command:
+  # Check kubelet version
+  kubelet --version:
+    exit-status: 0
+  # Check kubelet is ready
+  systemctl is-active kubelet:
+    stdout:
+      - active
+  # Check kernel modules for Kubernetes
+  lsmod | grep -q overlay:
+    exit-status: 0
+  lsmod | grep -q br_netfilter:
+    exit-status: 0
+
+port:
+  10250:  # kubelet API port
+    listening: true
+  10248:  # kubelet healthz
+    listening: true
+  10255:  # kubelet read-only
+    listening: false
+

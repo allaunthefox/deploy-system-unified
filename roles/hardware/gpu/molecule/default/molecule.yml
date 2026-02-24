@@ -8,7 +8,14 @@ driver:
     ansible_connection_options:
       ansible_connection: containers.podman.podman
 platforms:
-  - name: gpu-molecule
+  - name: gpu-ubuntu-2204
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+  - name: gpu-debian-12
+    image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  - name: gpu-alpine-319
+    image: docker.io/geerlingguy/docker-alpine319-ansible:latest
+  - name: gpu-rockylinux-9
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
 prerun: false
 provisioner:
   name: ansible
@@ -17,11 +24,19 @@ provisioner:
       deprecation_warnings: false
   inventory:
     host_vars:
-      gpu-molecule:
+      gpu-ubuntu-2204:
         ansible_connection: containers.podman.podman
-        ansible_host: gpu-molecule
+        ansible_host: gpu-ubuntu-2204
+      gpu-debian-12:
+        ansible_connection: containers.podman.podman
+        ansible_host: gpu-debian-12
+      gpu-alpine-319:
+        ansible_connection: containers.podman.podman
+        ansible_host: gpu-alpine-319
+      gpu-rockylinux-9:
+        ansible_connection: containers.podman.podman
+        ansible_host: gpu-rockylinux-9
   env:
-    # Point to the 'roles' directory of the project so 'hardware/gpu' can be resolved
     ANSIBLE_ROLES_PATH: ../../../../
   playbooks:
     create: create.yml

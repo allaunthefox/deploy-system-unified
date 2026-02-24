@@ -1,17 +1,17 @@
 ---
 # Defaults for networking/firewall role
-firewall_enabled: true
-firewall_allowed_tcp_ports:
+networking_firewall_enabled: true
+networking_firewall_allowed_tcp_ports:
   - "{{ ssh_effective_port | default(system_ssh_port) | default(22) }}"
   - 80
   - 443
 # Only open the Endlessh honeytrap port when enabled.
-firewall_allow_endlessh: "{{ system_enable_endlessh | default(false) }}"
-firewall_endlessh_port: 22
-firewall_allowed_udp_ports: []
+networking_firewall_allow_endlessh: "{{ system_enable_endlessh | default(false) }}"
+networking_firewall_endlessh_port: 22
+networking_firewall_allowed_udp_ports: []
 # Additional granular rules (e.g., restrict SSH to a specific CIDR)
 # Format: { port: 22, proto: tcp, src: "192.168.1.0/24", comment: "Office VPN" }
-firewall_additional_rules: []
+networking_firewall_additional_rules: []
 
 # Default Forward Policy (DROP/ACCEPT). Set to ACCEPT if running containers/VMs that need routing.
-firewall_forward_policy: "DROP"
+networking_firewall_forward_policy: "DROP"

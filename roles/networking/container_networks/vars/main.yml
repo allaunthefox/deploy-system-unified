@@ -1,1 +1,208 @@
 ---
+# vars/main.yml for container_networks role
+# Role-specific internal variables for Podman and Docker networking
+# Compliance: CIS 3.7.x | STIG V-230370 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.21
+# NOT meant to be overridden by users
+
+# =============================================================================
+# Podman Configuration Paths
+# =============================================================================
+_podman_system_config_dir: /etc/containers
+_podman_user_config_dir: .config/containers
+_podman_systemd_system_dir: /etc/containers/systemd
+_podman_systemd_user_dir: .config/containers/systemd
+_podman_networks_dir: /etc/cni/net.d
+_podman_networks_user_dir: .config/cni/net.d
+
+# Podman service names
+_podman_service_name: podman
+_podman_socket_name: podman.socket
+_podman_quadlet_service: podman-quadlet
+
+# Podman network backend
+_podman_default_backend: netavark
+_podman_legacy_backend: cni
+_podman_netavark_binary: /usr/bin/netavark
+_podman_aardvark_binary: /usr/bin/aardvark-dns
+
+# =============================================================================
+# Docker Configuration Paths
+# =============================================================================
+_docker_config_dir: /etc/docker
+_docker_systemd_dir: /etc/systemd/system
+_docker_networks_dir: /var/lib/docker/network
+_docker_daemon_config: /etc/docker/daemon.json
+
+# Docker service names
+_docker_service_name: docker
+_docker_socket_name: docker.socket
+
+# Docker network driver defaults
+_docker_default_driver: bridge
+_docker_overlay2_driver: overlay2
+
+# =============================================================================
+# Container Network Drivers
+# =============================================================================
+_container_network_drivers:
+  - bridge
+  - macvlan
+  - ipvlan
+  - overlay
+  - overlay2
+  - none
+  - host
+
+# =============================================================================
+# Quadlet Configuration
+# =============================================================================
+_quadlet_file_extension: .container
+_quadlet_network_extension: .network
+_quadlet_volume_extension: .volume
+_quadlet_kube_extension: .kube
+
+# Quadlet default settings
+_quadlet_default_container_name_prefix: container
+_quadlet_default_network_name_prefix: network
+
+# =============================================================================
+# CNI Plugin Configuration
+# =============================================================================
+_cni_config_dir: /etc/cni/net.d
+_cni_plugin_dir: /opt/cni/bin
+_cni_version: 1.0.0
+
+# CNI plugin names
+_cni_plugins:
+  - bridge
+  - portmap
+  - firewall
+  - tuning
+  - dns
+  - host-local
+
+# =============================================================================
+# Network Namespace Configuration
+# =============================================================================
+_netns_dir: /run/netns
+_netns_default_mode: host
+
+# =============================================================================
+# Kernel Modules for Container Networking
+# =============================================================================
+_container_kernel_modules:
+  - bridge
+  - br_netfilter
+  - veth
+  - macvlan
+  - ipvlan
+  - overlay
+  - nf_nat
+  - nf_conntrack
+
+# Required kernel modules (must be loaded)
+_container_required_modules:
+  - bridge
+  - br_netfilter
+  - veth
+
+# Optional kernel modules (loaded if available)
+_container_optional_modules:
+  - macvlan
+  - ipvlan
+  - overlay
+
+# =============================================================================
+# Sysctl Configuration for Containers
+# =============================================================================
+_container_sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
+_container_sysctl_modules_file: /etc/modules-load.d/containers-networking.conf
+
+# Container networking sysctls
+_container_sysctls:
+  net.ipv4.ip_forward: '1'
+  net.ipv6.conf.all.forwarding: '1'
+  net.bridge.bridge-nf-call-iptables: '1'
+  net.bridge.bridge-nf-call-ip6tables: '1'
+
+# =============================================================================
+# Default Network Definitions
+# =============================================================================
+_container_default_network_name: deploy-net
+_container_default_subnet: 10.89.0.0/24
+_container_default_gateway: 10.89.0.1
+_container_default_dns:
+  - 8.8.8.8
+  - 8.8.4.4
+
+# =============================================================================
+# Network Segments (Tiers)
+# =============================================================================
+_container_network_tiers:
+  frontend:
+    internal: false
+    isolate: false
+  backend:
+    internal: true
+    isolate: true
+  management:
+    internal: true
+    isolate: true
+  database:
+    internal: true
+    isolate: true
+
+# =============================================================================
+# systemd Integration
+# =============================================================================
+_container_systemd_scope_system: system
+_container_systemd_scope_user: user
+_container_systemd_default_scope: system
+
+# =============================================================================
+# Rootless Container Defaults
+# =============================================================================
+_rootless_default_user: "{{ ansible_user | default('prod') }}"
+_rootless_xdg_runtime_dir_template: /run/user/%U
+_rootless_default_network_driver: bridge
+
+# =============================================================================
+# DNS Configuration for Containers
+# =============================================================================
+_container_dns_enabled: true
+_container_dns_port: 53
+_container_dns_upstream:
+  - 8.8.8.8
+  - 1.1.1.1
+
+# =============================================================================
+# Compliance and Security Tags
+# =============================================================================
+_container_cis_controls:
+  - cis_3_7_1   # Apply kernel networking prerequisites
+  - cis_3_7_2   # Ensure containers systemd directory exists
+  - cis_3_7_3   # Deploy container networks
+  - cis_3_7_4   # Remove legacy frontend network definitions
+  - cis_3_7_5   # Create backend network segment
+  - cis_3_7_6   # Create management network segment
+
+_container_stig_controls:
+  - stig_v_230370  # Container Network Isolation
+
+_container_nist_controls:
+  - nist_sc_7   # Boundary Protection
+  - nist_ac_4   # Information Flow Enforcement
+
+_container_iso_controls:
+  - iso_27001_8_20  # Network Security
+  - iso_27001_8_21  # Security of Network Services
+  - iso_27001_8_26  # Application Security Requirements
+
+# =============================================================================
+# Compliance Control Descriptions
+# =============================================================================
+_container_compliance_description:
+  cis: "CIS Benchmark Section 3.7 - Container Networking and Isolation"
+  stig: "STIG Container Security - Network Segmentation"
+  nist: "NIST SP 800-53 SC-7 (Boundary Protection), AC-4 (Information Flow)"
+  iso: "ISO 27001:2022 Annex A 8.20-8.21 (Network Security), 8.26 (Application Security)"

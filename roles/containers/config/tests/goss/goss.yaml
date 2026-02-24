@@ -1,0 +1,30 @@
+# Goss tests for containers/config role
+# ISO 27001 §8.26 - Container security
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify container configuration
+# =============================================================================
+file:
+  /srv/containers/config:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+  /etc/containers/registries.conf:
+    exists: true
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  podman_version:
+    exec: 'podman version'
+    exit-status: 0
+    timeout: 10000

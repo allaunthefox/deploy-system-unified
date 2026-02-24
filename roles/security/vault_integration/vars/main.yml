@@ -1,0 +1,34 @@
+---
+# HashiCorp Vault Integration Role - Internal Variables
+
+# Vault binary paths
+vault_binary_path: /usr/local/bin
+vault_config_path: /etc/vault
+vault_data_path: /var/lib/vault
+vault_log_path: /var/log/vault
+
+# Vault user/group
+vault_user: vault
+vault_group: vault
+vault_uid: 100
+vault_gid: 1000
+
+# Vault API settings
+vault_api_timeout: 30
+vault_max_retries: 3
+
+# TLS settings (optional)
+vault_tls_cert_file: ""
+vault_tls_key_file: ""
+
+# Audit settings
+vault_audit_enabled: false
+vault_audit_device: file
+
+# Storage backend
+vault_storage_backend: raft
+vault_storage_path: "{{ vault_data_path }}/raft"
+
+# HA settings
+vault_ha_enabled: false
+vault_ha_retry_join: []

@@ -4,8 +4,13 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Remove GPU test container
+    - name: Remove gpu test containers
       containers.podman.podman_container:
-        name: gpu-molecule
+        name: "{{ item }}"
         state: absent
         force_delete: true
+      loop:
+        - gpu-ubuntu-2204
+        - gpu-debian-12
+        - gpu-alpine-319
+        - gpu-rockylinux-9

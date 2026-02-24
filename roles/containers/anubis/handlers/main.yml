@@ -1,5 +1,6 @@
 ---
-# Handlers for containers/anubis
+# Handlers for containers/anubis role
+
 - name: restart_anubis_if_systemd_is_available
   ansible.builtin.systemd:
     name: anubis
@@ -10,7 +11,7 @@
   become_user: "{{ containers_systemd_owner }}"
   listen: "restart anubis"
   when: ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
-  failed_when: false  # Ignore failures if systemd isn't available
+  failed_when: false
 
 - name: reload_systemd_if_systemd_is_available
   ansible.builtin.systemd:
@@ -21,4 +22,4 @@
   become_user: "{{ containers_systemd_owner }}"
   listen: "reload systemd"
   when: ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
-  failed_when: false  # Ignore failures if systemd isn't available
+  failed_when: false

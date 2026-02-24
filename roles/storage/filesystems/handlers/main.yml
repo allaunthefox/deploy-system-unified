@@ -1,3 +1,16 @@
 ---
-# Placeholder handlers file
-# Intentionally empty
+# Handlers for storage/filesystems role
+# Handlers for filesystem management
+
+- name: reload_fstab
+  ansible.builtin.command:
+    cmd: systemctl daemon-reload
+  become: true
+  listen: "reload systemd"
+
+- name: remount_filesystems
+  ansible.builtin.command:
+    cmd: mount -a
+  become: true
+  failed_when: false
+  listen: "remount filesystems"

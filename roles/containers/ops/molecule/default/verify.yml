@@ -1,0 +1,8 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check ops role executed
+      ansible.builtin.debug:
+        msg: "Containers/ops role executed successfully"

@@ -1,7 +1,39 @@
 ---
 argument_specs:
   main:
-    short_description: memcached role
+    short_description: memcached role for in-memory caching
     description:
-      - Formally documented memcached management
-    options: {}
+      - Deploys and configures Memcached container
+      - Manages memory limits and resource constraints
+      - Aligns with ISO 27001 §8.26 requirements
+    options:
+      memcached_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable memcached container
+      memcached_image:
+        type: str
+        required: false
+        default: "docker.io/library/memcached:alpine"
+        description:
+          - Container image for memcached
+      memcached_port:
+        type: int
+        required: false
+        default: 11211
+        description:
+          - Port for memcached to listen on
+      memcached_memory_mb:
+        type: int
+        required: false
+        default: 64
+        description:
+          - Maximum memory in MB for memcached object storage
+      memcached_status_check:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable status health check endpoint

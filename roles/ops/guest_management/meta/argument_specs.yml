@@ -1,7 +1,14 @@
 ---
 argument_specs:
   main:
-    short_description: guest_management role
+    short_description: guest_management role for virtual machine guest management
     description:
-      - Formally documented guest_management management
-    options: {}
+      - Placeholder role for virtual machine guest operations
+      - Aligns with CIS 4.x, STIG V-230540, NIST AU-2/CA-7/IR-4/SI-4, ISO 27001 §8.15/§8.16/§16.1
+    options:
+      guest_management_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable guest management role

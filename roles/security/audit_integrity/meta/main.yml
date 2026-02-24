@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: audit_integrity
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Cryptographic log immutability and audit verification"
   license: MIT
   min_ansible_version: "2.15"
@@ -18,7 +18,17 @@ galaxy_info:
     - security
     - audit
     - integrity
-    - iso_27001
-    - iso_27037
+    - forensic
+    - journald
+    - logs
+    - immutability
+    - iso27001
+    - iso27037
+    - nist80053
+    - identification
+    - authentication
+
+collections:
+  - ansible.builtin
 
 dependencies: []

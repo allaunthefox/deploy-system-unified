@@ -1,0 +1,280 @@
+# Goss tests for security/sandboxing role
+# User Namespace Isolation, Container Sandboxing
+# CIS Benchmark: 5.x - Access Control (Process Isolation)
+# ISO 27001 §8.26 | STIG V-23032x | NIST AC-6/SC-39
+
+# =============================================================================
+# PACKAGE TESTS - Verify sandboxing packages
+# =============================================================================
+package:
+  # CIS 5.x - User namespace tools
+  bubblewrap:
+    installed: true
+  # CIS 5.x - Container runtime
+  podman:
+    installed: true
+  # CIS 5.x - Container tools
+  containers-common:
+    installed: true
+  # CIS 5.x - Seccomp profiles
+  seccomp:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Sandboxing services
+# =============================================================================
+service:
+  # CIS 5.x - Container storage service
+  podman.socket:
+    enabled: false  # Rootless by default
+    running: false
+
+# =============================================================================
+# FILE TESTS - Verify sandboxing configuration files
+# =============================================================================
+file:
+  # CIS 5.x - Bubblewrap binary
+  /usr/bin/bwrap:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Podman binary
+  /usr/bin/podman:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Container configuration directory
+  /etc/containers:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Container registries configuration
+  /etc/containers/registries.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[registries.search\]/
+      - /^registries = \['docker.io'\]/
+
+  # CIS 5.x - Container storage configuration
+  /etc/containers/storage.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[storage\]/
+      - /^driver = "overlay"/
+
+  # CIS 5.x - Container policy configuration
+  /etc/containers/policy.json:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^"default":/
+      - /"type": "reject"/
+
+  # CIS 5.x - Seccomp default profile
+  /usr/share/containers/seccomp.json:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - User namespace configuration
+  /etc/subuid:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - User namespace GID configuration
+  /etc/subgid:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - Container network configuration
+  /etc/cni/net.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Container runtime hooks
+  /usr/share/containers/oci/hooks.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Sandboxing configuration directory
+  /etc/sandbox:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - User namespace limits
+  /etc/sysctl.d/99-user-namespace.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^kernel.unprivileged_userns_clone = 0/
+      - /^user.max_user_namespaces = 0/
+
+  # CIS 5.x - Container mount configuration
+  /etc/containers/mounts.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify sandboxing configurations
+# =============================================================================
+command:
+  # CIS 5.x - Verify bubblewrap is installed and working
+  bubblewrap_version:
+    exec: 'bwrap --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /bubblewrap/
+    timeout: 5000
+
+  # CIS 5.x - Verify podman is installed and working
+  podman_version:
+    exec: 'podman --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /podman/
+    timeout: 5000
+
+  # CIS 5.x - Verify user namespace is restricted
+  user_namespace_restricted:
+    exec: 'sysctl -n kernel.unprivileged_userns_clone 2>/dev/null || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 5.x - Verify max user namespaces is restricted
+  max_user_namespaces:
+    exec: 'sysctl -n user.max_user_namespaces 2>/dev/null || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 5.x - Verify subuid is configured
+  subuid_configured:
+    exec: 'wc -l < /etc/subuid'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify subgid is configured
+  subgid_configured:
+    exec: 'wc -l < /etc/subgid'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify container policy is restrictive
+  container_policy_restrictive:
+    exec: 'grep -c "\"type\": \"reject\"" /etc/containers/policy.json'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify seccomp profile exists
+  seccomp_profile_exists:
+    exec: 'test -f /usr/share/containers/seccomp.json && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 5.x - Verify container registries are configured
+  container_registries:
+    exec: 'grep -c "docker.io" /etc/containers/registries.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify container storage driver
+  container_storage_driver:
+    exec: 'grep "^driver" /etc/containers/storage.conf | awk -F= "{print $2}" | tr -d " \"'
+    exit-status: 0
+    stdout:
+      - /^overlay$/
+    timeout: 5000
+
+  # CIS 5.x - Verify bubblewrap can run
+  bubblewrap_test:
+    exec: 'bwrap --ro-bind / / --dev /dev --proc /proc --unshare-all echo "test" 2>&1'
+    exit-status: 0
+    stdout:
+      - /^test$/
+    timeout: 5000
+
+  # CIS 5.x - Verify podman info works
+  podman_info:
+    exec: 'podman info --format=json 2>/dev/null | head -1'
+    exit-status: 0
+    timeout: 10000
+
+  # CIS 5.x - Verify CNI network configuration exists
+  cni_config_exists:
+    exec: 'ls /etc/cni/net.d/*.conflist 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 5.x - Verify container runtime hooks directory
+  oci_hooks_exists:
+    exec: 'test -d /usr/share/containers/oci/hooks.d && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 5.x - Verify sandboxing config directory permissions
+  sandbox_config_perms:
+    exec: 'stat -c "%a" /etc/sandbox'
+    exit-status: 0
+    stdout:
+      - /^755$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Sandboxing is per-process
+# =============================================================================
+# Note: Sandboxing tools are invoked per-application, not as continuous processes
+
+# =============================================================================
+# PORT TESTS - Not applicable for sandboxing
+# =============================================================================
+# Note: Sandboxing does not involve network ports by default

@@ -1,6 +1,6 @@
 ---
 # Handlers for security/audit_integrity
-- name: restart_journald
+- name: Restart Journald
   ansible.builtin.systemd:
     name: systemd-journald
     state: restarted

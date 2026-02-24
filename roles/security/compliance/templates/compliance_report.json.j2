@@ -1,0 +1,43 @@
+{
+  "report_metadata": {
+    "generated_at": "{{ ansible_date_time.iso8601 }}",
+    "hostname": "{{ ansible_hostname }}",
+    "os_family": "{{ ansible_os_family }}",
+    "distribution": "{{ ansible_distribution }} {{ ansible_distribution_version }}",
+    "kernel": "{{ ansible_kernel }}",
+    "benchmark_version": "{{ cis_benchmark_version }}"
+  },
+  "compliance_summary": {
+    "cis_level_1": {
+      "score": {{ cis_level_1_score }},
+      "total": {{ cis_level_1_total }},
+      "percentage": {{ (cis_level_1_score / cis_level_1_total * 100) | round(1) if cis_level_1_total > 0 else 0 }},
+      "status": "{% if cis_level_1_score / cis_level_1_total >= 0.95 %}PASS{% elif cis_level_1_score / cis_level_1_total >= 0.80 %}PARTIAL{% else %}FAIL{% endif %}"
+    },
+    "cis_level_2": {
+      "score": {{ cis_level_2_score }},
+      "total": {{ cis_level_2_total }},
+      "percentage": {{ (cis_level_2_score / cis_level_2_total * 100) | round(1) if cis_level_2_total > 0 else 0 }},
+      "status": "{% if cis_level_2_score / cis_level_2_total >= 0.90 %}PASS{% elif cis_level_2_score / cis_level_2_total >= 0.75 %}PARTIAL{% else %}FAIL{% endif %}"
+    }
+  },
+  "frameworks_validated": {{ compliance_frameworks | to_json }},
+  "recommendations": [
+    {% if cis_level_1_score / cis_level_1_total < 0.95 %}
+    {
+      "priority": "HIGH",
+      "action": "Address CIS Level 1 gaps to achieve 95% compliance"
+    },
+    {% endif %}
+    {% if cis_level_2_score / cis_level_2_total < 0.90 %}
+    {
+      "priority": "MEDIUM",
+      "action": "Address CIS Level 2 gaps to achieve 90% compliance"
+    },
+    {% endif %}
+    {
+      "priority": "INFO",
+      "action": "Review compliance report for detailed findings"
+    }
+  ]
+}

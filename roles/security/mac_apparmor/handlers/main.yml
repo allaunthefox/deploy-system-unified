@@ -1,2 +1,22 @@
 ---
-# Handlers for security/mac_apparmor
+# Handlers for security/mac_apparmor - Mandatory Access Control
+
+- name: Reload apparmor profiles
+  ansible.builtin.command: apparmor_parser -r /etc/apparmor.d/*
+  become: true
+  failed_when: false
+  changed_when: false
+
+- name: Restart apparmor service
+  ansible.builtin.service:
+    name: apparmor
+    state: restarted
+  become: true
+  when: ansible_os_family in ['Debian', 'Alpine']
+
+- name: Reconfigure apparmor
+  ansible.builtin.command: aa-enforce /etc/apparmor.d/*
+  become: true
+  failed_when: false
+  changed_when: false
+  when: not (is_virtualized | default(false))

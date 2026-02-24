@@ -1,0 +1,49 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check TPM2 tools installation
+      ansible.builtin.shell: dpkg -l | grep tpm2-tools
+      register: tpm2_check
+      changed_when: false
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Assert TPM2 tools installed
+      ansible.builtin.assert:
+        that: tpm2_check.rc == 0
+        fail_msg: "TPM2 tools should be installed."
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Check TPM2 ABRMD installation
+      ansible.builtin.shell: dpkg -l | grep tpm2-abrmd
+      register: tpm2_abrmd_check
+      changed_when: false
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Assert TPM2 ABRMD installed
+      ansible.builtin.assert:
+        that: tpm2_abrmd_check.rc == 0
+        fail_msg: "TPM2 ABRMD should be installed."
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Check tpm2_print command available
+      ansible.builtin.command: which tpm2_print
+      register: tpm2_cmd_check
+      changed_when: false
+      failed_when: false
+
+    - name: Assert TPM2 commands available
+      ansible.builtin.assert:
+        that: tpm2_cmd_check.rc == 0
+        fail_msg: "TPM2 commands should be available."
+
+    - name: Check RTC configuration (informational)
+      ansible.builtin.command: timedatectl
+      register: timedatectl_output
+      failed_when: false
+      changed_when: false
+
+    - name: Display RTC status
+      ansible.builtin.debug:
+        msg: "RTC status: {{ timedatectl_output.stdout_lines | default(['timedatectl not available']) }}"

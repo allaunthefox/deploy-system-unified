@@ -1,0 +1,268 @@
+# Goss tests for security/ips role
+# Fail2Ban, Intrusion Prevention System
+# CIS Benchmark: 4.x, 5.x - Logging and Access Control
+# ISO 27001 §8.16, §8.23 | STIG V-23031x | NIST SI-4/SI-4(4)/AU-6
+
+# =============================================================================
+# PACKAGE TESTS - Verify IPS packages are installed
+# =============================================================================
+package:
+  # CIS 4.x - Fail2Ban intrusion prevention
+  fail2ban:
+    installed: true
+  # CIS 4.x - Fail2Ban documentation
+  fail2ban-doc:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify IPS services are running
+# =============================================================================
+service:
+  # CIS 4.x - Fail2Ban service
+  fail2ban:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify IPS configuration files
+# =============================================================================
+file:
+  # CIS 4.x - Fail2Ban main configuration
+  /etc/fail2ban/jail.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban local configuration (overrides)
+  /etc/fail2ban/jail.local:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[DEFAULT\]/
+      - /^bantime = 1h/
+      - /^findtime = 10m/
+      - /^maxretry = 5/
+      - /^backend = auto/
+      - /^ignoreip = 127.0.0.1/8 ::1/
+
+  # CIS 4.x - Fail2Ban SSH jail configuration
+  /etc/fail2ban/jail.d/sshd.local:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[sshd\]/
+      - /^enabled = true/
+      - /^port = ssh/
+      - /^logpath = \/var\/log\/auth.log/
+
+  # CIS 4.x - Fail2Ban filter directory
+  /etc/fail2ban/filter.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban action directory
+  /etc/fail2ban/action.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban SSH filter
+  /etc/fail2ban/filter.d/sshd.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[Definition\]/
+      - /^failregex =/
+
+  # CIS 4.x - Fail2Ban iptables action
+  /etc/fail2ban/action.d/iptables-common.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban log directory
+  /var/log/fail2ban:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban log file
+  /var/log/fail2ban.log:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban socket file
+  /var/run/fail2ban/fail2ban.sock:
+    exists: true
+    mode: "0660"
+    owner: root
+    group: root
+    filetype: socket
+
+  # CIS 4.x - Fail2Ban PID file
+  /var/run/fail2ban/fail2ban.pid:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 4.x - Fail2Ban database
+  /var/lib/fail2ban/fail2ban.sqlite3:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify IPS configuration and operation
+# =============================================================================
+command:
+  # CIS 4.x - Verify Fail2Ban service is active
+  fail2ban_active:
+    exec: 'systemctl is-active fail2ban'
+    exit-status: 0
+    stdout:
+      - /^active$/
+    timeout: 5000
+
+  # CIS 4.x - Verify Fail2Ban client can connect
+  fail2ban_client_status:
+    exec: 'fail2ban-client status 2>/dev/null | head -1'
+    exit-status: 0
+    stdout:
+      - /Status/
+    timeout: 5000
+
+  # CIS 4.x - Verify SSH jail is enabled
+  sshd_jail_enabled:
+    exec: 'fail2ban-client status sshd 2>/dev/null | grep -c "Currently failed" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 4.x - Verify bantime is configured
+  fail2ban_bantime:
+    exec: 'grep "^bantime" /etc/fail2ban/jail.local | head -1 | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /[0-9]+/
+    timeout: 5000
+
+  # CIS 4.x - Verify findtime is configured
+  fail2ban_findtime:
+    exec: 'grep "^findtime" /etc/fail2ban/jail.local | head -1 | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /[0-9]+/
+    timeout: 5000
+
+  # CIS 4.x - Verify maxretry is configured
+  fail2ban_maxretry:
+    exec: 'grep "^maxretry" /etc/fail2ban/jail.local | head -1 | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^[1-5]$/
+    timeout: 5000
+
+  # CIS 4.x - Verify backend is configured
+  fail2ban_backend:
+    exec: 'grep "^backend" /etc/fail2ban/jail.local | head -1 | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^auto$|^systemd$|^polling$/
+    timeout: 5000
+
+  # CIS 4.x - Verify ignoreip includes localhost
+  fail2ban_ignoreip:
+    exec: 'grep "^ignoreip" /etc/fail2ban/jail.local | grep -c "127.0.0.1"'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Count enabled jails
+  fail2ban_jail_count:
+    exec: 'fail2ban-client status 2>/dev/null | grep "Jail list" | tr "," "\n" | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify Fail2Ban log file exists and is writable
+  fail2ban_log_writable:
+    exec: 'test -w /var/log/fail2ban.log && echo "writable" || echo "not-writable"'
+    exit-status: 0
+    stdout:
+      - /^writable$/
+    timeout: 5000
+
+  # CIS 4.x - Verify Fail2Ban socket permissions
+  fail2ban_socket_perms:
+    exec: 'stat -c "%a" /var/run/fail2ban/fail2ban.sock'
+    exit-status: 0
+    stdout:
+      - /^660$/
+    timeout: 5000
+
+  # CIS 4.x - Verify SSH filter exists
+  sshd_filter_exists:
+    exec: 'test -f /etc/fail2ban/filter.d/sshd.conf && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 4.x - Verify iptables action exists
+  iptables_action_exists:
+    exec: 'test -f /etc/fail2ban/action.d/iptables-common.conf && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 4.x - Verify Fail2Ban version
+  fail2ban_version:
+    exec: 'fail2ban-client --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /Fail2Ban/
+    timeout: 5000
+
+  # CIS 4.x - Verify Fail2Ban database exists
+  fail2ban_database:
+    exec: 'test -f /var/lib/fail2ban/fail2ban.sqlite3 && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+# =============================================================================
+# PORT TESTS - Fail2Ban does not listen on ports
+# =============================================================================
+# Note: Fail2Ban monitors logs and modifies firewall rules, does not listen on ports
+
+# =============================================================================
+# PROCESS TESTS - Verify Fail2Ban process
+# =============================================================================
+process:
+  # CIS 4.x - Ensure Fail2Ban is running
+  fail2ban-server:
+    running: true

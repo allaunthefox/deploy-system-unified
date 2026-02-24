@@ -1,1 +1,8 @@
 ---
+# Internal variables for security/kernel role
+security_kernel_sysctl_path: "/etc/sysctl.d/99-security-hardening.conf"
+security_kernel_modules_blocklist: "/etc/modprobe.d/security-blocklist.conf"
+
+# Hardening Standards
+security_kernel_standard: "CIS-Benchmark-L2"
+security_kernel_nist_control: "SC-8"

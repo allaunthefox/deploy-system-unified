@@ -1,0 +1,66 @@
+---
+# Goss Remediation Playbook
+# This playbook automatically remediates common security issues
+# Usage: ansible-playbook remediation.yml
+
+- name: Security Remediation
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    goss_log_dir: /var/log/goss
+    goss_output_format: json
+
+  tasks:
+    - name: Ensure log directory exists
+      ansible.builtin.file:
+        path: "{{ goss_log_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Run goss validation with auto-remediation
+      ansible.builtin.command:
+        cmd: >
+          goss validate
+          --format {{ goss_output_format }}
+          --remediate
+          --output {{ goss_log_dir }}/remediation-{{ ansible_date_time.iso8601 }}.json
+      register: goss_remediation
+      failed_when: false
+      changed_when: false
+
+    - name: Parse remediation results
+      ansible.builtin.set_fact:
+        goss_results: "{{ goss_remediation.stdout | from_json }}"
+      when: goss_output_format == 'json'
+      failed_when: false
+
+    - name: Display remediation summary
+      ansible.builtin.debug:
+        msg: "Remediation completed: {{ goss_results.successful | length }} passed, {{ goss_results.failed | length }} failed"
+
+    - name: Log remediation results
+      ansible.builtin.copy:
+        content: |
+          Remediation Report
+          ==================
+          Date: {{ ansible_date_time.iso8601 }}
+          Host: {{ inventory_hostname }}
+          
+          Passed Tests: {{ goss_results.successful | length }}
+          Failed Tests: {{ goss_results.failed | length }}
+          
+          {% if goss_results.failed is defined %}
+          {% for test in goss_results.failed %}
+          - {{ test.test }}
+            {{ test.human }}
+          {% endfor %}
+          {% endif %}
+        dest: "{{ goss_log_dir }}/remediation-report-{{ ansible_date_time.iso8601 }}.txt"
+      when: goss_results is defined
+
+    - name: Alert on failed remediation
+      ansible.builtin.debug:
+        msg: "Some issues could not be remediated. Manual intervention required."
+      when: goss_results.failed is defined and goss_results.failed | length > 0

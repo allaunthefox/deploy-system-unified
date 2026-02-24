@@ -1,0 +1,39 @@
+---
+galaxy_info:
+  role_name: signing
+  author: deploysystemunified
+  description: "POL-SEC | Cosign container image signing with keyless signing and verification policies - ISO 27001 §14.2 compliant"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: CentOS
+      versions: [all]
+  galaxy_tags:
+    - security
+    - signing
+    - containers
+    - cosign
+    - sigstore
+    - image
+    - hardening
+    - linux
+    - iso27001
+    - iso27001_14_2
+    - nist80053
+    - nist_si_3
+    - supply_chain
+    - cryptography
+    - sbom
+    - compliance
+
+collections:
+  - ansible.builtin
+  - community.general
+
+dependencies: []

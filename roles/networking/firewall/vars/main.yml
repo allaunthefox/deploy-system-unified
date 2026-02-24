@@ -1,1 +1,206 @@
 ---
+# vars/main.yml for firewall role
+# Role-specific internal variables for UFW, Firewalld, and Nftables
+# NOT meant to be overridden by users
+
+# =============================================================================
+# UFW (Uncomplicated Firewall) Configuration
+# =============================================================================
+_ufw_package_name: ufw
+_ufw_config_file: /etc/default/ufw
+_ufw_rules_dir: /etc/ufw
+_ufw_user_rules_file: /etc/ufw/user.rules
+_ufw_user6_rules_file: /etc/ufw/user6.rules
+_ufw_before_rules_file: /etc/ufw/before.rules
+_ufw_before6_rules_file: /etc/ufw/before6.rules
+_ufw_after_rules_file: /etc/ufw/after.rules
+_ufw_after6_rules_file: /etc/ufw/after6.rules
+
+# UFW service and module
+_ufw_service_name: ufw
+_ufw_kernel_module: ip_tables
+
+# UFW default policies
+_ufw_default_input_policy: deny
+_ufw_default_output_policy: allow
+_ufw_default_forward_policy: deny
+_ufw_default_application_policy: skip
+
+# UFW logging defaults
+_ufw_log_level: low
+_ufw_log_limit_burst: 5
+_ufw_log_limit_interval: 60
+
+# =============================================================================
+# Firewalld Configuration
+# =============================================================================
+_firewalld_package_name: firewalld
+_firewalld_config_dir: /etc/firewalld
+_firewalld_zones_dir: /etc/firewalld/zones
+_firewalld_services_dir: /etc/firewalld/services
+_firewalld_icmptypes_dir: /etc/firewalld/icmptypes
+_firewalld_helpers_dir: /etc/firewalld/helpers
+
+# Firewalld runtime configuration
+_firewalld_runtime_config: /run/firewalld
+_firewalld_lockdown_whitelist: /etc/firewalld/lockdown-whitelist.xml
+
+# Firewalld service and module
+_firewalld_service_name: firewalld
+_firewalld_backend: nftables
+
+# Firewalld default zone
+_firewalld_default_zone: public
+_firewalld_zone_targets:
+  - default
+  - ACCEPT
+  - DROP
+  - %%REJECT%%
+  - REJECT
+
+# Firewalld logging
+_firewalld_log_denied: off
+_firewalld_log_denied_options:
+  - off
+  - unicast
+  - broadcast
+  - multicast
+  - all
+
+# =============================================================================
+# Nftables Configuration (Alpine/Modern)
+# =============================================================================
+_nftables_package_name: nftables
+_nftables_config_file: /etc/nftables.conf
+_nftables_config_file_alpine: /etc/nftables.nft
+_nftables_service_name: nftables
+_nftables_binary: /usr/sbin/nft
+
+# Nftables default tables and chains
+_nftables_default_table: inet filter
+_nftables_default_input_policy: drop
+_nftables_default_output_policy: accept
+_nftables_default_forward_policy: drop
+
+# Nftables chain priorities
+_nftables_filter_priority: 0
+_nftables_nat_priority: -100
+_nftables_mangle_priority: 150
+_nftables_raw_priority: -300
+
+# Nftables connection tracking
+_nftables_ct_states:
+  - established
+  - related
+
+# =============================================================================
+# IPTables Legacy Configuration
+# =============================================================================
+_iptables_package_name: iptables
+_iptables_service_name: iptables
+_iptables_binary: /usr/sbin/iptables
+_iptables_save_binary: /usr/sbin/iptables-save
+_iptables_restore_binary: /usr/sbin/iptables-restore
+
+# IPTables default chains and policies
+_iptables_default_input_policy: DROP
+_iptables_default_output_policy: ACCEPT
+_iptables_default_forward_policy: DROP
+
+# IPTables configuration persistence
+_iptables_persistent_package: iptables-persistent
+_iptables_rules_save_path_ipv4: /etc/iptables/rules.v4
+_iptables_rules_save_path_ipv6: /etc/iptables/rules.v6
+
+# =============================================================================
+# Kernel Modules for Firewalling
+# =============================================================================
+_firewall_kernel_modules:
+  - ip_tables
+  - ip6_tables
+  - nf_conntrack
+  - nf_conntrack_ipv4
+  - nf_conntrack_ipv6
+  - nf_nat
+  - xt_comment
+  - xt_multiport
+  - xt_conntrack
+  - xt_state
+
+# =============================================================================
+# Connection Tracking Settings
+# =============================================================================
+_conntrack_max_default: 262144
+_conntrack_timeout_established: 432000
+_conntrack_timeout_close: 10
+_conntrack_timeout_close_wait: 60
+_conntrack_timeout_fin_wait: 120
+_conntrack_timeout_last_ack: 30
+_conntrack_timeout_syn_recv: 60
+_conntrack_timeout_syn_sent: 120
+_conntrack_timeout_time_wait: 120
+
+# =============================================================================
+# OS Family Mappings
+# =============================================================================
+_firewall_os_family_mapping:
+  Debian:
+    package: ufw
+    service: ufw
+    config: /etc/default/ufw
+  RedHat:
+    package: firewalld
+    service: firewalld
+    config: /etc/firewalld/firewalld.conf
+  Alpine:
+    package: nftables
+    service: nftables
+    config: /etc/nftables.nft
+  Archlinux:
+    package: ufw
+    service: ufw
+    config: /etc/default/ufw
+
+# =============================================================================
+# Compliance and Security Tags
+# =============================================================================
+_firewall_cis_controls:
+  - cis_4_4_1    # Install firewall (UFW/Firewalld)
+  - cis_4_4_2    # Build effective firewall port list
+  - cis_4_4_1_1  # Configure UFW defaults (incoming deny, outgoing allow)
+  - cis_4_4_1_2  # Set UFW default forward policy
+  - cis_4_4_1_3  # Import firewall rules (UFW/Firewalld/Nftables)
+  - cis_4_4_1_4  # Enable UFW final state
+  - cis_4_4_1_5  # Configure nftables rules
+  - cis_4_4_1_6  # Enable nftables service
+  - cis_4_4_1_7  # Enable Firewalld service
+  - cis_4_4_1_8  # Set Firewalld default zone to drop
+  - cis_4_4_1_9  # Allow configured TCP ports (Firewalld)
+  - cis_4_4_1_10 # Allow configured UDP ports (Firewalld)
+  - cis_4_4_1_11 # Apply additional rich rules (Firewalld)
+  - cis_4_4_1_12 # Allow configured TCP ports (UFW)
+  - cis_4_4_1_13 # Allow configured UDP ports (UFW)
+  - cis_4_4_1_14 # Apply granular IP-restricted rules (UFW)
+  - cis_4_4_3    # Fail on unsupported OS family
+
+_firewall_stig_controls:
+  - stig_v_230270  # Firewall - Installation
+  - stig_v_230271  # Firewall - Configuration and Rules
+
+_firewall_nist_controls:
+  - nist_sc_7   # Boundary Protection
+  - nist_ac_4   # Information Flow Enforcement
+
+_firewall_iso_controls:
+  - iso_27001_8_20  # Network Security
+  - iso_27001_8_23  # Web Filtering
+  - iso_27001_9_4   # Access Control
+
+# =============================================================================
+# Compliance Control Descriptions
+# =============================================================================
+_firewall_compliance_description:
+  cis: "CIS Benchmark Section 4.4 - Firewall Configuration (UFW/Firewalld/Nftables)"
+  stig: "STIG Network Infrastructure - Firewall Implementation"
+  nist: "NIST SP 800-53 SC-7 (Boundary Protection), AC-4 (Information Flow)"
+  iso: "ISO 27001:2022 Annex A 8.20 (Networks Security), 8.23 (Web Filtering)"

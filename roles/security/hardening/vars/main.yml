@@ -1,1 +1,631 @@
 ---
+# Security/hardening Role - Internal Variables
+# ISO 9001 Structural Consistency | POL-SEC | Core System Hardening
+# These are role-specific internal variables not intended for user override
+
+# =============================================================================
+# COMPLIANCE FRAMEWORK MAPPINGS
+# =============================================================================
+
+# CIS Benchmark Controls covered by hardening role
+hardening_cis_controls:
+  - id: "1.1.1"
+    title: "Ensure mounting of cramfs filesystems is disabled"
+    severity: "high"
+  - id: "1.1.2"
+    title: "Ensure mounting of freevxfs filesystems is disabled"
+    severity: "high"
+  - id: "1.1.3"
+    title: "Ensure mounting of jffs2 filesystems is disabled"
+    severity: "high"
+  - id: "1.1.4"
+    title: "Ensure mounting of hfs filesystems is disabled"
+    severity: "high"
+  - id: "1.1.5"
+    title: "Ensure mounting of hfsplus filesystems is disabled"
+    severity: "high"
+  - id: "1.1.6"
+    title: "Ensure mounting of udf filesystems is disabled"
+    severity: "high"
+  - id: "1.1.7"
+    title: "Ensure mounting of FAT filesystems is limited"
+    severity: "medium"
+  - id: "1.4.1"
+    title: "Ensure bootloader password is set"
+    severity: "high"
+  - id: "1.4.2"
+    title: "Ensure permissions on bootloader config are configured"
+    severity: "high"
+  - id: "1.5.1"
+    title: "Ensure core dumps are restricted"
+    severity: "medium"
+  - id: "1.5.2"
+    title: "Ensure address space layout randomization (ASLR) is enabled"
+    severity: "high"
+  - id: "1.5.3"
+    title: "Ensure prelink is not installed"
+    severity: "medium"
+  - id: "1.5.4"
+    title: "Ensure automatic error reporting is not enabled"
+    severity: "low"
+  - id: "5.1.1"
+    title: "Ensure cron daemon is enabled and running"
+    severity: "medium"
+  - id: "5.1.2"
+    title: "Ensure permissions on /etc/crontab are configured"
+    severity: "medium"
+  - id: "5.1.3"
+    title: "Ensure permissions on /etc/cron.hourly are configured"
+    severity: "medium"
+  - id: "5.1.4"
+    title: "Ensure permissions on /etc/cron.daily are configured"
+    severity: "medium"
+  - id: "5.1.5"
+    title: "Ensure permissions on /etc/cron.weekly are configured"
+    severity: "medium"
+  - id: "5.1.6"
+    title: "Ensure permissions on /etc/cron.monthly are configured"
+    severity: "medium"
+  - id: "5.1.7"
+    title: "Ensure permissions on /etc/cron.d are configured"
+    severity: "medium"
+  - id: "5.1.8"
+    title: "Ensure cron is restricted to authorized users"
+    severity: "medium"
+  - id: "5.1.9"
+    title: "Ensure at is restricted to authorized users"
+    severity: "medium"
+  - id: "5.2.1"
+    title: "Ensure permissions on /etc/ssh/sshd_config are configured"
+    severity: "high"
+  - id: "5.2.2"
+    title: "Ensure permissions on SSH private host key files are configured"
+    severity: "high"
+  - id: "5.2.3"
+    title: "Ensure permissions on SSH public host key files are configured"
+    severity: "medium"
+  - id: "5.2.4"
+    title: "Ensure SSH access is limited"
+    severity: "high"
+  - id: "5.2.5"
+    title: "Ensure SSH PermitRootLogin is disabled"
+    severity: "high"
+  - id: "5.2.6"
+    title: "Ensure SSH PermitEmptyPasswords is disabled"
+    severity: "high"
+  - id: "5.2.7"
+    title: "Ensure SSH Protocol is set to 2"
+    severity: "high"
+  - id: "5.2.8"
+    title: "Ensure SSH HostbasedAuthentication is disabled"
+    severity: "medium"
+  - id: "5.2.9"
+    title: "Ensure SSH PermitUserEnvironment is disabled"
+    severity: "medium"
+  - id: "5.2.10"
+    title: "Ensure SSH IgnoreRhosts is enabled"
+    severity: "medium"
+  - id: "5.2.11"
+    title: "Ensure SSH X11 forwarding is disabled"
+    severity: "medium"
+  - id: "5.2.12"
+    title: "Ensure SSH LoginGraceTime is set to one minute or less"
+    severity: "medium"
+  - id: "5.2.13"
+    title: "Ensure SSH access is limited"
+    severity: "high"
+  - id: "5.2.14"
+    title: "Ensure SSH warning banner is configured"
+    severity: "medium"
+  - id: "5.2.15"
+    title: "Ensure SSH PAM is enabled"
+    severity: "medium"
+  - id: "5.2.16"
+    title: "Ensure SSH AllowTcpForwarding is disabled"
+    severity: "medium"
+  - id: "5.2.17"
+    title: "Ensure SSH MaxStartups is configured"
+    severity: "low"
+  - id: "5.2.18"
+    title: "Ensure SSH MaxSessions is set"
+    severity: "medium"
+  - id: "5.3.1"
+    title: "Ensure password creation requirements are configured"
+    severity: "high"
+  - id: "5.3.2"
+    title: "Ensure lockout for failed password attempts is configured"
+    severity: "high"
+  - id: "5.3.3"
+    title: "Ensure password reuse is limited"
+    severity: "high"
+  - id: "5.3.4"
+    title: "Ensure password hashing algorithm is SHA-512"
+    severity: "high"
+  - id: "5.4.1"
+    title: "Ensure shadow group is empty"
+    severity: "high"
+  - id: "5.4.2"
+    title: "Ensure default group for the root account is GID 0"
+    severity: "high"
+  - id: "5.4.3"
+    title: "Ensure default user shell timeout is configured"
+    severity: "medium"
+  - id: "5.4.4"
+    title: "Ensure default user umask is configured"
+    severity: "medium"
+  - id: "5.5"
+    title: "Ensure root login is restricted to system console"
+    severity: "high"
+  - id: "5.6"
+    title: "Ensure access to the su command is restricted"
+    severity: "high"
+
+# STIG Controls covered by hardening role
+hardening_stig_controls:
+  - id: "V-230217"
+    title: "File system permissions must be hardened"
+    severity: "high"
+  - id: "V-230218"
+    title: "User accounts must be hardened"
+    severity: "high"
+  - id: "V-230219"
+    title: "File system automount must be disabled"
+    severity: "medium"
+  - id: "V-230220"
+    title: "The Network File System (NFS) must be configured to use RPCSEC_GSS"
+    severity: "medium"
+  - id: "V-230221"
+    title: "The File Transfer Protocol (FTP) daemon must be configured for logging"
+    severity: "medium"
+  - id: "V-230222"
+    title: "The Trivial File Transfer Protocol (TFTP) server must not be installed"
+    severity: "high"
+  - id: "V-230223"
+    title: "The rsh-server package must not be installed"
+    severity: "high"
+  - id: "V-230224"
+    title: "The rsh package must not be installed"
+    severity: "high"
+  - id: "V-230225"
+    title: "The telnet-server package must not be installed"
+    severity: "high"
+  - id: "V-230226"
+    title: "The telnet package must not be installed"
+    severity: "high"
+  - id: "V-230227"
+    title: "The xinetd package must not be installed"
+    severity: "medium"
+  - id: "V-230228"
+    title: "The ypserv package must not be installed"
+    severity: "high"
+  - id: "V-230229"
+    title: "The rsh-client package must not be installed"
+    severity: "high"
+
+# NIST 800-53 Controls covered by hardening role
+hardening_nist_controls:
+  - id: "AC-2"
+    title: "Account Management"
+    family: "Access Control"
+  - id: "AC-3"
+    title: "Access Enforcement"
+    family: "Access Control"
+  - id: "AC-6"
+    title: "Least Privilege"
+    family: "Access Control"
+  - id: "AC-17"
+    title: "Remote Access"
+    family: "Access Control"
+  - id: "CM-2"
+    title: "Baseline Configuration"
+    family: "Configuration Management"
+  - id: "CM-6"
+    title: "Configuration Settings"
+    family: "Configuration Management"
+  - id: "CM-7"
+    title: "Least Functionality"
+    family: "Configuration Management"
+  - id: "IA-2"
+    title: "Identification and Authentication (Organizational Users)"
+    family: "Identification and Authentication"
+  - id: "IA-5"
+    title: "Authenticator Management"
+    family: "Identification and Authentication"
+  - id: "SC-8"
+    title: "Transmission Confidentiality and Integrity"
+    family: "System and Communications Protection"
+  - id: "SI-4"
+    title: "Information System Monitoring"
+    family: "System and Information Integrity"
+
+# ISO 27001:2022 Controls covered by hardening role
+hardening_iso_27001_controls:
+  - id: "8.8"
+    title: "Management of technical vulnerabilities"
+    category: "Technological controls"
+  - id: "8.9"
+    title: "Configuration management"
+    category: "Technological controls"
+  - id: "8.10"
+    title: "Information deletion"
+    category: "Technological controls"
+  - id: "8.12"
+    title: "Data leakage prevention"
+    category: "Technological controls"
+  - id: "8.16"
+    title: "Monitoring activities"
+    category: "Technological controls"
+  - id: "8.18"
+    title: "Use of privileged utility programs"
+    category: "Technological controls"
+  - id: "8.19"
+    title: "Installation of software on operational systems"
+    category: "Technological controls"
+  - id: "8.20"
+    title: "Networks security"
+    category: "Technological controls"
+  - id: "8.21"
+    title: "Security of network services"
+    category: "Technological controls"
+  - id: "8.22"
+    title: "Segregation of networks"
+    category: "Technological controls"
+  - id: "8.23"
+    title: "Web filtering"
+    category: "Technological controls"
+  - id: "9.2"
+    title: "Privileged access rights"
+    category: "Organisational controls"
+  - id: "9.3"
+    title: "Access control"
+    category: "Organisational controls"
+
+# =============================================================================
+# SERVICE NAMES (OS-specific)
+# =============================================================================
+
+hardening_service_names:
+  debian:
+    auditd: "auditd"
+    ssh: "ssh"
+    cron: "cron"
+  redhat:
+    auditd: "auditd"
+    ssh: "sshd"
+    cron: "crond"
+  alpine:
+    auditd: "auditd"
+    ssh: "sshd"
+    cron: "crond"
+  archlinux:
+    auditd: "auditd"
+    ssh: "sshd"
+    cron: "cronie"
+
+# =============================================================================
+# PACKAGE LISTS (OS-specific)
+# =============================================================================
+
+hardening_packages_core:
+  debian:
+    - "libpam-tmpdir"
+    - "auditd"
+    - "libpam-pwquality"
+    - "libpam-cracklib"
+    - "passwd"
+    - "login"
+  redhat:
+    - "audit"
+    - "libpwquality"
+    - "cracklib"
+    - "shadow-utils"
+  alpine:
+    - "audit"
+    - "pam"
+    - "shadow"
+  archlinux:
+    - "audit"
+    - "pam"
+    - "shadow"
+
+# Packages to remove (security risk)
+hardening_packages_remove:
+  - "rsh-server"
+  - "rsh"
+  - "rsh-client"
+  - "telnet-server"
+  - "telnet"
+  - "tftp-server"
+  - "tftp"
+  - "xinetd"
+  - "ypserv"
+  - "nis"
+  - "ypbind"
+
+# =============================================================================
+# PATHS AND DIRECTORIES
+# =============================================================================
+
+hardening_paths:
+  shadow_file: "/etc/shadow"
+  passwd_file: "/etc/passwd"
+  group_file: "/etc/group"
+  gshadow_file: "/etc/gshadow"
+  sudoers_file: "/etc/sudoers"
+  sudoers_dir: "/etc/sudoers.d"
+  pam_config_dir: "/etc/pam.d"
+  pam_common_password: "/etc/pam.d/common-password"
+  pam_common_session: "/etc/pam.d/common-session"
+  pam_common_auth: "/etc/pam.d/common-auth"
+  pam_common_account: "/etc/pam.d/common-account"
+  login_defs_file: "/etc/login.defs"
+  securetty_file: "/etc/securetty"
+  issue_file: "/etc/issue"
+  issue_net_file: "/etc/issue.net"
+  motd_file: "/etc/motd"
+  profile_file: "/etc/profile"
+  bashrc_file: "/etc/bash.bashrc"
+  cron_dir: "/etc/cron.d"
+  cron_hourly_dir: "/etc/cron.hourly"
+  cron_daily_dir: "/etc/cron.daily"
+  cron_weekly_dir: "/etc/cron.weekly"
+  cron_monthly_dir: "/etc/cron.monthly"
+  crontab_file: "/etc/crontab"
+  cron_allow_file: "/etc/cron.allow"
+  cron_deny_file: "/etc/cron.deny"
+  at_allow_file: "/etc/at.allow"
+  at_deny_file: "/etc/at.deny"
+  limits_conf_dir: "/etc/security/limits.d"
+  limits_conf_file: "/etc/security/limits.conf"
+  sysctl_conf_dir: "/etc/sysctl.d"
+  modprobe_conf_dir: "/etc/modprobe.d"
+  audit_rules_dir: "/etc/audit/rules.d"
+
+# =============================================================================
+# FILE PERMISSIONS (Security Baseline)
+# =============================================================================
+
+hardening_file_permissions:
+  # Critical system files
+  - path: "/etc/shadow"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  - path: "/etc/passwd"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  - path: "/etc/group"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  - path: "/etc/gshadow"
+    mode: "0640"
+    owner: "root"
+    group: "shadow"
+  - path: "/etc/sudoers"
+    mode: "0440"
+    owner: "root"
+    group: "root"
+  # SSH files
+  - path: "/etc/ssh"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh/sshd_config"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  # Cron files
+  - path: "/etc/crontab"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  - path: "/etc/cron.hourly"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  - path: "/etc/cron.daily"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  - path: "/etc/cron.weekly"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  - path: "/etc/cron.monthly"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  - path: "/etc/cron.d"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  # Boot files
+  - path: "/boot/grub/grub.cfg"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  - path: "/boot/grub/grub.conf"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+
+# =============================================================================
+# SYSTEM ACCOUNTS TO LOCK
+# =============================================================================
+
+hardening_system_accounts_lock:
+  - "bin"
+  - "daemon"
+  - "adm"
+  - "lp"
+  - "sync"
+  - "shutdown"
+  - "halt"
+  - "mail"
+  - "news"
+  - "uucp"
+  - "operator"
+  - "man"
+  - "nobody"
+  - "games"
+  - "gnats"
+  - "list"
+  - "irc"
+  - "proxy"
+  - "backup"
+  - "www-data"
+
+# =============================================================================
+# PAM CONFIGURATION
+# =============================================================================
+
+hardening_pam_settings:
+  # Password quality settings
+  minlen: 14
+  minclass: 4
+  dcredit: -1
+  ucredit: -1
+  ocredit: -1
+  lcredit: -1
+  # Password aging
+  pass_min_days: 7
+  pass_max_days: 90
+  pass_warn_age: 14
+  # Account lockout
+  deny: 5
+  unlock_time: 900
+  fail_interval: 900
+
+# PAM module configuration lines
+hardening_pam_password_debian:
+  - "password        [success=1 default=ignore]      pam_unix.so obscure sha512 rounds=65536"
+  - "password        requisite                       pam_pwquality.so retry=3 minlen=14 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1"
+  - "password        required                        pam_deny.so"
+
+hardening_pam_session_debian:
+  - "session optional        pam_tmpdir.so"
+  - "session required        pam_limits.so"
+  - "session required        pam_unix.so"
+
+# =============================================================================
+# LOGIN.DEFS SETTINGS
+# =============================================================================
+
+hardening_login_defs:
+  PASS_MAX_DAYS: "90"
+  PASS_MIN_DAYS: "7"
+  PASS_WARN_AGE: "14"
+  ENCRYPT_METHOD: "SHA512"
+  SHA_CRYPT_MIN_ROUNDS: "65536"
+  SHA_CRYPT_MAX_ROUNDS: "65536"
+  CREATE_HOME: "yes"
+  UMASK: "027"
+  HOME_MODE: "0750"
+
+# =============================================================================
+# SYSCTL HARDENING PARAMETERS
+# =============================================================================
+
+hardening_sysctl_params:
+  # Kernel hardening
+  kernel.randomize_va_space: "2"
+  kernel.exec-shield: "1"
+  kernel.dmesg_restrict: "1"
+  kernel.kptr_restrict: "2"
+  kernel.unprivileged_bpf_disabled: "1"
+  kernel.unprivileged_userns_clone: "0"
+  kernel.yama.ptrace_scope: "3"
+  # File system hardening
+  fs.suid_dumpable: "0"
+  fs.protected_hardlinks: "1"
+  fs.protected_symlinks: "1"
+  fs.protected_regular: "2"
+  fs.protected_fifos: "2"
+  # Network hardening
+  net.ipv4.conf.all.accept_redirects: "0"
+  net.ipv4.conf.all.secure_redirects: "0"
+  net.ipv4.conf.all.send_redirects: "0"
+  net.ipv4.conf.all.accept_source_route: "0"
+  net.ipv4.conf.all.log_martians: "1"
+  net.ipv4.tcp_syncookies: "1"
+  net.ipv4.tcp_rfc1337: "1"
+  net.ipv4.icmp_echo_ignore_broadcasts: "1"
+  net.ipv4.icmp_ignore_bogus_error_responses: "1"
+  net.ipv4.conf.all.rp_filter: "1"
+  net.ipv4.conf.default.rp_filter: "1"
+
+# =============================================================================
+# MODULE BLACKLIST (Disable unnecessary kernel modules)
+# =============================================================================
+
+hardening_module_blacklist:
+  # Filesystems
+  - "cramfs"
+  - "freevxfs"
+  - "jffs2"
+  - "hfs"
+  - "hfsplus"
+  - "squashfs"
+  - "udf"
+  # Network protocols
+  - "rds"
+  - "sctp"
+  - "tipc"
+  - "dccp"
+  # Legacy
+  - "tipc"
+  - "bluetooth"
+  - "usb-storage"
+  - "firewire-core"
+
+# =============================================================================
+# COMPLETION FLAGS
+# =============================================================================
+
+# Role completion tracking (internal state)
+_hardening_complete: false
+
+# =============================================================================
+# SEVERITY CLASSIFICATIONS
+# =============================================================================
+
+hardening_severity_levels:
+  critical:
+    cis: ["5.2.5", "5.2.6", "5.3.1", "5.3.2", "5.3.3", "5.3.4"]
+    stig: ["V-230217", "V-230218", "V-230222", "V-230223", "V-230224", "V-230225", "V-230226"]
+  high:
+    cis: ["1.1.1", "1.1.2", "1.1.3", "1.1.4", "1.1.5", "1.1.6", "1.4.1", "1.4.2", "1.5.2", "5.1.8", "5.1.9", "5.2.1", "5.2.2", "5.2.4", "5.4.1", "5.4.2", "5.5", "5.6"]
+    stig: ["V-230219", "V-230227", "V-230228", "V-230229"]
+  medium:
+    cis: ["1.1.7", "1.5.1", "1.5.3", "5.1.1", "5.1.2", "5.1.3", "5.1.4", "5.1.5", "5.1.6", "5.1.7", "5.2.3", "5.2.8", "5.2.9", "5.2.10", "5.2.11", "5.2.12", "5.2.13", "5.2.14", "5.2.15", "5.2.16", "5.2.18", "5.3.3", "5.4.3", "5.4.4"]
+    stig: ["V-230220", "V-230221"]
+  low:
+    cis: ["1.5.4", "5.2.17"]
+    stig: []
+
+# =============================================================================
+# AUDIT RULES
+# =============================================================================
+
+hardening_audit_rules:
+  # File system mounts
+  - "-w /etc/fstab -p wa -k filesystem_mounts"
+  # Identity and access
+  - "-w /etc/group -p wa -k identity"
+  - "-w /etc/passwd -p wa -k identity"
+  - "-w /etc/gshadow -p wa -k identity"
+  - "-w /etc/shadow -p wa -k identity"
+  - "-w /etc/security/opasswd -p wa -k identity"
+  # Sudo and privilege escalation
+  - "-w /etc/sudoers -p wa -k sudoers"
+  - "-w /etc/sudoers.d/ -p wa -k sudoers"
+  # SSH configuration
+  - "-w /etc/ssh/sshd_config -p wa -k sshd"
+  # Network configuration
+  - "-w /etc/hosts -p wa -k network"
+  - "-w /etc/network/ -p wa -k network"
+  # System calls
+  - "-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts"
+  - "-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts"

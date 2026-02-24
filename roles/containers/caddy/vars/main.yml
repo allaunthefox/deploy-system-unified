@@ -1,1 +1,218 @@
----
+# Internal variables for containers/caddy role
+# Caddy reverse proxy service configuration
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/caddy
+# Standards: CIS Docker Benchmark 3.x, STIG V-230480,
+#            NIST SC-8/SC-13, ISO 27001 §8.24/§8.28
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "3.x"
+    description: "Proxy Configuration Security"
+    controls:
+      - id: "3.1"
+        name: "Caddy Secrets validation"
+        stig: "V-230480"
+        nist: ["IA-2"]
+      - id: "3.2"
+        name: "Caddy secret files verification"
+        stig: "V-230480"
+        nist: ["IA-2"]
+      - id: "3.3"
+        name: "Porkbun API keys validation"
+        stig: "V-230480"
+        nist: ["SC-13"]
+      - id: "3.4"
+        name: "Caddy secrets file"
+        stig: "V-230480"
+        nist: ["IA-2"]
+      - id: "3.5"
+        name: "Proxy Network Quadlet"
+        stig: "V-230480"
+        nist: ["SC-8"]
+      - id: "3.6"
+        name: "Caddy directories"
+        stig: "V-230480"
+        nist: ["AC-3"]
+      - id: "3.7"
+        name: "Caddyfile"
+        stig: "V-230480"
+        nist: ["SC-8"]
+      - id: "3.8"
+        name: "Quadlet GPU capabilities validation"
+        stig: "V-230480"
+        nist: ["CM-6"]
+      - id: "3.9"
+        name: "Caddy container quadlet"
+        stig: "V-230480"
+        nist: ["SC-8", "SC-13"]
+        iso: "8.24"
+      - id: "3.10"
+        name: "Set caddy completion flag"
+        stig: "V-230480"
+        nist: ["CM-6"]
+      - id: "3.11"
+        name: "Crowdsec Directories"
+        stig: "V-230480"
+        nist: ["AC-3"]
+      - id: "3.12"
+        name: "Crowdsec Container Quadlet"
+        stig: "V-230480"
+        nist: ["SC-8"]
+        iso: "16.1"
+      - id: "3.13"
+        name: "Crowdsec Bouncer Dependencies"
+        stig: "V-230480"
+        nist: ["CM-7"]
+      - id: "3.14"
+        name: "Crowdsec Bouncer Directory"
+        stig: "V-230480"
+        nist: ["AC-6"]
+      - id: "3.15"
+        name: "Firewall Bouncer Config"
+        stig: "V-230480"
+        nist: ["SC-8"]
+      - id: "3.16"
+        name: "Check if Bouncer is installed"
+        stig: "V-230480"
+        nist: ["CA-7"]
+      - id: "3.17"
+        name: "Install Firewall Bouncer"
+        stig: "V-230480"
+        nist: ["CM-7", "AC-6", "SC-8"]
+      - id: "3.18"
+        name: "Enable and Start Firewall Bouncer"
+        stig: "V-230480"
+        nist: ["CA-7"]
+  stig:
+    proxy_config:
+      - id: "V-230480"
+        title: "Proxy Configuration Security"
+        severity: "medium"
+  nist:
+    sc_8: "Transmission Confidentiality and Integrity"
+    sc_13: "Cryptographic Protection"
+    ia_2: "Identification and Authentication"
+    ac_3: "Access Enforcement"
+    ac_6: "Least Privilege"
+    cm_6: "Configuration Settings"
+    cm_7: "Least Functionality"
+    ca_7: "Continuous Monitoring"
+  iso_27001:
+    "8.24": "Cryptography"
+    "8.28": "Secure Coding"
+    "16.1": "Incident Management"
+
+# Service identification
+_caddy_service_name: caddy
+_caddy_container_name: caddy
+_caddy_description: Caddy Reverse Proxy
+
+# Container image configuration
+_caddy_image_registry: docker.io
+_caddy_image_repository: serfriz/caddy-porkbun-dockerproxy
+_caddy_image_tag: 2.10.2
+_caddy_image: docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2
+
+# Alternative Caddy images
+_caddy_image_official: docker.io/library/caddy:2
+_caddy_image_dockerproxy: docker.io/dockerproxy/caddy:latest
+
+# Directory structure
+_caddy_base_dir: /srv/containers/caddy
+_caddy_config_dir: /srv/containers/caddy/config
+_caddy_data_dir: /srv/containers/caddy/data
+_caddy_logs_dir: /srv/containers/caddy/logs
+_caddy_conf_d_dir: /srv/containers/caddy/conf.d
+_caddy_crowdsec_dir: /srv/containers/caddy/crowdsec
+
+# Configuration file paths
+_caddy_caddyfile: /srv/containers/caddy/Caddyfile
+_caddy_env_file: caddy.env
+_caddy_conf_d_pattern: "*.caddy"
+
+# Port configuration
+_caddy_http_port_default: 80
+_caddy_https_port_default: 443
+_caddy_https_port_udp_default: 443
+_caddy_admin_port: 2019
+_caddy_http_port_rootless: 8080
+_caddy_https_port_rootless: 8443
+
+# Network configuration
+_caddy_network_name: proxy_net
+_caddy_network_driver: bridge
+_caddy_extra_networks_default:
+  - media_net
+  - ops_net
+  - monitoring_net
+  - anubis_net
+
+# Quadlet file paths
+_caddy_quadlet_file: caddy.container
+_caddy_network_quadlet_file: proxy_net.network
+_caddy_quadlet_dest_dir: /etc/containers/systemd
+
+# Crowdsec integration
+_crowdsec_service_name: crowdsec
+_crowdsec_container_name: crowdsec
+_crowdsec_image_default: docker.io/crowdsecurity/crowdsec:latest
+_crowdsec_config_dir: /srv/containers/caddy/crowdsec/config
+_crowdsec_data_dir: /srv/containers/crowdsec/data
+_crowdsec_bouncer_dir: /etc/crowdsec/bouncers
+_crowdsec_bouncer_binary: /usr/local/bin/crowdsec-firewall-bouncer
+_crowdsec_bouncer_service: crowdsec-firewall-bouncer
+_crowdsec_bouncer_config: crowdsec-firewall-bouncer.yaml
+
+# Crowdsec collections
+_crowdsec_collections_default:
+  - crowdsecurity/linux
+  - crowdsecurity/sshd
+  - crowdsecurity/caddy
+  - crowdsecurity/whitelist-good-actors
+
+# Crowdsec firewall bouncer
+_crowdsec_bouncer_version_default: 0.0.34
+_crowdsec_bouncer_sha256_default: 8b07e08fb35a90b33eb2403eb93966679b39adb42c9cd03882de66cdf19a949f
+_crowdsec_bouncer_download_url: https://github.com/crowdsecurity/cs-firewall-bouncer/releases/download
+
+# Log configuration
+_caddy_log_format: json
+_caddy_log_roll_size: 10mb
+_caddy_log_roll_keep: 5
+_caddy_log_roll_keep_for: 720h
+_caddy_log_file: /var/log/caddy/access.log
+
+# ACME configuration
+_caddy_acme_email_default: admin@example.com
+_caddy_acme_server: letsencrypt
+_caddy_acme_ca: https://acme-v02.api.letsencrypt.org/directory
+
+# Porkbun DNS configuration
+_caddy_porkbun_env_vars:
+  - PORKBUN_API_KEY
+  - PORKBUN_SECRET_API_KEY
+
+# Security headers (default Caddyfile)
+_caddy_security_headers:
+  - Strict-Transport-Security
+  - X-Content-Type-Options
+  - X-Frame-Options
+  - X-XSS-Protection
+
+# Systemd service configuration
+_caddy_wanted_by:
+  - multi-user.target
+  - default.target
+_caddy_restart_policy: always
+_caddy_timeout_start_sec: 300
+
+# Dependencies
+_caddy_after_services:
+  - network-online.target
+_caddy_wants_services:
+  - network-online.target

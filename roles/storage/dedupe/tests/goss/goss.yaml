@@ -1,0 +1,17 @@
+# Goss tests for storage/dedupe role
+
+package:
+  duperemove:
+    installed: true
+
+command:
+  duperemove:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /var/lib/duperemove:
+    exists: true
+    is-directory: true
+    mode: "0700"

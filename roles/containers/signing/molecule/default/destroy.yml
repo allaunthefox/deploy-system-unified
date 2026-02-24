@@ -1,0 +1,13 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Destroy signing test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - signing-ubuntu-2204
+        - signing-debian-12

@@ -1,0 +1,15 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove firmware test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - firmware-ubuntu-2204
+        - firmware-debian-12
+        - firmware-rockylinux-9

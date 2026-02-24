@@ -1,0 +1,51 @@
+---
+# HashiCorp Vault Integration Role - Default Variables
+
+# Installation mode: standalone, kubernetes, agent_only
+vault_install_mode: standalone
+
+# Vault version
+vault_version: "1.15.0"
+
+# Configuration paths
+vault_config_dir: /etc/vault
+vault_data_dir: /var/lib/vault
+vault_log_dir: /var/log/vault
+
+# User and group
+vault_user_group:
+  name: vault
+  system: true
+
+# Kubernetes authentication settings
+vault_enable_k8s_auth: false
+vault_k8s_host: "https://kubernetes.default.svc"
+vault_k8s_ca_cert: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+vault_k8s_token_reviewer_jwt: ""
+vault_k8s_role_name: "deploy-system"
+vault_k8s_service_account: "default"
+vault_k8s_namespace: "default"
+vault_k8s_ttl: "1h"
+
+# Dynamic secrets settings
+vault_enable_dynamic_secrets: false
+vault_dynamic_secrets_policy_name: "dynamic-secrets-reader"
+
+# Vault Agent Injector settings
+vault_enable_agent_injector: false
+vault_k8s_annotations_file: "/etc/vault/annotations.yaml"
+
+# KV Secrets settings
+vault_enable_kv_secrets: false
+vault_secrets_path: "secret"
+
+# Vault connection (for remote Vault)
+vault_addr: "http://127.0.0.1:8200"
+vault_root_token: ""
+
+# Tags
+vault_tags:
+  - security
+  - secrets
+  - vault
+  - hashicorp

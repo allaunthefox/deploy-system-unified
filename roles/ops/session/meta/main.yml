@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: session
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "SOP-OPS | Management of interactive deployment sessions (TMUX)"
   license: MIT
   min_ansible_version: "2.15"
@@ -21,6 +21,15 @@ galaxy_info:
     - session
     - tmux
     - deployment
-    - iso_9001
+    - persistence
+    - shell
+    - interactive
+    - operational
+    - linux
+    - automation
+    - iso9001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

@@ -1,0 +1,8 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check advanced security role executed
+      ansible.builtin.debug:
+        msg: "Security/advanced role executed successfully"

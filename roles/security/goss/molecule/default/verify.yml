@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Verify goss directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /etc/goss
+        - /var/log/goss
+
+    - name: Verify goss integration is complete
+      ansible.builtin.assert:
+        that:
+          - goss_integration_complete | default(false) == true
+        fail_msg: "Goss integration was not completed"

@@ -1,1 +1,65 @@
 ---
+# Internal variables for core/time role
+# Time synchronization configuration
+# CIS 5.4.1, 5.4.2 | STIG V-230270 | NIST AU-8, SC-12 | ISO 27001 §8.17
+
+# Role metadata
+core_time_role_version: "1.0.0"
+
+# Chrony configuration paths by distribution
+core_time_chrony_config_paths:
+  archlinux: "/etc/chrony.conf"
+  debian: "/etc/chrony/chrony.conf"
+  ubuntu: "/etc/chrony/chrony.conf"
+  fedora: "/etc/chrony.conf"
+  alpine: "/etc/chrony.conf"
+
+# NTP pool servers (default secure time sources)
+core_time_ntp_pools:
+  - "0.pool.ntp.org iburst"
+  - "1.pool.ntp.org iburst"
+  - "2.pool.ntp.org iburst"
+  - "3.pool.ntp.org iburst"
+
+# Chrony configuration defaults
+core_time_chrony_defaults:
+  driftfile: "/var/lib/chrony/drift"
+  makestep: "1.0 3"
+  rtcsync: true
+  bindaddress: "0.0.0.0"
+  bindcmdaddress: "127.0.0.1"
+  keyfile: "/etc/chrony/chrony.keys"
+  commandkey: "1"
+  statistics: "tracking"
+  log: "measurements statistics"
+  logdir: "/var/log/chrony"
+
+# Service restart handler names
+core_time_handlers:
+  - "restart_chrony"
+  - "restart_chronyd"
+
+# Verification settings
+core_time_sync_retries: 5
+core_time_sync_delay: 5
+core_time_sync_command: "chronyc tracking"
+
+# ISO 27001 compliance reference
+core_time_iso_control: "ISO 27001 §8.17"
+core_time_action_code: "300001"
+
+# Container detection
+core_time_skip_in_containers: true
+
+# Compliance mappings
+core_time_compliance:
+  cis:
+    - "CIS 5.4.1"
+    - "CIS 5.4.2"
+  stig:
+    - "V-230270"
+  nist:
+    - "AU-8"
+    - "SC-12"
+  iso_27001:
+    - "§8.17"

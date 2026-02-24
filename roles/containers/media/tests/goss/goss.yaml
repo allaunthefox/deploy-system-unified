@@ -1,0 +1,43 @@
+# Goss tests for containers/media role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify media container configuration
+# =============================================================================
+file:
+  /srv/containers/media:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+  /etc/containers/systemd/media.container:
+    exists: true
+    mode: "0644"
+    contains:
+      - "/Description=media/"
+      - "/Image=/"
+      - "/ContainerName=media/"
+      - "/Restart=always/"
+
+# =============================================================================
+# SERVICE TESTS
+# =============================================================================
+service:
+  media:
+    enabled: true
+    running: true
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  media_container:
+    exec: 'podman ps -a | grep media || true'
+    exit-status: 0
+    timeout: 10000

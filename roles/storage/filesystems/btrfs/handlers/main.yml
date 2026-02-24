@@ -1,1 +1,26 @@
 ---
+# Handlers for storage/filesystems/btrfs role
+# Handlers for Btrfs filesystem management
+
+- name: trigger_btrfs_scrub
+  ansible.builtin.command:
+    cmd: btrfs scrub start -B {{ item }}
+  loop: "{{ btrfs_scrub_mounts | default(['/']) }}"
+  become: true
+  failed_when: false
+  listen: "trigger btrfs scrub"
+
+- name: trigger_btrfs_balance
+  ansible.builtin.command:
+    cmd: btrfs balance start -dusage=50 {{ item }}
+  loop: "{{ btrfs_balance_mounts | default(['/']) }}"
+  become: true
+  failed_when: false
+  listen: "trigger btrfs balance"
+
+- name: reload_btrfs_devices
+  ansible.builtin.command:
+    cmd: btrfs device scan
+  become: true
+  failed_when: false
+  listen: "scan btrfs devices"

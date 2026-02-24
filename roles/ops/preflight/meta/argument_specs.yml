@@ -27,3 +27,31 @@ argument_specs:
         type: bool
         description: Whether to run license compliance checks
         default: true
+      preflight_check_gpu_vendor:
+        type: bool
+        description: Whether to validate GPU vendor matches configuration
+        default: false
+      preflight_strict_gpu_vendor:
+        type: bool
+        description: Fail on GPU vendor mismatch (vs warning)
+        default: true
+      preflight_check_container_runtime:
+        type: bool
+        description: Whether to validate container runtime availability
+        default: false
+      preflight_required_container_runtime:
+        type: str
+        description: Required container runtime (podman or docker)
+        default: podman
+      preflight_check_kubernetes:
+        type: bool
+        description: Whether to validate kubectl and K8s connectivity
+        default: false
+      preflight_require_kubectl:
+        type: bool
+        description: Require kubectl to be installed
+        default: true
+      preflight_require_cluster_connectivity:
+        type: bool
+        description: Require Kubernetes cluster to be accessible
+        default: false

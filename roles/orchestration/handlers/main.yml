@@ -1,0 +1,49 @@
+---
+# Handlers for orchestration role
+# ISO 9001 Structural Consistency - Handler definitions for Kubernetes orchestration
+
+- name: restart_kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - kubernetes
+    - orchestration
+
+- name: restart_container_runtime
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - containerd
+    - crio
+  become: true
+  failed_when: false
+  tags:
+    - kubernetes
+    - orchestration
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  tags:
+    - kubernetes
+    - orchestration
+
+- name: restart_kubernetes_services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - kubelet
+    - kube-proxy
+  become: true
+  failed_when: false
+  tags:
+    - kubernetes
+    - orchestration

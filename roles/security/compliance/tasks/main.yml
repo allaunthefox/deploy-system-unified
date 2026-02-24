@@ -1,0 +1,65 @@
+---
+# Main compliance validation tasks
+# Compliance: CIS, STIG, NIST, ISO 27001
+
+- name: "COMPLIANCE 1 | Initialize compliance validation"
+  ansible.builtin.set_fact:
+    compliance_validation_started: "{{ ansible_date_time.iso8601 }}"
+  tags:
+    - compliance
+    - cis
+    - stig
+    - nist
+
+- name: "COMPLIANCE 2 | Create compliance report directory"
+  ansible.builtin.file:
+    path: "{{ compliance_report_path }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  tags:
+    - compliance
+    - cis
+
+- name: "COMPLIANCE 3 | Run CIS Level 1 validation"
+  ansible.builtin.include_tasks: cis_level_1.yml
+  when: "'cis_level_1' in compliance_frameworks"
+  tags:
+    - compliance
+    - cis
+    - cis_level_1
+
+- name: "COMPLIANCE 4 | Run CIS Level 2 validation"
+  ansible.builtin.include_tasks: cis_level_2.yml
+  when: "'cis_level_2' in compliance_frameworks"
+  tags:
+    - compliance
+    - cis
+    - cis_level_2
+
+- name: "COMPLIANCE 5 | Generate compliance report"
+  ansible.builtin.template:
+    src: compliance_report.json.j2
+    dest: "{{ compliance_report_path }}/cis_compliance_report.json"
+    mode: '0644'
+  become: true
+  when: generate_compliance_report
+  tags:
+    - compliance
+    - cis
+    - report
+
+- name: "COMPLIANCE 6 | Display compliance summary"
+  ansible.builtin.debug:
+    msg: |
+      Compliance Validation Summary
+      =============================
+      CIS Level 1: {{ cis_level_1_score }}/{{ cis_level_1_total }} ({{ (cis_level_1_score / cis_level_1_total * 100) | round(1) if cis_level_1_total > 0 else 0 }}%)
+      CIS Level 2: {{ cis_level_2_score }}/{{ cis_level_2_total }} ({{ (cis_level_2_score / cis_level_2_total * 100) | round(1) if cis_level_2_total > 0 else 0 }}%)
+      Report: {{ compliance_report_path }}/cis_compliance_report.json
+  tags:
+    - compliance
+    - cis
+    - report

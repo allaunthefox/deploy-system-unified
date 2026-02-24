@@ -1,0 +1,19 @@
+# Goss tests for hardware/virtual_guest role
+
+command:
+  cloud-init:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  lsb_release:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /var/lib/cloud:
+    exists: true
+    is-directory: true
+  /etc/cloud:
+    exists: true
+    is-directory: true

@@ -1,7 +1,9 @@
 ---
 - name: Configure LXC container for Intel Level Zero
+  tags: [containers, lxc, gpu, intel]
   block:
     - name: Create LXC Level Zero configuration template
+  tags: [containers, lxc, gpu, intel]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/level-zero.conf

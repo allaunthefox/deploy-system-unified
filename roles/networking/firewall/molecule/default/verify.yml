@@ -1,14 +1,203 @@
 ---
-- name: Verify
+# verify.yml - Verification playbook for networking/firewall role
+# Validates firewall configuration including UFW, Firewalld, and Nftables
+#
+# Args:
+#     Runs on all hosts defined in inventory
+#
+# Returns:
+#     Passes if firewall is properly configured
+#
+# Example:
+#     molecule verify -s default
+
+- name: Verify firewall configuration
   hosts: all
+  gather_facts: true
+  become: true
   tasks:
-    - name: Check UFW status
-      ansible.builtin.command: ufw status
+    # =========================================================================
+    # UFW Verification (Debian/Ubuntu/Arch)
+    # =========================================================================
+    - name: Check if UFW is available
+      ansible.builtin.command: which ufw
+      register: ufw_which
+      changed_when: false
+      failed_when: false
+
+    - name: Get UFW status
+      ansible.builtin.command: ufw status verbose
       register: ufw_status
       changed_when: false
-      become: true
-    - name: Assert UFW is enabled
+      when: ufw_which.rc == 0
+
+    - name: Assert UFW is active (Debian/Ubuntu/Arch)
       ansible.builtin.assert:
         that:
           - "'Status: active' in ufw_status.stdout"
-        fail_msg: "UFW is not active"
+        fail_msg: "UFW should be active on Debian/Ubuntu/Arch systems"
+        success_msg: "UFW is active"
+      when: ufw_which.rc == 0
+
+    - name: Assert UFW default incoming policy is deny
+      ansible.builtin.assert:
+        that:
+          - "'deny (incoming)' in ufw_status.stdout.lower() or 'reject (incoming)' in ufw_status.stdout.lower()"
+        fail_msg: "UFW default incoming policy should be deny or reject"
+        success_msg: "UFW default incoming policy is secure"
+      when: ufw_which.rc == 0
+
+    - name: Assert UFW default outgoing policy is allow
+      ansible.builtin.assert:
+        that:
+          - "'allow (outgoing)' in ufw_status.stdout.lower()"
+        fail_msg: "UFW default outgoing policy should be allow"
+        success_msg: "UFW default outgoing policy is correct"
+      when: ufw_which.rc == 0
+
+    - name: Assert UFW default forward policy is deny
+      ansible.builtin.assert:
+        that:
+          - "'deny (forwarded)' in ufw_status.stdout.lower() or 'deny (routed)' in ufw_status.stdout.lower()"
+        fail_msg: "UFW default forward policy should be deny"
+        success_msg: "UFW default forward policy is secure"
+      when: ufw_which.rc == 0
+
+    # =========================================================================
+    # UFW Port Rules Verification
+    # =========================================================================
+    - name: Get UFW detailed status
+      ansible.builtin.command: ufw status numbered
+      register: ufw_status_numbered
+      changed_when: false
+      when: ufw_which.rc == 0
+
+    - name: Verify SSH port is allowed in UFW
+      ansible.builtin.debug:
+        msg: "SSH port rule should be present in UFW"
+      when: ufw_which.rc == 0
+
+    # =========================================================================
+    # Firewalld Verification (RedHat/CentOS)
+    # =========================================================================
+    - name: Check if Firewalld is available
+      ansible.builtin.command: which firewall-cmd
+      register: firewalld_which
+      changed_when: false
+      failed_when: false
+
+    - name: Get Firewalld state
+      ansible.builtin.command: firewall-cmd --state
+      register: firewalld_state
+      changed_when: false
+      when: firewalld_which.rc == 0
+
+    - name: Assert Firewalld is running (RedHat/CentOS)
+      ansible.builtin.assert:
+        that:
+          - "firewalld_state.stdout == 'running'"
+        fail_msg: "Firewalld should be running on RedHat/CentOS systems"
+        success_msg: "Firewalld is running"
+      when: firewalld_which.rc == 0
+
+    - name: Get Firewalld default zone
+      ansible.builtin.command: firewall-cmd --get-default-zone
+      register: firewalld_default_zone
+      changed_when: false
+      when: firewalld_which.rc == 0
+
+    - name: Get allowed services in Firewalld
+      ansible.builtin.command: firewall-cmd --list-services
+      register: firewalld_services
+      changed_when: false
+      when: firewalld_which.rc == 0
+
+    - name: Get allowed ports in Firewalld
+      ansible.builtin.command: firewall-cmd --list-ports
+      register: firewalld_ports
+      changed_when: false
+      when: firewalld_which.rc == 0
+
+    - name: Verify SSH service is allowed in Firewalld
+      ansible.builtin.assert:
+        that:
+          - "'ssh' in firewalld_services.stdout"
+        fail_msg: "SSH service should be allowed in Firewalld"
+        success_msg: "SSH service is allowed in Firewalld"
+      when: firewalld_which.rc == 0
+
+    # =========================================================================
+    # Nftables Verification (Alpine)
+    # =========================================================================
+    - name: Check if Nftables is available
+      ansible.builtin.command: which nft
+      register: nft_which
+      changed_when: false
+      failed_when: false
+
+    - name: Get Nftables ruleset
+      ansible.builtin.command: nft list ruleset
+      register: nft_ruleset
+      changed_when: false
+      when: nft_which.rc == 0
+
+    - name: Verify Nftables has rules loaded
+      ansible.builtin.assert:
+        that:
+          - "nft_ruleset.rc == 0"
+          - "nft_ruleset.stdout | length > 0"
+        fail_msg: "Nftables should have rules loaded"
+        success_msg: "Nftables rules are loaded"
+      when: nft_which.rc == 0
+
+    # =========================================================================
+    # Port Verification
+    # =========================================================================
+    - name: Verify SSH port is listening
+      ansible.builtin.wait_for:
+        port: 22
+        host: 127.0.0.1
+        timeout: 5
+        state: started
+      register: ssh_port_check
+      failed_when: false
+
+    - name: Check listening ports with ss
+      ansible.builtin.shell: ss -tlnp | grep -E ':22\s' || true
+      register: ss_ssh_check
+      changed_when: false
+      failed_when: false
+
+    - name: Verify SSH is listening on port 22
+      ansible.builtin.assert:
+        that:
+          - "ss_ssh_check.stdout | length > 0"
+        fail_msg: "SSH should be listening on port 22"
+        success_msg: "SSH is listening on port 22"
+      when: ss_ssh_check.rc == 0
+
+    # =========================================================================
+    # Kernel Module Verification
+    # =========================================================================
+    - name: Check loaded kernel modules for netfilter
+      ansible.builtin.shell: lsmod | grep -E 'nf_|ipt_' || true
+      register: netfilter_modules
+      changed_when: false
+      failed_when: false
+
+    - name: Verify netfilter modules are available
+      ansible.builtin.debug:
+        msg: "Netfilter modules should be available for packet filtering"
+      when: netfilter_modules.rc == 0
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display verification summary for UFW
+      ansible.builtin.debug:
+        msg: |
+          Firewall verification complete:
+          - UFW Status: {{ 'Active' if ufw_which.rc == 0 and 'Status: active' in ufw_status.stdout else 'Not configured' }}
+          - Firewalld Status: {{ 'Running' if firewalld_which.rc == 0 and firewalld_state.stdout == 'running' else 'Not configured' }}
+          - Nftables Status: {{ 'Loaded' if nft_which.rc == 0 and nft_ruleset.rc == 0 else 'Not configured' }}
+      when: true

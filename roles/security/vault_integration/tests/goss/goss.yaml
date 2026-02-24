@@ -1,0 +1,58 @@
+---
+# Goss tests for security/vault_integration role
+# Tests HashiCorp Vault configuration
+
+package:
+  vault:
+    installed: true
+
+service:
+  vault:
+    enabled: true
+    running: true
+
+file:
+  /etc/vault:
+    exists: true
+    mode: "0750"
+    owner: vault
+  /etc/vault/vault.hcl:
+    exists: true
+    mode: "0640"
+    owner: vault
+  /var/lib/vault:
+    exists: true
+    mode: "0750"
+    owner: vault
+  /var/log/vault:
+    exists: true
+    mode: "0750"
+    owner: vault
+
+command:
+  # Check vault version
+  vault version:
+    exit-status: 0
+    stdout:
+      - "v"
+  # Check vault status
+  vault status:
+    exit-status: 0
+  # Check vault is sealed (should be in dev or unsealed)
+  vault status -format=json:
+    exit-status: 0
+
+port:
+  8200:  # Vault API port
+    listening: true
+
+user:
+  vault:
+    exists: true
+    home: /var/lib/vault
+    shell: /bin/nologin
+
+group:
+  vault:
+    exists: true
+

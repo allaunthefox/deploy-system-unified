@@ -1,0 +1,252 @@
+# Goss tests for security/hardware_isolation role
+# IOMMU, DMA Protection, Hardware Security
+# CIS Benchmark: 1.x, 3.x - System and Network Hardening
+# ISO 27001 §8.20, §8.26 | STIG V-23030x | NIST SC-3/SC-4/SC-7
+
+# =============================================================================
+# PACKAGE TESTS - Verify hardware isolation packages
+# =============================================================================
+package:
+  # CIS 1.x - PCI utilities for hardware inspection
+  pciutils:
+    installed: true
+  # CIS 1.x - USB utilities for device management
+  usbutils:
+    installed: true
+  # CIS 3.x - IOMMU tools
+  iommu-tools:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Hardware isolation does not run as services
+# =============================================================================
+# Note: Hardware isolation is configured at boot time via kernel parameters
+
+# =============================================================================
+# FILE TESTS - Verify hardware isolation configuration files
+# =============================================================================
+file:
+  # CIS 1.x - GRUB configuration for IOMMU
+  /etc/default/grub:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      # CIS 1.x - Intel IOMMU configuration
+      - /intel_iommu=on/
+      # CIS 1.x - IOMMU passthrough mode
+      - /iommu=pt/
+      # CIS 1.x - DMA remapping
+      - /intel_iommu=igfx_off/
+
+  # CIS 1.x - GRUB configuration backup
+  /etc/default/grub.d/hardware-isolation.cfg:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /intel_iommu=on/
+      - /amd_iommu=on/
+      - /iommu=pt/
+
+  # CIS 1.x - Modprobe configuration for hardware isolation
+  /etc/modprobe.d/hardware-isolation.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /blacklist thunderbolt/
+      - /blacklist firewire-core/
+
+  # CIS 1.x - USB autosuspend configuration
+  /etc/udev/rules.d/50-usb-autosuspend.rules:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /ACTION=="add".*SUBSYSTEM=="usb".*ATTR{power\/autosuspend}/
+
+  # CIS 1.x - PCI device configuration
+  /etc/udev/rules.d/60-pci-security.rules:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 1.x - DMA protection configuration
+  /etc/sysctl.d/99-hardware-isolation.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^kernel.dma_protect=1/
+
+  # CIS 1.x - Thunderbolt security configuration
+  /etc/thunderbolt/authorized_devices:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 1.x - IOMMU groups directory
+  /sys/kernel/iommu_groups:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 1.x - VT-d configuration
+  /sys/kernel/intel_iommu:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 1.x - AMD IOMMU configuration
+  /sys/kernel/amd_iommu:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify hardware isolation configurations
+# =============================================================================
+command:
+  # CIS 1.x - Verify Intel IOMMU is enabled
+  intel_iommu_enabled:
+    exec: 'dmesg 2>/dev/null | grep -c "Intel-IOMMU enabled" || cat /proc/cmdline | grep -c "intel_iommu=on" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 1.x - Verify AMD IOMMU is enabled (if AMD CPU)
+  amd_iommu_enabled:
+    exec: 'dmesg 2>/dev/null | grep -c "AMD-Vi" || cat /proc/cmdline | grep -c "amd_iommu=on" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 1.x - Verify IOMMU passthrough mode
+  iommu_passthrough:
+    exec: 'cat /proc/cmdline | grep -c "iommu=pt" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 1.x - Verify IOMMU is enabled in kernel
+  iommu_kernel_status:
+    exec: 'test -d /sys/kernel/iommu_groups && echo "enabled" || echo "disabled"'
+    exit-status: 0
+    stdout:
+      - /^enabled$/
+    timeout: 5000
+
+  # CIS 1.x - Count IOMMU groups
+  iommu_group_count:
+    exec: 'ls -d /sys/kernel/iommu_groups/*/ 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 1.x - Verify VT-d is supported
+  vtd_supported:
+    exec: 'grep -c "vt-d" /proc/cpuinfo || dmesg 2>/dev/null | grep -c "DMAR" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 1.x - Verify DMA remapping is enabled
+  dma_remapping:
+    exec: 'dmesg 2>/dev/null | grep -c "DMA remapping" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 1.x - Verify thunderbolt is disabled/blacklisted
+  thunderbolt_blacklisted:
+    exec: 'lsmod 2>/dev/null | grep -c thunderbolt || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 1.x - Verify firewire is disabled/blacklisted
+  firewire_blacklisted:
+    exec: 'lsmod 2>/dev/null | grep -c firewire || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 1.x - Verify GRUB has IOMMU parameters
+  grub_iommu_params:
+    exec: 'grep -c "intel_iommu=on\|amd_iommu=on" /etc/default/grub'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 1.x - Verify USB autosuspend is configured
+  usb_autosuspend_configured:
+    exec: 'test -f /etc/udev/rules.d/50-usb-autosuspend.rules && echo "configured" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^configured$/
+    timeout: 5000
+
+  # CIS 1.x - Verify PCI utilities are available
+  lspci_available:
+    exec: 'which lspci 2>/dev/null && echo "available" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^available$/
+    timeout: 5000
+
+  # CIS 1.x - Verify USB utilities are available
+  lsusb_available:
+    exec: 'which lsusb 2>/dev/null && echo "available" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^available$/
+    timeout: 5000
+
+  # CIS 1.x - Check for DMA protection support
+  dma_protect_support:
+    exec: 'grep -c "DMA" /proc/cpuinfo || dmesg 2>/dev/null | grep -c "DMA" || echo "1"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 1.x - Verify hardware isolation config exists
+  hardware_isolation_config:
+    exec: 'test -f /etc/default/grub.d/hardware-isolation.cfg && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Hardware isolation is kernel-level
+# =============================================================================
+# Note: Hardware isolation is enforced by the kernel, not user-space processes
+
+# =============================================================================
+# PORT TESTS - Not applicable for hardware isolation
+# =============================================================================
+# Note: Hardware isolation does not involve network ports

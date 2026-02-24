@@ -1,0 +1,74 @@
+---
+# Goss tests for ops/pre_connection role
+# This role runs on the controller to check connectivity and SSH port
+#
+# Compliance: CIS 4.11.x, STIG V-230770-V-230777, NIST SC-7/IR-4, ISO 27001 §8.15/§8.16
+#
+# These tests verify:
+# - SSH commands are available on controller
+# - Basic connectivity tools are available
+# - Port checking tools are available
+
+# Command checks - controller-side checks
+command:
+  # Check SSH is available on controller
+  ssh -V:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+
+  # Check sshd is available for port detection
+  sshd -T:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+
+  # Check nc/netcat for port checking
+  nc -h:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+    skip: true  # May not be installed
+
+  # Check bash is available
+  bash --version:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+  # Check awk for parsing
+  awk --version:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+# File checks - SSH configuration on controller/target
+file:
+  # Controller SSH config
+  ~/.ssh/config:
+    exists: true
+    skip: true  # May not exist
+
+  /etc/ssh/ssh_config:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/ssh/sshd_config:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# Package checks
+package:
+  openssh-client:
+    installed: true
+
+  openssh-server:
+    installed: true
+
+  netcat-openbsd:
+    installed: true
+    skip: true  # Optional

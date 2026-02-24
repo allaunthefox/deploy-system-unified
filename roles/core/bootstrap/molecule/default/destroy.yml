@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove bootstrap test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - bootstrap-ubuntu-2204
+        - bootstrap-debian-12
+        - bootstrap-alpine-319
+        - bootstrap-rockylinux-9

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: monitoring
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "SOP-OPS | Host-level metrics collection and health monitoring (Node Exporter, Smartd)"
   license: MIT
   min_ansible_version: "2.15"
@@ -22,6 +22,16 @@ galaxy_info:
     - prometheus
     - node_exporter
     - smartd
-    - iso_27001
+    - health
+    - metrics
+    - observability
+    - systems
+    - forensic
+    - audit
+    - iso9001
+    - iso27001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

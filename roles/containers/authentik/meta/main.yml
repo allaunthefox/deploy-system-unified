@@ -16,7 +16,24 @@ galaxy_info:
       versions: [all]
     - name: Alpine
       versions: [all]
-  galaxy_tags: [containers, authentik]
+  galaxy_tags:
+    - containers
+    - authentik
+    - identity
+    - iam
+    - sso
+    - auth
+    - security
+    - hardening
+    - podman
+    - quadlet
+    - iso27001
+    - nist80053
+
+collections:
+  - ansible.builtin
+
+dependencies: []
 # 'assumes_permissive' removed: metadata key unsupported by Ansible role metadata.
 # Authentik role has secrets and may be used with host-network assumptions in some profiles.
 

@@ -1,0 +1,63 @@
+---
+# Goss Drift Detection Playbook
+# This playbook detects configuration drift and generates reports
+# Usage: ansible-playbook drift-detection.yml
+
+- name: Detect Configuration Drift
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    goss_log_dir: /var/log/goss
+    goss_output_format: json
+
+  tasks:
+    - name: Ensure log directory exists
+      ansible.builtin.file:
+        path: "{{ goss_log_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Run goss validation
+      ansible.builtin.command:
+        cmd: >
+          goss validate
+          --format {{ goss_output_format }}
+          --output {{ goss_log_dir }}/drift-{{ ansible_date_time.iso8601 }}.json
+      register: goss_validation
+      failed_when: false
+      changed_when: false
+
+    - name: Parse goss results
+      ansible.builtin.set_fact:
+        goss_results: "{{ goss_validation.stdout | from_json }}"
+      when: goss_output_format == 'json'
+
+    - name: Display drift summary
+      ansible.builtin.debug:
+        msg: "Drift detected: {{ goss_results.failed | length }} failed tests"
+      when: goss_results.failed is defined
+
+    - name: Generate drift report
+      ansible.builtin.copy:
+        content: |
+          Drift Detection Report
+          ======================
+          Date: {{ ansible_date_time.iso8601 }}
+          Host: {{ inventory_hostname }}
+          
+          Failed Tests: {{ goss_results.failed | length }}
+          Passed Tests: {{ goss_results.successful | length }}
+          
+          {% for test in goss_results.failed %}
+          - {{ test.test }}
+            {{ test.human }}
+          {% endfor %}
+        dest: "{{ goss_log_dir }}/drift-report-{{ ansible_date_time.iso8601 }}.txt"
+      when: goss_results.failed is defined
+
+    - name: Alert on drift
+      ansible.builtin.debug:
+        msg: "Configuration drift detected! Review {{ goss_log_dir }}/drift-report-*.txt"
+      when: goss_results.failed is defined and goss_results.failed | length > 0

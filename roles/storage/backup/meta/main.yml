@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: backup
-  author: deploy-system-unified
-  description: backup management and configuration
+  author: deploysystemunified
+  description: "Backup management and configuration - ISO 27040 Storage Security compliant"
   license: MIT
   min_ansible_version: '2.15'
   platforms:
@@ -10,5 +10,27 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - backup
-    - iso_27001
+    - storage
+    - data_protection
+    - disaster_recovery
+    - iso27001
+    - iso27001_12_4
+    - iso27040
+    - nist_cp_9
+    - compliance
+    - security
+    - linux
+    - ubuntu
+    - debian
+    - enterprise
+    - infrastructure
+    - operations
+    - redundancy
+    - archival
+    - restore_test
+    - integrity_verify
+    - audit
+collections:
+  - ansible.builtin
+
 dependencies: []

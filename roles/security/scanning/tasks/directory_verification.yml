@@ -1,6 +1,6 @@
 ---
 # Directory verification for Deploy-System-Unified
-- name: Verify all required directories exist (idempotent)
+- name: "ISO 27001 §8.9 | Action 520010 | Verify all required directories exist (idempotent)"
   ansible.builtin.stat:
     path: "{{ item }}"
   register: dir_check
@@ -10,16 +10,15 @@
     - /var/lib/deploy-system/backups
     - /var/lib/deploy-system/logs
     - /etc/firejail
-    # - /etc/landlock # Kernel feature, no config dir
-    # - /etc/bubblewrap # Utils, no config dir
-    # - /etc/chrony # Arch uses /etc/chrony.conf
-    # - /etc/trivy
-    # - /etc/trufflehog
-    # - /etc/checkov
     - /srv/containers
     - /srv/containers/config
     - /srv/containers/data
     - /srv/containers/secrets
+  tags:
+    - iso27001
+    - security
+    - scanning
+
 - name: Validate directory permissions (idempotent)
   ansible.builtin.assert:
     that:
@@ -27,3 +26,6 @@
       - item.stat.isdir
     fail_msg: "Directory {{ item.item }} does not exist or is not a directory"
   loop: "{{ dir_check.results }}"
+  tags:
+    - security
+    - scanning

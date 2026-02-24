@@ -1,9 +1,21 @@
 ---
 argument_specs:
   main:
-    short_description: Cloud-init sync role
+    short_description: cloud_init role for cloud-init configuration
     description:
-      - Waits for cloud-init to finish its tasks before proceeding
-      - Ensures system is in a stable state for further configuration
+      - Configures cloud-init for instance initialization
+      - Manages cloud-config, user-data, and metadata
       - Aligns with ISO 9001 requirements for process synchronization
-    options: {}
+    options:
+      cloud_init_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable cloud_init role execution
+      cloud_init_config:
+        type: dict
+        required: false
+        default: {}
+        description:
+          - Cloud-init configuration dictionary

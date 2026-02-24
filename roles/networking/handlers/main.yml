@@ -1,0 +1,67 @@
+---
+# Handlers for networking role
+# ISO 9001 Structural Consistency - Handler definitions for network services
+
+- name: restart_networking
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - networking
+    - systemd-networkd
+    - NetworkManager
+  become: true
+  failed_when: false
+  tags:
+    - networking
+
+- name: reload_networking
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: reloaded
+  become: true
+  failed_when: false
+  tags:
+    - networking
+
+- name: restart_systemd_networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - networking
+
+- name: restart_network_manager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
+    daemon_reload: true
+  become: true
+  failed_when: false
+  tags:
+    - networking
+
+- name: reload_resolv_conf
+  ansible.builtin.command:
+    cmd: systemctl restart systemd-resolved
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - dns
+
+- name: restart_dns_service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - systemd-resolved
+    - dnsmasq
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - dns

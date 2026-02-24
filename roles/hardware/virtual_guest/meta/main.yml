@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: virtual_guest
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Optimization and tuning for virtual machines and cloud guests
   license: MIT
   min_ansible_version: "2.15"
@@ -22,6 +22,15 @@ galaxy_info:
     - cloud
     - guest
     - optimization
-    - iso_27001
+    - tuning
+    - kvm
+    - qemu
+    - contabo
+    - hetzner
+    - performance
+    - iso27001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

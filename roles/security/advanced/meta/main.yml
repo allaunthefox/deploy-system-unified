@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: advanced
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Advanced security measures (Port randomization, SSH key rotation)"
   license: MIT
   min_ansible_version: "2.15"
@@ -22,6 +22,16 @@ galaxy_info:
     - ssh
     - randomization
     - rotation
-    - iso_27001
+    - hardening
+    - defensive
+    - iso27001
+    - nist80053
+    - infrastructure
+    - isolation
+    - proactive
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

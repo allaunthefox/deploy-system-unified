@@ -7,15 +7,54 @@ argument_specs:
       - Implements CIS Level 1 and ISO 27001 §10.1 controls
       - Focuses on strong ciphers and key exchange algorithms
     options:
-      sshd_pqc_enabled:
+      security_sshd_backup_config:
         type: bool
-        description: Enable Post-Quantum Hybrid key exchange
+        description: Whether to back up the original sshd_config file
         default: true
-      sshd_permit_root_login:
+      security_sshd_disable_weak_keys:
+        type: bool
+        description: Whether to remove legacy weak host keys (DSA, ECDSA)
+        default: false
+      security_sshd_use_strong_ciphers:
+        type: bool
+        description: Enforce high-strength FIPS-compliant ciphers
+        default: true
+      security_sshd_allow_tcp_forwarding:
+        type: bool
+        description: Allow TCP port forwarding
+        default: false
+      security_sshd_allow_agent_forwarding:
+        type: bool
+        description: Allow SSH agent forwarding
+        default: false
+      security_sshd_allow_x11_forwarding:
+        type: bool
+        description: Allow X11 graphic forwarding
+        default: false
+      security_sshd_permit_root_login:
         type: str
-        description: Permit root login setting
+        description: SSH root login policy (yes, no, prohibit-password)
+        choices: ["yes", "no", "prohibit-password", "without-password"]
         default: "no"
-      sshd_password_authentication:
+      security_sshd_password_authentication:
         type: str
-        description: Enable password authentication
+        description: Enable password-based authentication
+        choices: ["yes", "no"]
         default: "no"
+      security_sshd_pqc_enabled:
+        type: bool
+        description: Enable Post-Quantum Hybrid key exchange (ML-KEM, sntrup761)
+        default: true
+      security_sshd_config_path:
+        type: str
+        description: Destination path for the sshd configuration file
+        default: "/etc/ssh/sshd_config"
+      security_sshd_enable_trusted_group_exceptions:
+        type: bool
+        description: Enable granular forwarding exceptions for specific groups
+        default: false
+      security_sshd_trusted_groups:
+        type: list
+        elements: str
+        description: Groups allowed to bypass standard forwarding restrictions
+        default: []

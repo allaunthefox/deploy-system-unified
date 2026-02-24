@@ -1,1 +1,41 @@
 ---
+# Handlers for security/file_integrity - AIDE Initialization and Monitoring
+
+- name: Rebuild aide database
+  ansible.builtin.command: aide --update
+  become: true
+  changed_when: false
+  async: 600
+  poll: 10
+
+- name: Initialize aide database
+  ansible.builtin.command: aide --init
+  become: true
+  changed_when: false
+  async: 600
+  poll: 10
+
+- name: Copy new aide database
+  ansible.builtin.command: cp /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+  become: true
+  changed_when: false
+
+- name: Restart aide service
+  ansible.builtin.service:
+    name: aidecheck.service
+    state: started
+  become: true
+  failed_when: false
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: Restart aide boot check service
+  ansible.builtin.systemd:
+    name: aide-boot-check.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  when: ansible_service_mgr == 'systemd'

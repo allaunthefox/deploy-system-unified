@@ -1,0 +1,29 @@
+# Goss tests for core/updates role
+# CIS 3.3.x | STIG V-230280 | NIST SI-2, CM-2 | ISO 27001 §8.8, §8.9
+---
+package:
+  unattended-upgrades:
+    installed: true
+  dnf-automatic:
+    installed: true
+
+file:
+  # Check for unattended-upgrades config (Debian/Ubuntu)
+  /etc/apt/apt.conf.d/20auto-upgrades:
+    exists: true
+    mode: "0644"
+  # Check for dnf-automatic config (RedHat/Fedora)
+  /etc/dnf/automatic.conf:
+    exists: true
+
+command:
+  # Verify apt is configured for auto-updates (Debian/Ubuntu)
+  apt-config dump APT::Periodic::Unattended-Upgrade:
+    exit-status: 0
+    stdout:
+      - "1"
+
+service:
+  dnf-automatic.timer:
+    enabled: true
+    running: true

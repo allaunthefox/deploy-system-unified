@@ -1,0 +1,19 @@
+# Goss tests for storage/filesystems role
+
+command:
+  mkfs.btrfs:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  btrfs:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /mnt:
+    exists: true
+    is-directory: true
+  /media:
+    exists: true
+    is-directory: true

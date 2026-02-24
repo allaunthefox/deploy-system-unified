@@ -1,0 +1,9 @@
+---
+- name: Side Effect
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Side effect placeholder
+      ansible.builtin.debug:
+        msg: "No side effect steps required for core/entropy."

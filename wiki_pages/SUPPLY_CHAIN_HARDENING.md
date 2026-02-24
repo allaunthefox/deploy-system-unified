@@ -1,52 +1,44 @@
 # SUPPLY_CHAIN_HARDENING
 
 ## Overview
-The Supply-Chain Hardening Profile is an optional, high-security configuration layer designed to protect against **Repository Hijacking** and **Compromised Mirrors**. It enforces strict cryptographic verification (SHA256 Checksums and GPG Fingerprints) for third-party software sources.
+The Supply-Chain Hardening framework provides end-to-face cryptographic verification of all software components, from bare-metal repositories to containerized workloads.
 
-**Target Audience:** High-security production environments, air-gapped systems, and regulatory-compliant deployments.
+**Status:** ✅ **Fully Integrated** (Feb 2026)
 
 ## 🛡 Capabilities
 
-| Component | Standard Behavior (Default) | Hardened Behavior | Mitigation |
-| :--- | :--- | :--- | :--- |
-| **GPU Repos** | Trusts GPG Key URL implicitly. | Verifies GPG Key SHA256 + Fingerprint before import. | Prevents Man-in-the-Middle (MitM) replacement of GPG keys. |
-| **RPMFusion** | Installs via direct URL (trusts mirror). | Downloads to temp file -> Verifies SHA256 -> Installs. | Prevents installation of tampered release RPMs from compromised mirrors. |
-| **Intel OneAPI** | Trusts GPG Key URL. | Verifies GPG Fingerprint. | Prevents key substitution. |
+### 1. Repository & Binary Verification
+| Component | Hardened Behavior | Mitigation |
+| :--- | :--- | :--- |
+| **GPU Repos** | Verifies GPG Key SHA256 + Fingerprint before import. | Prevents repository hijacking (MitM). |
+| **RPMFusion** | Downloads -> Verifies SHA256 -> Installs. | Prevents tampered mirror packages. |
+| **Intel OneAPI** | Mandatory GPG Fingerprint verification. | Prevents key substitution. |
+
+### 2. Container Workload Verification (Cosign)
+The system enforces **Sigstore/Cosign** signature verification for all container images before they are pulled or executed.
+- **Enforcement**: Deployment hard-fails if an image lacks a valid signature (Action `700015`).
+- **Standard**: Aligns with ISO 27001 §14.2.
+
+### 3. Software Bill of Materials (SBOM Audit)
+Automatically generates and signs a **CycloneDX (v1.5)** SBOM for the entire deployment.
+- **Discovery**: Scans all roles for container images, Python libraries, and system binaries.
+- **Immutability**: Every SBOM is signed (`sbom.json.sha256`) to prevent post-audit tampering.
+- **Forensic Match**: The `security/scanning` role performs a real-time vulnerability match against the signed SBOM.
 
 ## 🚀 Activation
 
-The profile is managed via a single configuration file: `inventory/group_vars/all/hardened_supply_chain.yml`.
+The framework is managed via `inventory/group_vars/all/os_settings.yml`.
 
-### 1. Enable Verification
-Toggle the verification flags to `true`.
-
+### 1. Enable Global Supply Chain Guard
 ```yaml
-nvidia_gpg_key_verify: true
-amd_rocm_gpg_key_verify: true
-intel_oneapi_gpg_fingerprint_verify: true
-rpmfusion_verify_checksum: true
+system_container_cosign_verify: true
 ```
 
-### 2. Pin Checksums
-You must populate the checksum variables with the **current official hashes** from the vendor. These are left empty by default to prevent "stale pin" breakage during standard deployments.
-
-**Example (Hypothetical Values):**
-```yaml
-# NVIDIA CUDA (RHEL 9)
-nvidia_gpg_key_sha256: "d42d06850... (full hash)"
-nvidia_gpg_fingerprint: "AE09 FE4B ..."
-
-# RPMFusion (Fedora 40)
-rpmfusion_free_sha256: "a1b2c3d4..."
-rpmfusion_nonfree_sha256: "e5f6g7h8..."
-```
-
-### 3. Deployment
-Run your standard playbook. The `hardware/gpu` and `core/repositories` roles will automatically detect the hardened variables and switch to "Verified Mode".
-
+### 2. Run SBOM Audit
 ```bash
-ansible-playbook -i inventory/prod.ini site.yml
+ansible-playbook production_deploy.yml --tags sbom
 ```
+Report location: `ci-artifacts/sbom/sbom.json`
 
 ## ⚠️ Maintenance Note
-**"Pinned means Manual"**: When vendors rotate their signing keys or release new repository versions (e.g., Fedora 40 -> 41), deployments **will fail** until you update the hashes in `hardened_supply_chain.yml`. This is a feature, not a bug—it forces human review of the supply chain change.
+**"Trust but Verify"**: The SBOM audit is a mandatory compliance gate in `hardened` and `production` profiles. If new, untrusted dependencies are introduced, the supply-chain watchdog will halt the deployment.

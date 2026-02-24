@@ -1,0 +1,32 @@
+---
+# Compliance framework defaults
+
+# Enable compliance validation
+compliance_framework_enable: true
+
+# Compliance frameworks to validate
+compliance_frameworks:
+  - cis_level_1
+  - cis_level_2
+
+# CIS Benchmark configuration
+cis_sshd_level: 1
+cis_firewall_level: 1
+cis_auditd_enable: true
+
+# Report generation
+generate_compliance_report: true
+compliance_report_path: /var/lib/deploy-system/compliance
+
+# STIG configuration
+stig_profile: "Server"
+stig_cat_override: false
+
+# NIST configuration
+nist_control_families:
+  - AC  # Access Control
+  - AU  # Audit and Accountability
+  - CM  # Configuration Management
+  - IA  # Identification and Authentication
+  - SC  # System and Communications Protection
+  - SI  # System and Information Integrity

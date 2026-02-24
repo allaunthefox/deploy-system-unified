@@ -1,0 +1,273 @@
+# Goss tests for security/access role
+# Access Control, PAM Configuration, Password Policies
+# CIS Benchmark: 5.3.x, 5.4.x, 6.x - User and Group Settings
+# ISO 27001 §8.2.3 | STIG V-23025x | NIST AC-2/AC-3/IA-5
+
+# =============================================================================
+# PACKAGE TESTS - Verify required packages for access control
+# =============================================================================
+package:
+  # CIS 5.3.x - Password policy packages
+  libpam-pwquality:
+    installed: true
+  libpam-modules:
+    installed: true
+  # CIS 5.4.x - Account management
+  sudo:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify authentication services
+# =============================================================================
+service:
+  # CIS 5.4.x - System authentication service
+  systemd-logind:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify access control configuration files
+# =============================================================================
+file:
+  # CIS 5.1.1 - Ensure permissions on /etc/shadow are configured
+  /etc/shadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: shadow
+
+  # CIS 5.1.2 - Ensure permissions on /etc/passwd are configured
+  /etc/passwd:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.1.3 - Ensure permissions on /etc/group are configured
+  /etc/group:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.1.4 - Ensure permissions on /etc/gshadow are configured
+  /etc/gshadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: shadow
+
+  # CIS 5.3.x - Password aging configuration
+  /etc/login.defs:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^PASS_MAX_DAYS\s+90/
+      - /^PASS_MIN_DAYS\s+7/
+      - /^PASS_WARN_AGE\s+7/
+      - /^LOGIN_RETRIES\s+5/
+      - /^LOGIN_TIMEOUT\s+60/
+
+  # CIS 5.3.4 - Ensure inactive password lock is configured
+  /etc/default/useradd:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^INACTIVE=30/
+
+  # CIS 6.1.1 - Ensure password hash algorithm is SHA-512 or stronger
+  /etc/pam.d/common-password:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /pam_pwquality.so/
+      - /pam_unix.so.*sha512/
+
+  # CIS 5.4.x - PAM authentication configuration
+  /etc/pam.d/common-auth:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /pam_deny.so/
+      - /pam_permit.so/
+
+  # CIS 5.4.x - PAM account configuration
+  /etc/pam.d/common-account:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.4.x - PAM session configuration
+  /etc/pam.d/common-session:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.4.x - Sudoers configuration
+  /etc/sudoers:
+    exists: true
+    mode: "0440"
+    owner: root
+    group: root
+
+  # CIS 5.4.x - Sudoers.d directory
+  /etc/sudoers.d:
+    exists: true
+    filetype: directory
+    mode: "0750"
+    owner: root
+    group: root
+
+  # CIS 5.4.x - Ensure sudo log file exists
+  /var/log/sudo.log:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify access control configurations
+# =============================================================================
+command:
+  # CIS 5.3.1 - Ensure password expiration is 90 days or less
+  password_max_days:
+    exec: 'grep "^PASS_MAX_DAYS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^90$/
+    timeout: 5000
+
+  # CIS 5.3.2 - Ensure minimum days between password changes is 7
+  password_min_days:
+    exec: 'grep "^PASS_MIN_DAYS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^7$/
+    timeout: 5000
+
+  # CIS 5.3.3 - Ensure password expiration warning days is 7
+  password_warn_age:
+    exec: 'grep "^PASS_WARN_AGE" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^7$/
+    timeout: 5000
+
+  # CIS 5.3.4 - Ensure inactive password lock is 30 days or less
+  password_inactive_lock:
+    exec: 'grep "^INACTIVE" /etc/default/useradd | awk -F= "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^30$/
+    timeout: 5000
+
+  # CIS 6.1.1 - Ensure password hash algorithm is SHA-512
+  password_hash_algorithm:
+    exec: 'grep -E "pam_unix\.so" /etc/pam.d/common-password | grep -o "sha[0-9]*" | head -1'
+    exit-status: 0
+    stdout:
+      - /sha512/
+    timeout: 5000
+
+  # CIS 6.1.2 - Ensure /etc/shadow password fields are not empty
+  shadow_password_fields:
+    exec: 'awk -F: '\''($2 == "" ) {print $1}'\'' /etc/shadow | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 6.2.2 - Ensure no duplicate UIDs exist
+  no_duplicate_uids:
+    exec: 'cut -f3 -d":" /etc/passwd | sort -n | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 6.2.3 - Ensure no duplicate GIDs exist
+  no_duplicate_gids:
+    exec: 'cut -f3 -d":" /etc/group | sort -n | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 6.2.4 - Ensure no duplicate user names exist
+  no_duplicate_usernames:
+    exec: 'cut -f1 -d":" /etc/passwd | sort | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 6.2.5 - Ensure no duplicate group names exist
+  no_duplicate_groupnames:
+    exec: 'cut -f1 -d":" /etc/group | sort | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 6.2.7 - Ensure root is the only UID 0 account
+  root_only_uid_zero:
+    exec: 'awk -F: '\''($3 == 0) {print $1}'\'' /etc/passwd | wc -l'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+  # CIS 5.4.1 - Ensure system accounts are secured (nologin shell)
+  system_accounts_secured:
+    exec: 'awk -F: '\''($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print $1}'\'' /etc/passwd | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 5.4.x - Ensure sudo requires password
+  sudo_require_password:
+    exec: 'grep -E "^Defaults.*!authenticate" /etc/sudoers /etc/sudoers.d/* 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 5.4.x - Ensure sudo log file is configured
+  sudo_logfile_configured:
+    exec: 'grep -E "^Defaults.*logfile" /etc/sudoers /etc/sudoers.d/* 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 6.1.x - Verify pam_pwquality is configured
+  pam_pwquality_configured:
+    exec: 'grep -E "pam_pwquality\.so" /etc/pam.d/common-password | wc -l'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Verify authentication processes
+# =============================================================================
+process:
+  # CIS 5.4.x - Ensure systemd-logind is running
+  systemd-logind:
+    running: true
+
+# =============================================================================
+# PORT TESTS - Not applicable for access control
+# =============================================================================
+# Note: Access control does not involve network ports

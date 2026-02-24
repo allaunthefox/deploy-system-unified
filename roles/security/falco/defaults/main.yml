@@ -1,0 +1,54 @@
+---
+# Falco Runtime Security Role - Default Variables
+
+# Falco version
+falco_version: "0.36.2"
+
+# Installation method: package, binary, kubernetes
+falco_install_method: "package"
+
+# Package name
+falco_package_name: "falco"
+
+# Repository configuration
+falco_deb_repo_suffix: "deb"
+falco_rpm_repo_suffix: "x86_64"
+falco_gpg_check: true
+falco_gpg_key: "https://download.falco.org/packages/pubkey.gpg"
+
+# Configuration
+falco_config:
+  log_level: "info"
+  priority: "debug"
+  console_output: false
+  json_output: true
+
+# Rules
+falco_rules_file: /etc/falco/falco.yaml
+falco_rules_enabled:
+  - falco_rules.yaml
+  - falco-rules.yaml
+
+# Output settings
+falco_outputs:
+  - type: syslog
+    format: "%time% %container% %proc.name: %msg"
+  - type: file
+    file_path: /var/log/falco/falco.log
+
+# Alert integration
+falco_alerts:
+  enabled: false
+  webhook_url: ""
+  webhook_auth: ""
+
+# Falco tags
+falco_tags:
+  - security
+  - runtime
+  - falco
+  - monitoring
+  - hardening
+  - linux
+  - iso27001
+  - nist80053

@@ -1,36 +1,47 @@
 ---
 # Tasks for security/firejail - Application Sandboxing
-- name: "ISO 27001 §8.26 | Action 410001 | Install Firejail"
+- name: "CIS 5.1.1 | STIG V-230220 | NIST CM-7 | ISO 27001 §8.26 | Action 410001 | Install Firejail"
   ansible.builtin.package:
     name: firejail
     state: present
   become: true
   tags:
+    - cis_5_1_1
+    - stig_v_230220
+    - nist_cm_7
     - iso_27001_8_26
     - security
     - sandboxing
 
-- name: Ensure Firejail profile directory exists
+- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410006 | Ensure Firejail profile directory exists"
   ansible.builtin.file:
     path: /etc/firejail
     state: directory
     mode: '0755'
   become: true
   tags:
+    - cis_5_1_2
+    - stig_v_230220
+    - nist_sc_39
+    - iso_27001_8_26
     - security
     - sandboxing
 
-- name: Create local Firejail configuration directory
+- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410007 | Create local Firejail configuration directory"
   ansible.builtin.file:
     path: /usr/local/etc/firejail
     state: directory
     mode: '0755'
   become: true
   tags:
+    - cis_5_1_2
+    - stig_v_230220
+    - nist_sc_39
+    - iso_27001_8_26
     - security
     - sandboxing
 
-- name: "ISO 27001 §8.26 | Action 410002 | Configure Firejail GPU Access (Globals)"
+- name: "CIS 5.1.3 | STIG V-230221 | NIST AC-6 | ISO 27001 §8.26 | Action 410002 | Configure Firejail GPU Access (Globals)"
   ansible.builtin.copy:
     content: |
       # Enable GPU acceleration for all Firejail sandboxes
@@ -41,6 +52,9 @@
     mode: '0644'
   become: true
   tags:
+    - cis_5_1_3
+    - stig_v_230221
+    - nist_ac_6
     - iso_27001_8_26
     - security
     - sandboxing

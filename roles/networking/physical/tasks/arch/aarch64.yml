@@ -3,5 +3,6 @@
 # Often uses different buffer defaults for embedded NICs
 
 - name: Apply ARM-specific Network Tuning
+  tags: [networking, physical, remediate]
   ansible.builtin.debug:
     msg: "Applying ARM-specific network tuning (Placeholder for future optimizations)"
