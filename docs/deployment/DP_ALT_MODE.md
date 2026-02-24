@@ -1,4 +1,4 @@
-# DisplayPort Alt Mode (DP Alt Mode) Guide
+# DP_ALT_MODE
 
 This guide covers using DisplayPort Alt Mode via USB-C for external GPU (eGPU) and display connections.
 

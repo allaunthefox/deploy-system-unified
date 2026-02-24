@@ -1,4 +1,4 @@
-# ISO & Industry Compliance Tagging Standard
+# ISO_TAGGING_STANDARD
 
 **Purpose:** This document defines the standardized Ansible tags for implementing ISO, NIST, and CIS compliance controls across the Deploy-System-Unified project.
 

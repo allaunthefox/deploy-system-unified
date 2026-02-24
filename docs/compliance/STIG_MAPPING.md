@@ -1,4 +1,4 @@
-# STIG Benchmark Mapping
+# STIG_MAPPING
 
 **Document Version:** 1.0
 **Date:** February 24, 2026

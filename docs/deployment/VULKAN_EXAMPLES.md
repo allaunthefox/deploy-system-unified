@@ -1,4 +1,4 @@
-# Vulkan Application Examples
+# VULKAN_EXAMPLES
 
 This guide provides examples for running Vulkan applications in containers with GPU acceleration.
 

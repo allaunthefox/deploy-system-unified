@@ -1,4 +1,4 @@
-# K8s vs Podman Resource Usage Benchmark
+# k8s_vs_podman_resource_usage
 
 **Created:** February 13, 2026  
 **Status:** Ready (Awaiting Target Hardware)  
