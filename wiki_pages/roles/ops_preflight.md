@@ -7,55 +7,55 @@ Mandatory system validation (memory, network, binaries) to ensure environment re
 
 ## Variables
 
-### `preflight_require_systemd`{#preflightrequiresystemd}
+<a id="preflight-require-systemd"></a>### `preflight_require_systemd`
 - `preflight_require_systemd`
 
-### `preflight_check_memory`{#preflightcheckmemory}
+<a id="preflight-check-memory"></a>### `preflight_check_memory`
 - `preflight_check_memory`
 
-### `preflight_min_memory_mb`{#preflightminmemorymb}
+<a id="preflight-min-memory-mb"></a>### `preflight_min_memory_mb`
 - `preflight_min_memory_mb`
 
-### `preflight_check_network`{#preflightchecknetwork}
+<a id="preflight-check-network"></a>### `preflight_check_network`
 - `preflight_check_network`
 
-### `preflight_connectivity_check_url`{#preflightconnectivitycheckurl}
+<a id="preflight-connectivity-check-url"></a>### `preflight_connectivity_check_url`
 - `preflight_connectivity_check_url`
 
-### `preflight_required_binaries`{#preflightrequiredbinaries}
+<a id="preflight-required-binaries"></a>### `preflight_required_binaries`
 - `preflight_required_binaries`
 
-### `preflight_check_license`{#preflightchecklicense}
+<a id="preflight-check-license"></a>### `preflight_check_license`
 - `preflight_check_license`
 
-### `preflight_strict_license_check`{#preflightstrictlicensecheck}
+<a id="preflight-strict-license-check"></a>### `preflight_strict_license_check`
 - `preflight_strict_license_check`
 
-### `preflight_install_license_tools`{#preflightinstalllicensetools}
+<a id="preflight-install-license-tools"></a>### `preflight_install_license_tools`
 - `preflight_install_license_tools`
 
-### `preflight_become_pip`{#preflightbecomepip}
+<a id="preflight-become-pip"></a>### `preflight_become_pip`
 - `preflight_become_pip`
 
-### `preflight_check_gpu_vendor`{#preflightcheckgpuvendor}
+<a id="preflight-check-gpu-vendor"></a>### `preflight_check_gpu_vendor`
 - `preflight_check_gpu_vendor`
 
-### `preflight_strict_gpu_vendor`{#preflightstrictgpuvendor}
+<a id="preflight-strict-gpu-vendor"></a>### `preflight_strict_gpu_vendor`
 - `preflight_strict_gpu_vendor`
 
-### `preflight_check_container_runtime`{#preflightcheckcontainerruntime}
+<a id="preflight-check-container-runtime"></a>### `preflight_check_container_runtime`
 - `preflight_check_container_runtime`
 
-### `preflight_required_container_runtime`{#preflightrequiredcontainerruntime}
+<a id="preflight-required-container-runtime"></a>### `preflight_required_container_runtime`
 - `preflight_required_container_runtime`
 
-### `preflight_check_kubernetes`{#preflightcheckkubernetes}
+<a id="preflight-check-kubernetes"></a>### `preflight_check_kubernetes`
 - `preflight_check_kubernetes`
 
-### `preflight_require_kubectl`{#preflightrequirekubectl}
+<a id="preflight-require-kubectl"></a>### `preflight_require_kubectl`
 - `preflight_require_kubectl`
 
-### `preflight_require_cluster_connectivity`{#preflightrequireclusterconnectivity}
+<a id="preflight-require-cluster-connectivity"></a>### `preflight_require_cluster_connectivity`
 - `preflight_require_cluster_connectivity`
 
 

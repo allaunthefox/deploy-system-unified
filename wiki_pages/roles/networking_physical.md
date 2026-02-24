@@ -7,46 +7,46 @@ This role manages physical network interface optimizations, specifically identif
 
 ## Variables
 
-### `interface_capabilities`{#interfacecapabilities}
+<a id="interface-capabilities"></a>### `interface_capabilities`
 - `interface_capabilities`
 
-### `networking_physical_install_tools`{#networkingphysicalinstalltools}
+<a id="networking-physical-install-tools"></a>### `networking_physical_install_tools`
 - `networking_physical_install_tools`
 
-### `networking_physical_manage_mtu`{#networkingphysicalmanagemtu}
+<a id="networking-physical-manage-mtu"></a>### `networking_physical_manage_mtu`
 - `networking_physical_manage_mtu`
 
-### `networking_physical_jumbo_frames_enabled`{#networkingphysicaljumboframesenabled}
+<a id="networking-physical-jumbo-frames-enabled"></a>### `networking_physical_jumbo_frames_enabled`
 - `networking_physical_jumbo_frames_enabled`
 
-### `networking_physical_jumbo_mtu`{#networkingphysicaljumbomtu}
+<a id="networking-physical-jumbo-mtu"></a>### `networking_physical_jumbo_mtu`
 - `networking_physical_jumbo_mtu`
 
-### `networking_physical_ring_tuning_enabled`{#networkingphysicalringtuningenabled}
+<a id="networking-physical-ring-tuning-enabled"></a>### `networking_physical_ring_tuning_enabled`
 - `networking_physical_ring_tuning_enabled`
 
-### `networking_physical_rx_ring_size`{#networkingphysicalrxringsize}
+<a id="networking-physical-rx-ring-size"></a>### `networking_physical_rx_ring_size`
 - `networking_physical_rx_ring_size`
 
-### `networking_physical_tx_ring_size`{#networkingphysicaltxringsize}
+<a id="networking-physical-tx-ring-size"></a>### `networking_physical_tx_ring_size`
 - `networking_physical_tx_ring_size`
 
-### `networking_physical_offload_tuning_enabled`{#networkingphysicaloffloadtuningenabled}
+<a id="networking-physical-offload-tuning-enabled"></a>### `networking_physical_offload_tuning_enabled`
 - `networking_physical_offload_tuning_enabled`
 
-### `networking_physical_enable_tso`{#networkingphysicalenabletso}
+<a id="networking-physical-enable-tso"></a>### `networking_physical_enable_tso`
 - `networking_physical_enable_tso` — TCP Segmentation Offload
 
-### `networking_physical_enable_gso`{#networkingphysicalenablegso}
+<a id="networking-physical-enable-gso"></a>### `networking_physical_enable_gso`
 - `networking_physical_enable_gso` — Generic Segmentation Offload
 
-### `networking_physical_enable_lro`{#networkingphysicalenablelro}
+<a id="networking-physical-enable-lro"></a>### `networking_physical_enable_lro`
 - `networking_physical_enable_lro` — Large Receive Offload (often problematic with forwarding)
 
-### `networking_physical_profiles`{#networkingphysicalprofiles}
+<a id="networking-physical-profiles"></a>### `networking_physical_profiles`
 - `networking_physical_profiles`
 
-### `networking_physical_default_profile`{#networkingphysicaldefaultprofile}
+<a id="networking-physical-default-profile"></a>### `networking_physical_default_profile`
 - `networking_physical_default_profile`
 
 

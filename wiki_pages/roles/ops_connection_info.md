@@ -7,25 +7,25 @@ Manages SSH/Rsync connection metadata, randomization of ports, and ephemeral acc
 
 ## Variables
 
-### `encryption_method`{#encryptionmethod}
+<a id="encryption-method"></a>### `encryption_method`
 - `encryption_method` — sops or vault (Default changed to plain for dev/test without keys)
 
-### `ssh_rsync_destination`{#sshrsyncdestination}
+<a id="ssh-rsync-destination"></a>### `ssh_rsync_destination`
 - `ssh_rsync_destination`
 
-### `ops_rsync_enable`{#opsrsyncenable}
+<a id="ops-rsync-enable"></a>### `ops_rsync_enable`
 - `ops_rsync_enable`
 
-### `ops_rsync_allowlist`{#opsrsyncallowlist}
+<a id="ops-rsync-allowlist"></a>### `ops_rsync_allowlist`
 - `ops_rsync_allowlist`
 
-### `ops_rsync_ephemeral_allow`{#opsrsyncephemeralallow}
+<a id="ops-rsync-ephemeral-allow"></a>### `ops_rsync_ephemeral_allow`
 - `ops_rsync_ephemeral_allow`
 
-### `ssh_randomize_port`{#sshrandomizeport}
+<a id="ssh-randomize-port"></a>### `ssh_randomize_port`
 - `ssh_randomize_port`
 
-### `ssh_port_cache_dir`{#sshportcachedir}
+<a id="ssh-port-cache-dir"></a>### `ssh_port_cache_dir`
 - `ssh_port_cache_dir`
 
 

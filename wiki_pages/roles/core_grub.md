@@ -7,46 +7,46 @@ Aggregates and applies kernel parameters from various roles into a single GRUB c
 
 ## Variables
 
-### `core_grub_enabled`{#coregrubenabled}
+<a id="core-grub-enabled"></a>### `core_grub_enabled`
 - `core_grub_enabled`
 
-### `core_grub_base_params`{#coregrubbaseparams}
+<a id="core-grub-base-params"></a>### `core_grub_base_params`
 - `core_grub_base_params`
 
-### `core_grub_security_params`{#coregrubsecurityparams}
+<a id="core-grub-security-params"></a>### `core_grub_security_params`
 - `core_grub_security_params`
 
-### `core_grub_hardware_params`{#coregrubhardwareparams}
+<a id="core-grub-hardware-params"></a>### `core_grub_hardware_params`
 - `core_grub_hardware_params`
 
-### `core_grub_isolation_params`{#coregrubisolationparams}
+<a id="core-grub-isolation-params"></a>### `core_grub_isolation_params`
 - `core_grub_isolation_params`
 
-### `core_grub_performance_params`{#coregrubperformanceparams}
+<a id="core-grub-performance-params"></a>### `core_grub_performance_params`
 - `core_grub_performance_params`
 
-### `core_grub_extra_params`{#coregrubextraparams}
+<a id="core-grub-extra-params"></a>### `core_grub_extra_params`
 - `core_grub_extra_params`
 
-### `core_grub_config_path`{#coregrubconfigpath}
+<a id="core-grub-config-path"></a>### `core_grub_config_path`
 - `core_grub_config_path`
 
-### `core_grub_force_update`{#coregrubforceupdate}
+<a id="core-grub-force-update"></a>### `core_grub_force_update`
 - `core_grub_force_update`
 
-### `core_grub_backup_enabled`{#coregrubbackupenabled}
+<a id="core-grub-backup-enabled"></a>### `core_grub_backup_enabled`
 - `core_grub_backup_enabled`
 
-### `core_grub_backup_dir`{#coregrubbackupdir}
+<a id="core-grub-backup-dir"></a>### `core_grub_backup_dir`
 - `core_grub_backup_dir`
 
-### `core_grub_backup_retention_days`{#coregrubbackupretentiondays}
+<a id="core-grub-backup-retention-days"></a>### `core_grub_backup_retention_days`
 - `core_grub_backup_retention_days`
 
-### `core_grub_backup_encrypt`{#coregrubbackupencrypt}
+<a id="core-grub-backup-encrypt"></a>### `core_grub_backup_encrypt`
 - `core_grub_backup_encrypt`
 
-### `core_grub_backup_gpg_recipient`{#coregrubbackupgpgrecipient}
+<a id="core-grub-backup-gpg-recipient"></a>### `core_grub_backup_gpg_recipient`
 - `core_grub_backup_gpg_recipient`
 
 

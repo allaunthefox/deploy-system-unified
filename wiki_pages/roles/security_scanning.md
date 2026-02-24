@@ -4,37 +4,37 @@
 
 ## Variables
 
-### `security_scanning_enable`{#securityscanningenable}
+<a id="security-scanning-enable"></a>### `security_scanning_enable`
 - `security_scanning_enable`
 
-### `security_scanning_install_tools`{#securityscanninginstalltools}
+<a id="security-scanning-install-tools"></a>### `security_scanning_install_tools`
 - `security_scanning_install_tools`
 
-### `security_scanning_ephemeral_skip`{#securityscanningephemeralskip}
+<a id="security-scanning-ephemeral-skip"></a>### `security_scanning_ephemeral_skip`
 - `security_scanning_ephemeral_skip`
 
-### `security_package_mapping`{#securitypackagemapping}
+<a id="security-package-mapping"></a>### `security_package_mapping`
 - `security_package_mapping`
 
-### `security_scanning_extra_packages`{#securityscanningextrapackages}
+<a id="security-scanning-extra-packages"></a>### `security_scanning_extra_packages`
 - `security_scanning_extra_packages`
 
-### `security_scanning_optional_tools`{#securityscanningoptionaltools}
+<a id="security-scanning-optional-tools"></a>### `security_scanning_optional_tools`
 - `security_scanning_optional_tools`
 
-### `security_scanning_critical_tools`{#securityscanningcriticaltools}
+<a id="security-scanning-critical-tools"></a>### `security_scanning_critical_tools`
 - `security_scanning_critical_tools`
 
-### `security_scanning_rkhunter_warning_threshold`{#securityscanningrkhunterwarningthreshold}
+<a id="security-scanning-rkhunter-warning-threshold"></a>### `security_scanning_rkhunter_warning_threshold`
 - `security_scanning_rkhunter_warning_threshold`
 
-### `security_scanning_aide_change_threshold`{#securityscanningaidechangethreshold}
+<a id="security-scanning-aide-change-threshold"></a>### `security_scanning_aide_change_threshold`
 - `security_scanning_aide_change_threshold`
 
-### `security_scanning_lynis_issue_threshold`{#securityscanninglynisissuethreshold}
+<a id="security-scanning-lynis-issue-threshold"></a>### `security_scanning_lynis_issue_threshold`
 - `security_scanning_lynis_issue_threshold`
 
-### `security_scanning_checkov_issue_threshold`{#securityscanningcheckovissuethreshold}
+<a id="security-scanning-checkov-issue-threshold"></a>### `security_scanning_checkov_issue_threshold`
 - `security_scanning_checkov_issue_threshold`
 
 

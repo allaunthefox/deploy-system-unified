@@ -7,37 +7,37 @@ This role provides optional advanced security hardening features that can be ena
 
 ## Variables
 
-### `advanced_security_hardening_enabled`{#advancedsecurityhardeningenabled}
+<a id="advanced-security-hardening-enabled"></a>### `advanced_security_hardening_enabled`
 - `advanced_security_hardening_enabled`
 
-### `ssh_randomize_port`{#sshrandomizeport}
+<a id="ssh-randomize-port"></a>### `ssh_randomize_port`
 - `ssh_randomize_port`
 
-### `ssh_random_port_range_start`{#sshrandomportrangestart}
+<a id="ssh-random-port-range-start"></a>### `ssh_random_port_range_start`
 - `ssh_random_port_range_start`
 
-### `ssh_random_port_range_end`{#sshrandomportrangeend}
+<a id="ssh-random-port-range-end"></a>### `ssh_random_port_range_end`
 - `ssh_random_port_range_end`
 
-### `ssh_random_port_file_dest`{#sshrandomportfiledest}
+<a id="ssh-random-port-file-dest"></a>### `ssh_random_port_file_dest`
 - `ssh_random_port_file_dest`
 
-### `ssh_rsync_destination`{#sshrsyncdestination}
+<a id="ssh-rsync-destination"></a>### `ssh_rsync_destination`
 - `ssh_rsync_destination`
 
-### `ssh_key_rotation_enabled`{#sshkeyrotationenabled}
+<a id="ssh-key-rotation-enabled"></a>### `ssh_key_rotation_enabled`
 - `ssh_key_rotation_enabled`
 
-### `ssh_key_rotation_interval_days`{#sshkeyrotationintervaldays}
+<a id="ssh-key-rotation-interval-days"></a>### `ssh_key_rotation_interval_days`
 - `ssh_key_rotation_interval_days`
 
-### `tmux_session_for_deployment`{#tmuxsessionfordeployment}
+<a id="tmux-session-for-deployment"></a>### `tmux_session_for_deployment`
 - `tmux_session_for_deployment`
 
-### `tmux_session_name`{#tmuxsessionname}
+<a id="tmux-session-name"></a>### `tmux_session_name`
 - `tmux_session_name`
 
-### `encryption_method`{#encryptionmethod}
+<a id="encryption-method"></a>### `encryption_method`
 - `encryption_method` — Options: sops, vault
 
 

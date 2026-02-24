@@ -8,55 +8,55 @@ This role uses Podman Quadlets to deploy a monitoring stack consisting of Promet
 
 ## Variables
 
-### `monitoring_enable`{#monitoringenable}
+<a id="monitoring-enable"></a>### `monitoring_enable`
 - `monitoring_enable`
 
-### `monitoring_instance`{#monitoringinstance}
+<a id="monitoring-instance"></a>### `monitoring_instance`
 - `monitoring_instance`
 
-### `monitoring_root_dir`{#monitoringrootdir}
+<a id="monitoring-root-dir"></a>### `monitoring_root_dir`
 - `monitoring_root_dir`
 
-### `monitoring_config_dir`{#monitoringconfigdir}
+<a id="monitoring-config-dir"></a>### `monitoring_config_dir`
 - `monitoring_config_dir`
 
-### `monitoring_network`{#monitoringnetwork}
+<a id="monitoring-network"></a>### `monitoring_network`
 - `monitoring_network`
 
-### `monitoring_pod_name`{#monitoringpodname}
+<a id="monitoring-pod-name"></a>### `monitoring_pod_name`
 - `monitoring_pod_name`
 
-### `monitoring_prometheus_image`{#monitoringprometheusimage}
+<a id="monitoring-prometheus-image"></a>### `monitoring_prometheus_image`
 - `monitoring_prometheus_image`
 
-### `monitoring_grafana_image`{#monitoringgrafanaimage}
+<a id="monitoring-grafana-image"></a>### `monitoring_grafana_image`
 - `monitoring_grafana_image`
 
-### `monitoring_grafana_admin_user`{#monitoringgrafanaadminuser}
+<a id="monitoring-grafana-admin-user"></a>### `monitoring_grafana_admin_user`
 - `monitoring_grafana_admin_user`
 
-### `monitoring_grafana_admin_password`{#monitoringgrafanaadminpassword}
+<a id="monitoring-grafana-admin-password"></a>### `monitoring_grafana_admin_password`
 - `monitoring_grafana_admin_password`
 
-### `monitoring_loki_enable`{#monitoringlokienable}
+<a id="monitoring-loki-enable"></a>### `monitoring_loki_enable`
 - `monitoring_loki_enable`
 
-### `monitoring_loki_image`{#monitoringlokiimage}
+<a id="monitoring-loki-image"></a>### `monitoring_loki_image`
 - `monitoring_loki_image`
 
-### `monitoring_loki_port`{#monitoringlokiport}
+<a id="monitoring-loki-port"></a>### `monitoring_loki_port`
 - `monitoring_loki_port`
 
-### `monitoring_promtail_enable`{#monitoringpromtailenable}
+<a id="monitoring-promtail-enable"></a>### `monitoring_promtail_enable`
 - `monitoring_promtail_enable`
 
-### `monitoring_promtail_image`{#monitoringpromtailimage}
+<a id="monitoring-promtail-image"></a>### `monitoring_promtail_image`
 - `monitoring_promtail_image`
 
-### `monitoring_forensic_dashboard_enabled`{#monitoringforensicdashboardenabled}
+<a id="monitoring-forensic-dashboard-enabled"></a>### `monitoring_forensic_dashboard_enabled`
 - `monitoring_forensic_dashboard_enabled`
 
-### `containers_monitoring_fail_secure`{#containersmonitoringfailsecure}
+<a id="containers-monitoring-fail-secure"></a>### `containers_monitoring_fail_secure`
 - `containers_monitoring_fail_secure`
 
 

@@ -7,22 +7,22 @@ Manages PCIe passthrough isolation and DMA protection (IOMMU) to prevent side-ch
 
 ## Variables
 
-### `hardware_isolation_iommu_enabled`{#hardwareisolationiommuenabled}
+<a id="hardware-isolation-iommu-enabled"></a>### `hardware_isolation_iommu_enabled`
 - `hardware_isolation_iommu_enabled`
 
-### `hardware_isolation_iommu_vendor`{#hardwareisolationiommuvendor}
+<a id="hardware-isolation-iommu-vendor"></a>### `hardware_isolation_iommu_vendor`
 - `hardware_isolation_iommu_vendor`
 
-### `hardware_isolation_iommu_pt`{#hardwareisolationiommupt}
+<a id="hardware-isolation-iommu-pt"></a>### `hardware_isolation_iommu_pt`
 - `hardware_isolation_iommu_pt`
 
-### `hardware_isolation_dma_protection_enabled`{#hardwareisolationdmaprotectionenabled}
+<a id="hardware-isolation-dma-protection-enabled"></a>### `hardware_isolation_dma_protection_enabled`
 - `hardware_isolation_dma_protection_enabled`
 
-### `hardware_isolation_blacklist_modules`{#hardwareisolationblacklistmodules}
+<a id="hardware-isolation-blacklist-modules"></a>### `hardware_isolation_blacklist_modules`
 - `hardware_isolation_blacklist_modules`
 
-### `hardware_isolation_acs_override`{#hardwareisolationacsoverride}
+<a id="hardware-isolation-acs-override"></a>### `hardware_isolation_acs_override`
 - `hardware_isolation_acs_override`
 
 

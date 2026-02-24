@@ -7,16 +7,16 @@ Configures Wi-Fi backends and NetworkManager settings for workstation profiles.
 
 ## Variables
 
-### `networking_desktop_enable_wifi`{#networkingdesktopenablewifi}
+<a id="networking-desktop-enable-wifi"></a>### `networking_desktop_enable_wifi`
 - `networking_desktop_enable_wifi`
 
-### `networking_desktop_wifi_backend`{#networkingdesktopwifibackend}
+<a id="networking-desktop-wifi-backend"></a>### `networking_desktop_wifi_backend`
 - `networking_desktop_wifi_backend` — or "iwd"
 
-### `networking_desktop_manager`{#networkingdesktopmanager}
+<a id="networking-desktop-manager"></a>### `networking_desktop_manager`
 - `networking_desktop_manager`
 
-### `networking_desktop_install_gui_tools`{#networkingdesktopinstallguitools}
+<a id="networking-desktop-install-gui-tools"></a>### `networking_desktop_install_gui_tools`
 - `networking_desktop_install_gui_tools`
 
 

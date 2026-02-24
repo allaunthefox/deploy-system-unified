@@ -7,28 +7,28 @@ This role provides support for Serial Attached SCSI (SAS) infrastructure, spanni
 
 ## Variables
 
-### `hardware_sas_install_tools`{#hardwaresasinstalltools}
+<a id="hardware-sas-install-tools"></a>### `hardware_sas_install_tools`
 - `hardware_sas_install_tools`
 
-### `hardware_sas_enable_monitoring`{#hardwaresasenablemonitoring}
+<a id="hardware-sas-enable-monitoring"></a>### `hardware_sas_enable_monitoring`
 - `hardware_sas_enable_monitoring`
 
-### `hardware_sas_configure_smartd`{#hardwaresasconfiguresmartd}
+<a id="hardware-sas-configure-smartd"></a>### `hardware_sas_configure_smartd`
 - `hardware_sas_configure_smartd`
 
-### `hardware_sas_load_drivers`{#hardwaresasloaddrivers}
+<a id="hardware-sas-load-drivers"></a>### `hardware_sas_load_drivers`
 - `hardware_sas_load_drivers`
 
-### `hardware_sas_drivers`{#hardwaresasdrivers}
+<a id="hardware-sas-drivers"></a>### `hardware_sas_drivers`
 - `hardware_sas_drivers`
 
-### `hardware_sas_packages`{#hardwaresaspackages}
+<a id="hardware-sas-packages"></a>### `hardware_sas_packages`
 - `hardware_sas_packages`
 
-### `hardware_sas_queue_depth`{#hardwaresasqueuedepth}
+<a id="hardware-sas-queue-depth"></a>### `hardware_sas_queue_depth`
 - `hardware_sas_queue_depth`
 
-### `hardware_sas_smartd_opts`{#hardwaresassmartdopts}
+<a id="hardware-sas-smartd-opts"></a>### `hardware_sas_smartd_opts`
 - `hardware_sas_smartd_opts` — Often SAS drives behind HBAs need this, or specific passthrough
 
 

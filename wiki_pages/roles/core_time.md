@@ -7,7 +7,7 @@ Ensures accurate system time via idempotent installation and configuration of ti
 
 ## Variables
 
-### `core_time_service_mapping`{#coretimeservicemapping}
+<a id="core-time-service-mapping"></a>### `core_time_service_mapping`
 - `core_time_service_mapping`
 
 

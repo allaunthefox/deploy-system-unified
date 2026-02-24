@@ -7,19 +7,19 @@ Deploys Memcached using Podman Quadlets for distributed memory caching.
 
 ## Variables
 
-### `memcached_enable`{#memcachedenable}
+<a id="memcached-enable"></a>### `memcached_enable`
 - `memcached_enable`
 
-### `memcached_image`{#memcachedimage}
+<a id="memcached-image"></a>### `memcached_image`
 - `memcached_image`
 
-### `memcached_port`{#memcachedport}
+<a id="memcached-port"></a>### `memcached_port`
 - `memcached_port`
 
-### `memcached_memory_mb`{#memcachedmemorymb}
+<a id="memcached-memory-mb"></a>### `memcached_memory_mb`
 - `memcached_memory_mb`
 
-### `memcached_status_check`{#memcachedstatuscheck}
+<a id="memcached-status-check"></a>### `memcached_status_check`
 - `memcached_status_check`
 
 

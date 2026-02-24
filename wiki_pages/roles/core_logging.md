@@ -7,19 +7,19 @@ Ensures mandatory forensic readiness by configuring systemd-journal-remote and l
 
 ## Variables
 
-### `logging_journal_remote_packages`{#loggingjournalremotepackages}
+<a id="logging-journal-remote-packages"></a>### `logging_journal_remote_packages`
 - `logging_journal_remote_packages`
 
-### `logging_rate_limit_interval`{#loggingratelimitinterval}
+<a id="logging-rate-limit-interval"></a>### `logging_rate_limit_interval`
 - `logging_rate_limit_interval`
 
-### `logging_rate_limit_burst`{#loggingratelimitburst}
+<a id="logging-rate-limit-burst"></a>### `logging_rate_limit_burst`
 - `logging_rate_limit_burst`
 
-### `logging_max_file_sec`{#loggingmaxfilesec}
+<a id="logging-max-file-sec"></a>### `logging_max_file_sec`
 - `logging_max_file_sec`
 
-### `logging_max_retention_sec`{#loggingmaxretentionsec}
+<a id="logging-max-retention-sec"></a>### `logging_max_retention_sec`
 - `logging_max_retention_sec`
 
 

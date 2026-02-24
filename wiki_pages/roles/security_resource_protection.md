@@ -7,13 +7,13 @@ Implements resource limits (tasks, memory, descriptors) to mitigate denial-of-se
 
 ## Variables
 
-### `resource_min_ram_mb`{#resourceminrammb}
+<a id="resource-min-ram-mb"></a>### `resource_min_ram_mb`
 - `resource_min_ram_mb`
 
-### `resource_default_tasks_max`{#resourcedefaulttasksmax}
+<a id="resource-default-tasks-max"></a>### `resource_default_tasks_max`
 - `resource_default_tasks_max`
 
-### `resource_default_memory_max`{#resourcedefaultmemorymax}
+<a id="resource-default-memory-max"></a>### `resource_default_memory_max`
 - `resource_default_memory_max` — Prevent a single leak from killing the host
 
 

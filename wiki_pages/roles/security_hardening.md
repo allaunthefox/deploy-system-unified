@@ -7,19 +7,19 @@ Enhanced core security configurations, including shell hardening and system-wide
 
 ## Variables
 
-### `security_hardening_enabled`{#securityhardeningenabled}
+<a id="security-hardening-enabled"></a>### `security_hardening_enabled`
 - `security_hardening_enabled`
 
-### `security_enable_ufw`{#securityenableufw}
+<a id="security-enable-ufw"></a>### `security_enable_ufw`
 - `security_enable_ufw`
 
-### `security_enable_fail2ban`{#securityenablefail2ban}
+<a id="security-enable-fail2ban"></a>### `security_enable_fail2ban`
 - `security_enable_fail2ban`
 
-### `security_enable_auto_updates`{#securityenableautoupdates}
+<a id="security-enable-auto-updates"></a>### `security_enable_auto_updates`
 - `security_enable_auto_updates`
 
-### `security_kernel_hardening`{#securitykernelhardening}
+<a id="security-kernel-hardening"></a>### `security_kernel_hardening`
 - `security_kernel_hardening`
 
 

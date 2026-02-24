@@ -10,109 +10,109 @@ This role handles the installation and configuration of the container runtime en
 
 ## Variables
 
-### `containers_install_podman`{#containersinstallpodman}
+<a id="containers-install-podman"></a>### `containers_install_podman`
 - `containers_install_podman`
 
-### `containers_enable_socket`{#containersenablesocket}
+<a id="containers-enable-socket"></a>### `containers_enable_socket`
 - `containers_enable_socket`
 
-### `podman_rootless_enabled`{#podmanrootlessenabled}
+<a id="podman-rootless-enabled"></a>### `podman_rootless_enabled`
 - `podman_rootless_enabled`
 
-### `podman_rootless_user`{#podmanrootlessuser}
+<a id="podman-rootless-user"></a>### `podman_rootless_user`
 - `podman_rootless_user`
 
-### `podman_rootless_user_home`{#podmanrootlessuserhome}
+<a id="podman-rootless-user-home"></a>### `podman_rootless_user_home`
 - `podman_rootless_user_home`
 
-### `podman_rootless_network_mode`{#podmanrootlessnetworkmode}
+<a id="podman-rootless-network-mode"></a>### `podman_rootless_network_mode`
 - `podman_rootless_network_mode`
 
-### `podman_rootless_allow_privileged_ports`{#podmanrootlessallowprivilegedports}
+<a id="podman-rootless-allow-privileged-ports"></a>### `podman_rootless_allow_privileged_ports`
 - `podman_rootless_allow_privileged_ports`
 
-### `podman_rootless_privileged_port_start`{#podmanrootlessprivilegedportstart}
+<a id="podman-rootless-privileged-port-start"></a>### `podman_rootless_privileged_port_start`
 - `podman_rootless_privileged_port_start`
 
-### `containers_systemd_dir`{#containerssystemddir}
+<a id="containers-systemd-dir"></a>### `containers_systemd_dir`
 - `containers_systemd_dir`
 
-### `containers_systemd_scope`{#containerssystemdscope}
+<a id="containers-systemd-scope"></a>### `containers_systemd_scope`
 - `containers_systemd_scope`
 
-### `containers_systemd_owner`{#containerssystemdowner}
+<a id="containers-systemd-owner"></a>### `containers_systemd_owner`
 - `containers_systemd_owner`
 
-### `containers_systemd_group`{#containerssystemdgroup}
+<a id="containers-systemd-group"></a>### `containers_systemd_group`
 - `containers_systemd_group`
 
-### `containers_secrets_dir`{#containerssecretsdir}
+<a id="containers-secrets-dir"></a>### `containers_secrets_dir`
 - `containers_secrets_dir`
 
-### `containers_secrets_owner`{#containerssecretsowner}
+<a id="containers-secrets-owner"></a>### `containers_secrets_owner`
 - `containers_secrets_owner`
 
-### `containers_secrets_group`{#containerssecretsgroup}
+<a id="containers-secrets-group"></a>### `containers_secrets_group`
 - `containers_secrets_group`
 
-### `containers_systemd_env`{#containerssystemdenv}
+<a id="containers-systemd-env"></a>### `containers_systemd_env`
 - `containers_systemd_env`
 
-### `intel_oneapi_gpg_key_url`{#inteloneapigpgkeyurl}
+<a id="intel-oneapi-gpg-key-url"></a>### `intel_oneapi_gpg_key_url`
 - `intel_oneapi_gpg_key_url`
 
-### `intel_oneapi_gpg_keyring_path`{#inteloneapigpgkeyringpath}
+<a id="intel-oneapi-gpg-keyring-path"></a>### `intel_oneapi_gpg_keyring_path`
 - `intel_oneapi_gpg_keyring_path`
 
-### `intel_oneapi_repo`{#inteloneapirepo}
+<a id="intel-oneapi-repo"></a>### `intel_oneapi_repo`
 - `intel_oneapi_repo`
 
-### `intel_oneapi_gpg_fingerprint`{#inteloneapigpgfingerprint}
+<a id="intel-oneapi-gpg-fingerprint"></a>### `intel_oneapi_gpg_fingerprint`
 - `intel_oneapi_gpg_fingerprint`
 
-### `intel_oneapi_gpg_fingerprint_verify`{#inteloneapigpgfingerprintverify}
+<a id="intel-oneapi-gpg-fingerprint-verify"></a>### `intel_oneapi_gpg_fingerprint_verify`
 - `intel_oneapi_gpg_fingerprint_verify`
 
-### `containers_pull_retries`{#containerspullretries}
+<a id="containers-pull-retries"></a>### `containers_pull_retries`
 - `containers_pull_retries`
 
-### `containers_pull_delay`{#containerspulldelay}
+<a id="containers-pull-delay"></a>### `containers_pull_delay`
 - `containers_pull_delay`
 
-### `containers_cosign_enable`{#containerscosignenable}
+<a id="containers-cosign-enable"></a>### `containers_cosign_enable`
 - `containers_cosign_enable`
 
-### `containers_cosign_version`{#containerscosignversion}
+<a id="containers-cosign-version"></a>### `containers_cosign_version`
 - `containers_cosign_version`
 
-### `containers_cosign_checksum`{#containerscosignchecksum}
+<a id="containers-cosign-checksum"></a>### `containers_cosign_checksum`
 - `containers_cosign_checksum` — Optional SHA256 checksum for binary
 
-### `containers_cosign_arch`{#containerscosignarch}
+<a id="containers-cosign-arch"></a>### `containers_cosign_arch`
 - `containers_cosign_arch`
 
-### `containers_arch_override`{#containersarchoverride}
+<a id="containers-arch-override"></a>### `containers_arch_override`
 - `containers_arch_override`
 
-### `containers_enable_gpu_support`{#containersenablegpusupport}
+<a id="containers-enable-gpu-support"></a>### `containers_enable_gpu_support`
 - `containers_enable_gpu_support`
 
-### `containers_gpu_vendor`{#containersgpuvendor}
+<a id="containers-gpu-vendor"></a>### `containers_gpu_vendor`
 - `containers_gpu_vendor` — Options: nvidia, amd, intel
 
-### `containers_gpu_count`{#containersgpucount}
+<a id="containers-gpu-count"></a>### `containers_gpu_count`
 - `containers_gpu_count`
 
-### `containers_gpu_allocation_map`{#containersgpuallocationmap}
+<a id="containers-gpu-allocation-map"></a>### `containers_gpu_allocation_map`
 - `containers_gpu_allocation_map`
 
-### `containers_gpu_slicing`{#containersgpuslicing}
+<a id="containers-gpu-slicing"></a>### `containers_gpu_slicing`
 - `containers_gpu_slicing`
 
-### `containers_gpu_profiles`{#containersgpuprofiles}
+<a id="containers-gpu-profiles"></a>### `containers_gpu_profiles`
 - `containers_gpu_profiles`
 
-### `containers_gpu_device_selectors`{#containersgpudeviceselectors}
+<a id="containers-gpu-device-selectors"></a>### `containers_gpu_device_selectors`
 - `containers_gpu_device_selectors`
 
 
