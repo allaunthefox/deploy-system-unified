@@ -21,13 +21,13 @@
 - [`networking_desktop_install_gui_tools`](roles/networking_desktop.md#networkingdesktopinstallguitools)
 
 ### `networking/firewall`
-- [`firewall_enabled`](roles/networking_firewall.md#firewallenabled)
-- [`firewall_allowed_tcp_ports`](roles/networking_firewall.md#firewallallowedtcpports)
-- [`firewall_allow_endlessh`](roles/networking_firewall.md#firewallallowendlessh)
-- [`firewall_endlessh_port`](roles/networking_firewall.md#firewallendlesshport)
-- [`firewall_allowed_udp_ports`](roles/networking_firewall.md#firewallallowedudpports)
-- [`firewall_additional_rules`](roles/networking_firewall.md#firewalladditionalrules)
-- [`firewall_forward_policy`](roles/networking_firewall.md#firewallforwardpolicy)
+- [`networking_firewall_enabled`](roles/networking_firewall.md#networkingfirewallenabled)
+- [`networking_firewall_allowed_tcp_ports`](roles/networking_firewall.md#networkingfirewallallowedtcpports)
+- [`networking_firewall_allow_endlessh`](roles/networking_firewall.md#networkingfirewallallowendlessh)
+- [`networking_firewall_endlessh_port`](roles/networking_firewall.md#networkingfirewallendlesshport)
+- [`networking_firewall_allowed_udp_ports`](roles/networking_firewall.md#networkingfirewallallowedudpports)
+- [`networking_firewall_additional_rules`](roles/networking_firewall.md#networkingfirewalladditionalrules)
+- [`networking_firewall_forward_policy`](roles/networking_firewall.md#networkingfirewallforwardpolicy)
 
 ### `networking/physical`
 - [`interface_capabilities`](roles/networking_physical.md#interfacecapabilities)
