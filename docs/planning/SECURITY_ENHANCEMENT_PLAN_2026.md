@@ -1,4 +1,4 @@
-# Security Enhancement Plan 2026
+# SECURITY_ENHANCEMENT_PLAN_2026
 
 **Status:** Proposed (Q2 2026)
 **Priority:** High
@@ -746,10 +746,10 @@ Q2 2026 (Apr-Jun)          Q3 2026 (Jul-Sep)          Q4 2026 (Oct-Dec)
 
 ## 🔗 Related Documentation
 
-- [SECURITY_AUDIT_REPORT](../wiki_pages/SECURITY_AUDIT_REPORT.md) - Current security assessment
-- [LAYERED_SECURITY](../wiki_pages/LAYERED_SECURITY.md) - Defense-in-depth architecture
+- [SECURITY_AUDIT_REPORT](../../wiki_pages/SECURITY_AUDIT_REPORT.md) - Current security assessment
+- [LAYERED_SECURITY](../../wiki_pages/LAYERED_SECURITY.md) - Defense-in-depth architecture
 - [STABILITY_EXECUTION_PLAN_2026](STABILITY_EXECUTION_PLAN_2026.md) - Current execution plan
-- [SECURITY_CROWDSEC_HYBRID](../wiki_pages/SECURITY_CROWDSEC_HYBRID.md) - IDS/IPS implementation
+- [SECURITY_CROWDSEC_HYBRID](../../wiki_pages/SECURITY_CROWDSEC_HYBRID.md) - IDS/IPS implementation
 
 ---
 

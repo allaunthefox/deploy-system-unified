@@ -1,4 +1,4 @@
-# CIS Benchmark Mapping
+# CIS_MAPPING
 
 **Document Version:** 2.0  
 **Date:** February 25, 2026  

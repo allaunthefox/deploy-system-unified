@@ -1,4 +1,4 @@
-# Helm Secrets Management
+# HELM_SECRETS
 
 This document outlines the security practices for managing secrets in Helm charts.
 

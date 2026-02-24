@@ -1,4 +1,4 @@
-# Role Implementation Standards Review
+# ROLE_IMPLEMENTATION_STANDARDS_REVIEW
 
 **Date:** February 23, 2026
 **Scope:** Comprehensive comparison of Deploy-System-Unified roles against industry standards
@@ -798,9 +798,9 @@ argument_specs:
 
 ## 🔗 Related Documentation
 
-- [SECURITY_ENHANCEMENT_PLAN_2026](../../docs/planning/SECURITY_ENHANCEMENT_PLAN_2026.md) - Security roadmap
-- [SECURITY_AUDIT_REPORT](../../wiki_pages/SECURITY_AUDIT_REPORT.md) - Current security assessment
-- [STYLE_GUIDE](../../wiki_pages/STYLE_GUIDE.md) - Ansible implementation standards
+- [SECURITY_ENHANCEMENT_PLAN_2026](../docs/planning/SECURITY_ENHANCEMENT_PLAN_2026.md) - Security roadmap
+- [SECURITY_AUDIT_REPORT](SECURITY_AUDIT_REPORT.md) - Current security assessment
+- [STYLE_GUIDE](STYLE_GUIDE.md) - Ansible implementation standards
 
 ---
 

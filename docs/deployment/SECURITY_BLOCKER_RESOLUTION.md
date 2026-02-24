@@ -37,7 +37,7 @@ ERROR! Host 38.242.222.130 must belong to exactly one ontological profile group
 The `contabo_cloud_vps_30_ssd` group was defined in inventory but not assigned to a production/hardened/ephemeral/dev profile.
 
 **Fix:**  
-Added production ontological profile assignment in [`inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini):
+Added production ontological profile assignment in ``inventory/contabo_cloud_vps_30_ssd.ini``:
 
 ```ini
 [production:children]
@@ -65,7 +65,7 @@ Security roles in `base_hardened.yml` were being skipped because the play target
 Hardcoded host target limited deployment to localhost only.
 
 **Fix:**  
-Updated [`base_hardened.yml` line 13](../base_hardened.yml#L13):
+Updated ``base_hardened.yml` line 13`:
 
 ```diff
  - name: Apply Secure Infrastructure Base
@@ -95,7 +95,7 @@ ERROR! Did not find any vault ID to use for encryption
 The vault encrypt command lacked the required `--encrypt-vault-id` parameter introduced in newer Ansible versions.
 
 **Fix:**  
-Updated [`roles/security/audit_integrity/tasks/main.yml`](../roles/security/audit_integrity/tasks/main.yml#L129-L137):
+Updated `roles/security/audit_integrity/tasks/main.yml`:
 
 **Before:**
 ```yaml
@@ -118,7 +118,7 @@ Updated [`roles/security/audit_integrity/tasks/main.yml`](../roles/security/audi
       - "{{ fss_temp_file.path }}"
 ```
 
-Also added default variable in [`roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml#L11):
+Also added default variable in ``roles/security/audit_integrity/defaults/main.yml``:
 ```yaml
 audit_integrity_vault_encrypt_id: "default"
 ```
@@ -141,7 +141,7 @@ Storing encrypted FSS keys in `/tmp` on the controller caused permission errors 
 Ansible controller's `/tmp` is system-managed and should not have permissions modified.
 
 **Fix:**  
-Changed output directory in [`roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml#L8):
+Changed output directory in ``roles/security/audit_integrity/defaults/main.yml``:
 
 ```diff
 -audit_integrity_output_dir: "/tmp"
@@ -169,7 +169,7 @@ Two issues in the sticky-bit task:
 - Missing default value handling for empty stdout
 
 **Fix:**  
-Updated [`roles/security/hardening/tasks/main.yml`](../roles/security/hardening/tasks/main.yml#L61-L69):
+Updated `roles/security/hardening/tasks/main.yml`:
 
 **Before:**
 ```yaml
@@ -221,7 +221,7 @@ SSH service start task hung indefinitely, waiting for `systemd-time-wait-sync` s
 Systemd service start was blocking, waiting for time synchronization to complete.
 
 **Fix:**  
-Added `no_block: true` in [`roles/security/access/tasks/main.yml`](../roles/security/access/tasks/main.yml#L33):
+Added `no_block: true` in ``roles/security/access/tasks/main.yml``:
 
 ```diff
  - name: Ensure SSH service is running
@@ -251,7 +251,7 @@ changed: [38.242.222.130]
 - **Exit Code:** `0` ✅ Success
 - **Duration:** 3 minutes 55 seconds
 - **Tasks:** 207 ok, 11 changed, 1 failed (unrelated sshd config validation)
-- **Log:** [`production_real_target.log`](../ci-artifacts/health/20260212T224246Z/production_real_target.log)
+- **Log:** ``production_real_target.log``
 
 ### Longest Running Tasks
 ```
@@ -282,14 +282,14 @@ $ ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242
 ## Files Modified
 
 ### Inventory & Playbook Configuration
-- [`inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
-- [`base_hardened.yml`](../base_hardened.yml) - Host targeting fix
+- ``inventory/contabo_cloud_vps_30_ssd.ini`` - Production profile assignment
+- ``base_hardened.yml`` - Host targeting fix
 
 ### Security Role Fixes
-- [`roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml) - Vault ID & output dir
-- [`roles/security/audit_integrity/tasks/main.yml`](../roles/security/audit_integrity/tasks/main.yml) - Vault encrypt fix
-- [`roles/security/hardening/tasks/main.yml`](../roles/security/hardening/tasks/main.yml) - Pipefail & changed_when fix
-- [`roles/security/access/tasks/main.yml`](../roles/security/access/tasks/main.yml) - SSH non-blocking start
+- ``roles/security/audit_integrity/defaults/main.yml`` - Vault ID & output dir
+- ``roles/security/audit_integrity/tasks/main.yml`` - Vault encrypt fix
+- ``roles/security/hardening/tasks/main.yml`` - Pipefail & changed_when fix
+- ``roles/security/access/tasks/main.yml`` - SSH non-blocking start
 
 ---
 
@@ -325,9 +325,9 @@ From this incident, the following best practices are recommended:
 
 ## Related Documentation
 
-- [SSH_INCIDENT_POSTMORTEM.md](../docs/deployment/SSH_INCIDENT_POSTMORTEM.md) - Prior SSH configuration issues
-- [POTENTIAL_PROBLEMS.md](../docs/deployment/POTENTIAL_PROBLEMS.md) - General deployment issues
-- [SSH_IDEMPOTENCE_GUARDRAILS.md](../docs/deployment/SSH_IDEMPOTENCE_GUARDRAILS.md) - SSH stability guardrails
+- [SSH_INCIDENT_POSTMORTEM.md](./SSH_INCIDENT_POSTMORTEM.md) - Prior SSH configuration issues
+- [POTENTIAL_PROBLEMS.md](./POTENTIAL_PROBLEMS.md) - General deployment issues
+- [SSH_IDEMPOTENCE_GUARDRAILS.md](./SSH_IDEMPOTENCE_GUARDRAILS.md) - SSH stability guardrails
 
 ---
 

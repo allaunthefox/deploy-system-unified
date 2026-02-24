@@ -1,4 +1,4 @@
-# K8s vs Podman Scalability Benchmark Methodology
+# k8s_vs_podman_methodology
 
 **Created:** February 13, 2026  
 **Status:** In Progress  

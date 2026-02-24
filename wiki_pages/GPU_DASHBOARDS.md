@@ -1,4 +1,4 @@
-# GPU Dashboards Guide
+# GPU_DASHBOARDS
 
 This guide covers GPU monitoring dashboards for Deploy-System-Unified.
 

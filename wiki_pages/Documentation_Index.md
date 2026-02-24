@@ -64,7 +64,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 ### 📋 Planning & Improvement
 
-* **[Wiki Improvement Plan](deploy-system-unified/docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
+* **[Wiki Improvement Plan](../docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
 * **[Community Enhancement Plan](COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
 * **[Compliance Framework Integration Plan](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)**: CIS/STIG/NIST compliance mapping with control coverage matrices.
 * **[Determinism Roadmap](DETERMINISM_ROADMAP)**: Roadmap for achieving full determinism in deployments.
@@ -105,4 +105,4 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 ### 📚 Documentation Integration
 
-For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](deploy-system-unified/docs/DOCUMENTATION_BRIDGE.md)**.
+For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](../docs/DOCUMENTATION_BRIDGE.md)**.

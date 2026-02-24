@@ -59,7 +59,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### [3a. Kubernetes & Helm](./deployment/KUBERNETES.md)
 
 * **[Ingress Controller Setup](./deployment/INGRESS_CONTROLLER_SETUP.md)**: Caddy, Traefik, and Nginx ingress configuration.
-* **[Helm Charts](./charts/)**: Deployable Helm charts for:
+* **[Helm Charts](./charts/index.md)**: Deployable Helm charts for:
   * **auth-stack**: Authentik (SSO)
   * **backup-stack**: Restic, Rclone (backups)
   * **database-stack**: PostgreSQL

@@ -1,4 +1,4 @@
-# Base Layer Implementation Status
+# BASE_LAYER_IMPLEMENTATION_STATUS
 
 **Assessment Date:** February 24, 2026
 **Phase:** Base Layer - **100% COMPLETE** ✅
@@ -186,7 +186,7 @@ The **Base Layer** (core infrastructure and security hardening) is **fully imple
 - [Deployment Status](DEPLOYMENT_STATUS)
 - [Security Audit Report](SECURITY_AUDIT_REPORT)
 - [Role Reference](Role_Reference)
-- [Roadmap](../planning/ROADMAP.md)
+- [Roadmap](../docs/planning/ROADMAP.md)
 
 ---
 

@@ -1,4 +1,4 @@
-# Third-Party License Acknowledgments
+# THIRD_PARTY_LICENSES
 
 This project incorporates third-party open source software components. This document lists the licenses of dependencies used in Deploy-System-Unified.
 
@@ -6,7 +6,7 @@ This project incorporates third-party open source software components. This docu
 
 **Deploy-System-Unified** is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
 
-See [LICENSE](./LICENSE) for the full license text.
+See [LICENSE](../LICENSE) for the full license text.
 
 ---
 

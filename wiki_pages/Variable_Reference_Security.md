@@ -23,9 +23,9 @@
 - [`encryption_method`](roles/security_advanced.md#encryptionmethod)
 
 ### `security/audit_integrity`
-- [`audit_integrity_store_keys`](roles/security_audit_integrity.md#auditintegritystorekeys)
-- [`audit_integrity_output_dir`](roles/security_audit_integrity.md#auditintegrityoutputdir)
-- [`audit_integrity_vault_encrypt_id`](roles/security_audit_integrity.md#auditintegrityvaultencryptid)
+- [`security_audit_integrity_store_keys`](roles/security_audit_integrity.md#securityauditintegritystorekeys)
+- [`security_audit_integrity_output_dir`](roles/security_audit_integrity.md#securityauditintegrityoutputdir)
+- [`security_audit_integrity_vault_encrypt_id`](roles/security_audit_integrity.md#securityauditintegrityvaultencryptid)
 
 ### `security/file_integrity`
 - *No variables defined in defaults/main.yml*
@@ -92,15 +92,15 @@
 - [`security_scanning_checkov_issue_threshold`](roles/security_scanning.md#securityscanningcheckovissuethreshold)
 
 ### `security/sshd`
-- [`sshd_backup_config`](roles/security_sshd.md#sshdbackupconfig)
-- [`sshd_disable_weak_keys`](roles/security_sshd.md#sshddisableweakkeys)
-- [`sshd_use_strong_ciphers`](roles/security_sshd.md#sshdusestrongciphers)
-- [`sshd_allow_tcp_forwarding`](roles/security_sshd.md#sshdallowtcpforwarding)
-- [`sshd_allow_agent_forwarding`](roles/security_sshd.md#sshdallowagentforwarding)
-- [`sshd_allow_x11_forwarding`](roles/security_sshd.md#sshdallowx11forwarding)
-- [`sshd_permit_root_login`](roles/security_sshd.md#sshdpermitrootlogin)
-- [`sshd_password_authentication`](roles/security_sshd.md#sshdpasswordauthentication)
-- [`sshd_config_path`](roles/security_sshd.md#sshdconfigpath)
-- [`sshd_enable_trusted_group_exceptions`](roles/security_sshd.md#sshdenabletrustedgroupexceptions)
-- [`sshd_trusted_groups`](roles/security_sshd.md#sshdtrustedgroups)
+- [`security_sshd_backup_config`](roles/security_sshd.md#securitysshdbackupconfig)
+- [`security_sshd_disable_weak_keys`](roles/security_sshd.md#securitysshddisableweakkeys)
+- [`security_sshd_use_strong_ciphers`](roles/security_sshd.md#securitysshdusestrongciphers)
+- [`security_sshd_allow_tcp_forwarding`](roles/security_sshd.md#securitysshdallowtcpforwarding)
+- [`security_sshd_allow_agent_forwarding`](roles/security_sshd.md#securitysshdallowagentforwarding)
+- [`security_sshd_allow_x11_forwarding`](roles/security_sshd.md#securitysshdallowx11forwarding)
+- [`security_sshd_permit_root_login`](roles/security_sshd.md#securitysshdpermitrootlogin)
+- [`security_sshd_password_authentication`](roles/security_sshd.md#securitysshdpasswordauthentication)
+- [`security_sshd_config_path`](roles/security_sshd.md#securitysshdconfigpath)
+- [`security_sshd_enable_trusted_group_exceptions`](roles/security_sshd.md#securitysshdenabletrustedgroupexceptions)
+- [`security_sshd_trusted_groups`](roles/security_sshd.md#securitysshdtrustedgroups)
 

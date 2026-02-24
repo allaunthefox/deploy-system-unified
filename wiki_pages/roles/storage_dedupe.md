@@ -1,24 +1,24 @@
-# Role: storage/dedupe (Archival Deduplication)
+# storage_dedupe
 
-**Classification:** WI-CONT (Work Instruction)  
-**Standard:** ISO 27040  
-**Action Codes:** 500060 - 500070
+**role**: `storage/dedupe`
 
-## Overview
-The `storage/dedupe` role implements NoDupeLabs archival standards for block-level deduplication. It focuses on optimizing long-term storage while ensuring data integrity via forensic auditing.
+**Archival Deduplication**
+Implements NoDupeLabs standards for offline Btrfs deduplication and archival optimization.
+**System Backup (restic/rclone)**
+Comprehensive system backup strategy using restic for encrypted snapshots and rclone for cloud synchronization.
 
-## Key Features
-- **Offline Btrfs Deduplication**: Scheduled `duperemove` scans for cold data.
-- **Forensic Audit mandatory**: Hardened profiles require a deduplication potential audit.
-- **Ephemeral Guard**: Automatically disabled in short-lived environments to save resources.
+## Variables
 
-## Configuration
-| Variable | Type | Default | Description |
-|----------|------|---------|-------------|
-| `storage_dedupe_btrfs_enable` | bool | `false` | Enable deduplication |
-| `storage_dedupe_btrfs_paths` | list | `["/srv/media"]` | Paths to scan |
+<a id="storage-dedupe-btrfs-enable"></a>### `storage_dedupe_btrfs_enable`
+- `storage_dedupe_btrfs_enable`
 
-## Compliance Mapping
-- **ISO 27040**: Storage security standards.
-- **Action 500061**: Deduplication complete.
-- **Profile 600032**: Requirement elevated (Hardened mandatory check).
+<a id="storage-dedupe-btrfs-paths"></a>### `storage_dedupe_btrfs_paths`
+- `storage_dedupe_btrfs_paths`
+
+<a id="storage-dedupe-schedule"></a>### `storage_dedupe_schedule`
+- `storage_dedupe_schedule`
+
+<a id="storage-dedupe-ephemeral-skip"></a>### `storage_dedupe_ephemeral_skip`
+- `storage_dedupe_ephemeral_skip`
+
+

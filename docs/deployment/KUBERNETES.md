@@ -1,4 +1,4 @@
-# Kubernetes & Helm Documentation
+# KUBERNETES
 
 This section covers Kubernetes cluster deployment and Helm chart usage.
 
@@ -41,15 +41,15 @@ helm install monitoring-stack ./charts/monitoring-stack
 
 Choose your ingress controller:
 
-- [Ingress Controller Setup](./deployment/INGRESS_CONTROLLER_SETUP.md)
-- [Variable Reference: Ingress](../wiki_pages/Variable_Reference_Ingress.md)
+- [Ingress Controller Setup](./INGRESS_CONTROLLER_SETUP.md)
+- [Variable Reference: Ingress]()
 
 ## Benchmarking
 
 Compare Podman vs Kubernetes resource usage:
 
-- [K8s vs Podman Methodology](./benchmarks/k8s_vs_podman_methodology.md)
-- [Results Template](./benchmarks/k8s_vs_podman_resource_usage.md)
+- [K8s vs Podman Methodology](../benchmarks/k8s_vs_podman_methodology.md)
+- [Results Template](../benchmarks/k8s_vs_podman_resource_usage.md)
 
 ## Helm Values Example
 
@@ -68,5 +68,5 @@ ingress:
 
 ## Related Documentation
 
-- [PHASE3_SECRETS_K8S_PLAN](./planning/PHASE3_SECRETS_K8S_PLAN.md)
-- [Media Stack V2](../wiki_pages/MEDIA_STACK_V2.md)
+- [PHASE3_SECRETS_K8S_PLAN](../planning/PHASE3_SECRETS_K8S_PLAN.md)
+- [Media Stack V2]()

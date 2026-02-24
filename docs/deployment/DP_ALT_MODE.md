@@ -1,4 +1,4 @@
-# DisplayPort Alt Mode (DP Alt Mode) Guide
+# DP_ALT_MODE
 
 This guide covers using DisplayPort Alt Mode via USB-C for external GPU (eGPU) and display connections.
 
@@ -176,6 +176,6 @@ amdconfig --initial
 
 ## Related Links
 
-- [eGPU Setup](roles/hardware/gpu/tasks/features/egpu.yml)
+- 
 - [Vulkan Examples](VULKAN_EXAMPLES.md)
-- [GPU Discovery](../roles/hardware/gpu/files/gpu_discovery.py)
+- 

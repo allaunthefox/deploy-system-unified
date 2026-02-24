@@ -1,4 +1,4 @@
-# Deployment Metrics & Monitoring Guide
+# DEPLOYMENT_METRICS
 
 This guide covers metrics collection and monitoring for Deploy-System-Unified deployments.
 
@@ -173,6 +173,6 @@ Add to crontab:
 
 ## Related Documentation
 
-- [Monitoring Stack](docs/deployment/MONITORING.md)
-- [Grafana Dashboards](docs/deployment/GRAFANA.md)
-- [Alert Manager](docs/deployment/ALERTING.md)
+- [Monitoring Stack](../docs/deployment/DEPLOYMENT_STATUS)
+- [Grafana Dashboards](../docs/deployment/GPU_INTERACTION_MATRIX)
+- [Alert Manager](../docs/deployment/SECURITY_BLOCKER_RESOLUTION)

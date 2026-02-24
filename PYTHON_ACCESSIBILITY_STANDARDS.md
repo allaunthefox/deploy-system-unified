@@ -434,24 +434,66 @@ Configure pre-commit to catch issues early:
 
 ```yaml
 # .pre-commit-config.yaml
+# Updated: 2026-02-24 with 2025/2026 tooling
+
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-
-  - repo: https://github.com/psf/black
-    rev: 24.1.0
-    hooks:
-      - id: black
-
+  # ===== PYTHON LINTING =====
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
+        args: [--max-line-length=120, --ignore=E501,W503]
+
+  # ===== PYTHON FORMATTING =====
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        args: [--line-length=120]
+
+  # ===== IMPORT SORTING =====
+  - repo: https://github.com/pycqa/isort
+    rev: 5.14.0
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=120]
+
+  # ===== YAML/JSON LINTING =====
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: detect-private-key
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  # ===== SECRET DETECTION =====
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.93.3
+    hooks:
+      - id: trufflehog
+        args: [--only-verified]
+
+  # ===== SHELL SCRIPT LINTING =====
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+
+  # ===== IaC SECURITY SCANNING =====
+  - repo: https://github.com/checkov/checkov
+    rev: 3.2.300
+    hooks:
+      - id: checkov
+        args: [--directory, ., --framework, ansible]
+
+  # ===== VULNERABILITY DETECTION =====
+  - repo: https://github.com/google/osv-scanner
+    rev: v1.9.0
+    hooks:
+      - id: osv-scanner
+        args: [--recursive, .]
 ```
 
 ---

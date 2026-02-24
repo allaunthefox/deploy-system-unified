@@ -1,4 +1,4 @@
-# Detect‑Secrets baseline policy
+# DETECT_SECRETS_BASELINE
 
 Purpose
 - Keep CI actionable by recording *benign* findings so Detect‑Secrets only blocks on real secrets.

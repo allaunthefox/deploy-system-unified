@@ -1,4 +1,4 @@
-# Role Enhancement Execution Plan 2026
+# ROLE_ENHANCEMENT_EXECUTION_PLAN_2026
 
 **Status:** Proposed (Q2-Q3 2026)
 **Priority:** Critical
@@ -1249,7 +1249,7 @@ ansible-playbook verify_stig.yml --tags {{ role_name }}
 
 - [CIS Benchmark Documentation](https://www.cisecurity.org/benchmark/ubuntu_linux)
 - [DISA STIG Documentation](https://public.cyber.mil/stigs/)
-- [LAYERED_SECURITY](../../../wiki_pages/LAYERED_SECURITY.md)
+- [LAYERED_SECURITY](../../wiki_pages/LAYERED_SECURITY.md)
 
 ## License
 
@@ -1444,9 +1444,9 @@ molecule test --idempotence
 ## 🔗 Related Documentation
 
 - [SECURITY_ENHANCEMENT_PLAN_2026](SECURITY_ENHANCEMENT_PLAN_2026.md) - Overall security roadmap
-- [ROLE_IMPLEMENTATION_STANDARDS_REVIEW](ROLE_IMPLEMENTATION_STANDARDS_REVIEW.md) - Current state analysis
+- [ROLE_IMPLEMENTATION_STANDARDS_REVIEW](../development/ROLE_IMPLEMENTATION_STANDARDS_REVIEW.md) - Current state analysis
 - [ROADMAP](ROADMAP.md) - Project direction
-- [STYLE_GUIDE](../../../wiki_pages/STYLE_GUIDE.md) - Implementation standards
+- [STYLE_GUIDE](../../wiki_pages/STYLE_GUIDE.md) - Implementation standards
 
 ---
 

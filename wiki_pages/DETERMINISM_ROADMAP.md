@@ -1,4 +1,4 @@
-# Determinism & Hardening Roadmap
+# DETERMINISM_ROADMAP
 
 > This document captures the gaps identified in the sterile reassessment and outlines the path to full environment determinism and supply-chain hardening.
 

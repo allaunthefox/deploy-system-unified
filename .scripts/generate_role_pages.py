@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RR = ROOT / 'wiki_pages' / 'Role_Reference.md'
 OUT_DIR = ROOT / 'wiki_pages' / 'roles'
-PROJECT_ROLES = ROOT / 'deploy-system-unified' / 'roles'
+PROJECT_ROLES = ROOT / 'roles'
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -83,7 +83,7 @@ for role, body in role_blocks.items():
             # Create a heading that will slugify to the variable name with underscores removed
             # Since the linter removes underscores during slugification, we need to make sure
             # the links also use the underscore-removed version
-            content_lines.append(f'### `{varname}`')
+            content_lines.append(f'<a id="{varname.replace("_", "-")}"></a>### `{varname}`')
             line = f'- `{varname}`'
             if comment:
                 line += f' — {comment}'

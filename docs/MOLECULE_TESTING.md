@@ -1,4 +1,4 @@
-# Molecule Testing Guide
+# MOLECULE_TESTING
 
 This project uses [Molecule](https://molecule.readthedocs.io/) for testing Ansible roles and playbooks.
 

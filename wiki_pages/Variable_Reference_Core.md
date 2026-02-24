@@ -72,7 +72,7 @@
 - [`systemd_persistent_journal`](roles/core_systemd.md#systemdpersistentjournal)
 
 ### `core/time`
-- [`time_service_mapping`](roles/core_time.md#timeservicemapping)
+- [`core_time_service_mapping`](roles/core_time.md#coretimeservicemapping)
 
 ### `core/updates`
 - *No variables defined in defaults/main.yml*
