@@ -3,12 +3,12 @@
 ## Containers Variables
 
 ### `containers/anubis`
-- [`anubis_enabled`](roles/containers_anubis.md#anubisenabled)
-- [`anubis_port`](roles/containers_anubis.md#anubisport)
-- [`anubis_difficulty`](roles/containers_anubis.md#anubisdifficulty)
-- [`anubis_target_url`](roles/containers_anubis.md#anubistargeturl)
-- [`anubis_image`](roles/containers_anubis.md#anubisimage)
-- [`anubis_container_name`](roles/containers_anubis.md#anubiscontainername)
+- [`anubis_enabled`](roles/containers_anubis.md#anubis-enabled)
+- [`anubis_port`](roles/containers_anubis.md#anubis-port)
+- [`anubis_difficulty`](roles/containers_anubis.md#anubis-difficulty)
+- [`anubis_target_url`](roles/containers_anubis.md#anubis-target-url)
+- [`anubis_image`](roles/containers_anubis.md#anubis-image)
+- [`anubis_container_name`](roles/containers_anubis.md#anubis-container-name)
 - [`quadlet_enable_gpu_support`](roles/containers_anubis.md#quadletenablegpusupport)
 - [`quadlet_gpu_capabilities`](roles/containers_anubis.md#quadletgpucapabilities)
 
