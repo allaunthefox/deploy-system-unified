@@ -1,0 +1,12 @@
+# Goss tests for storage/backup/timeshift role
+# Compliance: ISO 27001 §8.13
+
+package:
+  timeshift:
+    installed: true
+
+command:
+  timeshift:
+    exit-status: 0
+    stderr: []
+    timeout: 5000

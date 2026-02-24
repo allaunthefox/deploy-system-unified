@@ -1,0 +1,47 @@
+# Cosign Verification Policy
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: {{ cosign_policy_name }}
+  annotations:
+    description: "Verification policy for {{ cosign_policy_name }}"
+spec:
+  images:
+  - glob: "{{ cosign_policy_glob | default('**/*') }}"
+  
+  {% if cosign_policy_annotations is defined %}
+  annotations:
+    {% for key, value in cosign_policy_annotations.items() %}
+    {{ key }}: "{{ value }}"
+    {% endfor %}
+  {% endif %}
+  
+  {% if cosign_policy_authorities is defined %}
+  authorities:
+  {% for authority in cosign_policy_authorities %}
+  - name: {{ authority.name }}
+    {% if authority.key is defined %}
+    key:
+      data: |
+        {{ authority.key }}
+    {% endif %}
+    {% if authority.keyless is defined %}
+    keyless:
+      url: {{ authority.keyless.url | default(cosign_fulcio_url) }}
+      identity:
+        {{ authority.keyless.identity }}
+    {% endif %}
+  {% endfor %}
+  {% else %}
+  authorities:
+  - keyless:
+      url: {{ cosign_fulcio_url }}
+  {% endif %}
+  
+  {% if cosign_policy_mode == 'enforce' %}
+  mode: enforce
+  {% else %}
+  mode: warn
+  {% endif %}

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: memory
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "STD-CORE | Intelligent memory optimization and compression (ZRAM, ZSwap, THP)"
   license: MIT
   min_ansible_version: "2.15"
@@ -20,8 +20,18 @@ galaxy_info:
     - core
     - memory
     - optimization
+    - tuning
     - zram
     - zswap
-    - iso_27001
+    - linux
+    - performance
+    - iso27001
+    - virtualization
+    - automation
+    - multiarch
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

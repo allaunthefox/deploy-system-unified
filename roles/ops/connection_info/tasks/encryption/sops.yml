@@ -1,5 +1,6 @@
 ---
 - name: Encrypt SSH connection info with SOPS (idempotent)
+  tags: [ops, secrets, remediate]
   ansible.builtin.shell: |
     encrypted_file="{{ connection_info_temp_file.path }}.sops.yml"
     sops -e "{{ connection_info_temp_file.path }}" > "$encrypted_file"
@@ -12,6 +13,7 @@
   run_once: true
 
 - name: Verify SOPS encryption succeeded and set path (idempotent)
+  tags: [ops, secrets, remediate]
   ansible.builtin.stat:
     path: "{{ connection_info_temp_file.path }}.sops.yml"
   register: sops_encrypted_stat
@@ -20,6 +22,7 @@
   run_once: true
 
 - name: Set encrypted SSH info path for sops (idempotent)
+  tags: [ops, secrets, remediate]
   ansible.builtin.set_fact:
     encrypted_ssh_info_path: "{{ connection_info_temp_file.path }}.sops.yml"
   when:

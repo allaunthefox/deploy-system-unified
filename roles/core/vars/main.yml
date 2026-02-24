@@ -1,0 +1,28 @@
+---
+# Internal variables for core role
+# Role metadata and internal configuration paths
+
+core_role_version: "1.0.0"
+core_compliance_frameworks:
+  - "ISO 27001"
+  - "ISO 27037"
+  - "ISO 27040"
+  - "NIST AU-2"
+  - "NIST CM-2"
+  - "CIS"
+
+# Core configuration directories
+core_config_base_dir: "/etc/ansible"
+core_secrets_dir: "/etc/ansible/secrets"
+core_backup_base_dir: "/var/backups"
+
+# Service manager detection helper
+core_required_service_manager: "systemd"
+
+# Supported distributions for core functionality
+core_supported_distros:
+  - "debian"
+  - "ubuntu"
+  - "fedora"
+  - "archlinux"
+  - "alpine"

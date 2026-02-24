@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove hardening test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - hardening-ubuntu-2204
+        - hardening-debian-12
+        - hardening-alpine-319
+        - hardening-rockylinux-9

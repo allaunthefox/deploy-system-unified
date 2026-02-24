@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: grub
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "STD-CORE | Centralized GRUB bootloader and kernel parameter management"
   license: MIT
   min_ansible_version: "2.15"
@@ -18,9 +18,19 @@ galaxy_info:
     - core
     - grub
     - bootloader
-    - iso_27001
-    - iso_27040
+    - kernel
+    - optimization
+    - boot
+    - linux
+    - iso27001
+    - iso27040
+    - nist80053
     - cis
-    - nist_800_53
+    - security
+    - multiarch
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

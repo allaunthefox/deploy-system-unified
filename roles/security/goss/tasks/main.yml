@@ -1,0 +1,158 @@
+---
+# Security - Goss-based Continuous Monitoring Role
+# Supports: goss installation, security test definitions, drift detection, remediation
+
+- name: Check if goss is already installed
+  ansible.builtin.command:
+    cmd: goss --version
+  register: goss_check
+  failed_when: false
+  changed_when: false
+
+- name: Get system architecture
+  ansible.builtin.set_fact:
+    goss_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' }}"
+  changed_when: false
+
+- name: Install goss binary
+  ansible.builtin.unarchive:
+    src: "https://github.com/aelsabbahy/goss/releases/download/{{ goss_version }}/goss-linux-{{ goss_arch }}.tar.gz"
+    dest: /usr/local/bin
+    remote_src: true
+    creates: /usr/local/bin/goss
+  become: true
+  when: goss_check.rc != 0
+  tags:
+    - goss
+    - security
+    - monitoring
+
+- name: Install goss manually from package
+  ansible.builtin.get_url:
+    url: "https://github.com/aelsabbahy/goss/releases/download/{{ goss_version }}/goss-linux-{{ goss_arch }}-{{ goss_install_type }}.tar.gz"
+    dest: "/tmp/goss-linux-{{ goss_arch }}.tar.gz"
+    mode: '0644'
+  become: true
+  when: goss_check.rc != 0
+  tags:
+    - goss
+    - security
+    - monitoring
+
+- name: Create goss directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  loop:
+    - /etc/goss
+    - /etc/goss/tests
+    - /var/log/goss
+  tags:
+    - goss
+    - security
+    - monitoring
+
+- name: Deploy goss configuration
+  ansible.builtin.template:
+    src: goss.yaml.j2
+    dest: /etc/goss/goss.yaml
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags:
+    - goss
+    - security
+    - config
+
+- name: Deploy security tests
+  ansible.builtin.copy:
+    src: security_tests.yaml
+    dest: /etc/goss/tests/security_tests.yaml
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags:
+    - goss
+    - security
+    - tests
+
+- name: Deploy system tests
+  ansible.builtin.copy:
+    src: system_tests.yaml
+    dest: /etc/goss/tests/system_tests.yaml
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags:
+    - goss
+    - security
+    - tests
+
+- name: Deploy drift detection playbook
+  ansible.builtin.copy:
+    src: drift-detection.yml
+    dest: /etc/goss/drift-detection.yml
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: goss_enable_drift_detection
+  tags:
+    - goss
+    - security
+    - drift
+
+- name: Deploy remediation playbook
+  ansible.builtin.copy:
+    src: remediation.yml
+    dest: /etc/goss/remediation.yml
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: goss_enable_auto_remediation
+  tags:
+    - goss
+    - security
+    - remediation
+
+- name: Run initial goss validation
+  ansible.builtin.command:
+    cmd: >
+      goss validate
+      --format {{ goss_output_format }}
+      {% if goss_output_format == 'json' %}
+      --output /var/log/goss/goss-{{ ansible_date_time.iso8601 }}.json
+      {% endif %}
+  register: goss_initial_validation
+  failed_when: false
+  changed_when: false
+  tags:
+    - goss
+    - security
+    - validation
+
+- name: Create goss validation cron job
+  ansible.builtin.cron:
+    name: "Goss security validation"
+    minute: "{{ goss_cron_minute }}"
+    hour: "{{ goss_cron_hour }}"
+    job: "/usr/local/bin/goss validate --format {{ goss_output_format }} >> /var/log/goss/goss-cron.log 2>&1"
+    state: present
+  become: true
+  when: goss_enable_cron
+  tags:
+    - goss
+    - security
+    - cron
+
+- name: Set goss integration complete flag
+  ansible.builtin.set_fact:
+    goss_integration_complete: true

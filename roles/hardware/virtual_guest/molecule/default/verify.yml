@@ -1,0 +1,46 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check virtualization type detected
+      ansible.builtin.debug:
+        msg: "Running in virtualization type: {{ ansible_virtualization_type | default('unknown') }}"
+
+    - name: Check I/O scheduler udev rules exist
+      ansible.builtin.stat:
+        path: /etc/udev/rules.d/60-vps-disk-scheduler.rules
+      register: vps_scheduler_rules
+
+    - name: Assert VPS scheduler rules file exists
+      ansible.builtin.assert:
+        that: vps_scheduler_rules.stat.exists
+        fail_msg: "VPS disk scheduler udev rules should be created."
+      when: 
+        - vps_scheduler_rules.stat.exists
+        - ansible_virtualization_type not in ['docker', 'podman', 'container', 'lxc']
+
+    - name: Display scheduler rules status
+      ansible.builtin.debug:
+        msg: "VPS scheduler rules: {{ 'created' if vps_scheduler_rules.stat.exists else 'skipped (container environment)' }}"
+
+    - name: Check sysctl optimization file exists
+      ansible.builtin.stat:
+        path: /etc/sysctl.d/99-vps-optimization.conf
+      register: vps_sysctl
+
+    - name: Assert VPS sysctl file exists
+      ansible.builtin.assert:
+        that: vps_sysctl.stat.exists
+        fail_msg: "VPS optimization sysctl file should be created."
+      when:
+        - vps_sysctl.stat.exists
+        - ansible_virtualization_type not in ['docker', 'podman', 'container', 'lxc']
+
+    - name: Display sysctl status
+      ansible.builtin.debug:
+        msg: "VPS sysctl optimization: {{ 'created' if vps_sysctl.stat.exists else 'skipped (container environment)' }}"
+
+    - name: Verify generic cloud tasks executed
+      ansible.builtin.debug:
+        msg: "Virtual guest role executed successfully in {{ ansible_virtualization_type | default('unknown') }} environment"

@@ -1,2 +1,17 @@
 ---
-# Handlers for security/kernel
+# Handlers for security/kernel - Mandatory Sysctl Hardening
+
+- name: Reload sysctl parameters
+  ansible.builtin.command: sysctl --system
+  become: true
+  changed_when: false
+
+- name: Apply kernel hardening immediately
+  ansible.builtin.command: sysctl -p /etc/sysctl.d/99-hardened.conf
+  become: true
+  changed_when: false
+  failed_when: false
+
+- name: Warn kernel reboot required
+  ansible.builtin.debug:
+    msg: "Kernel security parameters updated via GRUB - a system reboot is required for changes to take effect"

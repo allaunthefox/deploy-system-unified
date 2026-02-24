@@ -1,1 +1,59 @@
 ---
+# Internal variables for storage/backup/restic role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_restic_role_name: restic
+_restic_role_version: "1.0.0"
+
+# Service names
+_restic_service: restic-backup.timer
+_restic_service_unit: restic-backup.service
+
+# Package names (internal reference)
+_restic_packages:
+  - restic
+
+# Configuration paths
+_restic_config_base: /etc/restic
+_restic_password_file: /etc/restic/password
+_restic_cache_dir: /var/cache/restic
+
+# Data paths
+_restic_data_base: /srv/backups/restic
+_restic_log_dir: /var/log/restic
+_restic_script_dir: /usr/local/bin
+
+# Script names
+_restic_wrapper_script: restic_wrapper.sh
+_restic_wrapper_path: /usr/local/bin/restic_wrapper.sh
+
+# Systemd unit paths
+_restic_systemd_service: /etc/systemd/system/restic-backup.service
+_restic_systemd_timer: /etc/systemd/system/restic-backup.timer
+
+# User/Group settings
+_restic_default_user: root
+_restic_default_group: root
+_restic_config_mode: '0700'
+_restic_password_mode: '0600'
+_restic_script_mode: '0750'
+
+# Retention defaults (internal reference)
+_restic_keep_daily_default: 7
+_restic_keep_weekly_default: 4
+_restic_keep_monthly_default: 6
+
+# Restore test configuration
+_restic_test_default_path: /tmp/restic-restore-test
+_restic_test_default_subset: "*"
+
+# Compression settings
+_restic_compression_auto: auto
+_restic_compression_max: max
+
+# Internal state tracking
+_restic_initialized: false
+_restic_repository_initialized: false
+_restic_timer_active: false
+_restic_last_backup: null

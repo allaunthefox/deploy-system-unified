@@ -1,5 +1,6 @@
 ---
 - name: Create Intel Level Zero configuration file
+  tags: [containers, runtime, gpu, level_zero]
   ansible.builtin.template:
     src: level_zero_config.j2
     dest: /etc/level-zero/level-zero.conf

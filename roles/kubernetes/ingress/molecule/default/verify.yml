@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Verify ingress vars file exists
+      ansible.builtin.stat:
+        path: "{{ role_path }}/../vars/main.yml"
+      register: vars_file
+
+    - name: Verify ingress vars are loaded
+      ansible.builtin.assert:
+        that:
+          - vars_file.stat.exists
+        fail_msg: "Ingress vars file is missing"

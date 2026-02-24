@@ -1,0 +1,16 @@
+---
+# Handlers for virtualization role
+# Parent role handlers for virtualization services
+
+- name: restart_libvirtd
+  ansible.builtin.systemd:
+    name: libvirtd
+    state: restarted
+  become: true
+  listen: "restart libvirtd"
+
+- name: reload_libvirt_storage
+  ansible.builtin.command:
+    cmd: virsh pool-refresh --build default
+  become: true
+  failed_when: false

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: sandboxing
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | User-space application isolation via Bubblewrap and Landlock"
   license: MIT
   min_ansible_version: "2.15"
@@ -20,6 +20,16 @@ galaxy_info:
     - isolation
     - bubblewrap
     - landlock
-    - iso_27001
+    - restricted
+    - hardening
+    - application
+    - linux
+    - iso27001
+    - nist80053
+    - identification
+    - authentication
+
+collections:
+  - ansible.builtin
 
 dependencies: []

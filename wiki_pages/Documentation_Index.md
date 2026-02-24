@@ -65,7 +65,26 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### 📋 Planning & Improvement
 
 * **[Wiki Improvement Plan](deploy-system-unified/docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
-* **[Community Enhancement Plan](deploy-system-unified/docs/planning/COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
+* **[Community Enhancement Plan](COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
+* **[Compliance Framework Integration Plan](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)**: CIS/STIG/NIST compliance mapping with control coverage matrices.
+* **[Determinism Roadmap](DETERMINISM_ROADMAP)**: Roadmap for achieving full determinism in deployments.
+* **[Role Enhancement Execution Plan 2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)**: 2026 role enhancement roadmap.
+* **[Security Enhancement Plan 2026](SECURITY_ENHANCEMENT_PLAN_2026)**: 2026 security hardening roadmap.
+* **[Stability Plan](STABILITY_PLAN)**: Comprehensive stability and reliability planning.
+
+### 🔧 Deployment Extensions
+
+* **[DP Alt Mode Guide](DP_ALT_MODE)**: DisplayPort Alt Mode / USB-C eGPU setup guide.
+* **[Restore Runbook](RESTORE_RUNBOOK)**: Disaster recovery runbook for system restoration.
+* **[SOPS Key Rotation SOP](SOPS_KEY_ROTATION_SOP)**: Standard Operating Procedure for key rotation.
+* **[SOPS Migration Guide](SOPS_MIGRATION_GUIDE)**: Migration guide from Vault to SOPS.
+* **[Vulkan Examples](VULKAN_EXAMPLES)**: Running Vulkan applications in containers.
+
+### 📐 Development Standards
+
+* **[Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)**: Compliance gap analysis with remediation status.
+* **[ISO Tagging Standard](ISO_TAGGING_STANDARD)**: ISO 27001, NIST, CIS tagging standards.
+* **[Role Implementation Standards Review](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)**: Comprehensive comparison vs ansible-lockdown/dev-sec.io.
 
 ### 📊 Variable References
 

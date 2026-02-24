@@ -1,0 +1,47 @@
+# HashiCorp Vault Configuration
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+{% if vault_install_mode == 'standalone' %}
+# Storage backend
+storage "file" {
+  path = "{{ vault_data_dir }}"
+}
+
+# Listener configuration
+listener "tcp" {
+  address     = "127.0.0.1:8200"
+  cluster_address = "127.0.0.1:8201"
+  tls_disable = true
+}
+
+# API address
+api_addr = "http://127.0.0.1:8200"
+
+# Cluster address
+cluster_addr = "http://127.0.0.1:8201"
+
+# Disable mlock
+disable_mlock = true
+
+# Telemetry
+telemetry {
+  prometheus_retention_time = "30s"
+  disable = false
+}
+
+# Log level
+log_level = "{{ vault_log_level | default('info') }}"
+
+# Vault data directory
+data_dir = "{{ vault_data_dir }}"
+{% endif %}
+
+# Enable Kubernetes auth if configured
+{% if vault_enable_k8s_auth %}
+# Kubernetes auth is enabled via CLI
+{% endif %}
+
+# Enable KV secrets if configured
+{% if vault_enable_kv_secrets %}
+# KV v2 secrets engine is enabled via CLI
+{% endif %}

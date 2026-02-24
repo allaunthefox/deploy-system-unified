@@ -1,0 +1,14 @@
+---
+- name: Cleanup
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Cleanup cosign files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/cosign
+        - /var/log/cosign
+      failed_when: false

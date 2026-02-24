@@ -1,0 +1,14 @@
+---
+# Handlers for security/compliance
+
+- name: restart_auditd
+  ansible.builtin.systemd:
+    name: auditd
+    state: restarted
+  become: true
+  listen: "restart auditd"
+
+- name: reload_sysctl
+  ansible.builtin.command: sysctl --system
+  become: true
+  listen: "reload sysctl"

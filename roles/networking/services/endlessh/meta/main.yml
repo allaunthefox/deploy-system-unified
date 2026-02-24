@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: endlessh
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Endlessh SSH tarpit for access control and intruder delay
   license: MIT
   min_ansible_version: "2.15"
@@ -21,6 +21,18 @@ galaxy_info:
     - security
     - tarpit
     - ssh
-    - iso_27001
+    - iso27001
+    - honeypot
+    - defense
+    - intrusion-detection
+    - cis
+    - nist80053
+    - protection
+    - monitoring
+    - linux
+    - automation
+
+collections:
+  - ansible.builtin
 
 dependencies: []

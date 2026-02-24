@@ -1,0 +1,20 @@
+# Goss tests for core/identity role
+# CIS 5.1.1 | STIG V-230340 | NIST IA-2 | ISO 27001 §9.2 | ISO 8000-110
+---
+command:
+  # Verify UUID generation works
+  cat /proc/sys/kernel/random/uuid:
+    exit-status: 0
+    stdout-regex: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+  # Verify uuidgen is available
+  uuidgen:
+    exit-status: 0
+  # Verify random device is available
+  cat /dev/urandom:
+    exit-status: 0
+    timeout: 1000
+
+file:
+  /proc/sys/kernel/random/uuid:
+    exists: true
+    mode: "0444"

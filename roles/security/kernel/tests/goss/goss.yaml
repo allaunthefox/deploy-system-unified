@@ -1,0 +1,87 @@
+# Goss tests for security/kernel role
+# CIS Benchmark: 3.x - Network Configuration
+
+file:
+  /etc/sysctl.d/99-security-hardening.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^net.ipv4.ip_forward = 0/
+      - /^net.ipv4.conf.all.accept_redirects = 0/
+      - /^net.ipv4.conf.all.send_redirects = 0/
+      - /^net.ipv4.conf.all.secure_redirects = 0/
+      - /^net.ipv4.conf.all.log_martians = 1/
+      - /^net.ipv4.icmp_echo_ignore_broadcasts = 1/
+      - /^net.ipv4.tcp_syncookies = 1/
+      - /^net.ipv4.conf.all.rp_filter = 1/
+      - /^net.ipv6.conf.all.accept_redirects = 0/
+
+  /etc/modprobe.d/disable-filesystems.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /install squashfs/
+      - /install udf/
+      - /install cramfs/
+      - /install freevxfs/
+      - /install jffs2/
+      - /install hfs/
+      - /install hfsplus/
+
+# CIS 3.1.1 - Ensure IP forwarding is disabled
+command:
+  ip_forward_disabled:
+    exec: 'sysctl -n net.ipv4.ip_forward'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+# CIS 3.2.1 - Ensure ICMP redirects are not accepted
+command:
+  icmp_redirects_disabled:
+    exec: 'sysctl -n net.ipv4.conf.all.accept_redirects'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+# CIS 3.2.7 - Ensure TCP SYN Cookies is enabled
+command:
+  tcp_syncookies_enabled:
+    exec: 'sysctl -n net.ipv4.tcp_syncookies'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+# CIS 3.2.8 - Ensure Reverse Path Filtering is enabled
+command:
+  rp_filter_enabled:
+    exec: 'sysctl -n net.ipv4.conf.all.rp_filter'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+# CIS 3.2.3 - Ensure suspicious packet responses are logged
+command:
+  log_martians_enabled:
+    exec: 'sysctl -n net.ipv4.conf.all.log_martians'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+# Verify sysctl settings are applied
+command:
+  sysctl_applied:
+    exec: 'sysctl --system 2>&1 | grep -c "error" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 10000

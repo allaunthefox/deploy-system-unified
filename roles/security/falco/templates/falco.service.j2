@@ -1,0 +1,22 @@
+[Unit]
+Description=Falco Runtime Security Monitor
+Documentation=https://falco.org/docs/
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/falco --c /etc/falco/falco.yaml
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+Delegate=yes
+
+# Allow Falco to run without root privileges
+AmbientCapabilities=CAP_SYS_PTRACE
+CapabilityBoundingSet=CAP_SYS_PTRACE
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

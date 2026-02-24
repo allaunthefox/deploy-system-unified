@@ -9,4 +9,5 @@
     # Use explicit phase for this role to avoid recursive variable expansion in test environments
     additional_phases: ["containers/runtime"]
     checkpoint_status: "{{ checkpoint_status | default('running') }}"
+  tags: [containers, runtime, checkpoint]
 

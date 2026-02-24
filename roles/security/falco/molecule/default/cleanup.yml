@@ -1,0 +1,14 @@
+---
+- name: Cleanup
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Cleanup falco files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/falco
+        - /var/log/falco
+      failed_when: false

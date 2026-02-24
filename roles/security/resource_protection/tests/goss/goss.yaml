@@ -1,0 +1,110 @@
+# Goss tests for security/resource_protection role
+# DoS and Resource Exhaustion Mitigation (ulimits, systemd limits)
+# ISO 27001 §8.26 | CIS 1.7 | NIST AC-6
+
+# =============================================================================
+# PACKAGE TESTS - No specific packages required for resource protection
+# =============================================================================
+# Note: Resource protection uses system-built-in capabilities (ulimits, systemd)
+# No additional packages need to be installed
+
+# =============================================================================
+# SERVICE TESTS - Verify systemd service is available
+# =============================================================================
+service:
+  systemd-journald:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify resource protection configuration files
+# =============================================================================
+file:
+  /etc/security/limits.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/security/limits.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /etc/security/limits.d/99-resource-protection.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - "* soft core 0"
+      - "* hard core 0"
+      - "* soft nproc 2048"
+      - "* hard nproc 4096"
+      - "* soft nofile 8192"
+      - "* hard nofile 16384"
+
+  /etc/systemd/system.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - "DefaultTasksMax=4096"
+      - "DefaultMemoryMax=80%"
+      - "DefaultMemoryAccounting=yes"
+      - "DefaultCPUAccounting=yes"
+
+# =============================================================================
+# COMMAND TESTS - Verify resource limits are applied
+# =============================================================================
+command:
+  check_ulimit_nofile:
+    exec: "ulimit -n"
+    exit-status: 0
+    stdout:
+      - /[0-9]+/
+    allow-failure: true
+
+  check_ulimit_nproc:
+    exec: "ulimit -u"
+    exit-status: 0
+    stdout:
+      - /[0-9]+/
+    allow-failure: true
+
+  check_ulimit_core:
+    exec: "ulimit -c"
+    exit-status: 0
+    stdout:
+      - /0/
+
+  check_max_pid:
+    exec: "sysctl kernel.pid_max"
+    exit-status: 0
+    stdout:
+      - /[0-9]+/
+    allow-failure: true
+
+  check_systemd_limits:
+    exec: "systemctl show --property=DefaultTasksMax,DefaultMemoryMax,DefaultMemoryAccounting,DefaultCPUAccounting 2>/dev/null | head -10"
+    exit-status: 0
+    stdout:
+      - /DefaultTasksMax=/
+      - /DefaultMemoryMax=/
+    allow-failure: true
+
+  check_limits_d_contents:
+    exec: "cat /etc/security/limits.d/99-resource-protection.conf 2>/dev/null"
+    exit-status: 0
+    stdout:
+      - /core 0/
+      - /nproc/
+      - /nofile/
+
+# =============================================================================
+# PORT TESTS - Not applicable for resource protection
+# =============================================================================
+# Note: Resource protection does not involve network ports

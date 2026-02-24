@@ -1,1 +1,24 @@
 ---
+# Handlers for containers/config role
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  listen: "reload systemd"
+  failed_when: false
+
+- name: restart_container_storage
+  ansible.builtin.debug:
+    msg: "Container storage configuration updated. Restart container services if needed."
+  listen: "restart container storage"
+  changed_when: false
+
+- name: reload_loginctl_linger
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ user_name | default('') }}"
+  become: true
+  listen: "reload loginctl linger"
+  when: user_name is defined
+  changed_when: true
+  failed_when: false

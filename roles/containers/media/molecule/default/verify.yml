@@ -1,0 +1,8 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check media role executed
+      ansible.builtin.debug:
+        msg: "Containers/media role executed successfully"

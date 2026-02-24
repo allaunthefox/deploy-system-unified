@@ -1,1 +1,102 @@
 ---
+# Internal variables for ops/cloud_init role
+# Cloud Initialization Configuration
+
+# Cloud-init paths and binaries
+cloud_init_binary: "/usr/bin/cloud-init"
+cloud_init_config_dir: "/etc/cloud"
+cloud_init_config_file: "{{ cloud_init_config_dir }}/cloud.cfg"
+cloud_init_data_dir: "/var/lib/cloud"
+cloud_init_logs_dir: "/var/log/cloud"
+cloud_init_run_dir: "/run/cloud-init"
+
+# Cloud-init state files
+cloud_init_state_file: "{{ cloud_init_data_dir }}/instance/sem/config_done"
+cloud_init_status_file: "{{ cloud_init_run_dir }}/status.json"
+cloud_init_result_file: "{{ cloud_init_data_dir }}/instance/sem/config_scripts_vendor"
+
+# Cloud-init modules
+cloud_init_modules:
+  - bootcmd
+  - write_files
+  - growpart
+  - resizefs
+  - set_hostname
+  - update_hostname
+  - update_etc_hosts
+  - ca_certs
+  - rsyslog
+  - ssh
+  - ssh_authkey_fingerprints
+  - keys_to_console
+  - set_passwords
+  - locale
+  - set_hostname
+  - update_hostname
+  - update_etc_hosts
+  - apt_configure
+  - apt_update
+  - apt_upgrade
+  - package_update_upgrade_install
+  - disk_setup
+  - mounts
+  - ssh_import_id
+  - keyboard
+  - ntp
+  - timezone
+  - disable_ec2_metadata
+  - runcmd
+  - byobu
+  - landscape
+  - lxd
+  - ubuntu_advantage
+  - snap
+  - ubuntu_drivers
+  - puppet
+  - chef
+  - salt_minion
+  - mcollective
+  - mail
+  - phone_home
+  - final_message
+  - power_state_change
+
+# Cloud-init status check configuration
+cloud_init_status_timeout: 300
+cloud_init_status_check_interval: 10
+cloud_init_status_wait_states:
+  - "running"
+  - "waiting"
+
+# Cloud provider detection
+cloud_init_providers:
+  - aws
+  - azure
+  - gcp
+  - digitalocean
+  - openstack
+  - vmware
+  - nocloud
+  - configdrive
+
+# Cloud-init network configuration
+cloud_init_network_config_dir: "/etc/netplan"
+cloud_init_network_config_file: "{{ cloud_init_network_config_dir }}/50-cloud-init.yaml"
+
+# Cloud-init user data
+cloud_init_user_data_dir: "/var/lib/cloud/user-data"
+cloud_init_vendor_data_dir: "/var/lib/cloud/vendor-data"
+
+# Cloud-init logging configuration
+cloud_init_log_level: "DEBUG"
+cloud_init_log_file: "{{ cloud_init_logs_dir }}/cloud-init.log"
+cloud_init_output_log_file: "{{ cloud_init_logs_dir }}/cloud-init-output.log"
+
+# Cloud-init hooks
+cloud_init_pre_hooks_dir: "{{ cloud_init_config_dir }}/hooks/pre"
+cloud_init_post_hooks_dir: "{{ cloud_init_config_dir }}/hooks/post"
+
+# Cloud-init cleanup
+cloud_init_cleanup_enabled: true
+cloud_init_cleanup_old_instances: true
+cloud_init_instance_retention_days: 30

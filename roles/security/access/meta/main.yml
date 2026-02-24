@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: access
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Advanced user access control and SSH Match block management"
   license: MIT
   min_ansible_version: "2.15"
@@ -21,6 +21,17 @@ galaxy_info:
     - access
     - ssh
     - user
-    - iso_27001
+    - accesscontrol
+    - iam
+    - hardening
+    - linux
+    - iso27001
+    - nist80053
+    - identification
+    - authentication
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

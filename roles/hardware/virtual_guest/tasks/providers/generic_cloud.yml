@@ -2,6 +2,7 @@
 # Tasks for Generic Cloud VPS optimization
 # Based on research: Prevents the "Fragmentation Trap" in virtualized tunnels
 - name: Detect and Standardize Cloud MTU
+  tags: [hardware, virtualization, remediate]
   ansible.builtin.shell: |
     # Find primary interface and set safe MTU for cloud tunneling
     PRIMARY_IF=$(ip route | grep default | awk '{print $5}' | head -n 1)

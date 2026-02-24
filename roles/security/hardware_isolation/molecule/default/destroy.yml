@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove hardware_isolation test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - hardware-isolation-ubuntu-2204
+        - hardware-isolation-debian-12
+        - hardware-isolation-alpine-319
+        - hardware-isolation-rockylinux-9

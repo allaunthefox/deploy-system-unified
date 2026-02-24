@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  role_name: compliance
+  author: deploysystemunified
+  description: CIS/STIG/NIST compliance validation and reporting
+  company: Deploy-System-Unified Project
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [jammy, noble]
+    - name: Debian
+      versions: [bookworm]
+    - name: RockyLinux
+      versions: ['9']
+    - name: AlmaLinux
+      versions: ['9']
+  galaxy_tags:
+    - security
+    - compliance
+    - cis
+    - stig
+    - nist
+    - audit
+    - hardening
+    - linux
+    - multiarch
+
+collections:
+  - ansible.builtin
+  - community.general
+
+dependencies: []

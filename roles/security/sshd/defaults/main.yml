@@ -1,23 +1,23 @@
 ---
 # Defaults for security/sshd role
-sshd_backup_config: true
-sshd_disable_weak_keys: false
-sshd_use_strong_ciphers: true
-sshd_allow_tcp_forwarding: false
-sshd_allow_agent_forwarding: false
-sshd_allow_x11_forwarding: false
+security_sshd_backup_config: true
+security_sshd_disable_weak_keys: false
+security_sshd_use_strong_ciphers: true
+security_sshd_allow_tcp_forwarding: false
+security_sshd_allow_agent_forwarding: false
+security_sshd_allow_x11_forwarding: false
 # Authoritative policy: disable root SSH login by default
 # CIS 5.2.5 | ISO 27001 §9.2
-sshd_permit_root_login: "no"
+security_sshd_permit_root_login: "no"
 # CIS 5.2.11 | ISO 27001 §9.2
-sshd_password_authentication: "no"
+security_sshd_password_authentication: "no"
 # Post-Quantum Cryptography (PQC) support (Hybrid Mode)
 # Enables sntrup761 and ML-KEM algorithms where supported by OpenSSH
-sshd_pqc_enabled: "{{ system_ssh_pqc_enabled | default(true) }}"
+security_sshd_pqc_enabled: "{{ system_ssh_pqc_enabled | default(true) }}"
 # Path to sshd config file (useful for testing with a temporary path)
-sshd_config_path: "/etc/ssh/sshd_config"
+security_sshd_config_path: "/etc/ssh/sshd_config"
 # Trusted groups for limited exceptions (agent/tcp forwarding)
 # - Set sshd_enable_trusted_group_exceptions: true to enable
 # - Populate sshd_trusted_groups with group names (e.g., ['ssh-trusted'])
-sshd_enable_trusted_group_exceptions: false
-sshd_trusted_groups: []
+security_sshd_enable_trusted_group_exceptions: false
+security_sshd_trusted_groups: []

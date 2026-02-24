@@ -1,1 +1,58 @@
 ---
+# Internal variables for ops/guest_management role
+# Guest Management Configuration
+
+# Guest management base directories
+guest_management_base_dir: "/var/lib/deploy-system/guests"
+guest_management_state_dir: "{{ guest_management_base_dir }}/state"
+guest_management_config_dir: "{{ guest_management_base_dir }}/config"
+guest_management_data_dir: "{{ guest_management_base_dir }}/data"
+
+# Guest user configuration
+guest_user_base_uid: 1100
+guest_user_base_gid: 1100
+guest_user_shell: "/bin/bash"
+guest_user_home_base: "/home/guests"
+
+# Guest session configuration
+guest_session_timeout_minutes: 60
+guest_session_idle_timeout_minutes: 30
+guest_session_max_concurrent: 10
+
+# Guest resource limits
+guest_cpu_limit_percent: 50
+guest_memory_limit_mb: 1024
+guest_disk_limit_gb: 10
+guest_process_limit: 100
+guest_file_limit: 1000
+
+# Guest network configuration
+guest_network_isolation: true
+guest_network_bridge: "guest-br0"
+guest_network_range: "10.100.0.0/24"
+
+# Guest security configuration
+guest_security_context: "guest"
+guest_apparmor_profile: "deploy-system-guest"
+guest_seccomp_enabled: true
+guest_capabilities_drop:
+  - ALL
+guest_capabilities_add: []
+
+# Guest logging configuration
+guest_log_enabled: true
+guest_log_dir: "/var/log/deploy-system/guests"
+guest_log_level: "INFO"
+
+# Guest cleanup configuration
+guest_cleanup_enabled: true
+guest_cleanup_interval_hours: 24
+guest_cleanup_age_days: 7
+
+# Guest state tracking
+guest_state_file: "{{ guest_management_state_dir }}/guest_state.json"
+guest_registry_file: "{{ guest_management_state_dir }}/guest_registry.json"
+
+# Guest templates
+guest_template_dir: "/etc/deploy-system/guest-templates"
+guest_default_template: "default"

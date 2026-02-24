@@ -1,1 +1,52 @@
 ---
+# Handlers for ops/connection_info role
+# ISO 9001 Structural Consistency - Handler definitions for connection info management
+# Note: This role manages SSH connection information and encryption
+
+- name: restart_ssh
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - ops
+    - connection_info
+    - ssh
+
+- name: reload_ssh_config
+  ansible.builtin.systemd:
+    name: sshd
+    state: reloaded
+  become: true
+  tags:
+    - ops
+    - connection_info
+    - ssh
+
+- name: restart_sshd_service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - sshd
+    - ssh
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - connection_info
+    - ssh
+
+- name: cleanup_ssh_temp_files
+  ansible.builtin.file:
+    path: "{{ ssh_port_cache_dir_effective }}"
+    state: absent
+  delegate_to: localhost
+  become: false
+  when: ssh_cleanup_temp_files | default(false) | bool
+  tags:
+    - ops
+    - connection_info
+    - cleanup

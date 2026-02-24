@@ -1,1 +1,49 @@
 ---
+# Internal variables for storage/filesystems/btrfs role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_btrfs_role_name: btrfs
+_btrfs_role_version: "1.0.0"
+
+# Service names
+_btrfs_services: []
+
+# Package names (internal reference)
+_btrfs_packages:
+  - btrfs-progs
+
+# Configuration paths
+_btrfs_config_base: /etc/btrfs
+_btrfs_scrub_schedule_dir: /etc/cron.d
+
+# Command paths
+_btrfs_command: /usr/bin/btrfs
+_btrfs_scrub_command: /usr/bin/btrfs scrub
+_btrfs_balance_command: /usr/bin/btrfs balance
+_btrfs_subvolume_command: /usr/bin/btrfs subvolume
+
+# Scrub configuration
+_btrfs_scrub_default_mounts:
+  - /
+_btrfs_scrub_schedule: "0 2 * * 0"  # Weekly at 2 AM Sunday
+_btrfs_scrub_cron_name: "Btrfs scrub"
+
+# Subvolume management
+_btrfs_subvolume_check_command: btrfs subvolume list
+_btrfs_subvolume_create_command: btrfs subvolume create
+
+# Filesystem type detection
+_btrfs_fs_type: btrfs
+_btrfs_fs_type_check: stat -f -c %T
+
+# Maintenance operations
+_btrfs_maintenance_operations:
+  - scrub
+  - balance
+  - check
+
+# Internal state tracking
+_btrfs_initialized: false
+_btrfs_filesystems_detected: []
+_btrfs_subvolumes_created: []

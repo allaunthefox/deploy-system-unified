@@ -1,0 +1,38 @@
+---
+galaxy_info:
+  role_name: falco
+  author: deploysystemunified
+  description: "POL-SEC | Falco runtime security monitoring with rules configuration and alert integration - ISO 27001 §16.1 compliant"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: CentOS
+      versions: [all]
+  galaxy_tags:
+    - security
+    - runtime
+    - falco
+    - monitoring
+    - hardening
+    - linux
+    - iso27001
+    - iso27001_16_1
+    - nist80053
+    - nist_si_4
+    - container
+    - kubernetes
+    - incident_response
+    - threat_detection
+    - compliance
+
+collections:
+  - ansible.builtin
+  - community.general
+
+dependencies: []

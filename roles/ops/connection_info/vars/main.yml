@@ -1,1 +1,72 @@
 ---
+# Internal variables for ops/connection_info role
+# Connection Information Configuration
+
+# Connection info base directories
+connection_info_base_dir: "/var/lib/deploy-system/connection"
+connection_info_state_dir: "{{ connection_info_base_dir }}/state"
+connection_info_cache_dir: "{{ connection_info_base_dir }}/cache"
+connection_info_secure_dir: "{{ connection_info_base_dir }}/secure"
+
+# SSH port cache configuration
+connection_info_ssh_port_cache_extension: ".port"
+connection_info_ssh_port_cache_mode: "0600"
+connection_info_ssh_port_cache_format: "plain"
+
+# Connection info file configuration
+connection_info_file_prefix: "ssh_connection_info_"
+connection_info_file_suffix: ".yml"
+connection_info_file_mode: "0600"
+connection_info_file_format: "yaml"
+
+# Encryption configuration paths
+connection_info_sops_config: "/etc/deploy-system/sops.yml"
+connection_info_vault_password_file: "/etc/deploy-system/vault_password"
+connection_info_gpg_keyring: "/etc/deploy-system/gpg"
+
+# Encryption metadata
+connection_info_encryption_algorithm: "aes256"
+connection_info_encryption_key_size: 256
+
+# Connection info schema
+connection_info_schema_version: "deploy-system/connection-info/v1"
+connection_info_schema_fields:
+  - deployment_id
+  - hostname
+  - port
+  - username
+  - timestamp
+
+# Rsync configuration
+connection_info_rsync_binary: "/usr/bin/rsync"
+connection_info_rsync_options:
+  - "-avz"
+  - "--chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r"
+  - "--delete"
+connection_info_rsync_timeout: 300
+connection_info_rsync_bandwidth_limit: 0
+
+# Connection validation
+connection_info_validation_timeout: 30
+connection_info_validation_retries: 3
+
+# Connection info retention
+connection_info_retention_days: 90
+connection_info_cleanup_enabled: true
+connection_info_cleanup_interval_hours: 24
+
+# Audit logging
+connection_info_audit_enabled: true
+connection_info_audit_log_file: "/var/log/deploy-system/connection_info_audit.log"
+connection_info_audit_events:
+  - create
+  - read
+  - update
+  - delete
+  - encrypt
+  - decrypt
+
+# Temporary file configuration
+connection_info_tmp_dir: "/tmp/deploy-system/connection"
+connection_info_tmp_prefix: "conn_info_"
+connection_info_tmp_mode: "0600"

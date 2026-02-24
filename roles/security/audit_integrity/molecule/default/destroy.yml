@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove audit_integrity test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - audit-integrity-ubuntu-2204
+        - audit-integrity-debian-12
+        - audit-integrity-alpine-319
+        - audit-integrity-rockylinux-9

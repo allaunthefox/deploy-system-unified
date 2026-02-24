@@ -1,18 +1,18 @@
 ---
-- name: reload_ufw
+- name: Reload UFW
   community.general.ufw:
     state: reloaded
   become: true
 
 
-- name: reload_firewalld
+- name: Reload Firewalld
   ansible.builtin.service:
     name: firewalld
     state: reloaded
   become: true
 
 
-- name: reload_nftables
+- name: Reload Nftables
   ansible.builtin.service:
     name: nftables
     state: reloaded

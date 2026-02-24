@@ -1,0 +1,31 @@
+# Vault Agent Injector Annotations
+# These annotations can be added to Kubernetes pods for automatic secret injection
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+annotations:
+  # Enable Vault Agent Injector
+  vault.hashicorp.com/agent-inject: "{{ 'true' if vault_enable_agent_injector else 'false' }}"
+  
+  # Vault address
+  vault.hashicorp.com/agent-address: "{{ vault_addr }}"
+  
+  # Template for secret injection
+  vault.hashicorp.com/agent-inject-secret-config: "secret/data/{{ vault_secrets_path }}/config"
+  vault.hashicorp.com/agent-inject-template-config: |
+    {{ '{{' }} with secret "secret/data/{{ vault_secrets_path }}/config" }}
+    {{ '{{' }} .Data.data.data | tojson }}
+    {{ '{{' }} end }}
+  
+  # Role for Kubernetes auth
+  vault.hashicorp.com/role: "{{ vault_k8s_role_name }}"
+  
+  # Service account (if using Vault Agent)
+  vault.hashicorp.com/service-account-name: "{{ vault_k8s_service_account }}"
+  
+  # Namespace (for Vault Enterprise)
+  # vault.hashicorp.com/vault-namespace: "admin"
+  
+  # TLS configuration (if using TLS)
+  # vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
+  # vault.hashicorp.com/client-cert: "/vault/tls/client.crt"
+  # vault.hashicorp.com/client-key: "/vault/tls/client.key"

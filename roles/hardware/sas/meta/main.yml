@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: sas
-  author: deploy-system-unified
+  author: deploysystemunified
   description: SAS HBA management and storage controller tuning
   license: MIT
   min_ansible_version: "2.15"
@@ -19,6 +19,16 @@ galaxy_info:
     - sas
     - storage
     - tuning
-    - iso_27040
+    - controller
+    - hba
+    - lsi
+    - mpt3sas
+    - performance
+    - infrastructure
+    - baremetal
+    - iso27040
+
+collections:
+  - ansible.builtin
 
 dependencies: []

@@ -1,0 +1,47 @@
+---
+# Configure TLS for Ingress
+
+- name: "Create TLS secret for Ingress"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/tls
+      metadata:
+        name: "{{ kubernetes_ingress_tls_secret_name }}"
+        namespace: "{{ kubernetes_ingress_namespace }}"
+      data:
+        # These should be replaced with actual certificates in production
+        # For Let's Encrypt, cert-manager should be deployed separately
+        tls.crt: "{{ lookup('file', '/dev/null') | b64encode if false else 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURQekNDQWllZ0F3SUJBZ0lKQUt4bXB0YmhKTUFvR0NDcUdTTTQ5QkFNQ01CNHhIREFhQmdOVkJBTU0KRTJGd2NDNWxlR0Z0Y0d4bExtTnZiU0F3SGhjTk1qTXdNVEF4TURBd01EQXdXaGNOTWpRd01UQXhNREF3TURBdwpXakFlTVJ3d0dnWURWUVFEREJOaGNIQXVaWGhoYlhCc1pTNWpiMjBnTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJCnpqMERBUWNEUWdBRXBsYWNlaG9sZGVyQ2VydGlmaWNhdGVEYXRhCmV4YW1wbGU=
+        tls.key: "{{ lookup('file', '/dev/null') | b64encode if false else 'LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCnBsYWNlaG9sZGVyS2V5RGF0YQpleGFtcGxl'
+  when: kubernetes_ingress_tls_enabled | bool
+
+- name: "Configure Let's Encrypt ClusterIssuer (optional)"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: ClusterIssuer
+      metadata:
+        name: letsencrypt-{{ 'prod' if kubernetes_ingress_tls_letsencrypt_production else 'staging' }}
+      spec:
+        acme:
+          server: >-
+            {{
+              'https://acme-v02.api.letsencrypt.org/directory' 
+              if kubernetes_ingress_tls_letsencrypt_production 
+              else 'https://acme-staging-v02.api.letsencrypt.org/directory'
+            }}
+          email: "{{ kubernetes_ingress_tls_letsencrypt_email }}"
+          privateKeySecretRef:
+            name: letsencrypt-{{ 'prod' if kubernetes_ingress_tls_letsencrypt_production else 'staging' }}
+          solvers:
+            - http01:
+                ingress:
+                  class: "{{ kubernetes_ingress_class_name }}"
+  when: 
+    - kubernetes_ingress_tls_letsencrypt_enabled | bool
+    - kubernetes_ingress_tls_letsencrypt_email | length > 0
+  failed_when: false

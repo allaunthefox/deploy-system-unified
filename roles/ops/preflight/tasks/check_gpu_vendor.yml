@@ -1,0 +1,86 @@
+---
+# Preflight GPU Vendor Validation
+# Validates that configured GPU vendor matches detected hardware
+# Addresses: POTENTIAL_PROBLEMS.md - GPU Vendor Mismatch
+
+- name: "GPU Vendor | Detect GPU devices using lspci"
+  ansible.builtin.shell:
+    cmd: "lspci -nnk | grep -iE 'VGA|3D|Display' || echo 'NO_GPU_FOUND'"
+  register: preflight_gpu_detection
+  changed_when: false
+  failed_when: false
+  tags:
+    - preflight
+    - gpu
+    - nist_cm_6
+
+- name: "GPU Vendor | Set detected GPU vendor fact"
+  ansible.builtin.set_fact:
+    preflight_detected_gpu_vendor: >-
+      {{
+        'nvidia'
+        if preflight_gpu_detection.stdout is search('NVIDIA', ignorecase=true)
+        else (
+          'amd'
+          if preflight_gpu_detection.stdout is search('AMD|Radeon', ignorecase=true)
+          else (
+            'intel'
+            if preflight_gpu_detection.stdout is search('Intel', ignorecase=true)
+            else 'none'
+          )
+        )
+      }}
+  when: preflight_gpu_detection.rc == 0
+  tags:
+    - preflight
+    - gpu
+    - nist_cm_6
+
+- name: "GPU Vendor | Debug GPU detection results"
+  ansible.builtin.debug:
+    msg: >-
+      Detected GPU: {{ preflight_gpu_detection.stdout | default('No GPU detected') }}
+      Vendor: {{ preflight_detected_gpu_vendor | default('none') }}
+  when: preflight_check_gpu_vendor | default(false) | bool
+  changed_when: false
+  tags:
+    - preflight
+    - gpu
+    - nist_cm_6
+
+- name: "GPU Vendor | Validate GPU vendor matches configuration (strict mode)"
+  ansible.builtin.assert:
+    that:
+      - preflight_detected_gpu_vendor | default('none') == containers_gpu_vendor | default('none')
+    fail_msg: >-
+      GPU VENDOR MISMATCH DETECTED!
+      Configured: {{ containers_gpu_vendor | default('none') }}
+      Detected: {{ preflight_detected_gpu_vendor | default('none') }}
+      Update containers_gpu_vendor in your inventory to match the detected hardware.
+    success_msg: >-
+      GPU vendor validated: configured {{ containers_gpu_vendor }} matches detected {{ preflight_detected_gpu_vendor }}
+  when:
+    - preflight_check_gpu_vendor | default(false) | bool
+    - preflight_detected_gpu_vendor | default('none') != 'none'
+    - preflight_strict_gpu_vendor | default(true) | bool
+  tags:
+    - preflight
+    - gpu
+    - nist_cm_6
+
+- name: "GPU Vendor | Warn on GPU vendor mismatch (lenient mode)"
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: GPU vendor mismatch - configured '{{ containers_gpu_vendor | default('none') }}'
+      does not match detected '{{ preflight_detected_gpu_vendor | default('none') }}'.
+      Set preflight_strict_gpu_vendor=true to fail on mismatch.
+  when:
+    - preflight_check_gpu_vendor | default(false) | bool
+    - preflight_detected_gpu_vendor | default('none') != containers_gpu_vendor | default('none')
+    - preflight_detected_gpu_vendor | default('none') != 'none'
+    - not preflight_strict_gpu_vendor | default(true) | bool
+  changed_when: false
+  tags:
+    - preflight
+    - gpu
+    - nist_cm_6

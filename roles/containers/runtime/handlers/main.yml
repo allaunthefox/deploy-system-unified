@@ -1,1 +1,67 @@
 ---
+# Handlers for containers/runtime role
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  listen: "reload systemd"
+  failed_when: false
+
+- name: restart_podman
+  ansible.builtin.systemd:
+    name: podman
+    state: restarted
+  become: true
+  listen: "restart podman"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_podman_socket
+  ansible.builtin.systemd:
+    name: podman.socket
+    state: restarted
+  become: true
+  listen: "restart podman socket"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_podman_user_socket
+  ansible.builtin.systemd:
+    name: podman.socket
+    state: restarted
+    scope: user
+  environment:
+    XDG_RUNTIME_DIR: "{{ podman_rootless_runtime_dir | default('/run/user/0') }}"
+    DBUS_SESSION_BUS_ADDRESS: "{{ podman_rootless_dbus_address | default('unix:path=/run/user/0/bus') }}"
+  become: "{{ podman_rootless_enabled | default(false) | bool }}"
+  become_user: "{{ podman_rootless_user | default('root') }}"
+  listen: "restart podman user socket"
+  when:
+    - podman_rootless_enabled | default(false) | bool
+    - ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: reload_container_config
+  ansible.builtin.debug:
+    msg: "Container configuration reloaded. Restart containers manually if needed."
+  listen: "reload container config"
+  changed_when: false
+
+- name: restart_netavark
+  ansible.builtin.systemd:
+    name: netavark
+    state: restarted
+  become: true
+  listen: "restart netavark"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_aardvark_dns
+  ansible.builtin.systemd:
+    name: aardvark-dns
+    state: restarted
+  become: true
+  listen: "restart aardvark-dns"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false

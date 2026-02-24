@@ -1,1 +1,83 @@
 ---
+# Handlers for virtual role - Virtual Network (VLAN/VXLAN) Services
+# ISO 9001 Structural Consistency - Handler definitions for virtual networking
+
+- name: restart_networking
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - systemd-networkd
+    - networking
+    - NetworkManager
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - virtual
+
+- name: reload_systemd_networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: reloaded
+  become: true
+  tags:
+    - networking
+    - virtual
+
+- name: restart_vlan_services
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - networking
+    - virtual
+    - vlan
+
+- name: restart_vxlan_services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - systemd-networkd
+    - openvswitch
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - virtual
+    - vxlan
+
+- name: reload_kernel_modules
+  ansible.builtin.command:
+    cmd: modprobe -r {{ item }} && modprobe {{ item }}
+  loop:
+    - 8021q
+    - vxlan
+    - bridge
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - virtual
+    - kernel
+
+- name: restart_openvswitch
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - openvswitch
+    - ovs-vswitchd
+    - ovsdb-server
+  become: true
+  failed_when: false
+  tags:
+    - networking
+    - virtual
+    - ovs

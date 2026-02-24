@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: sshd
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | SSH daemon hardening with strong cryptography and access control"
   company: Deploy-System-Unified Project
   license: MIT
@@ -38,16 +38,17 @@ galaxy_info:
     - ssh
     - sshd
     - hardening
-    - access_control
+    - accesscontrol
     - cryptography
     - cis
-    - cis_level_1
-    - iso_27001
-    - nist_800_53
+    - cislevel1
+    - cislevel2
+    - iso27001
+    - nist80053
+    - identification
+    - authentication
     - pqc
-    - linux
-    - network
-    - deploy-system-unified
+    - multiarch
 
 collections:
   - ansible.builtin

@@ -1,0 +1,21 @@
+---
+# Cosign Container Signing Role - Internal Variables
+
+# Cosign installation paths
+cosign_install_dir: /usr/local/bin
+cosign_config_dir: /etc/cosign
+cosign_keys_dir: "{{ cosign_config_dir }}/keys"
+
+# Cosign binary
+cosign_binary: cosign
+
+# Verification policy paths
+cosign_policy_dir: /etc/cosign/policies
+cosign_policy_template: "{{ cosign_policy_dir }}/template.yaml"
+
+# Systemd service (if needed)
+cosign_service_name: cosign.service
+cosign_service_path: /etc/systemd/system
+
+# Log file for cosign operations
+cosign_log_file: /var/log/cosign.log

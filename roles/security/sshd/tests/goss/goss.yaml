@@ -1,0 +1,453 @@
+# Goss tests for security/sshd role
+# CIS Benchmark: 5.2.x - SSH Server Configuration
+# STIG V-2305xx | NIST SC-8, SC-13 | ISO 27001 §8.24, §8.32
+
+# =============================================================================
+# FILE TESTS - Verify SSH configuration files
+# =============================================================================
+file:
+  # CIS 5.2.1 - Ensure permissions on SSH config files
+  /etc/ssh/sshd_config:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+  # CIS 5.2.2 - Ensure permissions on SSH private host key files
+  /etc/ssh/ssh_host_ed25519_key:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+  /etc/ssh/ssh_host_rsa_key:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+  # CIS 5.2.3 - Ensure permissions on SSH public host key files
+  /etc/ssh/ssh_host_ed25519_key.pub:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/ssh/ssh_host_rsa_key.pub:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.2.15 - Ensure SSH warning banner is configured
+  /etc/issue.net:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # Additional security configuration files
+  /etc/ssh/sshd_config.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+# =============================================================================
+# SERVICE TESTS - Verify SSH service
+# =============================================================================
+service:
+  # CIS 5.2.2 - Ensure SSH service is enabled
+  ssh:
+    enabled: true
+    running: true
+
+  sshd:
+    enabled: true
+    running: true
+
+# =============================================================================
+# PORT TESTS - Verify SSH is listening
+# =============================================================================
+port:
+  # CIS 5.2.1 - Ensure SSH port is configured
+  tcp:22:
+    listening: true
+    ip:
+      - 0.0.0.0
+      - "::"
+
+# =============================================================================
+# PROCESS TESTS - Verify SSH processes
+# =============================================================================
+process:
+  sshd:
+    running: true
+
+# =============================================================================
+# COMMAND TESTS - Verify SSH security configurations
+# =============================================================================
+command:
+  # CIS 5.2.5 - Ensure SSH root login is disabled
+  ssh_root_login:
+    exec: 'sshd -T 2>/dev/null | grep "^permitrootlogin"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.6 - Ensure SSH PermitEmptyPasswords is disabled
+  ssh_empty_passwords:
+    exec: 'sshd -T 2>/dev/null | grep "^permitemptypasswords"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.7 - Ensure SSH PasswordAuthentication is disabled
+  ssh_password_auth:
+    exec: 'sshd -T 2>/dev/null | grep "^passwordauthentication"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.8 - Ensure SSH PubkeyAuthentication is enabled
+  ssh_pubkey_auth:
+    exec: 'sshd -T 2>/dev/null | grep "^pubkeyauthentication"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.9 - Ensure SSH AcceptEnv is disabled
+  ssh_accept_env:
+    exec: 'sshd -T 2>/dev/null | grep "^acceptenv"'
+    exit-status: 0
+    stdout:
+      - /^acceptenv\s*$/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.11 - Ensure SSH MaxAuthTries is set to 4 or less
+  ssh_max_auth_tries:
+    exec: 'sshd -T 2>/dev/null | grep "^maxauthtries"'
+    exit-status: 0
+    stdout:
+      - /^[0-4]$/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.12 - Ensure SSH MaxSessions is set to 4 or less
+  ssh_max_sessions:
+    exec: 'sshd -T 2>/dev/null | grep "^maxsessions"'
+    exit-status: 0
+    stdout:
+      - /^[0-4]$/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.13 - Ensure SSH LoginGraceTime is set to 60 seconds or less
+  ssh_login_grace_time:
+    exec: 'sshd -T 2>/dev/null | grep "^logingracetime"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.14 - Ensure SSH X11Forwarding is disabled
+  ssh_x11_forwarding:
+    exec: 'sshd -T 2>/dev/null | grep "^x11forwarding"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.16 - Ensure SSH AllowTcpForwarding is disabled
+  ssh_tcp_forwarding:
+    exec: 'sshd -T 2>/dev/null | grep "^allowtcpforwarding"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.17 - Ensure SSH AllowAgentForwarding is disabled
+  ssh_agent_forwarding:
+    exec: 'sshd -T 2>/dev/null | grep "^allowagentforwarding"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.18 - Ensure SSH ClientAliveInterval is set to 300 seconds or less
+  ssh_client_alive_interval:
+    exec: 'sshd -T 2>/dev/null | grep "^clientaliveinterval"'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.19 - Ensure SSH ClientAliveCountMax is set to 3 or less
+  ssh_client_alive_count_max:
+    exec: 'sshd -T 2>/dev/null | grep "^clientalivecountmax"'
+    exit-status: 0
+    stdout:
+      - /^[0-3]$/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.20 - Ensure SSH UsePAM is enabled
+  ssh_use_pam:
+    exec: 'sshd -T 2>/dev/null | grep "^usepam"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.21 - Ensure SSH AllowUsers is configured (if specified)
+  ssh_allow_users_config:
+    exec: 'sshd -T 2>/dev/null | grep "^allowusers"'
+    exit-status: 0
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.22 - Ensure SSH DenyUsers is configured (if specified)
+  ssh_deny_users_config:
+    exec: 'sshd -T 2>/dev/null | grep "^denyusers"'
+    exit-status: 0
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.23 - Ensure SSH AllowGroups is configured (if specified)
+  ssh_allow_groups_config:
+    exec: 'sshd -T 2>/dev/null | grep "^allowgroups"'
+    exit-status: 0
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.24 - Ensure SSH DenyGroups is configured (if specified)
+  ssh_deny_groups_config:
+    exec: 'sshd -T 2>/dev/null | grep "^denygroups"'
+    exit-status: 0
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.10 - Ensure SSH LogLevel is VERBOSE
+  ssh_log_level:
+    exec: 'sshd -T 2>/dev/null | grep "^loglevel"'
+    exit-status: 0
+    stdout:
+      - /VERBOSE/i
+    timeout: 5000
+    skip: false
+
+  # =============================================================================
+  # CRYPTOGRAPHIC ALGORITHM TESTS
+  # =============================================================================
+  
+  # CIS 5.2.25 - Ensure only strong ciphers are used
+  ssh_ciphers:
+    exec: 'sshd -T 2>/dev/null | grep "^ciphers"'
+    exit-status: 0
+    stdout:
+      - /chacha20-poly1305/
+      - /aes256-gcm/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.26 - Ensure only strong MACs are used
+  ssh_macs:
+    exec: 'sshd -T 2>/dev/null | grep "^macs"'
+    exit-status: 0
+    stdout:
+      - /hmac-sha2-512-etm/
+      - /hmac-sha2-256-etm/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.27 - Ensure only strong key exchange algorithms are used
+  ssh_kex_algorithms:
+    exec: 'sshd -T 2>/dev/null | grep "^kexalgorithms"'
+    exit-status: 0
+    stdout:
+      - /curve25519-sha256/
+    timeout: 5000
+    skip: false
+
+  # CIS 5.2.28 - Ensure only strong host key algorithms are used
+  ssh_host_key_algorithms:
+    exec: 'sshd -T 2>/dev/null | grep "^hostkeyalgorithms"'
+    exit-status: 0
+    stdout:
+      - /ssh-ed25519/
+      - /rsa-sha2-512/
+    timeout: 5000
+    skip: false
+
+  # =============================================================================
+  # WEAK ALGORITHM VERIFICATION
+  # =============================================================================
+
+  # Verify weak ciphers are NOT present
+  ssh_no_weak_ciphers:
+    exec: 'sshd -T 2>/dev/null | grep "^ciphers"'
+    exit-status: 0
+    stdout:
+      - '! /3des/'
+      - '! /aes128-cbc/'
+      - '! /aes256-cbc/'
+      - '! /blowfish/'
+      - '! /cast128-cbc/'
+      - '! /arcfour/'
+    timeout: 5000
+    skip: false
+
+  # Verify weak MACs are NOT present
+  ssh_no_weak_macs:
+    exec: 'sshd -T 2>/dev/null | grep "^macs"'
+    exit-status: 0
+    stdout:
+      - '! /hmac-md5/'
+      - '! /hmac-sha1/'
+      - '! /umac-64@openssh.com/'
+    timeout: 5000
+    skip: false
+
+  # Verify weak KEX are NOT present
+  ssh_no_weak_kex:
+    exec: 'sshd -T 2>/dev/null | grep "^kexalgorithms"'
+    exit-status: 0
+    stdout:
+      - '! /diffie-hellman-group1-sha1/'
+      - '! /diffie-hellman-group14-sha1/'
+      - '! /diffie-hellman-group-exchange-sha1/'
+    timeout: 5000
+    skip: false
+
+  # =============================================================================
+  # ADDITIONAL SECURITY CHECKS
+  # =============================================================================
+
+  # Ensure weak host keys are not present
+  ssh_no_dsa_key:
+    exec: 'test -f /etc/ssh/ssh_host_dsa_key && exit 1 || exit 0'
+    exit-status: 0
+    timeout: 5000
+    skip: false
+
+  # Verify sshd config syntax is valid
+  sshd_config_valid:
+    exec: 'sshd -t -f /etc/ssh/sshd_config 2>&1'
+    exit-status: 0
+    timeout: 5000
+    skip: false
+
+  # Verify privilege separation is enabled
+  ssh_privsep:
+    exec: 'sshd -T 2>/dev/null | grep "^privilegeseparation"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # Verify strict modes are enabled
+  ssh_strict_modes:
+    exec: 'sshd -T 2>/dev/null | grep "^strictmodes"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # Verify IgnoreRhosts is enabled
+  ssh_ignore_rhosts:
+    exec: 'sshd -T 2>/dev/null | grep "^ignorerhosts"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # Verify HostbasedAuthentication is disabled
+  ssh_hostbased_auth:
+    exec: 'sshd -T 2>/dev/null | grep "^hostbasedauthentication"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # Verify Kerberos authentication is disabled
+  ssh_kerberos_auth:
+    exec: 'sshd -T 2>/dev/null | grep "^kerberosauthentication"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # Verify GSSAPI authentication is disabled
+  ssh_gssapi_auth:
+    exec: 'sshd -T 2>/dev/null | grep "^gssapiauthentication"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # Verify PrintMotd is disabled
+  ssh_print_motd:
+    exec: 'sshd -T 2>/dev/null | grep "^printmotd"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # Verify PrintLastLog is enabled
+  ssh_print_last_log:
+    exec: 'sshd -T 2>/dev/null | grep "^printlastlog"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # Verify TCP KeepAlive is enabled
+  ssh_tcp_keep_alive:
+    exec: 'sshd -T 2>/dev/null | grep "^tcpkeepalive"'
+    exit-status: 0
+    stdout:
+      - /yes/
+    timeout: 5000
+    skip: false
+
+  # Verify PermitUserEnvironment is disabled
+  ssh_permit_user_env:
+    exec: 'sshd -T 2>/dev/null | grep "^permituserenvironment"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false
+
+  # Verify Compression is disabled or delayed
+  ssh_compression:
+    exec: 'sshd -T 2>/dev/null | grep "^compression"'
+    exit-status: 0
+    stdout:
+      - /no/
+    timeout: 5000
+    skip: false

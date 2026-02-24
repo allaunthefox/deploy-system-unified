@@ -1,2 +1,115 @@
 ---
 # vars file for containers/media
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/media
+# Standards: CIS Docker Benchmark 7.x, STIG V-230460,
+#            NIST SC-8/AC-3, ISO 27001 §8.20
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "7.x"
+    description: "Container Media Applications Security"
+    controls:
+      - id: "7.1"
+        name: "Pull Media Images"
+        stig: "V-230460"
+        nist: ["SC-8"]
+      - id: "7.2"
+        name: "Media Network Quadlet"
+        stig: "V-230460"
+        nist: ["SC-8"]
+      - id: "7.3"
+        name: "Media Directories"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.4"
+        name: "Media Pod Quadlet"
+        stig: "V-230460"
+        nist: ["SC-8"]
+      - id: "7.5"
+        name: "Media Caddy Configuration"
+        stig: "V-230460"
+        nist: ["SC-8"]
+        iso: "9.4"
+      - id: "7.6"
+        name: "Jellyfin Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+        iso: "8.20"
+      - id: "7.7"
+        name: "Radarr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.8"
+        name: "Sonarr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.9"
+        name: "Prowlarr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.10"
+        name: "Media secrets verification"
+        stig: "V-230460"
+        nist: ["IA-2"]
+      - id: "7.11"
+        name: "CHANGE_ME policy enforcement"
+        stig: "V-230460"
+        nist: ["CM-6"]
+      - id: "7.12"
+        name: "Transmission Secrets File"
+        stig: "V-230460"
+        nist: ["IA-2"]
+      - id: "7.13"
+        name: "Transmission Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.14"
+        name: "Lidarr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.15"
+        name: "Readarr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.16"
+        name: "Jellyseerr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.17"
+        name: "Navidrome Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.18"
+        name: "Plex Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.19"
+        name: "Bazarr Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.20"
+        name: "Kavita Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+      - id: "7.21"
+        name: "Audiobookshelf Container Quadlet"
+        stig: "V-230460"
+        nist: ["AC-3"]
+  stig:
+    container_media:
+      - id: "V-230460"
+        title: "Container Media Applications Security"
+        severity: "medium"
+  nist:
+    sc_8: "Transmission Confidentiality and Integrity"
+    ac_3: "Access Enforcement"
+    ia_2: "Identification and Authentication"
+    cm_6: "Configuration Settings"
+  iso_27001:
+    "8.20": "Networks Security"
+    "9.4": "System and Application Access Control"

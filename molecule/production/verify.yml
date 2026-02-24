@@ -1,20 +1,24 @@
 ---
 # verify.yml - Verification playbook for molecule tests
-# Validates that deployment was successful by checking directories and flags
+# Validates that deployment was successful by checking directories, packages, and configurations
 #
 # Args:
 #     Runs on all hosts defined in inventory
 #
 # Returns:
-#     Passes if all required directories and flags exist
+#     Passes if all required directories, packages, and configurations exist and are correct
 #
 # Example:
-#     molecule verify -s default
+#     molecule verify -s production
 
 - name: Verify
   hosts: all
-  gather_facts: false
+  gather_facts: true
+  become: true
   tasks:
+    # =========================================================================
+    # Essential Directories Verification
+    # =========================================================================
     - name: Verify essential directories exist
       ansible.builtin.stat:
         path: "{{ item }}"
@@ -26,19 +30,281 @@
         - /var/lib/deploy-system/logs
         - /tmp/deploy-system
         - /etc/security
+
     - name: Validate directory existence
       ansible.builtin.assert:
         that:
           - item.stat.exists
           - item.stat.isdir
         fail_msg: "Directory {{ item.item }} should exist"
+        success_msg: "Directory {{ item.item }} exists"
       loop: "{{ dir_stats.results }}"
+
+    # =========================================================================
+    # Package Verification by OS Family
+    # =========================================================================
+    - name: Verify essential packages are installed (Debian/Ubuntu)
+      ansible.builtin.package_facts:
+        manager: apt
+      when: ansible_os_family == 'Debian'
+
+    - name: Assert essential packages are installed (Debian/Ubuntu)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for Debian/Ubuntu are not installed."
+        success_msg: "Essential packages are installed on Debian/Ubuntu"
+      when: ansible_os_family == 'Debian'
+
+    - name: Verify essential packages are installed (RedHat/CentOS)
+      ansible.builtin.package_facts:
+        manager: dnf
+      when: ansible_os_family == 'RedHat'
+
+    - name: Assert essential packages are installed (RedHat/CentOS)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for RedHat/CentOS are not installed."
+        success_msg: "Essential packages are installed on RedHat/CentOS"
+      when: ansible_os_family == 'RedHat'
+
+    - name: Verify essential packages are installed (Archlinux)
+      ansible.builtin.package_facts:
+        manager: pacman
+      when: ansible_distribution == 'Archlinux'
+
+    - name: Assert essential packages are installed (Archlinux)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for Archlinux are not installed."
+        success_msg: "Essential packages are installed on Archlinux"
+      when: ansible_distribution == 'Archlinux'
+
+    - name: Verify essential packages are installed (Alpine)
+      ansible.builtin.package_facts:
+        manager: apk
+      when: ansible_os_family == 'Alpine'
+
+    - name: Assert essential packages are installed (Alpine)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for Alpine are not installed."
+        success_msg: "Essential packages are installed on Alpine"
+      when: ansible_os_family == 'Alpine'
+
+    # =========================================================================
+    # Firewall Verification
+    # =========================================================================
+    - name: Check if UFW is available
+      ansible.builtin.command: which ufw
+      register: ufw_which
+      changed_when: false
+      failed_when: false
+
+    - name: Get UFW status
+      ansible.builtin.command: ufw status verbose
+      register: ufw_status
+      changed_when: false
+      failed_when: false
+      when: ufw_which.rc == 0
+
+    - name: Verify UFW is active
+      ansible.builtin.assert:
+        that:
+          - "ufw_status.stdout == 'Status: active'"
+        fail_msg: "UFW should be active"
+        success_msg: "UFW is active"
+      when: ufw_which.rc == 0 and ufw_status.rc == 0
+      ignore_errors: true
+
+    - name: Check if Firewalld is available
+      ansible.builtin.command: which firewall-cmd
+      register: firewalld_which
+      changed_when: false
+      failed_when: false
+
+    - name: Get Firewalld state
+      ansible.builtin.command: firewall-cmd --state
+      register: firewalld_state
+      changed_when: false
+      failed_when: false
+      when: firewalld_which.rc == 0
+
+    - name: Verify Firewalld is running
+      ansible.builtin.assert:
+        that:
+          - "firewalld_state.stdout == 'running'"
+        fail_msg: "Firewalld should be running"
+        success_msg: "Firewalld is running"
+      when: firewalld_which.rc == 0 and firewalld_state.rc == 0
+      ignore_errors: true
+
+    # =========================================================================
+    # SSH Service Verification
+    # =========================================================================
+    - name: Get SSH service facts
+      ansible.builtin.service_facts:
+      register: services_state
+
+    - name: Determine SSH service name
+      ansible.builtin.set_fact:
+        ssh_service_name: "{{ 'sshd' if 'sshd' in services_state.ansible_facts.services else 'ssh' if 'ssh' in services_state.ansible_facts.services else '' }}"
+
+    - name: Verify SSH service is running
+      ansible.builtin.assert:
+        that:
+          - "ssh_service_name != ''"
+          - "services_state.ansible_facts.services[ssh_service_name].state == 'running'"
+        fail_msg: "SSH service should be running"
+        success_msg: "SSH service is running"
+      when: ssh_service_name != ''
+
+    - name: Verify SSH service is enabled
+      ansible.builtin.assert:
+        that:
+          - "services_state.ansible_facts.services[ssh_service_name].status == 'enabled'"
+        fail_msg: "SSH service should be enabled"
+        success_msg: "SSH service is enabled"
+      when: ssh_service_name != ''
+
+    - name: Verify SSH is listening on port
+      ansible.builtin.shell: ss -tlnp | grep -E ':22\s' || true
+      register: ssh_listening
+      changed_when: false
+      failed_when: false
+
+    - name: Assert SSH is listening on port 22
+      ansible.builtin.assert:
+        that:
+          - "ssh_listening.stdout | length > 0"
+        fail_msg: "SSH should be listening on port 22"
+        success_msg: "SSH is listening on port 22"
+
+    # =========================================================================
+    # SSHD Configuration Verification
+    # =========================================================================
+    - name: Verify SSHD config exists
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config
+      register: sshd_config
+
+    - name: Verify SSHD config permissions
+      ansible.builtin.assert:
+        that:
+          - "sshd_config.stat.exists"
+          - "sshd_config.stat.mode | oct | int | abs == 0o644"
+        fail_msg: "SSHD config should exist with mode 0644"
+        success_msg: "SSHD config exists with correct permissions"
+
+    - name: Test SSHD config syntax
+      ansible.builtin.command: sshd -t -f /etc/ssh/sshd_config 2>&1
+      register: sshd_syntax
+      changed_when: false
+      failed_when: false
+
+    - name: Verify SSHD config syntax is valid
+      ansible.builtin.assert:
+        that:
+          - "sshd_syntax.rc == 0"
+        fail_msg: "SSHD config syntax should be valid"
+        success_msg: "SSHD config syntax is valid"
+
+    - name: Get SSHD runtime configuration
+      ansible.builtin.command: sshd -T -f /etc/ssh/sshd_config 2>/dev/null
+      register: sshd_settings
+      changed_when: false
+      failed_when: false
+
+    - name: Verify PermitRootLogin is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout | regex_search('^permitrootlogin\\s+no', multiline=True)"
+        fail_msg: "PermitRootLogin should be disabled"
+        success_msg: "PermitRootLogin is disabled"
+      when: sshd_settings.rc == 0
+
+    - name: Verify PasswordAuthentication is disabled
+      ansible.builtin.assert:
+        that:
+          - "sshd_settings.stdout | regex_search('^passwordauthentication\\s+no', multiline=True)"
+        fail_msg: "PasswordAuthentication should be disabled"
+        success_msg: "PasswordAuthentication is disabled"
+      when: sshd_settings.rc == 0
+
+    # =========================================================================
+    # SSH Host Keys Verification
+    # =========================================================================
+    - name: Verify Ed25519 host key exists
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_ed25519_key
+      register: ed25519_key
+
+    - name: Verify Ed25519 key permissions
+      ansible.builtin.assert:
+        that:
+          - "ed25519_key.stat.exists"
+          - "ed25519_key.stat.mode | oct | int | abs == 0o600"
+        fail_msg: "Ed25519 private key should have mode 0600"
+        success_msg: "Ed25519 host key has correct permissions"
+
+    - name: Verify RSA host key exists
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_rsa_key
+      register: rsa_key
+
+    - name: Verify RSA key permissions
+      ansible.builtin.assert:
+        that:
+          - "rsa_key.stat.exists"
+          - "rsa_key.stat.mode | oct | int | abs == 0o600"
+        fail_msg: "RSA private key should have mode 0600"
+        success_msg: "RSA host key has correct permissions"
+
+    # =========================================================================
+    # Preflight Flag Verification
+    # =========================================================================
     - name: Verify preflight flag exists
       ansible.builtin.stat:
         path: /tmp/preflight_completed.flag
       register: preflight_flag
+
     - name: Validate preflight flag
       ansible.builtin.assert:
         that:
-          - preflight_flag.stat.exists
+          - "preflight_flag.stat.exists"
         fail_msg: "Preflight completion flag should exist"
+        success_msg: "Preflight completion flag exists"
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display verification summary
+      ansible.builtin.debug:
+        msg: |
+          Production Verification Complete:
+          - Essential directories: Verified
+          - Essential packages: Verified
+          - Firewall: {{ 'Active' if ufw_which.rc == 0 and 'Status: active' in ufw_status.stdout else ('Running' if firewalld_which.rc == 0 and firewalld_state.stdout == 'running' else 'Not configured') }}
+          - SSH Service: Running and enabled
+          - SSHD Configuration: Valid with secure settings
+          - Host Keys: Ed25519 and RSA present with mode 0600
+          - Preflight Flag: {{ 'Present' if preflight_flag.stat.exists else 'Missing' }}

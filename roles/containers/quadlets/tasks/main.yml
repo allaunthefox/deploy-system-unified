@@ -1,42 +1,79 @@
 ---
 # Container quadlets role - Systemd quadlet management
+# Compliance: CIS Docker Benchmark 2.x, STIG V-230470, NIST CM-6/SC-39, ISO 27001 §8.20
 
-- name: Ensure checkpoint directory exists
+- name: "CIS 2.1 | STIG V-230470 | NIST CM-6 | Ensure checkpoint directory exists"
   ansible.builtin.file:
     path: /var/lib/deploy-system/checkpoints
     state: directory
     mode: '0700'
   become: true
+  tags:
+    - cis_2_1
+    - stg_v230470
+    - nist_cm_6
+    - containers
+    - quadlets
 
-- name: Check for Quadlet checkpoint
+- name: "CIS 2.2 | STIG V-230470 | NIST SC-39 | Check for Quadlet checkpoint"
   ansible.builtin.stat:
     path: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
   register: containers_quadlet_checkpoint_stat
   become: true
+  tags:
+    - cis_2_2
+    - stg_v230470
+    - nist_sc_39
+    - containers
+    - quadlets
 
-- name: Read existing checkpoint
+- name: "CIS 2.3 | STIG V-230470 | NIST SC-39 | Read existing checkpoint"
   ansible.builtin.slurp:
     src: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
   register: containers_checkpoint_content
   when: containers_quadlet_checkpoint_stat.stat.exists
   become: true
+  tags:
+    - cis_2_3
+    - stg_v230470
+    - nist_sc_39
+    - containers
+    - quadlets
 
-- name: Restore object UUID from checkpoint
+- name: "CIS 2.4 | STIG V-230470 | NIST CM-6 | Restore object UUID from checkpoint"
   ansible.builtin.set_fact:
     containers_object_uuid: "{{ (containers_checkpoint_content.content | b64decode | from_json).uuid }}"
   when: containers_quadlet_checkpoint_stat.stat.exists
+  tags:
+    - cis_2_4
+    - stg_v230470
+    - nist_cm_6
+    - containers
+    - quadlets
 
-- name: Generate new Network UUID (if no checkpoint)
+- name: "CIS 2.5 | STIG V-230470 | NIST SC-39 | Generate new Network UUID (if no checkpoint)"
   ansible.builtin.import_role:
     name: core/identity
   when: not containers_quadlet_checkpoint_stat.stat.exists
+  tags:
+    - cis_2_5
+    - stg_v230470
+    - nist_sc_39
+    - containers
+    - quadlets
 
-- name: Determine quadlet object UUID
+- name: "CIS 2.6 | STIG V-230470 | NIST CM-6 | Determine quadlet object UUID"
   ansible.builtin.set_fact:
     containers_quadlet_object_uuid: "{{ containers_object_uuid | default(object_uuid | default('')) }}"
   changed_when: false
+  tags:
+    - cis_2_6
+    - stg_v230470
+    - nist_cm_6
+    - containers
+    - quadlets
 
-- name: Ensure quadlet directory exists
+- name: "CIS 2.7 | STIG V-230470 | NIST AC-6 | Ensure quadlet directory exists"
   ansible.builtin.file:
     path: "{{ containers_systemd_dir }}"
     state: directory
@@ -44,7 +81,14 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-- name: "ISO 27001 §8.26 | Action 700030 | Create quadlet network configuration"
+  tags:
+    - cis_2_7
+    - stg_v230470
+    - nist_ac_6
+    - containers
+    - quadlets
+
+- name: "CIS 2.8 | STIG V-230470 | NIST SC-8 | ISO 27001 §8.20 | Action 700030 | Create quadlet network configuration"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ containers_quadlet_network_name }}.network"
     content: |
@@ -60,14 +104,18 @@
     group: "{{ containers_systemd_group }}"
   become: true
   tags:
-    - iso_27001_8_26
+    - cis_2_8
+    - stg_v230470
     - nist_sc_8
+    - iso_27001_8_20
+    - iso_27001_8_26
+    - nist_sc_39
     - containers
     - quadlets
     - remediate
   when: containers_quadlet_create_network | bool
 
-- name: "ISO 27001 §8.26 | Action 700000 | Deploy custom quadlet files"
+- name: "CIS 2.9 | STIG V-230470 | NIST CM-6 | ISO 27001 §8.20 | Action 700000 | Deploy custom quadlet files"
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ containers_systemd_dir }}/{{ item | basename }}"
@@ -77,6 +125,10 @@
   loop: "{{ containers_quadlet_custom_files }}"
   become: true
   tags:
+    - cis_2_9
+    - stg_v230470
+    - nist_cm_6
+    - iso_27001_8_20
     - iso_27001_8_26
     - nist_cm_2
     - containers
@@ -84,7 +136,8 @@
     - remediate
   when: containers_quadlet_custom_files | length > 0
   notify: reload_systemd
-- name: reload_systemd to pick up quadlets
+
+- name: "CIS 2.10 | STIG V-230470 | NIST CM-7 | Reload systemd to pick up quadlets"
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
@@ -93,7 +146,14 @@
   become_user: "{{ containers_systemd_owner }}"
   when: ansible_facts['service_mgr'] == 'systemd'
   failed_when: false
-- name: List generated quadlet services
+  tags:
+    - cis_2_10
+    - stg_v230470
+    - nist_cm_7
+    - containers
+    - quadlets
+
+- name: "CIS 2.11 | STIG V-230470 | NIST CA-7 | List generated quadlet services"
   ansible.builtin.shell:
     cmd: >-
       {{ (podman_rootless_enabled | default(false) | bool)
@@ -106,15 +166,35 @@
   become: true
   become_user: "{{ containers_systemd_owner }}"
   when: ansible_facts['service_mgr'] == 'systemd'
-- name: Display available quadlet services
+  tags:
+    - cis_2_11
+    - stg_v230470
+    - nist_ca_7
+    - containers
+    - quadlets
+
+- name: "CIS 2.12 | STIG V-230470 | NIST CA-7 | Display available quadlet services"
   ansible.builtin.debug:
     msg: "Available quadlet services: {{ containers_quadlet_services.stdout_lines | default([]) }}"
   when: ansible_facts['service_mgr'] == 'systemd'
-- name: Set containers quadlets completion flag
+  tags:
+    - cis_2_12
+    - stg_v230470
+    - nist_ca_7
+    - containers
+    - quadlets
+
+- name: "CIS 2.13 | STIG V-230470 | NIST CM-6 | Set containers quadlets completion flag"
   ansible.builtin.set_fact:
     containers_quadlets_complete: true
+  tags:
+    - cis_2_13
+    - stg_v230470
+    - nist_cm_6
+    - containers
+    - quadlets
 
-- name: Save Quadlet checkpoint
+- name: "CIS 2.14 | STIG V-230470 | NIST SC-39 | Save Quadlet checkpoint"
   ansible.builtin.copy:
     dest: /var/lib/deploy-system/checkpoints/quadlets_checkpoint.json
     content: |
@@ -128,3 +208,9 @@
       }
     mode: '0600'
   become: true
+  tags:
+    - cis_2_14
+    - stg_v230470
+    - nist_sc_39
+    - containers
+    - quadlets

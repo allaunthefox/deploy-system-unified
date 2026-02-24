@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: hardware_isolation
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Hardware-level security isolation (IOMMU, DMA protection)"
   license: MIT
   min_ansible_version: "2.15"
@@ -22,6 +22,15 @@ galaxy_info:
     - iommu
     - dma
     - pcie
-    - iso_27001
+    - passthrough
+    - vfio
+    - hardening
+    - physical
+    - iso27001
+    - virtualization
+    - firmware
+
+collections:
+  - ansible.builtin
 
 dependencies: []

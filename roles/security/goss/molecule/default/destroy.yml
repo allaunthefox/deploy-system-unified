@@ -1,0 +1,13 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Destroy goss test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - goss-ubuntu-2204
+        - goss-debian-12

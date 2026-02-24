@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: mac_apparmor
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Mandatory Access Control (MAC) management via AppArmor"
   license: MIT
   min_ansible_version: "2.15"
@@ -17,6 +17,16 @@ galaxy_info:
     - mac
     - apparmor
     - isolation
-    - iso_27001
+    - profiles
+    - mandatory
+    - accesscontrol
+    - hardening
+    - linux
+    - iso27001
+    - nist80053
+    - container
+
+collections:
+  - ansible.builtin
 
 dependencies: []

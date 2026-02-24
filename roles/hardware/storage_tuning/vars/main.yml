@@ -1,1 +1,51 @@
 ---
+# Internal variables for hardware/storage_tuning role
+# Part of ISO 9001 Structural Consistency
+
+# Storage device paths
+_storage_device_base: /dev
+_storage_ssd_pattern: sd[a-z]*|nvme[0-9]*|mmcblk[0-9]*
+_storage_virtual_pattern: vd[a-z]*|xvd[a-z]*
+_storage_ram_pattern: ram[0-9]*|zram[0-9]*
+_storage_rotation_check_attr: queue/rotational
+
+# Storage I/O scheduler settings
+_storage_scheduler_ssd: mq-deadline
+_storage_scheduler_nvme: mq-deadline
+_storage_scheduler_virtual: none
+_storage_scheduler_ram: none
+_storage_scheduler_hdd: mq-deadline
+_storage_udev_rules_path: /etc/udev/rules.d/60-disk-scheduler.rules
+
+# Storage tuning paths
+_storage_sysctl_path: /etc/sysctl.d/99-storage-optimization.conf
+_storage_lsblk_cmd: lsblk -d -o NAME,SIZE,ROTA,PHY-SEC,OPT-IO -n --bytes
+_storage_blockdev_cmd: blockdev
+
+# Storage read-ahead settings
+_storage_readahead_default_sectors: 4096
+_storage_readahead_large_threshold_mb: 1000000
+_storage_readahead_alignment_bytes: 512
+
+# Storage TRIM settings
+_storage_fstrim_timer_name: fstrim.timer
+_storage_fstrim_service_name: fstrim.service
+_storage_fstrim_default_interval: weekly
+
+# Storage queue settings
+_storage_queue_nr_requests: 256
+_storage_queue_read_ahead_kb: 2048
+_storage_queue_max_sectors_kb: 512
+
+# Storage filesystem tuning
+_storage_filesystem_mount_options:
+  - noatime
+  - nodiratime
+  - discard
+
+# Storage device attributes
+_storage_attr_rotational: queue/rotational
+_storage_attr_scheduler: queue/scheduler
+_storage_attr_read_ahead: queue/read_ahead_kb
+_storage_attr_physical_sector: queue/physical_block_size
+_storage_attr_optimal_io: queue/optimal_io_size

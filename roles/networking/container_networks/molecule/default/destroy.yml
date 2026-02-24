@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove container_networks test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - container-networks-ubuntu-2204
+        - container-networks-debian-12
+        - container-networks-alpine-319
+        - container-networks-rockylinux-9

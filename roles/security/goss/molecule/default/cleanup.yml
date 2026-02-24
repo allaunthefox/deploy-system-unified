@@ -1,0 +1,14 @@
+---
+- name: Cleanup
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Cleanup goss files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/goss
+        - /var/log/goss
+      failed_when: false

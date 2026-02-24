@@ -1,0 +1,11 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove virtualization/storage test container
+      containers.podman.podman_container:
+        name: virt-storage-molecule
+        state: absent
+        force_delete: true

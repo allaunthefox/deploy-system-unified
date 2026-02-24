@@ -1,0 +1,405 @@
+---
+# Security Role - Internal Variables
+# ISO 9001 Structural Consistency | POL-SEC Security Baseline
+# These are role-specific internal variables not intended for user override
+
+# =============================================================================
+# COMPLIANCE FRAMEWORK MAPPINGS
+# =============================================================================
+
+# CIS Benchmark Controls covered by this role
+security_cis_controls:
+  - id: "1.1.1"
+    title: "Ensure mounting of cramfs filesystems is disabled"
+    severity: "high"
+  - id: "1.1.5"
+    title: "Ensure OpenSSH Server is installed"
+    severity: "high"
+  - id: "1.3.1"
+    title: "Ensure AIDE is installed"
+    severity: "high"
+  - id: "1.3.2"
+    title: "Ensure filesystem integrity is regularly checked"
+    severity: "high"
+  - id: "1.4.1"
+    title: "Ensure bootloader password is set"
+    severity: "high"
+  - id: "3.2.1"
+    title: "Ensure source routed packets are not accepted"
+    severity: "high"
+  - id: "4.2.1.2"
+    title: "Ensure journald is configured to send logs to rsyslog"
+    severity: "medium"
+  - id: "4.2.1.3"
+    title: "Ensure journald is configured to compress large log files"
+    severity: "medium"
+  - id: "5.2.2"
+    title: "Ensure permissions on SSH private host key files are configured"
+    severity: "high"
+  - id: "5.2.3"
+    title: "Ensure permissions on SSH public host key files are configured"
+    severity: "medium"
+  - id: "5.2.5"
+    title: "Ensure SSH PermitRootLogin is disabled"
+    severity: "high"
+  - id: "5.2.6"
+    title: "Ensure SSH PermitEmptyPasswords is disabled"
+    severity: "high"
+  - id: "5.2.11"
+    title: "Ensure SSH Protocol is set to 2"
+    severity: "high"
+  - id: "5.2.12"
+    title: "Ensure SSH HostbasedAuthentication is disabled"
+    severity: "medium"
+  - id: "5.2.13"
+    title: "Ensure SSH PermitUserEnvironment is disabled"
+    severity: "medium"
+  - id: "5.2.14"
+    title: "Ensure SSH LoginGraceTime is set to one minute or less"
+    severity: "medium"
+  - id: "5.2.15"
+    title: "Ensure SSH access is limited"
+    severity: "high"
+  - id: "5.2.18"
+    title: "Ensure SSH MaxAuthTries is set to 4 or less"
+    severity: "medium"
+  - id: "5.4.1"
+    title: "Ensure password creation requirements are configured"
+    severity: "high"
+  - id: "5.6.1"
+    title: "Ensure faillock is configured"
+    severity: "high"
+  - id: "7.1"
+    title: "Ensure sudo is installed"
+    severity: "high"
+
+# STIG Controls covered by this role
+security_stig_controls:
+  - id: "V-230217"
+    title: "File system permissions must be hardened"
+    severity: "high"
+  - id: "V-230218"
+    title: "User accounts must be hardened"
+    severity: "high"
+  - id: "V-230229"
+    title: "OpenSSH Server must be installed"
+    severity: "high"
+  - id: "V-230230"
+    title: "Wheel group must exist for sudo access"
+    severity: "medium"
+  - id: "V-230231"
+    title: "Kernel hardening parameters must be applied"
+    severity: "high"
+  - id: "V-230232"
+    title: "Kernel security parameters must be registered for GRUB"
+    severity: "high"
+  - id: "V-230235"
+    title: "Sudo must be configured for wheel group"
+    severity: "high"
+  - id: "V-230236"
+    title: "Sudo authentication must be required"
+    severity: "high"
+  - id: "V-230237"
+    title: "SSH root login must be disabled"
+    severity: "high"
+  - id: "V-230238"
+    title: "SSH password authentication must be disabled"
+    severity: "high"
+  - id: "V-230344"
+    title: "Fail2Ban must be installed"
+    severity: "medium"
+  - id: "V-230345"
+    title: "Fail2Ban must be configured for SSH protection"
+    severity: "medium"
+  - id: "V-230346"
+    title: "Web server Fail2Ban filters must be installed"
+    severity: "low"
+  - id: "V-230347"
+    title: "Fail2Ban must be configured for web protection"
+    severity: "medium"
+  - id: "V-230348"
+    title: "Fail2Ban service must be enabled"
+    severity: "medium"
+
+# NIST 800-53 Controls covered by this role
+security_nist_controls:
+  - id: "CM-2"
+    title: "Baseline Configuration"
+    family: "Configuration Management"
+  - id: "IA-2"
+    title: "Identification and Authentication (Organizational Users)"
+    family: "Identification and Authentication"
+  - id: "SC-8"
+    title: "Transmission Confidentiality and Integrity"
+    family: "System and Communications Protection"
+  - id: "AC-3"
+    title: "Access Enforcement"
+    family: "Access Control"
+  - id: "AC-6"
+    title: "Least Privilege"
+    family: "Access Control"
+  - id: "AU-2"
+    title: "Event Logging"
+    family: "Audit and Accountability"
+  - id: "AU-12"
+    title: "Audit Generation"
+    family: "Audit and Accountability"
+  - id: "SI-4"
+    title: "Information System Monitoring"
+    family: "System and Information Integrity"
+
+# ISO 27001:2022 Controls covered by this role
+security_iso_27001_controls:
+  - id: "8.8"
+    title: "Management of technical vulnerabilities"
+    category: "Technological controls"
+  - id: "8.26"
+    title: "Application security requirements"
+    category: "Technological controls"
+  - id: "9.2"
+    title: "Privileged access rights"
+    category: "Organisational controls"
+  - id: "10.1"
+    title: "Information deletion"
+    category: "Technological controls"
+  - id: "12.2"
+    title: "Information integrity monitoring"
+    category: "Technological controls"
+  - id: "12.4"
+    title: "Logging"
+    category: "Technological controls"
+  - id: "16.1"
+    title: "Responsibilities and procedures"
+    category: "Process controls"
+
+# =============================================================================
+# SERVICE NAMES (OS-specific)
+# =============================================================================
+
+security_service_names:
+  debian:
+    ssh: "ssh"
+    auditd: "auditd"
+    fail2ban: "fail2ban"
+    apparmor: "apparmor"
+    chrony: "chrony"
+  redhat:
+    ssh: "sshd"
+    auditd: "auditd"
+    fail2ban: "fail2ban"
+    chrony: "chronyd"
+  alpine:
+    ssh: "sshd"
+    auditd: "auditd"
+    fail2ban: "fail2ban"
+    apparmor: "apparmor"
+  archlinux:
+    ssh: "sshd"
+    auditd: "auditd"
+    fail2ban: "fail2ban"
+    chrony: "chronyd"
+
+# =============================================================================
+# PACKAGE LISTS (OS-specific)
+# =============================================================================
+
+security_packages_core:
+  debian:
+    - "openssh-server"
+    - "openssh-client"
+    - "auditd"
+    - "libpam-tmpdir"
+    - "fail2ban"
+    - "aide"
+    - "clamav"
+    - "rkhunter"
+    - "lynis"
+    - "bubblewrap"
+    - "chrony"
+  redhat:
+    - "openssh-server"
+    - "openssh-clients"
+    - "audit"
+    - "fail2ban"
+    - "aide"
+    - "clamav"
+    - "rkhunter"
+    - "lynis"
+    - "bubblewrap"
+    - "chrony"
+  alpine:
+    - "openssh"
+    - "audit"
+    - "fail2ban"
+    - "aide"
+    - "clamav"
+    - "rkhunter"
+    - "lynis"
+    - "bubblewrap"
+    - "chrony"
+  archlinux:
+    - "openssh"
+    - "audit"
+    - "fail2ban"
+    - "aide"
+    - "clamav"
+    - "rkhunter"
+    - "lynis"
+    - "bubblewrap"
+    - "chrony"
+
+# Security kernel packages
+security_packages_kernel:
+  debian:
+    - "linux-image-generic"
+    - "linux-headers-generic"
+  redhat:
+    - "kernel"
+    - "kernel-devel"
+  alpine:
+    - "linux-lts"
+    - "linux-lts-virt"
+  archlinux:
+    - "linux"
+    - "linux-headers"
+
+# =============================================================================
+# PATHS AND DIRECTORIES
+# =============================================================================
+
+security_paths:
+  ssh_config_dir: "/etc/ssh"
+  ssh_config_file: "/etc/ssh/sshd_config"
+  ssh_keys_dir: "/etc/ssh"
+  ssh_privsep_dir: "/run/sshd"
+  audit_config_dir: "/etc/audit"
+  audit_rules_file: "/etc/audit/rules.d/audit.rules"
+  aide_config_file: "/etc/aide/aide.conf"
+  aide_db_dir: "/var/lib/aide"
+  aide_db_file: "/var/lib/aide/aide.db.gz"
+  fail2ban_config_dir: "/etc/fail2ban"
+  fail2ban_jail_dir: "/etc/fail2ban/jail.d"
+  fail2ban_filter_dir: "/etc/fail2ban/filter.d"
+  sysctl_config_dir: "/etc/sysctl.d"
+  sysctl_hardening_file: "/etc/sysctl.d/99-hardened.conf"
+  pam_config_dir: "/etc/pam.d"
+  sudoers_file: "/etc/sudoers"
+  sudoers_dir: "/etc/sudoers.d"
+  journald_config_file: "/etc/systemd/journald.conf"
+  journal_dir: "/var/log/journal"
+  sandboxing_policy_dir: "/etc/sandboxing/policies"
+  grub_config_file: "/etc/default/grub"
+  grub_config_dir: "/etc/default/grub.d"
+
+# =============================================================================
+# FILE PERMISSIONS (Security Baseline)
+# =============================================================================
+
+security_file_permissions:
+  - path: "/etc/shadow"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  - path: "/etc/passwd"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  - path: "/etc/group"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  - path: "/etc/sudoers"
+    mode: "0440"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh/sshd_config"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh/ssh_host_ed25519_key"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh/ssh_host_ed25519_key.pub"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh/ssh_host_rsa_key"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  - path: "/etc/ssh/ssh_host_rsa_key.pub"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+# =============================================================================
+# KERNEL HARDENING PARAMETERS (Sysctl)
+# =============================================================================
+
+security_sysctl_params:
+  # Network Hardening
+  net.ipv4.conf.all.accept_redirects: "0"
+  net.ipv4.conf.all.secure_redirects: "0"
+  net.ipv4.conf.all.send_redirects: "0"
+  net.ipv4.conf.all.accept_source_route: "0"
+  net.ipv4.conf.all.log_martians: "1"
+  net.ipv4.tcp_syncookies: "1"
+  net.ipv4.tcp_rfc1337: "1"
+  # System Hardening
+  kernel.kptr_restrict: "2"
+  kernel.dmesg_restrict: "1"
+  kernel.printk: "3 3 3 3"
+  kernel.unprivileged_bpf_disabled: "1"
+  net.core.bpf_jit_harden: "2"
+  dev.tty.ldisc_autoload: "0"
+  vm.unprivileged_userfaultfd: "0"
+  # Memory Hardening
+  kernel.panic_on_oops: "1"
+  vm.swappiness: "1"
+
+# GRUB Security Parameters
+security_grub_params:
+  - "init_on_free=1"
+  - "page_poison=1"
+  - "slab_nomerge"
+  - "apparmor=1"
+  - "security=apparmor"
+
+# =============================================================================
+# COMPLETION FLAGS
+# =============================================================================
+
+# Role completion tracking (internal state)
+_security_subroles_complete:
+  access: false
+  hardening: false
+  sshd: false
+  kernel: false
+  ips: false
+  file_integrity: false
+  audit_integrity: false
+  sandboxing: false
+  scanning: false
+
+# =============================================================================
+# SEVERITY CLASSIFICATIONS
+# =============================================================================
+
+security_severity_levels:
+  critical:
+    cis: ["1.1.1", "1.1.5", "5.2.5", "5.2.6"]
+    stig: ["V-230217", "V-230218", "V-230237", "V-230238"]
+  high:
+    cis: ["1.3.1", "1.3.2", "1.4.1", "3.2.1", "5.2.2", "5.2.3", "5.4.1", "5.6.1", "7.1"]
+    stig: ["V-230229", "V-230230", "V-230231", "V-230232", "V-230235", "V-230236"]
+  medium:
+    cis: ["4.2.1.2", "4.2.1.3", "5.2.12", "5.2.13", "5.2.14", "5.2.18"]
+    stig: ["V-230344", "V-230345", "V-230347", "V-230348"]
+  low:
+    cis: []
+    stig: ["V-230346"]

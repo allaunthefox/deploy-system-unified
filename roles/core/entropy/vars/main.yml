@@ -1,1 +1,75 @@
 ---
+# Internal variables for core/entropy role
+# Entropy enhancement for cryptographic operations
+# CIS 3.5.x | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1
+
+# Role metadata
+core_entropy_role_version: "1.0.0"
+
+# Service and package mapping by distribution
+core_entropy_service_mapping:
+  archlinux:
+    entropy_service: "haveged"
+    entropy_package: "haveged"
+    rng_service: "rngd"
+    rng_package: "rng-tools"
+  debian:
+    entropy_service: "haveged"
+    entropy_package: "haveged"
+    rng_service: "rng-tools"
+    rng_package: "rng-tools5"
+  ubuntu:
+    entropy_service: "haveged"
+    entropy_package: "haveged"
+    rng_service: "rng-tools"
+    rng_package: "rng-tools5"
+  fedora:
+    entropy_service: "haveged"
+    entropy_package: "haveged"
+    rng_service: "rngd"
+    rng_package: "rng-tools"
+  alpine:
+    entropy_service: "haveged"
+    entropy_package: "haveged"
+    rng_service: "rngd"
+    rng_package: "rng-tools"
+
+# Entropy device paths
+core_entropy_device_paths:
+  random: "/dev/random"
+  urandom: "/dev/urandom"
+  hwrng: "/dev/hwrng"
+
+# Entropy thresholds
+core_entropy_min_available_bits: 1024
+core_entropy_target_bits: 2048
+
+# Service status check settings
+core_entropy_service_retries: 3
+core_entropy_service_delay: 5
+
+# ISO 27001 compliance references
+core_entropy_iso_control: "ISO 27001 §10.1"
+core_entropy_action_codes:
+  install: "530001"
+  enable: "300014"
+
+# Virtualization handling
+core_entropy_skip_in_virtualized: true
+
+# Handler names
+core_entropy_handlers:
+  - "restart_haveged"
+  - "restart_rngd"
+
+# Compliance mappings
+core_entropy_compliance:
+  cis:
+    - "CIS 3.5.1"
+  stig:
+    - "V-230300"
+  nist:
+    - "SC-12"
+    - "SP 800-90"
+  iso_27001:
+    - "§10.1"

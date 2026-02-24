@@ -1,0 +1,32 @@
+# Goss tests for core/memory role
+# CIS 3.4.x | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20
+---
+command:
+  # Verify memory info is available
+  free -h:
+    exit-status: 0
+  # Verify swapon works
+  swapon --show:
+    exit-status: 0
+
+file:
+  /proc/meminfo:
+    exists: true
+  # Check for zram device if configured
+  /sys/block/zram0:
+    exists: true
+  # Check for sysctl config
+  /etc/sysctl.d/99-memory-tuning.conf:
+    exists: true
+  # Check for zram-generator config
+  /etc/systemd/zram-generator.conf:
+    exists: true
+
+# Check sysctl parameters
+command:
+  # Verify swappiness can be read
+  sysctl vm.swappiness:
+    exit-status: 0
+  # Verify transparent hugepage exists
+  ls /sys/kernel/mm/transparent_hugepage/:
+    exit-status: 0

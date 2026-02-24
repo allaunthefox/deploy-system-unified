@@ -1,0 +1,47 @@
+# Custom Falco Security Rules
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+- rule: Detect sensitive file access
+  desc: Detect access to sensitive system files
+  condition: open_read and (fd.name in (sensitive_files) or fd.name startswith /etc/shadow)
+  priority: WARNING
+  output: "Sensitive file accessed (user=%user.name command=%proc.cmdline file=%fd.name)"
+  tags: [filesystem, sensitive]
+
+- rule: Detect suspicious process execution
+  desc: Detect execution of suspicious processes
+  condition: proc.name in (suspicious_processes)
+  priority: WARNING
+  output: "Suspicious process executed (user=%user.name command=%proc.cmdline)"
+  tags: [process, suspicious]
+
+- rule: Detect network connections to suspicious destinations
+  desc: Detect outbound network connections to known bad IPs or domains
+  condition: evt.type=connect and (fd.ip in (suspicious_ips) or fd.sip in (suspicious_ips))
+  priority: CRITICAL
+  output: "Suspicious network connection (user=%user.name command=%proc.cmdline dest=%fd.ip)"
+  tags: [network, suspicious]
+
+- rule: Detect privilege escalation
+  desc: Detect attempts to gain root privileges
+  condition: (evt.type=setuid or evt.type=setgid) and (proc.euid=0 or proc.egid=0)
+  priority: CRITICAL
+  output: "Privilege escalation detected (user=%user.name command=%proc.cmdline)"
+  tags: [privilege, escalation]
+
+- rule: Detect container escape attempts
+  desc: Detect potential container escape techniques
+  condition: (proc.name=nsenter or proc.name=unshare) and not k8s.ns.name=""
+  priority: CRITICAL
+  output: "Container escape attempt (user=%user.name command=%proc.cmdline)"
+  tags: [container, escape]
+
+# Lists for detection
+- list: sensitive_files
+  items: [/etc/shadow, /etc/passwd, /etc/sudoers, /etc/ssh/sshd_config]
+
+- list: suspicious_processes
+  items: [ncat, netcat, socat, nc, cryptominer]
+
+- list: suspicious_ips
+  items: []

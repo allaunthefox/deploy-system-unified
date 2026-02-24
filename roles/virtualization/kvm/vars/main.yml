@@ -1,1 +1,73 @@
 ---
+# Internal variables for virtualization/kvm role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_kvm_role_name: kvm
+_kvm_role_version: "1.0.0"
+
+# Service names
+_kvm_services:
+  - libvirtd
+  - virtlogd
+  - virtlockd
+
+# Package names (internal reference)
+_kvm_packages:
+  - qemu-kvm
+  - qemu-utils
+  - libvirt-daemon-system
+  - libvirt-clients
+  - bridge-utils
+  - virt-manager
+  - ovmf
+  - libguestfs-tools
+  - swtpm
+  - swtpm-tools
+
+# Configuration paths
+_kvm_config_base: /etc/libvirt
+_kvm_config_file: /etc/libvirt/qemu.conf
+_kvm_network_dir: /etc/libvirt/qemu/networks
+_kvm_storage_dir: /var/lib/libvirt
+_kvm_images_dir: /var/lib/libvirt/images
+_kvm_logs_dir: /var/log/libvirt
+_kvm_run_dir: /run/libvirt
+_kvm_cache_dir: /var/cache/libvirt
+
+# Kernel modules
+_kvm_kernel_modules_intel:
+  - kvm
+  - kvm_intel
+  - vhost_net
+
+_kvm_kernel_modules_amd:
+  - kvm
+  - kvm_amd
+  - vhost_net
+
+_kvm_kernel_modules_common:
+  - nbd
+
+# Security configuration
+_kvm_security_user: libvirt-qemu
+_kvm_security_group: libvirt-qemu
+_kvm_security_dynamic_ownership: 0
+
+# TPM configuration
+_kvm_tpm_emulator: swtpm
+_kvm_tpm_socket_dir: /var/lib/swtpm
+_kvm_tpm_state_dir: /var/lib/swtpm
+
+# OVMF/UEFI paths
+_kvm_ovmf_code_path: /usr/share/OVMF/OVMF_CODE.fd
+_kvm_ovmf_vars_path: /usr/share/OVMF/OVMF_VARS.fd
+
+# Bridge configuration
+_kvm_bridge_name: virbr0
+_kvm_bridge_network: 192.168.122.0/24
+
+# Internal state tracking
+_kvm_initialized: false
+_kvm_hardware_tpm_detected: false
+_kvm_cpu_vendor: unknown

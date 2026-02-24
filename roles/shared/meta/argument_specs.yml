@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Shared tasks and utilities
+    description:
+      - Provides reusable tasks for other roles
+      - Includes assertions, package installation, and backup security
+    options:
+      package_name:
+        type: str
+        description: Package name for installation tasks
+      backup_name:
+        type: str
+        description: Backup name for security tasks
+      backup_source_path:
+        type: str
+        description: Source path for backup operations

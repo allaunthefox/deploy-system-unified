@@ -1,0 +1,22 @@
+---
+# Internal variables for compliance role
+
+# CIS Benchmark version
+cis_benchmark_version: "1.0.0"
+cis_ubuntu_version: "22.04"
+
+# Compliance score tracking
+cis_level_1_score: 0
+cis_level_1_total: 0
+cis_level_2_score: 0
+cis_level_2_total: 0
+
+# STIG tracking
+stig_vuln_count: 0
+stig_cat1_count: 0
+stig_cat2_count: 0
+stig_cat3_count: 0
+
+# NIST tracking
+nist_controls_mapped: 0
+nist_control_families_status: {}

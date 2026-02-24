@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove firejail test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - firejail-ubuntu-2204
+        - firejail-debian-12
+        - firejail-alpine-319
+        - firejail-rockylinux-9

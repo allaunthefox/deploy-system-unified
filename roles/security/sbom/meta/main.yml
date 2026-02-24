@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: sbom
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Software Bill of Materials (SBOM) generation and supply-chain auditing"
   license: MIT
   min_ansible_version: "2.15"
@@ -11,8 +11,21 @@ galaxy_info:
   galaxy_tags:
     - security
     - sbom
-    - supply_chain
-    - iso_27001
+    - supplychain
+    - iso27001
     - audit
+    - compliance
+    - devops
+    - cicd
+    - vulnerability
+    - dependencies
+    - linux
+    - forensic
+    - traceability
+    - software_composition
+    - risk_management
+
+collections:
+  - ansible.builtin
 
 dependencies: []

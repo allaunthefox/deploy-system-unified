@@ -1,1 +1,61 @@
 ---
+# Internal variables for hardware/firmware role
+# Part of ISO 9001 Structural Consistency
+
+# TPM paths
+_firmware_tpm_primary_device: /dev/tpmrm0
+_firmware_tpm_secondary_device: /dev/tpm0
+_firmware_tpm_tools_package: tpm2-tools
+_firmware_tpm_abrmd_package: tpm2-abrmd
+_firmware_tpm_abrmd_service: tpm2-abrmd.service
+
+# Secure Boot paths
+_firmware_secure_boot_path: /sys/firmware/efi
+_firmware_secure_boot_status_cmd: mokutil --sb-state
+_firmware_secure_boot_enabled_string: SecureBoot enabled
+_firmware_efivars_path: /sys/firmware/efi/efivars
+
+# RTC/Hardware Clock paths
+_firmware_rtc_device: /dev/rtc
+_firmware_rtc_class_device: /sys/class/rtc/rtc0
+_firmware_timedatectl_cmd: timedatectl
+_firmware_rtc_utc_cmd: timedatectl set-local-rtc 0
+_firmware_ntp_enable_cmd: timedatectl set-ntp true
+
+# Watchdog paths
+_firmware_watchdog_device: /dev/watchdog
+_firmware_watchdog_config: /etc/watchdog.conf
+_firmware_watchdog_service: watchdog
+_firmware_watchdog_package: watchdog
+
+# Hardware monitoring paths
+_firmware_hwmon_path: /sys/class/hwmon
+_firmware_thermal_path: /sys/class/thermal
+_firmware_sensors_package: lm-sensors
+_firmware_sensors_detect_cmd: sensors-detect
+_firmware_sensors_config: /etc/sensors3.conf
+
+# CPU detection
+_firmware_cpu_server_patterns:
+  - Xeon
+  - EPYC
+  - Opteron
+  - Epyc
+_firmware_cpu_consumer_patterns:
+  - Ryzen
+  - Core
+  - Athlon
+  - Pentium
+
+# DMI/SMBIOS paths
+_firmware_dmi_path: /sys/class/dmi
+_firmware_dmi_id_path: /sys/class/dmi/id
+_firmware_dmidecode_cmd: dmidecode
+
+# Firmware architecture tasks
+_firmware_arch_tasks_dir: /home/prod/Workspaces/repos/deploy-system-unified/roles/hardware/firmware/tasks/arch
+
+# Hardware services
+_firmware_services:
+  - smartmontools
+  - watchdog

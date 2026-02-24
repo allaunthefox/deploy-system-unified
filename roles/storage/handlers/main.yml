@@ -1,0 +1,17 @@
+---
+# Handlers for storage role
+# Parent role handlers for storage services
+
+- name: reload_udev_rules
+  ansible.builtin.command:
+    cmd: udevadm control --reload-rules && udevadm trigger
+  become: true
+  listen: "reload udev"
+
+- name: reload_multipath
+  ansible.builtin.systemd:
+    name: multipathd
+    state: reloaded
+  become: true
+  failed_when: false
+  listen: "reload multipath"

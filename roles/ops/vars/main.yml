@@ -1,0 +1,50 @@
+---
+# Internal variables for ops role
+# Part of ISO 9001 Structural Consistency
+
+# Operations base directories
+ops_base_dir: "/var/lib/deploy-system"
+ops_state_dir: "{{ ops_base_dir }}/state"
+ops_log_dir: "{{ ops_base_dir }}/logs"
+ops_cache_dir: "{{ ops_base_dir }}/cache"
+ops_tmp_dir: "{{ ops_base_dir }}/tmp"
+
+# Operations configuration
+ops_config_dir: "/etc/deploy-system"
+ops_config_file: "{{ ops_config_dir }}/config.yml"
+
+# Operations logging
+ops_log_level: "INFO"
+ops_log_format: "json"
+ops_log_max_size_mb: 100
+ops_log_max_backups: 5
+ops_log_max_age_days: 30
+
+# Operations timeouts
+ops_default_timeout: 300
+ops_connection_timeout: 30
+ops_operation_timeout: 600
+
+# Operations retry configuration
+ops_retry_count: 3
+ops_retry_delay: 5
+ops_retry_backoff_multiplier: 2
+
+# Security configuration
+ops_security_context: "deploy-system"
+ops_security_mode: "0750"
+ops_file_mode: "0640"
+ops_executable_mode: "0750"
+
+# Audit and compliance
+ops_audit_enabled: true
+ops_audit_dir: "{{ ops_base_dir }}/audit"
+ops_audit_log_file: "{{ ops_audit_dir }}/audit.log"
+
+# Feature flags
+ops_feature_toggles:
+  health_check: true
+  monitoring: true
+  session_management: true
+  connection_info: true
+  cloud_init: true

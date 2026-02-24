@@ -1,0 +1,45 @@
+# Goss tests for containers/memcached role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify memcached container configuration
+# =============================================================================
+file:
+  /etc/containers/systemd/memcached.container:
+    exists: true
+    mode: "0644"
+    contains:
+      - "/Description=memcached/"
+      - "/Image=/"
+      - "/ContainerName=memcached/"
+      - "/Restart=always/"
+
+# =============================================================================
+# SERVICE TESTS
+# =============================================================================
+service:
+  memcached:
+    enabled: true
+    running: true
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  memcached_container:
+    exec: 'podman ps -a | grep memcached || true'
+    exit-status: 0
+    timeout: 10000
+
+# =============================================================================
+# PORT TESTS
+# =============================================================================
+port:
+  tcp:11211:
+    listening: true

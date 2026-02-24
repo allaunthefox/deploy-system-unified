@@ -1,1 +1,14 @@
 ---
+# Handlers for security/sandboxing - User-space Isolation
+
+- name: Reload sandboxing policies
+  ansible.builtin.command: >-
+    find {{ sandboxing_policy_dir | default('/etc/sandboxing/policies') }}
+    -name '*.conf' -exec echo "Policy {} loaded" \;
+  become: true
+  changed_when: false
+
+- name: Restart bubblewrap profiles
+  ansible.builtin.debug:
+    msg: "Bubblewrap profiles updated - applications must be restarted to apply new sandbox policies"
+  when: sandboxing_enabled

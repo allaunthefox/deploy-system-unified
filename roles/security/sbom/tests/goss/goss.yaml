@@ -1,0 +1,14 @@
+file:
+  /usr/local/bin/syft:
+    exists: true
+    mode: "0755"
+
+package:
+  syft:
+    installed: true
+
+command:
+  syft_version:
+    exec: "syft --version"
+    exit-status: 0
+    allow-failure: true

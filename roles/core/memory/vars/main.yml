@@ -1,2 +1,54 @@
 ---
 # vars file for core/memory
+# CIS 3.4.x | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20
+
+# Role metadata
+core_memory_role_version: "1.0.0"
+
+# Memory compression strategy options
+core_memory_compression_strategies:
+  - "zram"
+  - "zswap"
+  - "auto"
+  - "none"
+
+# ZRAM configuration defaults
+core_memory_zram_defaults:
+  size_percent: 50
+  algorithm: "zstd"
+  priority: 100
+
+# ZSwap configuration defaults
+core_memory_zswap_defaults:
+  compressor: "zstd"
+  max_pool_percent: 25
+
+# Memory tuning parameters
+core_memory_swappiness_default: 60
+core_memory_cache_pressure_default: 100
+
+# THP (Transparent Huge Pages) states
+core_memory_thp_states:
+  - "always"
+  - "madvise"
+  - "never"
+
+# Workload profiles
+core_memory_workload_profiles:
+  - "standard"
+  - "database"
+  - "webserver"
+  - "container"
+
+# Compliance mappings
+core_memory_compliance:
+  cis:
+    - "CIS 3.4.1"
+    - "CIS 3.4.2"
+  stig:
+    - "V-230310"
+  nist:
+    - "SC-4"
+    - "SC-28"
+  iso_27001:
+    - "§8.20"

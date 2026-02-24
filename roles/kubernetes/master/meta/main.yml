@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: master
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Kubernetes control plane installation and management (K3s)
   license: MIT
   min_ansible_version: "2.15"
@@ -22,6 +22,18 @@ galaxy_info:
     - master
     - control_plane
     - k3s
-    - iso_27001
+    - iso27001
+    - container
+    - orchestration
+    - cluster
+    - control
+    - cis
+    - nist80053
+    - automation
+    - linux
+    - cloud-native
+
+collections:
+  - ansible.builtin
 
 dependencies: []

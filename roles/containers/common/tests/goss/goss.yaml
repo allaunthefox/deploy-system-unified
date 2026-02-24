@@ -1,0 +1,42 @@
+# Goss tests for containers/common role
+# ISO 27001 §8.26 - Container security
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+
+# =============================================================================
+# DIRECTORY TESTS
+# =============================================================================
+file:
+  /srv/containers:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+  /etc/containers/systemd:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  podman_version:
+    exec: 'podman version'
+    exit-status: 0
+    timeout: 10000
+
+  podman_info:
+    exec: 'podman info'
+    exit-status: 0
+    timeout: 10000
+
+  podman_networks:
+    exec: 'podman network ls'
+    exit-status: 0
+    timeout: 10000

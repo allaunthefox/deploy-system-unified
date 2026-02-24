@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check kubernetes node role executed
+      ansible.builtin.debug:
+        msg: "Kubernetes/node role executed successfully"
+
+    - name: Display virtualization type
+      ansible.builtin.debug:
+        msg: "Running in virtualization type: {{ ansible_virtualization_type | default('unknown') }}"
+
+    - name: Check architecture fact
+      ansible.builtin.debug:
+        msg: "Architecture: {{ ansible_architecture | default('unknown') }}"

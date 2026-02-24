@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove systemd test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - systemd-ubuntu-2204
+        - systemd-debian-12
+        - systemd-alpine-319
+        - systemd-rockylinux-9

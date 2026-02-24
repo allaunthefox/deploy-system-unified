@@ -1,1 +1,17 @@
 ---
+# Handlers for virtualization/storage role
+# Handlers for VM storage pool management
+
+- name: reload_libvirt_storage_pool
+  ansible.builtin.command:
+    cmd: virsh pool-refresh {{ storage_pool_name | default('default') }}
+  become: true
+  failed_when: false
+  listen: "reload storage pool"
+
+- name: restart_libvirtd
+  ansible.builtin.systemd:
+    name: libvirtd
+    state: restarted
+  become: true
+  listen: "restart libvirtd"

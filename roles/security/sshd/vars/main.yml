@@ -1,1 +1,19 @@
 ---
+# Internal variables for security/sshd role
+security_sshd_config_path: "/etc/ssh/sshd_config"
+security_sshd_binary_path: "/usr/sbin/sshd"
+security_sshd_service_name_map:
+  Debian: ssh
+  RedHat: sshd
+  Alpine: sshd
+  Archlinux: sshd
+
+# Default crypto guidelines
+security_sshd_crypto_standard: "FIPS-140-2-Plus"
+security_sshd_pqc_support: true
+
+# 2025/2026 Post-Quantum Cryptography enhancements
+# ML-KEM-1024: NIST-approved PQC KEM (expected in OpenSSH 9.10+)
+# SHA3-based MACs: Future-proof hash-based message authentication
+security_sshd_ml_kem_1024_support: true
+security_sshd_sha3_macs_enabled: false  # Enable when clients support SHA3

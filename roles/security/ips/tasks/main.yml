@@ -1,25 +1,21 @@
 ---
 # Tasks for security/ips - Intrusion Prevention System (Fail2Ban)
-- name: "ISO 9001 | Action 600030 | Validate IPS Eligibility (Ephemeral Guard)"
-  ansible.builtin.assert:
-    that:
-      - not ips_ephemeral_skip | bool
-    fail_msg: "IPS (Fail2Ban) is skipped in ephemeral profiles. Set system_security_ips_ephemeral_allow: true to override."
-  tags: [security, ips, profile_guard]
-  when: (deployment_profile | default('') == 'ephemeral')
-
-- name: "ISO 27001 §16.1 | Action 460002 | Install Fail2Ban"
+- name: "CIS 5.6.1 | STIG V-230344 | NIST AC-7 | NIST SI-3 | Action 460002 | Install Fail2Ban"
   ansible.builtin.package:
     name: fail2ban
     state: present
   become: true
   tags:
+    - cis_5_6_1
+    - stig_v_230344
+    - nist_ac_7
+    - nist_si_3
     - iso_27001_16_1
     - security
     - ips
     - forensic
 
-- name: "ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for SSH protection"
+- name: "CIS 5.6.1 | STIG V-230345 | NIST AC-7 | NIST SI-3 | ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for SSH protection"
   ansible.builtin.copy:
     content: |
       [sshd]
@@ -34,6 +30,10 @@
     mode: '0644'
   become: true
   tags:
+    - cis_5_6_1
+    - stig_v_230345
+    - nist_ac_7
+    - nist_si_3
     - iso_27001_16_1
     - security
     - ips
@@ -41,18 +41,21 @@
     - remediate
   notify: restart_fail2ban
 
-- name: Install Caddy Filter
+- name: "CIS 5.6.1 | STIG V-230346 | NIST SI-3 | Install Caddy Filter"
   ansible.builtin.copy:
     src: filter_caddy.conf
     dest: /etc/fail2ban/filter.d/caddy.conf
     mode: '0644'
   become: true
   tags:
+    - cis_5_6_1
+    - stig_v_230346
+    - nist_si_3
     - security
     - ips
   notify: restart_fail2ban
 
-- name: "ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for Caddy (Web Protection)"
+- name: "CIS 5.6.1 | STIG V-230347 | NIST SI-3 | ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for Caddy (Web Protection)"
   ansible.builtin.copy:
     content: |
       [caddy]
@@ -67,6 +70,9 @@
     mode: '0644'
   become: true
   tags:
+    - cis_5_6_1
+    - stig_v_230347
+    - nist_si_3
     - iso_27001_16_1
     - security
     - ips
@@ -74,12 +80,16 @@
     - remediate
   notify: restart_fail2ban
 
-- name: Enable and start Fail2Ban
+- name: "CIS 5.6.1 | STIG V-230348 | NIST AC-7 | NIST SI-3 | Enable and start Fail2Ban"
   ansible.builtin.systemd:
     name: fail2ban
     enabled: true
     state: started
   become: true
   tags:
+    - cis_5_6_1
+    - stig_v_230348
+    - nist_ac_7
+    - nist_si_3
     - security
     - ips

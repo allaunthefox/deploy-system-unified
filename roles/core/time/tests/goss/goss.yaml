@@ -1,0 +1,36 @@
+# Goss tests for core/time role
+# CIS 5.4.1, 5.4.2 | STIG V-230270 | NIST AU-8, SC-12 | ISO 27001 §8.17
+---
+package:
+  chrony:
+    installed: true
+  chronyd:
+    installed: true
+
+service:
+  chrony:
+    enabled: true
+    running: true
+  chronyd:
+    enabled: true
+    running: true
+
+file:
+  /etc/chrony/chrony.conf:
+    exists: true
+  /etc/chrony.conf:
+    exists: true
+
+command:
+  # Verify time synchronization is working
+  chronyc tracking:
+    exit-status: 0
+  # Verify timedatectl works
+  timedatectl:
+    exit-status: 0
+  # Verify time is synchronized
+  timedatectl status:
+    exit-status: 0
+    stdout:
+      - "NTP enabled"
+      - "system clock synchronized"

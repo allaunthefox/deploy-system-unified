@@ -1,0 +1,54 @@
+---
+# Internal variables for storage role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_storage_role_name: storage
+_storage_role_version: "1.0.0"
+
+# Service names
+_storage_services:
+  - multipathd
+
+# Package names (internal reference - base storage packages)
+_storage_packages:
+  - multipath-tools
+  - lvm2
+  - hdparm
+  - smartmontools
+
+# Configuration paths
+_storage_config_base: /etc/storage
+_storage_udev_rules_dir: /etc/udev/rules.d
+_storage_multipath_config: /etc/multipath.conf
+_storage_smartd_config: /etc/smartd.conf
+
+# Data paths
+_storage_data_base: /srv/storage
+_storage_mounts_base: /mnt/storage
+
+# Device management
+_storage_udev_reload_command: udevadm control --reload-rules && udevadm trigger
+_storage_multipath_service: multipathd
+
+# Filesystem tools
+_storage_filesystem_tools:
+  - btrfs-progs
+  - xfsprogs
+  - e2fsprogs
+  - zfsutils-linux
+
+# RAID/LVM tools
+_storage_raid_tools:
+  - mdadm
+_storage_lvm_tools:
+  - lvm2
+
+# Monitoring configuration
+_storage_smartd_daemon: smartd
+_storage_smartd_check_interval: 30
+
+# Internal state tracking
+_storage_initialized: false
+_storage_multipath_active: false
+_storage_devices_discovered: []

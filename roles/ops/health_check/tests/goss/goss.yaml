@@ -1,0 +1,86 @@
+---
+# Goss tests for ops/health_check role
+# This role performs post-deployment health checks
+#
+# Compliance: CIS 4.6.x, STIG V-230700-V-230717, NIST CA-7/IR-4/SI-4, ISO 27001 §12.4
+#
+# These tests verify:
+# - System health check commands are available
+# - systemd is available for service checks
+# - Basic disk and memory checks can run
+# - Endpoint connectivity tools are available
+
+# Command checks
+command:
+  # Check systemd is available
+  systemctl --version:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+
+  # Check df command for disk checks
+  df --version:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+  # Check free command for memory checks
+  free --version:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+  # Check curl for endpoint checks
+  curl --version:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+    skip: true  # May not be installed
+
+  # Check wget for endpoint checks
+  wget --version:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+    skip: true  # May not be installed
+
+  # Check if systemd is the service manager
+  systemctl is-system-running:
+    exit-status: 0
+    stderr: []
+    timeout: 30000
+    skip: true  # May fail in containers
+
+# File checks
+file:
+  /proc/mounts:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+  /proc/meminfo:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+# Service checks
+service:
+  systemd:
+    enabled: true
+    running: true
+    skip: true  # Service check syntax differs
+
+# Package checks
+package:
+  curl:
+    installed: true
+    skip: true
+
+  wget:
+    installed: true
+    skip: true
+
+  systemd:
+    installed: true

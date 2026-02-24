@@ -20,51 +20,58 @@
         {{ containers_gpu_slicing.strategy }}
       {% endif %}
   when: containers_enable_gpu_support
+  tags: [containers, gpu, runtime]
 
-- name: Configure NVIDIA MIG (bare metal only)
+- name: "ISO 27001 §8.26 | Action 800420 | Configure NVIDIA MIG (bare metal only)"
   ansible.builtin.include_tasks: slicing/mig.yml
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "mig"
     - containers_gpu_vendor_detected == "nvidia"
     - not is_virtualized
+  tags: [containers, gpu, runtime, nvidia, iso27001]
 
-- name: Configure NVIDIA time-slicing
+- name: "ISO 27001 §8.26 | Action 800422 | Configure NVIDIA time-slicing"
   ansible.builtin.include_tasks: slicing/time_slicing.yml
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "time-slicing"
     - containers_gpu_vendor_detected == "nvidia"
     - not _con_is_container
+  tags: [containers, gpu, runtime, nvidia, iso27001]
 
-- name: Configure AMD SR-IOV (bare metal and host)
+- name: "ISO 27001 §8.26 | Action 800420 | Configure AMD SR-IOV (bare metal and host)"
   ansible.builtin.include_tasks: slicing/sriov.yml
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "sriov"
     - containers_gpu_vendor_detected == "amd"
     - ansible_facts['virtualization_role'] in ["host", ""]
+  tags: [containers, gpu, runtime, amd, iso27001]
 
-- name: Configure Intel Level Zero slicing (bare metal)
+- name: "ISO 27001 §8.26 | Action 800420 | Configure Intel Level Zero slicing (bare metal)"
   ansible.builtin.include_tasks: slicing/level_zero.yml
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "level-zero"
     - containers_gpu_vendor_detected == "intel"
     - not is_virtualized
+  tags: [containers, gpu, runtime, intel, iso27001]
 
-- name: Configure Intel OneAPI support
+- name: "ISO 27001 §8.26 | Action 800420 | Configure Intel OneAPI support"
   ansible.builtin.include_tasks: slicing/oneapi.yml
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "oneapi"
     - containers_gpu_vendor_detected == "intel"
+  tags: [containers, gpu, runtime, intel, iso27001]
 
 - name: Configure GPU passthrough
   ansible.builtin.include_tasks: slicing/passthrough.yml
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing_strategy == "passthrough"
+  tags: [containers, gpu, runtime]
 
 - name: Debug GPU slicing configuration
   ansible.builtin.debug:
@@ -89,3 +96,4 @@
         Passthrough Devices: {{ containers_gpu_passthrough_devices | default([]) }}
         {% endif %}
   when: containers_enable_gpu_support
+  tags: [containers, gpu, runtime]

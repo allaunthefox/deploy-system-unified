@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: storage
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Virtualization storage management and allocation
   license: MIT
   min_ansible_version: "2.15"
@@ -18,7 +18,20 @@ galaxy_info:
     - virtualization
     - storage
     - libvirt
-    - iso_27040
+    - kvm
+    - qemu
+    - iso27040
     - iso_8000
+    - compliance
+    - linux
+    - multi_platform
+    - infrastructure
+    - cloud
+    - data_management
+    - volume
+    - pool
+
+collections:
+  - ansible.builtin
 
 dependencies: []

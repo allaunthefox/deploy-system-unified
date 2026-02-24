@@ -1,0 +1,35 @@
+# Goss tests for hardware/sas role
+# Compliance: NIST SC-8, ISO 27001
+
+package:
+  lsscsi:
+    installed: true
+  sg3-utils:
+    installed: true
+  sdparm:
+    installed: true
+  smartmontools:
+    installed: true
+
+command:
+  lsscsi:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  sg_scan:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  smartctl:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /dev/sg0:
+    exists: true
+  /etc/smartd.conf:
+    exists: true
+  /sys/class/scsi_device:
+    exists: true
+    is-directory: true

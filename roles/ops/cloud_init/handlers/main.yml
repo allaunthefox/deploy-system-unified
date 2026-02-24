@@ -1,1 +1,41 @@
 ---
+# Handlers for ops/cloud_init role
+# ISO 9001 Structural Consistency - Handler definitions for cloud-init synchronization
+# Note: This role waits for cloud-init to complete during instance initialization
+
+- name: restart_cloud_init
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - cloud-init
+    - cloud-init-local
+    - cloud-config
+    - cloud-final
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - cloud_init
+    - initialization
+
+- name: reload_cloud_init_config
+  ansible.builtin.command:
+    cmd: cloud-init clean --logs
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - cloud_init
+    - initialization
+
+- name: trigger_cloud_init_rerun
+  ansible.builtin.command:
+    cmd: cloud-init --debug init --force
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - cloud_init
+    - initialization

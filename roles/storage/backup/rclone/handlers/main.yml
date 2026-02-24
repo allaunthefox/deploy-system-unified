@@ -1,1 +1,23 @@
 ---
+# Handlers for backup/rclone role
+# Handlers for Rclone cloud sync management
+
+- name: restart_rclone_mount
+  ansible.builtin.systemd:
+    name: "{{ rclone_mount_service | default('rclone-mount') }}"
+    state: restarted
+  become: true
+  failed_when: false
+  listen: "restart rclone mount"
+
+- name: reload_rclone_config
+  ansible.builtin.debug:
+    msg: "Rclone configuration updated. Remount or restart services to apply changes."
+  listen: "reload rclone config"
+
+- name: sync_rclone_remote
+  ansible.builtin.command:
+    cmd: rclone sync {{ rclone_sync_source | default('') }} {{ rclone_sync_dest | default('') }}
+  become: true
+  failed_when: false
+  listen: "sync rclone"

@@ -1,0 +1,13 @@
+---
+# Handlers for security/vault_integration role
+- name: restart_vault
+  ansible.builtin.systemd:
+    name: vault
+    state: restarted
+  become: true
+
+- name: reload_vault
+  ansible.builtin.systemd:
+    name: vault
+    state: reloaded
+  become: true

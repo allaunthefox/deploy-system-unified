@@ -1,0 +1,40 @@
+---
+# Internal variables for containers meta-role
+# ISO 9001 Structural Consistency - Role orchestration variables
+
+# Role orchestration flags
+containers_roles_order:
+  - containers/runtime
+  - containers/config
+  - containers/quadlets
+  - containers/caddy
+  - containers/anubis
+
+# Common container infrastructure paths
+containers_base_dir: /srv/containers
+containers_volumes_dir: /srv/containers/volumes
+containers_configs_dir: /srv/containers/configs
+containers_storage_dir: /var/lib/containers
+containers_checkpoint_dir: /var/lib/deploy-system/checkpoints
+
+# Container network base configuration
+containers_network_base: 10.89.0.0/16
+containers_network_prefix: 24
+
+# Internal service labels
+containers_managed_label: org.deploy-system.managed
+containers_uuid_label: org.deploy-system.uuid
+
+# Runtime detection
+containers_runtime_detected: podman
+containers_runtime_version_min: "4.0.0"
+
+# Security contexts
+containers_seccomp_profile: /usr/share/containers/seccomp.json
+containers_apparmor_profile: /etc/apparmor.d/podman-default
+
+# Health check defaults
+containers_healthcheck_interval: 30s
+containers_healthcheck_timeout: 10s
+containers_healthcheck_retries: 3
+containers_healthcheck_start_period: 40s

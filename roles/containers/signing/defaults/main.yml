@@ -1,0 +1,47 @@
+---
+# Cosign Container Image Signing Role - Default Variables
+
+# Cosign version
+cosign_version: "2.3.0"
+
+# Architecture
+cosign_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' }}"
+
+# Signing mode: keypair, keyless
+cosign_key_mode: "keypair"
+
+# Skip key generation (use existing keys)
+cosign_skip_keygen: false
+
+# Keyless mode settings
+cosign_keyless_mode: false
+cosign_fulcio_url: "https://fulcio.sigstore.dev"
+cosign_rekor_url: "https://rekor.sigstore.dev"
+
+# Verification settings
+cosign_enable_verification: false
+cosign_policy_name: "default-policy"
+
+# Image to verify (optional)
+cosign_verify_image: ""
+
+# Root certificate
+cosign_root_cert: ""
+
+# Cosignful additional security
+cosign_enable_cosignful: false
+
+# Log level
+cosign_log_level: "info"
+
+# Cosign tags
+cosign_tags:
+  - security
+  - signing
+  - containers
+  - cosign
+  - sigstore
+  - hardening
+  - linux
+  - iso27001
+  - nist80053

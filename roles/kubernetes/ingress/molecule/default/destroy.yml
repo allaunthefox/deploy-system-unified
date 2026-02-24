@@ -1,0 +1,13 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Destroy ingress test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - ingress-ubuntu-2204
+        - ingress-debian-12

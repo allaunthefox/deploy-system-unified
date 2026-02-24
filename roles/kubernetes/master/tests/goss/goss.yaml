@@ -1,0 +1,125 @@
+---
+# Goss tests for kubernetes/master role
+# Tests K3s control plane, API server, etcd
+
+# K3s Binary Tests
+file:
+  /usr/local/bin/k3s:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+# K3s Service Tests
+service:
+  k3s:
+    enabled: true
+    running: true
+
+# K3s Configuration Directory Tests
+directory:
+  /etc/rancher/k3s:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+  /var/lib/rancher/k3s:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+# Kubeconfig Tests
+file:
+  /etc/rancher/k3s/k3s.yaml:
+    exists: true
+    mode: "0644"
+    owner: root
+    contains:
+      - "apiVersion:"
+      - "clusters:"
+      - "users:"
+
+# K3s Token File
+file:
+  /var/lib/deploy-system/kubernetes/token:
+    exists: true
+    mode: "0640"
+
+# Port Tests - API Server
+port:
+  6443:
+    listening: true
+    ip: "0.0.0.0"
+
+# Process Tests - K3s
+process:
+  k3s:
+    running: true
+
+# Command Tests - K3s Functionality
+command:
+  # K3s version check
+  /usr/local/bin/k3s --version:
+    exit-status: 0
+    stdout:
+      - "k3s"
+    stderr: []
+
+  # kubectl should be available
+  /usr/local/bin/k3s kubectl version --client:
+    exit-status: 0
+    stdout:
+      - "Client Version"
+    stderr: []
+
+  # API health check
+  /usr/local/bin/k3s kubectl get --raw /healthz:
+    exit-status: 0
+    stdout:
+      - "ok"
+    stderr: []
+
+  # Check cluster info
+  /usr/local/bin/k3s kubectl cluster-info:
+    exit-status: 0
+    stdout:
+      - "kubernetes"
+    stderr: []
+
+  # Check system pods
+  /usr/local/bin/k3s kubectl get pods -n kube-system:
+    exit-status: 0
+    stdout:
+      - "kube-system"
+    stderr: []
+
+# HTTP Endpoint Tests
+http:
+  # K3s API health endpoint
+  https://127.0.0.1:6443/healthz?accept=application/json:
+    status: 200
+    allow-insecure: true
+    no-follow-redirects: false
+
+# etcd tests (if embedded)
+command:
+  # Check etcd is running if embedded
+  /usr/local/bin/k3s kubectl get endpoints -n default kubernetes:
+    exit-status: 0
+    stdout:
+      - "kubernetes"
+
+# Storage class tests
+command:
+  /usr/local/bin/k3s kubectl get storageclass:
+    exit-status: 0
+    stdout:
+      - "local-path"
+
+# DNS tests
+command:
+  /usr/local/bin/k3s kubectl get pods -n kube-system -l k8s-app=kube-dns:
+    exit-status: 0
+    stdout:
+      - "coredns"

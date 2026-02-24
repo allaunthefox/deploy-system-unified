@@ -1,1 +1,51 @@
 ---
+# Handlers for core/entropy role
+
+- name: restart_haveged
+  ansible.builtin.systemd:
+    name: haveged
+    state: restarted
+  become: true
+  listen: "restart haveged"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_rngd
+  ansible.builtin.systemd:
+    name: rngd
+    state: restarted
+  become: true
+  listen: "restart rngd"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_rng_tools_debian
+  ansible.builtin.systemd:
+    name: rng-tools-debian
+    state: restarted
+  become: true
+  listen: "restart rng-tools"
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_rng_tools_redhat
+  ansible.builtin.systemd:
+    name: rngd
+    state: restarted
+  become: true
+  listen: "restart rng-tools"
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_jitterentropy
+  ansible.builtin.systemd:
+    name: jitterentropy-rngd
+    state: restarted
+  become: true
+  listen: "restart jitterentropy"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false

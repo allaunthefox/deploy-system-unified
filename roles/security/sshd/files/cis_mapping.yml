@@ -13,7 +13,7 @@ controls:
       - cis_5_2_1
       - level_1
       - automated
-    
+
   - control_id: 5.2.2
     title: Ensure permissions on SSH private host key files are configured
     level: 1
@@ -23,7 +23,7 @@ controls:
       - cis_5_2_2
       - level_1
       - automated
-  
+
   - control_id: 5.2.3
     title: Ensure permissions on SSH public host key files are configured
     level: 1

@@ -1,1 +1,16 @@
 ---
+# Handlers for backup/timeshift role
+# Handlers for Timeshift backup management
+
+- name: restart_timeshift
+  ansible.builtin.systemd:
+    name: timeshift
+    state: restarted
+  become: true
+  failed_when: false
+  listen: "restart timeshift"
+
+- name: reload_timeshift_config
+  ansible.builtin.debug:
+    msg: "Timeshift configuration updated. Changes will apply on next scheduled snapshot."
+  listen: "reload timeshift config"

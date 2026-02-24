@@ -7,12 +7,16 @@
     state: directory
     mode: '0755'
   become: true
+  tags: [kubernetes, master, checkpoint]
 
 - name: Capture K3s node status
   ansible.builtin.command: kubectl get nodes -o json
   register: _k8s_node_status
   changed_when: false
   become: true
+  failed_when: false
+  when: not _k8s_is_container
+  tags: [kubernetes, master, checkpoint]
 
 - name: Save K3s status evidence
   ansible.builtin.copy:
@@ -20,10 +24,15 @@
     dest: "/var/lib/deploy-system/evidence/kubernetes/master_status.json"
     mode: '0644'
   become: true
+  when:
+    - not _k8s_is_container
+    - _k8s_node_status.stdout is defined
+  tags: [kubernetes, master, checkpoint]
 
 - name: Update deployment checkpoint
   ansible.builtin.set_fact:
     _dsu_checkpoint_phases: "{{ (_dsu_checkpoint_phases | default([])) + additional_phases }}"
+  tags: [kubernetes, master, checkpoint]
 
 - name: Save Checkpoint Evidence
   ansible.builtin.copy:
@@ -38,3 +47,4 @@
     dest: "/var/lib/deploy-system/evidence/kubernetes/checkpoint.json"
     mode: '0644'
   become: true
+  tags: [kubernetes, master, checkpoint]

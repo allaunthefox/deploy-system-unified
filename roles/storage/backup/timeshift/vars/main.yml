@@ -1,1 +1,44 @@
 ---
+# Internal variables for storage/backup/timeshift role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_timeshift_role_name: timeshift
+_timeshift_role_version: "1.0.0"
+
+# Service names
+_timeshift_service: timeshift
+
+# Package names (internal reference)
+_timeshift_packages:
+  - timeshift
+
+# Configuration paths
+_timeshift_config_base: /etc/timeshift
+_timeshift_config_file: /etc/timeshift/timeshift.json
+_timeshift_snapshots_dir: /timeshift
+
+# Data paths
+_timeshift_data_base: /var/lib/timeshift
+_timeshift_log_dir: /var/log/timeshift
+
+# Snapshot types
+_timeshift_snapshot_modes:
+  - rsync
+  - btrfs
+
+# Default schedule
+_timeshift_default_schedule:
+  - hourly: 5
+  - daily: 4
+  - weekly: 4
+  - monthly: 3
+
+# Security settings
+_timeshift_config_mode: '0755'
+_timeshift_snapshot_mode: '0755'
+
+# Internal state tracking
+_timeshift_initialized: false
+_timeshift_config_deployed: false
+_timeshift_last_snapshot: null

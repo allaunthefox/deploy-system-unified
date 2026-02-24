@@ -1,0 +1,109 @@
+---
+# Preflight Container Runtime Validation
+# Validates container runtime availability for container profiles
+# Addresses: POTENTIAL_PROBLEMS.md - Container Runtime Conflicts
+
+- name: "Container Runtime | Check for Podman availability"
+  ansible.builtin.command: which podman
+  register: preflight_podman_check
+  changed_when: false
+  failed_when: false
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Check for Docker availability"
+  ansible.builtin.command: which docker
+  register: preflight_docker_check
+  changed_when: false
+  failed_when: false
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Set available runtime fact"
+  ansible.builtin.set_fact:
+    preflight_container_runtime_available: >-
+      {{
+        'podman'
+        if preflight_podman_check.rc == 0
+        else (
+          'docker'
+          if preflight_docker_check.rc == 0
+          else 'none'
+        )
+      }}
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Get Podman version if available"
+  ansible.builtin.command: podman --version
+  register: preflight_podman_version
+  changed_when: false
+  failed_when: false
+  when: preflight_podman_check.rc == 0
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Get Docker version if available"
+  ansible.builtin.command: docker --version
+  register: preflight_docker_version
+  changed_when: false
+  failed_when: false
+  when: preflight_docker_check.rc == 0
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Debug runtime detection results"
+  ansible.builtin.debug:
+    msg: >-
+      Available container runtime: {{ preflight_container_runtime_available }}
+      {% if preflight_podman_check.rc == 0 %}Podman: {{ preflight_podman_version.stdout | default('unknown') }}{% endif %}
+      {% if preflight_docker_check.rc == 0 %}Docker: {{ preflight_docker_version.stdout | default('unknown') }}{% endif %}
+  when: preflight_check_container_runtime | default(false) | bool
+  changed_when: false
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Validate required runtime is available"
+  ansible.builtin.assert:
+    that:
+      - preflight_container_runtime_available != 'none'
+      - preflight_container_runtime_available == preflight_required_container_runtime | default('podman')
+    fail_msg: >-
+      Required container runtime '{{ preflight_required_container_runtime | default('podman') }}' is not available.
+      Found: {{ preflight_container_runtime_available }}
+      Install the required container runtime before deploying container profiles.
+    success_msg: >-
+      Container runtime validated: {{ preflight_required_container_runtime | default('podman') }} is available
+  when:
+    - preflight_check_container_runtime | default(false) | bool
+  tags:
+    - preflight
+    - container
+    - nist_cm_6
+
+- name: "Container Runtime | Warn if no container runtime available"
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: No container runtime (Podman/Docker) detected on this system.
+      Container profiles will fail without a container runtime.
+      Set preflight_check_container_runtime=false to skip this check.
+  when:
+    - preflight_check_container_runtime | default(false) | bool
+    - preflight_container_runtime_available == 'none'
+  changed_when: false
+  tags:
+    - preflight
+    - container
+    - nist_cm_6

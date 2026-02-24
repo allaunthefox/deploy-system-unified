@@ -1,3 +1,13 @@
 ---
-# Placeholder handlers file
-# Intentionally empty
+# Handlers for storage/backup role
+# Parent role handlers for backup services
+
+- name: restart_backup_services
+  ansible.builtin.debug:
+    msg: "Backup services restart triggered. Child roles manage specific service restarts."
+  listen: "restart backup services"
+
+- name: reload_backup_config
+  ansible.builtin.debug:
+    msg: "Backup configuration reloaded. Child roles manage specific config reloads."
+  listen: "reload backup config"

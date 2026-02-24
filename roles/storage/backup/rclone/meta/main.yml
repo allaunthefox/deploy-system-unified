@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: rclone
-  author: deploy-system-unified
+  author: deploysystemunified
   description: rclone management and configuration
   license: MIT
   min_ansible_version: '2.15'
@@ -11,5 +11,20 @@ galaxy_info:
   galaxy_tags:
     - rclone
     - backup
-    - iso_27040
+    - cloud
+    - sync
+    - storage
+    - iso27040
+    - iso27001
+    - compliance
+    - linux
+    - encryption
+    - s3
+    - data_transfer
+    - remote
+    - archival
+    - multi_platform
+collections:
+  - ansible.builtin
+
 dependencies: []

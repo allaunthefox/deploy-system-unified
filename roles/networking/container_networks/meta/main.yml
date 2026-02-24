@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: container_networks
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Container network isolation and Quadlet network management
   license: MIT
   min_ansible_version: "2.15"
@@ -20,6 +20,15 @@ galaxy_info:
     - podman
     - quadlet
     - isolation
-    - iso_27001
+    - bridge
+    - routing
+    - security
+    - hardening
+    - kernel
+    - linux
+    - iso27001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

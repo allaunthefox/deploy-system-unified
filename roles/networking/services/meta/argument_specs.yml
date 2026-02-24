@@ -1,7 +1,14 @@
 ---
 argument_specs:
   main:
-    short_description: services role
+    short_description: services role for network service management
     description:
-      - Formally documented services management
-    options: {}
+      - Placeholder role for network service configuration
+      - Supports various network services
+    options:
+      services_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable services role execution

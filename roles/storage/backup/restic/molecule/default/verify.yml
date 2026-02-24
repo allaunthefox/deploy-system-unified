@@ -1,0 +1,39 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check restic package installation
+      ansible.builtin.command: which restic
+      register: restic_check
+      failed_when: false
+      changed_when: false
+
+    - name: Assert restic is installed
+      ansible.builtin.assert:
+        that: restic_check.rc == 0
+        fail_msg: "Restic should be installed."
+
+    - name: Check restic configuration directory
+      ansible.builtin.stat:
+        path: /etc/restic
+      register: restic_config_dir
+
+    - name: Assert restic config directory exists
+      ansible.builtin.assert:
+        that: restic_config_dir.stat.exists
+        fail_msg: "Restic config directory should exist."
+
+    - name: Check restic wrapper script
+      ansible.builtin.stat:
+        path: /usr/local/bin/restic_wrapper.sh
+      register: wrapper_script
+
+    - name: Assert wrapper script exists
+      ansible.builtin.assert:
+        that: wrapper_script.stat.exists
+        fail_msg: "Restic wrapper script should exist."
+
+    - name: Display restic verification complete
+      ansible.builtin.debug:
+        msg: "Storage/backup/restic role verified successfully"

@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: hardening
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "POL-SEC | Core system security hardening (Permissions, PAM, User accounts)"
   license: MIT
   min_ansible_version: "2.15"
@@ -19,8 +19,18 @@ galaxy_info:
   galaxy_tags:
     - security
     - hardening
+    - base
+    - permissions
+    - pam
+    - accounts
     - cis
-    - iso_27001
-    - nist_800_53
+    - cislevel1
+    - cislevel2
+    - iso27001
+    - nist80053
+    - systems
+
+collections:
+  - ansible.builtin
 
 dependencies: []

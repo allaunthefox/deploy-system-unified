@@ -1,0 +1,38 @@
+# Goss tests for hardware/gpu role
+# Compliance: CIS, NIST SC-8, ISO 27001
+
+package:
+  mesa-utils:
+    installed: true
+  vulkan-tools:
+    installed: true
+  libgl1-mesa-dri:
+    installed: true
+
+command:
+  glxinfo:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  glxgears:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  vulkaninfo:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /dev/dri:
+    exists: true
+    is-directory: true
+  /usr/share/vulkan/icd.d:
+    exists: true
+    is-directory: true
+
+group:
+  video:
+    exists: true
+  render:
+    exists: true

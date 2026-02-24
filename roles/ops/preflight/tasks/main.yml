@@ -1,10 +1,12 @@
 ---
 # Preflight role - Validation and readiness checks ONLY
+# Compliance: CIS 4.x, STIG V-230540, NIST AU-2/CA-7/IR-4/SI-4, ISO 27001 §8.15/§8.16/§16.1
 # Reason: This file centralized placeholder detection for inventory variables; these
 # values are intentionally listed for validation policy and may include "CHANGE_ME" placeholders.
 # noqa DSU003
 # Package installation has been moved to core/bootstrap
-- name: "ISO 9001 | Action 600013 | Gather minimum facts for preflight checks"
+
+- name: "CIS 4.5.1 | STIG V-230670 | NIST AU-2 | ISO 9001 | Action 600013 | Gather minimum facts for preflight checks"
   ansible.builtin.setup:
     gather_subset:
       - '!all'
@@ -15,17 +17,25 @@
       - service_mgr
       - virtual
   tags:
+    - cis_4_5_1
+    - stig_v_230670
+    - nist_au_2
     - iso_9001
     - preflight
 
-- name: Detect virtualization facts (preflight)
+- name: "CIS 4.5.2 | STIG V-230671 | NIST CM-6 | Detect virtualization facts (preflight)"
   ansible.builtin.set_fact:
     detected_virtualization_role: "{{ ansible_facts['virtualization_role'] | default('host') | lower }}"
     detected_virtualization_type: "{{ ansible_facts['virtualization_type'] | default('none') | lower }}"
     is_virtualized: "{{ (ansible_facts['virtualization_role'] | default('host') | lower) == 'guest' }}"
   changed_when: false
+  tags:
+    - cis_4_5_2
+    - stig_v_230671
+    - nist_cm_6
+    - preflight
 
-- name: Determine virt_type (ontology default)
+- name: "CIS 4.5.3 | STIG V-230672 | NIST CM-6 | Determine virt_type (ontology default)"
   ansible.builtin.set_fact:
     virt_type: >-
       {{
@@ -43,8 +53,13 @@
       }}
   when: virt_type is not defined
   changed_when: false
+  tags:
+    - cis_4_5_3
+    - stig_v_230672
+    - nist_cm_6
+    - preflight
 
-- name: Assert virt_type is a valid ontology value
+- name: "CIS 4.5.4 | STIG V-230673 | NIST CM-6 | Assert virt_type is a valid ontology value"
   ansible.builtin.assert:
     that:
       - virt_type is defined
@@ -55,31 +70,52 @@
       bare-metal, virtual, vps, container.
       Detected: virtualization_role={{ detected_virtualization_role | default('unknown') }},
       virtualization_type={{ detected_virtualization_type | default('unknown') }}.
+  tags:
+    - cis_4_5_4
+    - stig_v_230673
+    - nist_cm_6
+    - preflight
 
-- name: "ISO 9001 | Action 520010 | Validate distribution is supported"
+- name: "CIS 4.5.5 | STIG V-230674 | NIST CM-6 | ISO 9001 | Action 520010 | Validate distribution is supported"
   ansible.builtin.assert:
     that:
       - ansible_facts['distribution'] | lower in ['archlinux', 'debian', 'ubuntu', 'fedora', 'alpine', 'centos', 'rocky', 'almalinux']
     fail_msg: "Unsupported distribution: {{ ansible_facts['distribution'] }}"
     success_msg: "Distribution {{ ansible_facts['distribution'] }} is supported"
   tags:
+    - cis_4_5_5
+    - stig_v_230674
+    - nist_cm_6
     - iso_9001
     - preflight
-- name: Validate systemd is available
+
+- name: "CIS 4.5.6 | STIG V-230675 | NIST CM-6 | Validate systemd is available"
   ansible.builtin.assert:
     that:
       - ansible_facts['service_mgr'] == 'systemd'
     fail_msg: "This deployment requires systemd as the service manager"
     success_msg: "systemd service manager confirmed"
   when: preflight_require_systemd | default(true)
-- name: Check for minimum memory
+  tags:
+    - cis_4_5_6
+    - stig_v_230675
+    - nist_cm_6
+    - preflight
+
+- name: "CIS 4.5.7 | STIG V-230676 | NIST SC-39 | Check for minimum memory"
   ansible.builtin.assert:
     that:
       - ansible_memtotal_mb | default(0) >= preflight_min_memory_mb | default(512)
     fail_msg: "Insufficient memory: {{ ansible_memtotal_mb }}MB < {{ preflight_min_memory_mb | default(512) }}MB"
     success_msg: "Memory check passed: {{ ansible_memtotal_mb }}MB available"
   when: preflight_check_memory | default(false)
-- name: Check for required binaries
+  tags:
+    - cis_4_5_7
+    - stig_v_230676
+    - nist_sc_39
+    - preflight
+
+- name: "CIS 4.5.8 | STIG V-230677 | NIST CM-6 | Check for required binaries"
   ansible.builtin.shell:
     cmd: "command -v {{ item }}"
   loop: "{{ preflight_required_binaries | default([]) }}"
@@ -87,14 +123,26 @@
   changed_when: false
   failed_when: false
   when: preflight_required_binaries is defined and preflight_required_binaries | length > 0
-- name: Validate required binaries exist
+  tags:
+    - cis_4_5_8
+    - stig_v_230677
+    - nist_cm_6
+    - preflight
+
+- name: "CIS 4.5.9 | STIG V-230678 | NIST CM-6 | Validate required binaries exist"
   ansible.builtin.assert:
     that:
       - item.rc == 0
     fail_msg: "Required binary not found: {{ item.item }}"
   loop: "{{ preflight_binary_check.results | default([]) }}"
   when: preflight_binary_check.results is defined
-- name: Check network connectivity
+  tags:
+    - cis_4_5_9
+    - stig_v_230678
+    - nist_cm_6
+    - preflight
+
+- name: "CIS 4.5.10 | STIG V-230679 | NIST SC-7 | Check network connectivity"
   ansible.builtin.uri:
     url: "{{ preflight_connectivity_check_url | default('https://1.1.1.1') }}"
     method: HEAD
@@ -103,7 +151,13 @@
   failed_when: false
   changed_when: false
   when: preflight_check_network | default(false)
-- name: Validate network connectivity
+  tags:
+    - cis_4_5_10
+    - stig_v_230679
+    - nist_sc_7
+    - preflight
+
+- name: "CIS 4.5.11 | STIG V-230680 | NIST SC-7 | Validate network connectivity"
   ansible.builtin.assert:
     that:
       - preflight_network_check.status is defined
@@ -113,20 +167,38 @@
   when:
     - preflight_check_network | default(false)
     - preflight_network_check is defined
-- name: Install KVM checker (Bare Metal only)
+  tags:
+    - cis_4_5_11
+    - stig_v_230680
+    - nist_sc_7
+    - preflight
+
+- name: "CIS 4.5.12 | STIG V-230681 | NIST SC-39 | Install KVM checker (Bare Metal only)"
   ansible.builtin.package:
     name: cpu-checker
     state: present
   become: true
   when: virt_type == "bare-metal"
-- name: Validate KVM Hardware Acceleration (Bare Metal only)
+  tags:
+    - cis_4_5_12
+    - stig_v_230681
+    - nist_sc_39
+    - preflight
+
+- name: "CIS 4.5.13 | STIG V-230682 | NIST SC-39 | Validate KVM Hardware Acceleration (Bare Metal only)"
   ansible.builtin.command: kvm-ok
   register: kvm_check
   changed_when: false
   failed_when: false
   become: true
   when: virt_type == "bare-metal"
-- name: Assert KVM is functional
+  tags:
+    - cis_4_5_13
+    - stig_v_230682
+    - nist_sc_39
+    - preflight
+
+- name: "CIS 4.5.14 | STIG V-230683 | NIST SC-39 | Assert KVM is functional"
   ansible.builtin.assert:
     that:
       - kvm_check.rc == 0
@@ -134,14 +206,25 @@
   when:
     - virt_type == "bare-metal"
     - "'virtual_hypervisor' in ansible_play_name or 'bare_metal' in ansible_play_name"
-- name: Set preflight completion facts
+  tags:
+    - cis_4_5_14
+    - stig_v_230683
+    - nist_sc_39
+    - preflight
+
+- name: "CIS 4.5.15 | STIG V-230684 | NIST CM-6 | Set preflight completion facts"
   ansible.builtin.set_fact:
     preflight_complete: true
     preflight_distribution: "{{ ansible_facts['distribution'] }}"
     preflight_os_family: "{{ ansible_facts['os_family'] }}"
     preflight_pkg_mgr: "{{ ansible_facts['pkg_mgr'] }}"
+  tags:
+    - cis_4_5_15
+    - stig_v_230684
+    - nist_cm_6
+    - preflight
 
-- name: Define default secret guards
+- name: "CIS 4.5.16 | STIG V-230685 | NIST SC-12 | Define default secret guards"
   ansible.builtin.set_fact:
     preflight_secret_guards:
       - name: "crowdsec_firewall_bouncer_key"
@@ -156,30 +239,55 @@
       - name: "restic_password"
         value: "{{ restic_password | default('') }}" # noqa DSU003
         bad_values: ["CHANGE_ME_IN_VAULT", ""]
+  tags:
+    - cis_4_5_16
+    - stig_v_230685
+    - nist_sc_12
+    - preflight
 
-- name: Run license compliance checks
+- name: "CIS 4.5.17 | STIG V-230686 | NIST CA-7 | Run license compliance checks"
   ansible.builtin.include_tasks: check_license_compliance.yml
   when: preflight_check_license | default(true) | bool
+  tags:
+    - cis_4_5_17
+    - stig_v_230686
+    - nist_ca_7
+    - preflight
 
-- name: Run preflight diagnose (non-failing)
+- name: "CIS 4.5.18 | STIG V-230687 | NIST IR-4 | Run preflight diagnose (non-failing)"
   ansible.builtin.include_tasks: diagnose.yml
   when: preflight_diagnose_only | default(false)
+  tags:
+    - cis_4_5_18
+    - stig_v_230687
+    - nist_ir_4
+    - preflight
 
-- name: Define deployment profile for transfer policy
+- name: "CIS 4.5.19 | STIG V-230688 | NIST CM-6 | Define deployment profile for transfer policy"
   ansible.builtin.set_fact:
     preflight_deployment_profile: "{{ deployment_profile | default('hardened') }}"
     preflight_profile_strict: ["ephemeral", "hardened", "production", "vps", "backup"]
     preflight_profile_lenient: ["workstation", "dev"]
+  tags:
+    - cis_4_5_19
+    - stig_v_230688
+    - nist_cm_6
+    - preflight
 
-- name: Validate deployment profile is supported
+- name: "CIS 4.5.20 | STIG V-230689 | NIST CM-6 | Validate deployment profile is supported"
   ansible.builtin.assert:
     that:
       - preflight_deployment_profile in (preflight_profile_strict + preflight_profile_lenient)
     fail_msg: >-
       Unsupported deployment_profile: {{ preflight_deployment_profile }}.
       Valid: {{ (preflight_profile_strict + preflight_profile_lenient) | join(', ') }}
+  tags:
+    - cis_4_5_20
+    - stig_v_230689
+    - nist_cm_6
+    - preflight
 
-- name: Enforce NFS explicit-allow policy (least privilege)
+- name: "CIS 4.5.21 | STIG V-230690 | NIST AC-6 | Enforce NFS explicit-allow policy (least privilege)"
   ansible.builtin.assert:
     that:
       - storage_nfs_exports | default([]) | length > 0
@@ -188,8 +296,13 @@
       NFS is enabled but exports/mounts are not explicitly defined.
       Define storage_nfs_exports and storage_nfs_mounts in the profile.
   when: storage_nfs_enable | default(false) | bool
+  tags:
+    - cis_4_5_21
+    - stig_v_230690
+    - nist_ac_6
+    - preflight
 
-- name: Enforce NFS export scope (no broad exports by default)
+- name: "CIS 4.5.22 | STIG V-230691 | NIST AC-6 | Enforce NFS export scope (no broad exports by default)"
   ansible.builtin.assert:
     that:
       - storage_nfs_allow_broad_exports | default(false) | bool or
@@ -199,8 +312,13 @@
       Set storage_nfs_allow_broad_exports=true to override explicitly.
   loop: "{{ storage_nfs_exports | default([]) | map(attribute='clients') | list | flatten }}"
   when: storage_nfs_enable | default(false) | bool
+  tags:
+    - cis_4_5_22
+    - stig_v_230691
+    - nist_ac_6
+    - preflight
 
-- name: Enforce NFS ephemeral opt-in (strict profiles)
+- name: "CIS 4.5.23 | STIG V-230692 | NIST CP-9 | Enforce NFS ephemeral opt-in (strict profiles)"
   ansible.builtin.assert:
     that:
       - storage_nfs_ephemeral_allow | default(false) | bool
@@ -210,8 +328,13 @@
   when:
     - storage_nfs_enable | default(false) | bool
     - preflight_deployment_profile == "ephemeral"
+  tags:
+    - cis_4_5_23
+    - stig_v_230692
+    - nist_cp_9
+    - preflight
 
-- name: Enforce rsync explicit-allow policy (least privilege)
+- name: "CIS 4.5.24 | STIG V-230693 | NIST AC-6 | Enforce rsync explicit-allow policy (least privilege)"
   ansible.builtin.assert:
     that:
       - ops_rsync_enable | default(false) | bool
@@ -223,8 +346,13 @@
       Set ops_rsync_enable=true and define ops_rsync_allowlist with allowed dest entries.
   when:
     - (ssh_rsync_destination | default('')) != "" or (ops_rsync_enable | default(false) | bool)
+  tags:
+    - cis_4_5_24
+    - stig_v_230693
+    - nist_ac_6
+    - preflight
 
-- name: Enforce rsync ephemeral opt-in (strict profiles)
+- name: "CIS 4.5.25 | STIG V-230694 | NIST CP-9 | Enforce rsync ephemeral opt-in (strict profiles)"
   ansible.builtin.assert:
     that:
       - ops_rsync_ephemeral_allow | default(false) | bool
@@ -234,8 +362,13 @@
   when:
     - (ssh_rsync_destination | default('')) != "" or (ops_rsync_enable | default(false) | bool)
     - preflight_deployment_profile == "ephemeral"
+  tags:
+    - cis_4_5_25
+    - stig_v_230694
+    - nist_cp_9
+    - preflight
 
-- name: Validate required secrets are not default placeholders
+- name: "CIS 4.5.26 | STIG V-230695 | NIST SC-12 | Validate required secrets are not default placeholders"
   ansible.builtin.assert:
     that:
       - item.value not in item.bad_values
@@ -245,8 +378,13 @@
     - not preflight_allow_default_secrets | default(false) | bool
     - core_security_fail_secure | default(true) | bool
     - not preflight_diagnose_only | default(false) | bool
+  tags:
+    - cis_4_5_26
+    - stig_v_230695
+    - nist_sc_12
+    - preflight
 
-- name: Scan inventory for placeholder test_key usage (controller)
+- name: "CIS 4.5.27 | STIG V-230696 | NIST SC-12 | Scan inventory for placeholder test_key usage (controller)"
   ansible.builtin.find:
     paths: "{{ playbook_dir }}/inventory"
     patterns:
@@ -259,8 +397,13 @@
   delegate_to: localhost
   run_once: true
   when: not preflight_allow_test_key | default(false) | bool
+  tags:
+    - cis_4_5_27
+    - stig_v_230696
+    - nist_sc_12
+    - preflight
 
-- name: Fail if placeholder test_key is present in inventory
+- name: "CIS 4.5.28 | STIG V-230697 | NIST SC-12 | Fail if placeholder test_key is present in inventory"
   ansible.builtin.assert:
     that:
       - (preflight_test_key_find.matched | default(0)) == 0
@@ -270,3 +413,29 @@
   delegate_to: localhost
   run_once: true
   when: not preflight_allow_test_key | default(false) | bool
+  tags:
+    - cis_4_5_28
+    - stig_v_230697
+    - nist_sc_12
+    - preflight
+
+- name: "Preflight | Run GPU vendor validation checks"
+  ansible.builtin.include_tasks: check_gpu_vendor.yml
+  when: preflight_check_gpu_vendor | default(false) | bool
+  tags:
+    - preflight
+    - gpu
+
+- name: "Preflight | Run container runtime validation checks"
+  ansible.builtin.include_tasks: check_container_runtime.yml
+  when: preflight_check_container_runtime | default(false) | bool
+  tags:
+    - preflight
+    - container
+
+- name: "Preflight | Run Kubernetes connectivity validation checks"
+  ansible.builtin.include_tasks: check_kubernetes_connectivity.yml
+  when: preflight_check_kubernetes | default(false) | bool
+  tags:
+    - preflight
+    - kubernetes

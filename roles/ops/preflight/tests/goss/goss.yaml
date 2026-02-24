@@ -1,0 +1,111 @@
+---
+# Goss tests for ops/preflight role
+# This role performs pre-deployment validation and readiness checks
+#
+# Compliance: CIS 4.5.x, STIG V-230670-V-230697, NIST CM-6/SC-7/SC-12/AC-6/CP-9, ISO 27001 §8.15/§8.16
+#
+# These tests verify:
+# - System requirements are met
+# - Required commands are available
+# - Distribution is supported
+# - Network connectivity tools are available
+
+# Command checks
+command:
+  # Check systemd is available
+  systemctl --version:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+
+  # Check distribution detection
+  cat /etc/os-release:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+  # Check virtualization detection
+  systemctl is-system-running:
+    exit-status: 0
+    stderr: []
+    timeout: 30000
+    skip: true  # May fail in containers
+
+  # Check memory info
+  free --version:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+  # Check disk info
+  df --version:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+  # Check network connectivity
+  curl --version:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+    skip: true
+
+  # Check kvm-ok (for bare-metal)
+  kvm-ok:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+    skip: true  # Only needed on bare-metal
+
+# File checks
+file:
+  /etc/os-release:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+  /proc/meminfo:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+  /proc/mounts:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+  # Check virtualization files
+  /proc/1/cgroup:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+# Process check
+process:
+  init:
+    running: true
+    # PID 1 should be running
+
+# Service checks
+service:
+  systemd:
+    enabled: true
+    running: true
+    skip: true  # Service check differs
+
+# Package checks
+package:
+  systemd:
+    installed: true
+
+  cpu-checker:
+    installed: true
+    skip: true  # Only needed on bare-metal
+
+  curl:
+    installed: true
+    skip: true

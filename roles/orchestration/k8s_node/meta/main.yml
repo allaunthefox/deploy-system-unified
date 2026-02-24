@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: k8s_node
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Kubernetes node readiness and orchestration prep
   license: MIT
   min_ansible_version: "2.15"
@@ -19,6 +19,16 @@ galaxy_info:
     - kubernetes
     - k8s
     - node
-    - iso_27001
+    - cluster
+    - container
+    - systems
+    - cloud
+    - worker
+    - setup
+    - hardening
+    - iso27001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

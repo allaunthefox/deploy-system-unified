@@ -1,3 +1,47 @@
 ---
-# Placeholder vars file
-# Intentionally empty
+# Internal variables for storage/filesystems role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_filesystems_role_name: filesystems
+_filesystems_role_version: "1.0.0"
+
+# Service names
+_filesystems_services: []
+
+# Package names (internal reference - common filesystem packages)
+_filesystems_packages:
+  - btrfs-progs
+  - xfsprogs
+  - e2fsprogs
+  - dosfstools
+  - ntfs-3g
+
+# Configuration paths
+_filesystems_config_base: /etc/filesystems
+_filesystems_fstab: /etc/fstab
+_filesystems_crypttab: /etc/crypttab
+
+# Mount paths
+_filesystems_mount_base: /mnt
+_filesystems_data_base: /srv/data
+
+# Supported filesystem types
+_filesystems_supported_types:
+  - ext4
+  - xfs
+  - btrfs
+  - vfat
+  - ntfs
+
+# Filesystem tools mapping
+_filesystems_tools_map:
+  ext4: e2fsprogs
+  xfs: xfsprogs
+  btrfs: btrfs-progs
+  vfat: dosfstools
+  ntfs: ntfs-3g
+
+# Internal state tracking
+_filesystems_initialized: false
+_filesystems_mounted: []

@@ -1,0 +1,44 @@
+---
+# Internal variables for kubernetes/node role
+# Part of ISO 9001 Structural Consistency
+
+# K3s Node paths
+_k3s_node_binary_path: /usr/local/bin/k3s
+_k3s_node_config_dir: /etc/rancher/k3s
+_k3s_node_data_dir: /var/lib/rancher/k3s
+_k3s_node_token_path: /var/lib/rancher/k3s/agent/token
+_k3s_node_config_yaml: /etc/rancher/k3s/config.yaml
+_k3s_node_kubeconfig_path: /etc/rancher/k3s/k3s-agent.yaml
+
+# K3s Node service names
+_k3s_node_service_name: k3s-agent
+_k3s_node_systemd_unit: k3s-agent.service
+
+# K3s Node API ports
+_k3s_node_kubelet_port: 10250
+_k3s_node_kubelet_readonly_port: 10255
+_k3s_node_kubelet_healthz_port: 10248
+
+# K3s Node directories
+_k3s_node_agent_dir: /var/lib/rancher/k3s/agent
+_k3s_node_kubelet_dir: /var/lib/kubelet
+_k3s_node_containerd_dir: /var/lib/rancher/k3s/agent/containerd
+_k3s_node_etc_dir: /etc/rancher/k3s
+
+# K3s Node systemd configuration
+_k3s_node_systemd_path: /etc/systemd/system/k3s-agent.service
+_k3s_node_environment_file: /etc/systemd/system/k3s-agent.service.env
+
+# K3s Node internal state
+_k3s_node_ready_timeout: 300
+_k3s_node_ready_retries: 20
+_k3s_node_ready_delay: 10
+
+# K3s Node symlinks
+_k3s_node_symlinks:
+  - src: /usr/local/bin/k3s
+    dest: /usr/local/bin/kubectl
+  - src: /usr/local/bin/k3s
+    dest: /usr/local/bin/crictl
+  - src: /usr/local/bin/k3s
+    dest: /usr/local/bin/ctr

@@ -1,2 +1,35 @@
 ---
-# handlers file for lxc
+# Handlers for containers/lxc role
+
+- name: restart_lxc
+  ansible.builtin.systemd:
+    name: lxc
+    state: restarted
+  become: true
+  listen: "restart lxc"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_lxc_net
+  ansible.builtin.systemd:
+    name: lxc-net
+    state: restarted
+  become: true
+  listen: "restart lxc-net"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: reload_lxc_config
+  ansible.builtin.debug:
+    msg: "LXC configuration reloaded. Restart affected containers manually."
+  listen: "reload lxc config"
+  changed_when: false
+
+- name: restart_container
+  ansible.builtin.command:
+    cmd: "lxc restart {{ container_name | default('') }}"
+  become: true
+  listen: "restart container"
+  when: container_name is defined
+  changed_when: true
+  failed_when: false

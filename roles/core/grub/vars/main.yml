@@ -1,1 +1,71 @@
 ---
+# Internal variables for core/grub role
+# Centralized bootloader management
+
+# Role metadata
+core_grub_role_version: "1.0.0"
+
+# GRUB configuration paths
+core_grub_config_path: "/etc/default/grub"
+core_grub_config_dir: "/etc/default"
+core_grub_boot_dir: "/boot"
+core_grub_bootloader_dir: "/boot/grub"
+core_grub_menu_file: "/boot/grub/grub.cfg"
+core_grub_env_file: "/boot/grub/grubenv"
+
+# GRUB update commands by distribution
+core_grub_update_commands:
+  Debian: "update-grub"
+  Ubuntu: "update-grub"
+  RedHat: "grub2-mkconfig -o /boot/grub2/grub.cfg"
+  Fedora: "grub2-mkconfig -o /boot/grub2/grub.cfg"
+  Archlinux: "grub-mkconfig -o /boot/grub/grub.cfg"
+
+# Backup configuration
+core_grub_backup_dir: "/var/backups/grub"
+core_grub_backup_retention_days: 30
+
+# Hash algorithms for integrity verification
+core_grub_hash_algorithms:
+  - "sha256"
+  - "sha512"
+  - "blake3"
+
+# Kernel parameter categories
+core_grub_param_categories:
+  - "base"
+  - "security"
+  - "hardware"
+  - "isolation"
+  - "performance"
+  - "extra"
+
+# Known conflicting parameter groups
+core_grub_conflict_groups:
+  iommu:
+    - "intel_iommu=on"
+    - "amd_iommu=on"
+    - "iommu=off"
+    - "iommu=pt"
+  gpu:
+    - "vfio-pci.ids="
+    - "nvidia.modest=0"
+    - "nouveau.modeset=0"
+    - "radeon.modeset=0"
+
+# Handler names
+core_grub_handlers:
+  - "update_grub"
+
+# ISO 27001 compliance references
+core_grub_iso_controls:
+  - "CIS 1.4.1"
+  - "ISO 27001 §8.9"
+  - "ISO 27040"
+  - "NIST CM-2"
+core_grub_action_codes:
+  cmdline: "450002"
+  backup: "900000"
+
+# Recovery script path
+core_grub_recovery_script: "/var/backups/grub/recover_grub.sh"

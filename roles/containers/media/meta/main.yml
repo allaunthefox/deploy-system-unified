@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: media
-  author: deploy-system-unified
+  author: deploysystemunified
   description: "WI-CONT | Deployment of a complete media stack (Jellyfin, Radarr, Sonarr, etc.)"
   license: MIT
   min_ansible_version: "2.15"
@@ -19,8 +19,18 @@ galaxy_info:
   galaxy_tags:
     - containers
     - media
+    - entertainment
     - jellyfin
-    - servarr
-    - iso_27001
+    - radarr
+    - sonarr
+    - transmission
+    - podman
+    - quadlet
+    - hardening
+    - security
+    - iso27001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

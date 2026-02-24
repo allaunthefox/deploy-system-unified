@@ -1,1 +1,8 @@
 ---
+# Internal variables for security/ips role
+security_ips_fail2ban_config_path: "/etc/fail2ban/jail.local"
+security_ips_fail2ban_service_name: "fail2ban"
+
+# IPS Standards
+security_ips_standard: "CIS-5.6"
+security_ips_nist_control: "SI-4"

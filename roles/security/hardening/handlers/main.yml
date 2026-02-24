@@ -1,1 +1,28 @@
 ---
+# Handlers for security/hardening - Enhanced core security configurations
+
+- name: Restart auditd service
+  ansible.builtin.service:
+    name: auditd
+    state: restarted
+  become: true
+  when:
+    - ansible_facts['service_mgr'] == 'systemd'
+    - not (is_virtualized | default(false))
+
+- name: Reload auditd rules
+  ansible.builtin.command: augenrules --load
+  become: true
+  changed_when: false
+  failed_when: false
+
+- name: Reload pam configuration
+  ansible.builtin.command: pam-auth-update --force
+  become: true
+  changed_when: false
+  failed_when: false
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Apply file permission hardening
+  ansible.builtin.debug:
+    msg: "File system permissions hardened - sensitive files secured with restrictive modes"

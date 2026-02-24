@@ -1,18 +1,27 @@
 ---
 # Pre-flight checks for K3s Master
 
+- name: Detect container environment
+  ansible.builtin.set_fact:
+    _k8s_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) }}"
+  tags: [kubernetes, master, audit]
+
 - name: Check for swap
   ansible.builtin.command: swapon --show
   register: _swap_check
   changed_when: false
   failed_when: false
+  when: not _k8s_is_container
+  tags: [kubernetes, master, audit]
 
 - name: Fail if swap is enabled (Kubernetes requirement)
   ansible.builtin.fail:
     msg: "Swap is enabled on the host. Kubernetes requires swap to be disabled."
-  when: 
-    - _swap_check.stdout | length > 0
-    - ansible_os_family != 'Alpine' # Alpine often runs with no swap by default or handles it differently
+  when:
+    - (_swap_check.stdout | default('')) | length > 0
+    - ansible_os_family != 'Alpine'
+    - not _k8s_is_container
+  tags: [kubernetes, master, audit]
 
 - name: Ensure required kernel modules are loaded
   community.general.modprobe:
@@ -22,7 +31,10 @@
     - overlay
     - br_netfilter
   become: true
-  when: ansible_os_family != 'Alpine' # Alpine uses different module management
+  when:
+    - ansible_os_family != 'Alpine'
+    - not _k8s_is_container
+  tags: [kubernetes, master, audit]
 
 - name: Set sysctl parameters for Kubernetes networking
   ansible.builtin.sysctl:
@@ -35,4 +47,7 @@
     - { key: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
     - { key: 'net.ipv4.ip_forward', value: '1' }
   become: true
-  when: ansible_os_family != 'Alpine'
+  when:
+    - ansible_os_family != 'Alpine'
+    - not _k8s_is_container
+  tags: [kubernetes, master, audit]

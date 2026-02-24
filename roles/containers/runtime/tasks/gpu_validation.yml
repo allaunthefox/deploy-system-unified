@@ -8,6 +8,7 @@
       - containers_gpu_slicing.strategy in ["auto", "mig", "vgpu", "time-slicing", "sriov", "level-zero", "oneapi", "passthrough", "none"]
     fail_msg: "GPU hardware or strategy not supported"
   when: containers_enable_gpu_support
+  tags: [containers, gpu, runtime, audit]
 
 - name: Verify Multi-GPU Configuration Consistency
   ansible.builtin.assert:
@@ -17,6 +18,7 @@
   when:
     - containers_enable_gpu_support
     - not (gpu_force_vendor | default(false))
+  tags: [containers, gpu, runtime, audit]
 
 - name: Validate NVIDIA vGPU license (virtual guest)
   ansible.builtin.assert:
@@ -28,6 +30,7 @@
     - is_virtualized
     - containers_gpu_vendor_detected == "nvidia"
     - containers_gpu_slicing.strategy == "vgpu"
+  tags: [containers, gpu, runtime, nvidia, audit]
 
 - name: Validate SR-IOV support (bare metal)
   ansible.builtin.assert:
@@ -38,6 +41,7 @@
     - containers_enable_gpu_support
     - not is_virtualized
     - containers_gpu_slicing.strategy == "sriov"
+  tags: [containers, gpu, runtime, amd, audit]
 
 - name: Validate NVIDIA MIG support
   ansible.builtin.assert:
@@ -48,8 +52,9 @@
   when:
     - containers_enable_gpu_support
     - containers_gpu_slicing.strategy == "mig"
+  tags: [containers, gpu, runtime, nvidia, audit]
 
-- name: Verify GPU devices in container (Podman Smoke Test)
+- name: "Action 800413 | Verify GPU devices in container (Podman Smoke Test)"
   ansible.builtin.command:
     cmd: podman run --rm --device=all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
   register: nvidia_smi_smoke
@@ -59,6 +64,7 @@
     - containers_enable_gpu_support
     - containers_gpu_vendor_detected == "nvidia"
     - not _gpu_is_container
+  tags: [containers, gpu, runtime, nvidia, audit]
 
 - name: Report GPU Health Summary
   ansible.builtin.debug:
@@ -68,3 +74,4 @@
       - "Multi-Vendor: {{ _gpu_is_multi_vendor | default(false) }}"
       - "Slicing Strategy: {{ containers_gpu_slicing.strategy }}"
   when: containers_enable_gpu_support
+  tags: [containers, gpu, runtime, audit]

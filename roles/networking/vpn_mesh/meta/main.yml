@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: vpn_mesh
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Multi-node VPN mesh readiness (WireGuard, IPsec)
   license: MIT
   min_ansible_version: "2.15"
@@ -20,6 +20,18 @@ galaxy_info:
     - networking
     - vpn
     - mesh
-    - iso_27001
+    - wireguard
+    - ipsec
+    - encryption
+    - security
+    - tunnels
+    - connectivity
+    - linux
+    - cryptography
+    - iso27001
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

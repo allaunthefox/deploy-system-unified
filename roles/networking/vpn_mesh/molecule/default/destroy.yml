@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove vpn_mesh test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - vpn-mesh-ubuntu-2204
+        - vpn-mesh-debian-12
+        - vpn-mesh-alpine-319
+        - vpn-mesh-rockylinux-9

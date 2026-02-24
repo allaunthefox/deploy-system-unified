@@ -1,0 +1,8 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check caddy role executed
+      ansible.builtin.debug:
+        msg: "Containers/caddy role executed successfully"

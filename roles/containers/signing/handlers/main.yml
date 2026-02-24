@@ -1,0 +1,26 @@
+---
+- name: sign_container_image
+  ansible.builtin.command:
+    cmd: >
+      cosign sign
+      {% if cosign_key_mode == 'keypair' %}
+      --key /etc/cosign/keys/cosign.key
+      {% elif cosign_keyless_mode %}
+      --fulcio-url {{ cosign_fulcio_url }}
+      --rekor-url {{ cosign_rekor_url }}
+      {% endif %}
+      {{ cosign_sign_image }}
+  listen: sign_container_image
+
+- name: verify_container_image
+  ansible.builtin.command:
+    cmd: >
+      cosign verify
+      {% if cosign_key_mode == 'keypair' %}
+      --key /etc/cosign/keys/cosign.pub
+      {% elif cosign_keyless_mode %}
+      --fulcio-url {{ cosign_fulcio_url }}
+      --rekor-url {{ cosign_rekor_url }}
+      {% endif %}
+      {{ cosign_verify_image }}
+  listen: verify_container_image

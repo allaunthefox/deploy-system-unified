@@ -1,6 +1,6 @@
 ---
 # Defaults for core/time role
-time_service_mapping:
+core_time_service_mapping:
   archlinux:
     service: chronyd
     package: chrony

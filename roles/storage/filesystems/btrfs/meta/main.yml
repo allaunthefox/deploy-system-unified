@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: btrfs
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Btrfs filesystem management and maintenance
   license: MIT
   min_ansible_version: "2.15"
@@ -17,6 +17,18 @@ galaxy_info:
     - filesystems
     - btrfs
     - snapshot
-    - iso_27040
+    - iso27040
+    - linux
+    - system
+    - data-protection
+    - backup
+    - volume-management
+    - cis
+    - nist80053
+    - automation
+    - infrastructure
+
+collections:
+  - ansible.builtin
 
 dependencies: []

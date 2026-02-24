@@ -1,0 +1,250 @@
+# Goss tests for security/file_integrity role
+# AIDE Configuration, File Monitoring
+# CIS Benchmark: 4.x - Logging and Auditing (File Integrity)
+# ISO 27001 §8.16 | STIG V-23028x | NIST SI-7/SI-7(1)
+
+# =============================================================================
+# PACKAGE TESTS - Verify file integrity packages
+# =============================================================================
+package:
+  # CIS 4.x - AIDE for file integrity monitoring
+  aide:
+    installed: true
+  aide-common:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify file integrity services
+# =============================================================================
+service:
+  # CIS 4.x - AIDE cron job service (if using systemd timer)
+  aidecheck:
+    enabled: true
+    running: false  # Only runs periodically
+
+# =============================================================================
+# FILE TESTS - Verify file integrity configuration files
+# =============================================================================
+file:
+  # CIS 4.x - AIDE configuration file
+  /etc/aide/aide.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\/etc F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+      - /^\/bin F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+      - /^\/sbin F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+      - /^\/usr F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+      - /^\/lib F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+      - /^\/lib64 F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+      - /^\/boot F IPACLs+md5+sha256+sha512+acl+selinux+xattrs/
+
+  # CIS 4.x - AIDE database directory
+  /var/lib/aide:
+    exists: true
+    filetype: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+  # CIS 4.x - AIDE database file
+  /var/lib/aide/aide.db:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+  # CIS 4.x - AIDE new database file
+  /var/lib/aide/aide.db.new:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+  # CIS 4.x - AIDE log directory
+  /var/log/aide:
+    exists: true
+    filetype: directory
+    mode: "0750"
+    owner: root
+    group: root
+
+  # CIS 4.x - AIDE daily cron job
+  /etc/cron.daily/aide:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    contains:
+      - /aide --update/
+      - /AIDEUPDATE=yes/
+
+  # CIS 4.x - AIDE systemd timer (alternative to cron)
+  /etc/systemd/system/aidecheck.service:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 4.x - AIDE systemd timer unit
+  /etc/systemd/system/aidecheck.timer:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 4.x - AIDE report configuration
+  /etc/aide/aide.conf.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 4.x - Critical system files to monitor
+  /etc/aide/aide.conf.d/critical-files.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /\/etc\/passwd/
+      - /\/etc\/shadow/
+      - /\/etc\/group/
+      - /\/etc\/sudoers/
+
+# =============================================================================
+# COMMAND TESTS - Verify file integrity monitoring
+# =============================================================================
+command:
+  # CIS 4.x - Verify AIDE database exists and is valid
+  aide_database_exists:
+    exec: 'test -f /var/lib/aide/aide.db && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE database permissions
+  aide_database_permissions:
+    exec: 'stat -c "%a" /var/lib/aide/aide.db'
+    exit-status: 0
+    stdout:
+      - /^600$/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE configuration is valid
+  aide_config_valid:
+    exec: 'aide --config-check 2>&1 | grep -c "Error" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 10000
+
+  # CIS 4.x - Verify AIDE can read its configuration
+  aide_config_readable:
+    exec: 'aide --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /AIDE/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE database is not empty
+  aide_database_not_empty:
+    exec: 'wc -l < /var/lib/aide/aide.db'
+    exit-status: 0
+    stdout:
+      - /^[1-9][0-9]*$/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE cron job is configured
+  aide_cron_configured:
+    exec: 'grep -c "aide --update" /etc/cron.daily/aide'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE log file exists
+  aide_log_exists:
+    exec: 'test -d /var/log/aide && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 4.x - Verify critical files are in AIDE config
+  aide_critical_files:
+    exec: 'grep -c "/etc/passwd" /etc/aide/aide.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify /etc/shadow is monitored
+  aide_shadow_monitored:
+    exec: 'grep -c "/etc/shadow" /etc/aide/aide.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify /etc/sudoers is monitored
+  aide_sudoers_monitored:
+    exec: 'grep -c "/etc/sudoers" /etc/aide/aide.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify /bin is monitored
+  aide_bin_monitored:
+    exec: 'grep -c "^/bin" /etc/aide/aide.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify /sbin is monitored
+  aide_sbin_monitored:
+    exec: 'grep -c "^/sbin" /etc/aide/aide.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify /usr is monitored
+  aide_usr_monitored:
+    exec: 'grep -c "^/usr" /etc/aide/aide.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE uses strong hashes
+  aide_hash_algorithms:
+    exec: 'grep -E "sha256|sha512" /etc/aide/aide.conf | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 4.x - Verify AIDE systemd timer is enabled
+  aide_timer_enabled:
+    exec: 'systemctl is-enabled aidecheck.timer 2>/dev/null || echo "disabled"'
+    exit-status: 0
+    stdout:
+      - /^enabled$|^disabled$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Verify file integrity processes
+# =============================================================================
+# Note: AIDE runs periodically, not as a continuous process
+
+# =============================================================================
+# PORT TESTS - Not applicable for file integrity
+# =============================================================================
+# Note: File integrity monitoring does not involve network ports

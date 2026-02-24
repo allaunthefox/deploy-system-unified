@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove scanning test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - scanning-ubuntu-2204
+        - scanning-debian-12
+        - scanning-alpine-319
+        - scanning-rockylinux-9

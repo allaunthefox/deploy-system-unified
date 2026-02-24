@@ -1,0 +1,81 @@
+---
+# Defaults for kubernetes/ingress role
+# Supports: nginx-ingress, traefik, ambassador
+
+# Ingress Controller Configuration
+kubernetes_ingress_enabled: true
+kubernetes_ingress_controller: "traefik"  # Options: nginx-ingress, traefik, ambassador
+kubernetes_ingress_namespace: "ingress-nginx"
+
+# Helm Configuration
+kubernetes_ingress_helm_version: "4.11.0"
+kubernetes_ingress_helm_repo: "https://kubernetes.github.io/ingress-nginx"
+kubernetes_ingress_helm_chart: "ingress-nginx/ingress-nginx"
+
+# Traefik-specific Helm Configuration
+kubernetes_ingress_traefik_helm_repo: "https://traefik.github.io/charts"
+kubernetes_ingress_traefik_helm_chart: "traefik/traefik"
+
+# Ambassador-specific Helm Configuration
+kubernetes_ingress_ambassador_helm_repo: "https://getambassador.io"
+kubernetes_ingress_ambassador_helm_chart: "datawire/ambassador"
+
+# Ingress Class
+kubernetes_ingress_class_name: "nginx"
+kubernetes_ingress_class_annotation: "nginx"
+
+# TLS Configuration
+kubernetes_ingress_tls_enabled: true
+kubernetes_ingress_tls_secret_name: "ingress-tls"
+kubernetes_ingress_tls_letsencrypt_enabled: false
+kubernetes_ingress_tls_letsencrypt_email: ""
+kubernetes_ingress_tls_letsencrypt_production: true
+
+# Network Configuration
+kubernetes_ingress_service_type: "LoadBalancer"  # Options: LoadBalancer, NodePort, ClusterIP
+kubernetes_ingress_external_ip: ""  # For static IP assignment
+kubernetes_ingress_http_port: 80
+kubernetes_ingress_https_port: 443
+
+# Resource Limits
+kubernetes_ingress_controller_resources:
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+# Advanced Options
+kubernetes_ingress_enable_metrics: true
+kubernetes_ingress_enable_prometheus_rule: false
+
+# Rate Limiting (via annotations)
+kubernetes_ingress_rate_limit_enabled: false
+kubernetes_ingress_rate_limit_requests: 100
+kubernetes_ingress_rate_limit_period: "1s"
+
+# Path-based Routing
+kubernetes_ingress_default_backend_enabled: true
+kubernetes_ingress_default_backend_service: "default-backend"
+kubernetes_ingress_default_backend_port: 80
+
+# Security
+kubernetes_ingress_security_context:
+  runAsNonRoot: true
+  runAsUser: 101
+  allowPrivilegeEscalation: false
+
+# Annotations for additional configuration
+kubernetes_ingress_annotations: {}
+# Example:
+# kubernetes_ingress_annotations:
+#   nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+#   nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+
+# Metrics Configuration
+kubernetes_ingress_metrics:
+  prometheus:
+    enabled: true
+    port: 10254
+    portName: metrics

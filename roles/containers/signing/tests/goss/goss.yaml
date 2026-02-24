@@ -1,0 +1,33 @@
+# Goss tests for containers/signing role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+  gpg:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify signing configuration
+# =============================================================================
+file:
+  /srv/containers/signing:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  gpg_version:
+    exec: 'gpg --version'
+    exit-status: 0
+    timeout: 10000
+
+  podman_version:
+    exec: 'podman --version'
+    exit-status: 0
+    timeout: 10000

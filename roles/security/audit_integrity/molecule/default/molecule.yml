@@ -1,0 +1,69 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: default
+  options:
+    managed: false
+    ansible_connection_options:
+      ansible_connection: containers.podman.podman
+platforms:
+  - name: audit-integrity-ubuntu-2204
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+  - name: audit-integrity-ubuntu-2404
+    image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+  - name: audit-integrity-debian-12
+    image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  - name: audit-integrity-alpine-319
+    image: docker.io/geerlingguy/docker-alpine319-ansible:latest
+  - name: audit-integrity-rockylinux-9
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+  - name: audit-integrity-amazonlinux-2023
+    image: docker.io/geerlingguy/docker-amazonlinux2023-ansible:latest
+prerun: false
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      deprecation_warnings: false
+  inventory:
+    host_vars:
+      audit-integrity-ubuntu-2204:
+        ansible_connection: containers.podman.podman
+        ansible_host: audit-integrity-ubuntu-2204
+      audit-integrity-ubuntu-2404:
+        ansible_connection: containers.podman.podman
+        ansible_host: audit-integrity-ubuntu-2404
+      audit-integrity-debian-12:
+        ansible_connection: containers.podman.podman
+        ansible_host: audit-integrity-debian-12
+      audit-integrity-alpine-319:
+        ansible_connection: containers.podman.podman
+        ansible_host: audit-integrity-alpine-319
+      audit-integrity-rockylinux-9:
+        ansible_connection: containers.podman.podman
+        ansible_host: audit-integrity-rockylinux-9
+      audit-integrity-amazonlinux-2023:
+        ansible_connection: containers.podman.podman
+        ansible_host: audit-integrity-amazonlinux-2023
+  env:
+    ANSIBLE_ROLES_PATH: ../../../../
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    prepare: prepare.yml
+    cleanup: cleanup.yml
+    side_effect: side_effect.yml
+    verify: verify.yml
+verifier:
+  name: ansible
+scenario:
+  test_sequence:
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy

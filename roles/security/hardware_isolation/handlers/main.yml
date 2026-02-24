@@ -1,2 +1,29 @@
 ---
-# Handlers for security/hardware_isolation
+# Handlers for security/hardware_isolation - PCIe and DMA Protection
+
+- name: Update initramfs
+  ansible.builtin.command: "{{ item }}"
+  become: true
+  loop:
+    - update-initramfs -u
+    - update-grub
+  when: ansible_os_family == 'Debian'
+  failed_when: false
+  changed_when: false
+
+- name: Update initramfs (RedHat)
+  ansible.builtin.command: dracut --force
+  become: true
+  when: ansible_os_family == 'RedHat'
+  failed_when: false
+  changed_when: false
+
+- name: Reload kernel modules
+  ansible.builtin.command: systemctl restart systemd-modules-load.service
+  become: true
+  failed_when: false
+  changed_when: false
+
+- name: Warn hardware isolation reboot required
+  ansible.builtin.debug:
+    msg: "IOMMU and DMA isolation parameters updated - a system reboot is required for hardware isolation to take effect"

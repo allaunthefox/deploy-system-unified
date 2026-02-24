@@ -1,0 +1,13 @@
+---
+# Handlers for security/falco role
+- name: restart_falco
+  ansible.builtin.systemd:
+    name: falco
+    state: restarted
+  become: true
+
+- name: reload_falco
+  ansible.builtin.systemd:
+    name: falco
+    state: reloaded
+  become: true
