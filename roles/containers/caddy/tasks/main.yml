@@ -250,6 +250,10 @@
     - /srv/containers/caddy/crowdsec/config
     - /srv/containers/caddy/crowdsec/data
   become: true
+  tags:
+    - containers
+    - caddy
+    - crowdsec
   when: crowdsec_enable | default(false)
   tags:
     - cis_3_11
@@ -297,6 +301,12 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
+  tags:
+    - iso_27001_16_1
+    - nist_sc_8
+    - containers
+    - crowdsec
+    - remediate
   when: crowdsec_enable | default(false)
   tags:
     - cis_3_12
