@@ -1,4 +1,4 @@
-# Security Enhancement Plan 2026
+# SECURITY_ENHANCEMENT_PLAN_2026
 
 **Status:** Proposed (Q2 2026)
 **Priority:** High
