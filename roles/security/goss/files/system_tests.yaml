@@ -1,0 +1,61 @@
+# System Tests for Goss
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+# Kernel parameters
+command:
+  sysctl net.ipv4.icmp_echo_ignore_broadcasts:
+    exit-status: 0
+    stdout:
+      - "^net.ipv4.icmp_echo_ignore_broadcasts = 1$"
+  sysctl net.ipv4.conf.all.rp_filter:
+    exit-status: 0
+    stdout:
+      - "^net.ipv4.conf.all.rp_filter = 1$"
+  sysctl net.ipv4.conf.default.rp_filter:
+    exit-status: 0
+    stdout:
+      - "^net.ipv4.conf.default.rp_filter = 1$"
+
+# File system checks
+file:
+  /tmp:
+    exists: true
+    mode: "1777"
+  /var:
+    exists: true
+    mode: "0755"
+  /var/log:
+    exists: true
+    mode: "0755"
+
+# Required packages
+package:
+  curl:
+    installed: true
+  wget:
+    installed: true
+  git:
+    installed: true
+
+# Port checks
+port:
+  22:
+    listening: true
+    ip: 0.0.0.0
+  {% if goss_check_http | default(false) %}
+  80:
+    listening: true
+  {% endif %}
+  {% if goss_check_https | default(false) %}
+  443:
+    listening: true
+  {% endif %}
+
+# Disk space checks
+command:
+  df -h /:
+    exit-status: 0
+    stdout:
+      - "^/dev.*[1-9]0%"
+    stderr: []
+    timeout: 5000

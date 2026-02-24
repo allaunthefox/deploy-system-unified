@@ -1,0 +1,33 @@
+---
+argument_specs:
+  main:
+    short_description: Physical networking tuning role
+    description:
+      - Discovers physical network interfaces and their capabilities using ethtool
+      - Applies adaptive performance profiles based on interface speed
+      - Configures Jumbo frames, ring buffers, and hardware offloading
+    options:
+      networking_physical_install_tools:
+        type: bool
+        description: Whether to install ethtool and other networking tools
+        default: true
+      networking_physical_manage_mtu:
+        type: bool
+        description: Whether to manage interface MTU
+        default: true
+      networking_physical_jumbo_frames_enabled:
+        type: bool
+        description: Enable Jumbo frames for high-speed interfaces
+        default: true
+      networking_physical_jumbo_mtu:
+        type: int
+        description: MTU value for Jumbo frames
+        default: 9000
+      networking_physical_ring_tuning_enabled:
+        type: bool
+        description: Enable adaptive ring buffer tuning
+        default: true
+      networking_physical_offload_tuning_enabled:
+        type: bool
+        description: Enable hardware offload tuning (TSO, GSO)
+        default: true

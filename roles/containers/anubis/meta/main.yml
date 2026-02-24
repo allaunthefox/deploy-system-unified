@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: anubis
+  author: deploysystemunified
+  description: "WI-CONT | anubis management and configuration"
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - containers
+    - anubis
+    - firewall
+    - waf
+    - security
+    - hardening
+    - podman
+    - quadlet
+    - iso27001
+    - nist80053
+    - supplychain
+    - web
+
+collections:
+  - ansible.builtin
+
+dependencies: []

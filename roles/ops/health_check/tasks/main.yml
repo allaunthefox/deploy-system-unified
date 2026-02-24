@@ -1,10 +1,11 @@
 ---
 # Tasks for ops/health_check
+# Compliance: CIS 4.x, STIG V-230540, NIST AU-2/CA-7/IR-4/SI-4, ISO 27001 §8.15/§8.16/§16.1
 
-- name: Run post-deploy health checks
+- name: "CIS 4.6.1 | STIG V-230700 | NIST CA-7 | Run post-deploy health checks"
   when: health_check_enabled | bool
   block:
-    - name: Ensure mount facts are available
+    - name: "CIS 4.6.1a | Ensure mount facts are available"
       ansible.builtin.setup:
         gather_subset:
           - '!all'
@@ -13,18 +14,18 @@
       when: ansible_mounts is not defined
       changed_when: false
 
-    - name: Determine service manager support
+    - name: "CIS 4.6.1b | Determine service manager support"
       ansible.builtin.set_fact:
         health_check_service_mgr: "{{ ansible_service_mgr | default(ansible_facts['service_mgr'] | default('unknown')) }}"
         health_check_service_mgr_is_systemd: "{{ (ansible_service_mgr | default(ansible_facts['service_mgr'] | default(''))) == 'systemd' }}"
       changed_when: false
 
-    - name: Gather service facts for systemd checks
+    - name: "CIS 4.6.1c | Gather service facts for systemd checks"
       ansible.builtin.service_facts:
       when: health_check_service_mgr_is_systemd | bool
       changed_when: false
 
-    - name: Initialize health check result containers
+    - name: "CIS 4.6.1d | Initialize health check result containers"
       ansible.builtin.set_fact:
         health_check_results_systemd: []
         health_check_results_container: []
@@ -35,7 +36,7 @@
         health_check_endpoint_active: []
       changed_when: false
 
-    - name: Build mandatory systemd checks
+    - name: "CIS 4.6.1e | Build mandatory systemd checks"
       ansible.builtin.set_fact:
         health_check_systemd_checks: "{{ health_check_systemd_checks + [{'name': item, 'mandatory': true}] }}"
       loop: "{{ health_check_systemd_mandatory_units | default([]) }}"
@@ -43,7 +44,7 @@
         label: "{{ item }}"
       changed_when: false
 
-    - name: Build optional systemd checks
+    - name: "CIS 4.6.1f | Build optional systemd checks"
       ansible.builtin.set_fact:
         health_check_systemd_checks: "{{ health_check_systemd_checks + [{'name': item, 'mandatory': false}] }}"
       loop: "{{ health_check_systemd_optional_units | default([]) }}"
@@ -51,297 +52,402 @@
         label: "{{ item }}"
       changed_when: false
 
-    - name: Evaluate systemd unit health
-      ansible.builtin.set_fact:
-        health_check_results_systemd: "{{ health_check_results_systemd + [_systemd_result] }}"
-      loop: "{{ health_check_systemd_checks }}"
-      loop_control:
-        label: "{{ item.name }}"
-      vars:
-        _normalized_unit: "{{ item.name if ('.' in item.name) else (item.name ~ '.service') }}"
-        _service_map: "{{ ansible_facts.services | default({}) }}"
-        _unit_info: "{{ _service_map[_normalized_unit] | default({}) }}"
-        _unit_exists: "{{ _unit_info | length > 0 }}"
-        _unit_running: "{{ (_unit_info.state | default('')) == 'running' }}"
-        _systemd_ok: "{{ (health_check_service_mgr_is_systemd | bool) and (_unit_exists | bool) and (_unit_running | bool) }}"
-        _systemd_failure_reason: >-
-          {{
-            'service manager is not systemd'
-            if not (health_check_service_mgr_is_systemd | bool) else (
-              'unit not found'
-              if not (_unit_exists | bool) else (
-                'unit not running'
-                if not (_unit_running | bool) else ''
-              )
-            )
-          }}
-        _systemd_result:
-          type: systemd
-          name: "{{ item.name }}"
-          mandatory: "{{ item.mandatory | default(false) | bool }}"
-          ok: "{{ _systemd_ok | bool }}"
-          severity: >-
-            {{
-              'pass'
-              if (_systemd_ok | bool) else (
-                'critical'
-                if (item.mandatory | default(false) | bool) else 'warning'
-              )
-            }}
-          details:
-            unit: "{{ _normalized_unit }}"
-            service_manager: "{{ health_check_service_mgr }}"
-            exists: "{{ _unit_exists | bool }}"
-            state: "{{ _unit_info.state | default('unknown') }}"
-            status: "{{ _unit_info.status | default('unknown') }}"
-          failure_reason: "{{ _systemd_failure_reason }}"
-      changed_when: false
+- name: "CIS 4.6.2 | STIG V-230701 | NIST CA-7 | ISO 27001 §12.4 | Action 840020 | Evaluate systemd unit health"
+  ansible.builtin.set_fact:
+    health_check_results_systemd: "{{ health_check_results_systemd + [_systemd_result] }}"
+  loop: "{{ health_check_systemd_checks }}"
+  loop_control:
+    label: "{{ item.name }}"
+  vars:
+    _normalized_unit: "{{ item.name if ('.' in item.name) else (item.name ~ '.service') }}"
+    _service_map: "{{ ansible_facts.services | default({}) }}"
+    _unit_info: "{{ _service_map[_normalized_unit] | default({}) }}"
+    _unit_exists: "{{ _unit_info | length > 0 }}"
+    _unit_running: "{{ (_unit_info.state | default('')) == 'running' }}"
+    _systemd_ok: "{{ (health_check_service_mgr_is_systemd | bool) and (_unit_exists | bool) and (_unit_running | bool) }}"
+    _systemd_failure_reason: >-
+      {{
+        'service manager is not systemd'
+        if not (health_check_service_mgr_is_systemd | bool) else (
+          'unit not found'
+          if not (_unit_exists | bool) else (
+            'unit not running'
+            if not (_unit_running | bool) else ''
+          )
+        )
+      }}
+    _systemd_result:
+      type: systemd
+      name: "{{ item.name }}"
+      mandatory: "{{ item.mandatory | default(false) | bool }}"
+      ok: "{{ _systemd_ok | bool }}"
+      severity: >-
+        {{
+          'pass'
+          if (_systemd_ok | bool) else (
+            'critical'
+            if (item.mandatory | default(false) | bool) else 'warning'
+          )
+        }}
+      details:
+        unit: "{{ _normalized_unit }}"
+        service_manager: "{{ health_check_service_mgr }}"
+        exists: "{{ _unit_exists | bool }}"
+        state: "{{ _unit_info.state | default('unknown') }}"
+        status: "{{ _unit_info.status | default('unknown') }}"
+      failure_reason: "{{ _systemd_failure_reason }}"
+  changed_when: false
+  tags:
+    - cis_4_6_2
+    - stig_v_230701
+    - nist_ca_7
+    - iso_27001_12_4
+    - ops
+    - health
 
-    - name: Build active container runtime probes
-      ansible.builtin.set_fact:
-        health_check_container_runtime_active: "{{ health_check_container_runtime_active + [item] }}"
-      loop: "{{ health_check_container_runtime_checks | default([]) }}"
-      loop_control:
-        label: "{{ item.name | default('unnamed-container-probe') }}"
-      when: item.enabled | default(true) | bool
-      changed_when: false
+- name: "CIS 4.6.3 | STIG V-230702 | NIST SI-4 | Build active container runtime probes"
+  ansible.builtin.set_fact:
+    health_check_container_runtime_active: "{{ health_check_container_runtime_active + [item] }}"
+  loop: "{{ health_check_container_runtime_checks | default([]) }}"
+  loop_control:
+    label: "{{ item.name | default('unnamed-container-probe') }}"
+  when: item.enabled | default(true) | bool
+  changed_when: false
+  tags:
+    - cis_4_6_3
+    - stig_v_230702
+    - nist_si_4
+    - ops
+    - health
 
-    - name: Run container runtime probes
-      ansible.builtin.command:
-        argv: "{{ item.command }}"
-      loop: "{{ health_check_container_runtime_active }}"
-      loop_control:
-        label: "{{ item.name }}"
-      register: health_check_container_runtime_probe
-      changed_when: false
-      failed_when: false
-      when: health_check_container_runtime_active | length > 0
+- name: "CIS 4.6.4 | STIG V-230703 | NIST SI-4 | Run container runtime probes"
+  ansible.builtin.command:
+    argv: "{{ item.command }}"
+  loop: "{{ health_check_container_runtime_active }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: health_check_container_runtime_probe
+  changed_when: false
+  failed_when: false
+  when: health_check_container_runtime_active | length > 0
+  tags:
+    - cis_4_6_4
+    - stig_v_230703
+    - nist_si_4
+    - ops
+    - health
 
-    - name: Record container runtime probe results
-      ansible.builtin.set_fact:
-        health_check_results_container: "{{ health_check_results_container + [_container_result] }}"
-      loop: "{{ health_check_container_runtime_probe.results | default([]) }}"
-      loop_control:
-        label: "{{ item.item.name | default('unknown-container-probe') }}"
-      vars:
-        _container_ok: "{{ (item.rc | default(1) | int) == 0 }}"
-        _container_mandatory: "{{ item.item.mandatory | default(false) | bool }}"
-        _container_failure_text: "{{ item.stderr | default(item.msg | default('command failed')) }}"
-        _container_result:
-          type: container_runtime
-          name: "{{ item.item.name | default('unknown') }}"
-          mandatory: "{{ _container_mandatory }}"
-          ok: "{{ _container_ok }}"
-          severity: "{{ 'pass' if (_container_ok | bool) else ('critical' if (_container_mandatory | bool) else 'warning') }}"
-          details:
-            command: "{{ item.item.command | default([]) }}"
-            rc: "{{ item.rc | default(-1) }}"
-            output_excerpt: "{{ _container_failure_text | regex_replace('\\s+', ' ') | trim | truncate(240, true, '...') }}"
-          failure_reason: "{{ '' if (_container_ok | bool) else _container_failure_text }}"
-      changed_when: false
+- name: "CIS 4.6.5 | STIG V-230704 | NIST SI-4 | Record container runtime probe results"
+  ansible.builtin.set_fact:
+    health_check_results_container: "{{ health_check_results_container + [_container_result] }}"
+  loop: "{{ health_check_container_runtime_probe.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item.name | default('unknown-container-probe') }}"
+  vars:
+    _container_ok: "{{ (item.rc | default(1) | int) == 0 }}"
+    _container_mandatory: "{{ item.item.mandatory | default(false) | bool }}"
+    _container_failure_text: "{{ item.stderr | default(item.msg | default('command failed')) }}"
+    _container_result:
+      type: container_runtime
+      name: "{{ item.item.name | default('unknown') }}"
+      mandatory: "{{ _container_mandatory }}"
+      ok: "{{ _container_ok }}"
+      severity: "{{ 'pass' if (_container_ok | bool) else ('critical' if (_container_mandatory | bool) else 'warning') }}"
+      details:
+        command: "{{ item.item.command | default([]) }}"
+        rc: "{{ item.rc | default(-1) }}"
+        output_excerpt: "{{ _container_failure_text | regex_replace('\\s+', ' ') | trim | truncate(240, true, '...') }}"
+      failure_reason: "{{ '' if (_container_ok | bool) else _container_failure_text }}"
+  changed_when: false
+  tags:
+    - cis_4_6_5
+    - stig_v_230704
+    - nist_si_4
+    - ops
+    - health
 
-    - name: Evaluate disk threshold checks
-      ansible.builtin.set_fact:
-        health_check_results_disk: "{{ health_check_results_disk + [_disk_result] }}"
-      loop: "{{ health_check_disk_checks | default([]) }}"
-      loop_control:
-        label: "{{ item.mountpoint }}"
-      vars:
-        _mount_info: "{{ (ansible_mounts | default([]) | selectattr('mount', 'equalto', item.mountpoint) | list | first | default({})) }}"
-        _mount_exists: "{{ _mount_info | length > 0 }}"
-        _used_percent_raw: >-
-          {{
-            (
-              (
-                (_mount_info.size_total | default(0) | float)
-                - (_mount_info.size_available | default(0) | float)
-              )
-              / (_mount_info.size_total | default(1) | float)
-            ) * 100
-            if (_mount_exists | bool) else -1
-          }}
-        _used_percent: "{{ _used_percent_raw | float | round(2) }}"
-        _warn_percent: "{{ item.warn_percent | default(80) | float }}"
-        _critical_percent: "{{ item.critical_percent | default(90) | float }}"
-        _disk_critical: "{{ (_mount_exists | bool) and ((_used_percent | float) >= _critical_percent) }}"
-        _disk_warning: "{{ (_mount_exists | bool) and (not (_disk_critical | bool)) and ((_used_percent | float) >= _warn_percent) }}"
-        _disk_ok: "{{ (_mount_exists | bool) and (not (_disk_critical | bool)) }}"
-        _disk_mandatory: "{{ item.mandatory | default(true) | bool }}"
-        _disk_failure_reason: >-
-          {{
-            'mountpoint not found'
-            if not (_mount_exists | bool) else (
-              'disk usage at or above critical threshold'
-              if (_disk_critical | bool) else ''
-            )
-          }}
-        _disk_result:
-          type: disk
-          name: "{{ item.mountpoint }}"
-          mandatory: "{{ _disk_mandatory }}"
-          ok: "{{ _disk_ok }}"
-          severity: >-
-            {{
-              'critical'
-              if (not (_disk_ok | bool) and (_disk_mandatory | bool)) else (
-                'warning'
-                if ((_disk_warning | bool) or (not (_disk_ok | bool))) else 'pass'
-              )
-            }}
-          details:
-            mountpoint: "{{ item.mountpoint }}"
-            used_percent: "{{ _used_percent }}"
-            warn_percent: "{{ _warn_percent }}"
-            critical_percent: "{{ _critical_percent }}"
-            size_total: "{{ _mount_info.size_total | default(0) }}"
-            size_available: "{{ _mount_info.size_available | default(0) }}"
-          failure_reason: "{{ _disk_failure_reason }}"
-      changed_when: false
+- name: "CIS 4.6.6 | STIG V-230705 | NIST SI-4 | Evaluate disk threshold checks"
+  ansible.builtin.set_fact:
+    health_check_results_disk: "{{ health_check_results_disk + [_disk_result] }}"
+  loop: "{{ health_check_disk_checks | default([]) }}"
+  loop_control:
+    label: "{{ item.mountpoint }}"
+  vars:
+    _mount_info: "{{ (ansible_mounts | default([]) | selectattr('mount', 'equalto', item.mountpoint) | list | first | default({})) }}"
+    _mount_exists: "{{ _mount_info | length > 0 }}"
+    _used_percent_raw: >-
+      {{
+        (
+          (
+            (_mount_info.size_total | default(0) | float)
+            - (_mount_info.size_available | default(0) | float)
+          )
+          / (_mount_info.size_total | default(1) | float)
+        ) * 100
+        if (_mount_exists | bool) else -1
+      }}
+    _used_percent: "{{ _used_percent_raw | float | round(2) }}"
+    _warn_percent: "{{ item.warn_percent | default(80) | float }}"
+    _critical_percent: "{{ item.critical_percent | default(90) | float }}"
+    _disk_critical: "{{ (_mount_exists | bool) and ((_used_percent | float) >= _critical_percent) }}"
+    _disk_warning: "{{ (_mount_exists | bool) and (not (_disk_critical | bool)) and ((_used_percent | float) >= _warn_percent) }}"
+    _disk_ok: "{{ (_mount_exists | bool) and (not (_disk_critical | bool)) }}"
+    _disk_mandatory: "{{ item.mandatory | default(true) | bool }}"
+    _disk_failure_reason: >-
+      {{
+        'mountpoint not found'
+        if not (_mount_exists | bool) else (
+          'disk usage at or above critical threshold'
+          if (_disk_critical | bool) else ''
+        )
+      }}
+    _disk_result:
+      type: disk
+      name: "{{ item.mountpoint }}"
+      mandatory: "{{ _disk_mandatory }}"
+      ok: "{{ _disk_ok }}"
+      severity: >-
+        {{
+          'critical'
+          if (not (_disk_ok | bool) and (_disk_mandatory | bool)) else (
+            'warning'
+            if ((_disk_warning | bool) or (not (_disk_ok | bool))) else 'pass'
+          )
+        }}
+      details:
+        mountpoint: "{{ item.mountpoint }}"
+        used_percent: "{{ _used_percent }}"
+        warn_percent: "{{ _warn_percent }}"
+        critical_percent: "{{ _critical_percent }}"
+        size_total: "{{ _mount_info.size_total | default(0) }}"
+        size_available: "{{ _mount_info.size_available | default(0) }}"
+      failure_reason: "{{ _disk_failure_reason }}"
+  changed_when: false
+  tags:
+    - cis_4_6_6
+    - stig_v_230705
+    - nist_si_4
+    - ops
+    - health
 
-    - name: Build active endpoint checks
-      ansible.builtin.set_fact:
-        health_check_endpoint_active: "{{ health_check_endpoint_active + [item] }}"
-      loop: "{{ health_check_endpoint_checks | default([]) }}"
-      loop_control:
-        label: "{{ item.name | default(item.url | default('unnamed-endpoint')) }}"
-      when: item.enabled | default(true) | bool
-      changed_when: false
+- name: "CIS 4.6.7 | STIG V-230706 | NIST IR-4 | Build active endpoint checks"
+  ansible.builtin.set_fact:
+    health_check_endpoint_active: "{{ health_check_endpoint_active + [item] }}"
+  loop: "{{ health_check_endpoint_checks | default([]) }}"
+  loop_control:
+    label: "{{ item.name | default(item.url | default('unnamed-endpoint')) }}"
+  when: item.enabled | default(true) | bool
+  changed_when: false
+  tags:
+    - cis_4_6_7
+    - stig_v_230706
+    - nist_ir_4
+    - ops
+    - health
 
-    - name: Run endpoint reachability checks
-      ansible.builtin.uri:
-        url: "{{ item.url }}"
-        method: "{{ item.method | default('GET') }}"
-        status_code: "{{ item.expected_status | default([200]) }}"
-        timeout: "{{ item.timeout | default(5) }}"
-        validate_certs: "{{ item.validate_certs | default(false) | bool }}"
-        return_content: false
-      loop: "{{ health_check_endpoint_active }}"
-      loop_control:
-        label: "{{ item.name | default(item.url) }}"
-      register: health_check_endpoint_probe
-      changed_when: false
-      failed_when: false
-      when: health_check_endpoint_active | length > 0
+- name: "CIS 4.6.8 | STIG V-230707 | NIST IR-4 | Run endpoint reachability checks"
+  ansible.builtin.uri:
+    url: "{{ item.url }}"
+    method: "{{ item.method | default('GET') }}"
+    status_code: "{{ item.expected_status | default([200]) }}"
+    timeout: "{{ item.timeout | default(5) }}"
+    validate_certs: "{{ item.validate_certs | default(false) | bool }}"
+    return_content: false
+  loop: "{{ health_check_endpoint_active }}"
+  loop_control:
+    label: "{{ item.name | default(item.url) }}"
+  register: health_check_endpoint_probe
+  changed_when: false
+  failed_when: false
+  when: health_check_endpoint_active | length > 0
+  tags:
+    - cis_4_6_8
+    - stig_v_230707
+    - nist_ir_4
+    - ops
+    - health
 
-    - name: Record endpoint check results
-      ansible.builtin.set_fact:
-        health_check_results_endpoint: "{{ health_check_results_endpoint + [_endpoint_result] }}"
-      loop: "{{ health_check_endpoint_probe.results | default([]) }}"
-      loop_control:
-        label: "{{ item.item.name | default(item.item.url | default('unknown-endpoint')) }}"
-      vars:
-        _endpoint_expected: "{{ item.item.expected_status | default([200]) }}"
-        _endpoint_status: "{{ item.status | default(-1) }}"
-        _endpoint_ok: >-
-          {{
-            (not (item.failed | default(false) | bool))
-            and ((_endpoint_status | int) in _endpoint_expected)
-          }}
-        _endpoint_mandatory: "{{ item.item.mandatory | default(false) | bool }}"
-        _endpoint_failure_text: "{{ item.msg | default('endpoint check failed') }}"
-        _endpoint_result:
-          type: endpoint
-          name: "{{ item.item.name | default(item.item.url | default('unknown')) }}"
-          mandatory: "{{ _endpoint_mandatory }}"
-          ok: "{{ _endpoint_ok }}"
-          severity: "{{ 'pass' if (_endpoint_ok | bool) else ('critical' if (_endpoint_mandatory | bool) else 'warning') }}"
-          details:
-            url: "{{ item.item.url | default('') }}"
-            method: "{{ item.item.method | default('GET') }}"
-            expected_status: "{{ _endpoint_expected }}"
-            status: "{{ _endpoint_status }}"
-            elapsed: "{{ item.elapsed | default(0) }}"
-          failure_reason: "{{ '' if (_endpoint_ok | bool) else _endpoint_failure_text }}"
-      changed_when: false
+- name: "CIS 4.6.9 | STIG V-230708 | NIST IR-4 | Record endpoint check results"
+  ansible.builtin.set_fact:
+    health_check_results_endpoint: "{{ health_check_results_endpoint + [_endpoint_result] }}"
+  loop: "{{ health_check_endpoint_probe.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item.name | default(item.item.url | default('unknown-endpoint')) }}"
+  vars:
+    _endpoint_expected: "{{ item.item.expected_status | default([200]) }}"
+    _endpoint_status: "{{ item.status | default(-1) }}"
+    _endpoint_ok: >-
+      {{
+        (not (item.failed | default(false) | bool))
+        and ((_endpoint_status | int) in _endpoint_expected)
+      }}
+    _endpoint_mandatory: "{{ item.item.mandatory | default(false) | bool }}"
+    _endpoint_failure_text: "{{ item.msg | default('endpoint check failed') }}"
+    _endpoint_result:
+      type: endpoint
+      name: "{{ item.item.name | default(item.item.url | default('unknown')) }}"
+      mandatory: "{{ _endpoint_mandatory }}"
+      ok: "{{ _endpoint_ok }}"
+      severity: "{{ 'pass' if (_endpoint_ok | bool) else ('critical' if (_endpoint_mandatory | bool) else 'warning') }}"
+      details:
+        url: "{{ item.item.url | default('') }}"
+        method: "{{ item.item.method | default('GET') }}"
+        expected_status: "{{ _endpoint_expected }}"
+        status: "{{ _endpoint_status }}"
+        elapsed: "{{ item.elapsed | default(0) }}"
+      failure_reason: "{{ '' if (_endpoint_ok | bool) else _endpoint_failure_text }}"
+  changed_when: false
+  tags:
+    - cis_4_6_9
+    - stig_v_230708
+    - nist_ir_4
+    - ops
+    - health
 
-    - name: Consolidate health check results
-      ansible.builtin.set_fact:
-        health_check_all_results: "{{ health_check_results_systemd + health_check_results_container + health_check_results_disk + health_check_results_endpoint }}"
-      changed_when: false
+- name: "CIS 4.6.10 | STIG V-230709 | NIST CA-7 | Consolidate health check results"
+  ansible.builtin.set_fact:
+    health_check_all_results: "{{ health_check_results_systemd + health_check_results_container + health_check_results_disk + health_check_results_endpoint }}"
+  changed_when: false
+  tags:
+    - cis_4_6_10
+    - stig_v_230709
+    - nist_ca_7
+    - ops
+    - health
 
-    - name: Compute health check counters
-      ansible.builtin.set_fact:
-        health_check_mandatory_failures: >-
-          {{
-            health_check_all_results
-            | selectattr('mandatory', 'equalto', true)
-            | selectattr('ok', 'equalto', false)
-            | list
-          }}
-        health_check_warning_results: "{{ health_check_all_results | selectattr('severity', 'equalto', 'warning') | list }}"
-        health_check_passed_results: "{{ health_check_all_results | selectattr('ok', 'equalto', true) | list }}"
-        health_check_failed_results: "{{ health_check_all_results | selectattr('ok', 'equalto', false) | list }}"
-      changed_when: false
+- name: "CIS 4.6.11 | STIG V-230710 | NIST CA-7 | Compute health check counters"
+  ansible.builtin.set_fact:
+    health_check_mandatory_failures: >-
+      {{
+        health_check_all_results
+        | selectattr('mandatory', 'equalto', true)
+        | selectattr('ok', 'equalto', false)
+        | list
+      }}
+    health_check_warning_results: "{{ health_check_all_results | selectattr('severity', 'equalto', 'warning') | list }}"
+    health_check_passed_results: "{{ health_check_all_results | selectattr('ok', 'equalto', true) | list }}"
+    health_check_failed_results: "{{ health_check_all_results | selectattr('ok', 'equalto', false) | list }}"
+  changed_when: false
+  tags:
+    - cis_4_6_11
+    - stig_v_230710
+    - nist_ca_7
+    - ops
+    - health
 
-    - name: Build machine-readable health summary
-      ansible.builtin.set_fact:
-        health_check_summary:
-          schema: deploy-system-unified/health-check/v1
-          host: "{{ inventory_hostname }}"
-          generated_at: "{{ ansible_date_time.iso8601 }}"
-          deployment_id: "{{ deployment_id | default('unknown') }}"
-          overall_ok: "{{ (health_check_mandatory_failures | length) == 0 }}"
-          counts:
-            total: "{{ health_check_all_results | length }}"
-            passed: "{{ health_check_passed_results | length }}"
-            failed: "{{ health_check_failed_results | length }}"
-            warnings: "{{ health_check_warning_results | length }}"
-            mandatory_failures: "{{ health_check_mandatory_failures | length }}"
-          checks:
-            systemd: "{{ health_check_results_systemd }}"
-            container_runtime: "{{ health_check_results_container }}"
-            disk: "{{ health_check_results_disk }}"
-            endpoints: "{{ health_check_results_endpoint }}"
-          mandatory_failures: "{{ health_check_mandatory_failures }}"
-      changed_when: false
+- name: "CIS 4.6.12 | STIG V-230711 | NIST CA-7 | Build machine-readable health summary"
+  ansible.builtin.set_fact:
+    health_check_summary:
+      schema: deploy-system-unified/health-check/v1
+      host: "{{ inventory_hostname }}"
+      generated_at: "{{ ansible_date_time.iso8601 }}"
+      deployment_id: "{{ deployment_id | default('unknown') }}"
+      overall_ok: "{{ (health_check_mandatory_failures | length) == 0 }}"
+      counts:
+        total: "{{ health_check_all_results | length }}"
+        passed: "{{ health_check_passed_results | length }}"
+        failed: "{{ health_check_failed_results | length }}"
+        warnings: "{{ health_check_warning_results | length }}"
+        mandatory_failures: "{{ health_check_mandatory_failures | length }}"
+      checks:
+        systemd: "{{ health_check_results_systemd }}"
+        container_runtime: "{{ health_check_results_container }}"
+        disk: "{{ health_check_results_disk }}"
+        endpoints: "{{ health_check_results_endpoint }}"
+      mandatory_failures: "{{ health_check_mandatory_failures }}"
+  changed_when: false
+  tags:
+    - cis_4_6_12
+    - stig_v_230711
+    - nist_ca_7
+    - ops
+    - health
 
-    - name: Ensure remote health summary directory exists
-      ansible.builtin.file:
-        path: "{{ health_check_output_dir_remote }}"
-        state: directory
-        mode: '0750'
+- name: "CIS 4.6.13 | STIG V-230712 | NIST AU-2 | Ensure remote health summary directory exists"
+  ansible.builtin.file:
+    path: "{{ health_check_output_dir_remote }}"
+    state: directory
+    mode: '0750'
+  tags:
+    - cis_4_6_13
+    - stig_v_230712
+    - nist_au_2
+    - ops
+    - health
 
-    - name: Write remote health summary artifact
-      ansible.builtin.copy:
-        dest: "{{ health_check_summary_file_remote }}"
-        content: "{{ health_check_summary | to_nice_json }}"
-        mode: '0640'
-      changed_when: false
+- name: "CIS 4.6.14 | STIG V-230713 | NIST AU-2 | Write remote health summary artifact"
+  ansible.builtin.copy:
+    dest: "{{ health_check_summary_file_remote }}"
+    content: "{{ health_check_summary | to_nice_json }}"
+    mode: '0640'
+  changed_when: false
+  tags:
+    - cis_4_6_14
+    - stig_v_230713
+    - nist_au_2
+    - ops
+    - health
 
-    - name: Ensure local health artifact directory exists
-      ansible.builtin.file:
-        path: "{{ health_check_artifact_dir_local }}"
-        state: directory
-        mode: '0755'
-      delegate_to: localhost
-      run_once: true
-      when: health_check_write_local_artifact | bool
-      changed_when: false
+- name: "CIS 4.6.15 | STIG V-230714 | NIST AU-2 | Ensure local health artifact directory exists"
+  ansible.builtin.file:
+    path: "{{ health_check_artifact_dir_local }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+  when: health_check_write_local_artifact | bool
+  changed_when: false
+  tags:
+    - cis_4_6_15
+    - stig_v_230714
+    - nist_au_2
+    - ops
+    - health
 
-    - name: Write local health summary artifact
-      ansible.builtin.copy:
-        dest: "{{ health_check_summary_file_local }}"
-        content: "{{ health_check_summary | to_nice_json }}"
-        mode: '0644'
-      delegate_to: localhost
-      when: health_check_write_local_artifact | bool
-      changed_when: false
+- name: "CIS 4.6.16 | STIG V-230715 | NIST AU-2 | Write local health summary artifact"
+  ansible.builtin.copy:
+    dest: "{{ health_check_summary_file_local }}"
+    content: "{{ health_check_summary | to_nice_json }}"
+    mode: '0644'
+  delegate_to: localhost
+  when: health_check_write_local_artifact | bool
+  changed_when: false
+  tags:
+    - cis_4_6_16
+    - stig_v_230715
+    - nist_au_2
+    - ops
+    - health
 
-    - name: Show health summary locations
-      ansible.builtin.debug:
-        msg:
-          - "Remote health summary: {{ health_check_summary_file_remote }}"
-          - "Local health summary: {{ health_check_summary_file_local if (health_check_write_local_artifact | bool) else 'disabled' }}"
-          - "Mandatory failures: {{ health_check_mandatory_failures | length }}"
-      changed_when: false
+- name: "CIS 4.6.17 | STIG V-230716 | NIST CA-7 | Show health summary locations"
+  ansible.builtin.debug:
+    msg:
+      - "Remote health summary: {{ health_check_summary_file_remote }}"
+      - "Local health summary: {{ health_check_summary_file_local if (health_check_write_local_artifact | bool) else 'disabled' }}"
+      - "Mandatory failures: {{ health_check_mandatory_failures | length }}"
+  changed_when: false
+  tags:
+    - cis_4_6_17
+    - stig_v_230716
+    - nist_ca_7
+    - ops
+    - health
 
-    - name: Enforce mandatory health checks
-      ansible.builtin.assert:
-        that:
-          - (health_check_mandatory_failures | length) == 0
-        fail_msg: >-
-          Mandatory health checks failed on {{ inventory_hostname }}:
-          {{ health_check_mandatory_failures | map(attribute='name') | list }}.
-          See {{ health_check_summary_file_remote }} for details.
-        success_msg: "Post-deploy health checks passed on {{ inventory_hostname }}"
-      when: health_check_fail_on_mandatory | bool
+- name: "CIS 4.6.18 | STIG V-230717 | NIST CA-7 | ISO 27001 §12.4 | Action 840021 | Enforce mandatory health checks"
+  ansible.builtin.assert:
+    that:
+      - (health_check_mandatory_failures | length) == 0
+    fail_msg: >-
+      Mandatory health checks failed on {{ inventory_hostname }}:
+      {{ health_check_mandatory_failures | map(attribute='name') | list }}.
+      See {{ health_check_summary_file_remote }} for details.
+    success_msg: "Post-deploy health checks passed on {{ inventory_hostname }}"
+  when: health_check_fail_on_mandatory | bool
+  tags:
+    - cis_4_6_18
+    - stig_v_230717
+    - nist_ca_7
+    - iso_27001_12_4
+    - ops
+    - health
+    - audit

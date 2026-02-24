@@ -1,0 +1,83 @@
+---
+# Install Traefik Ingress Controller via Helm
+
+- name: "Ensure Helm is available"
+  ansible.builtin.command:
+    cmd: helm version --short
+  register: helm_version_check
+  failed_when: false
+  changed_when: false
+
+- name: "Fail if Helm is not installed"
+  ansible.builtin.fail:
+    msg: "Helm is required for ingress controller installation. Please install Helm first."
+  when: helm_version_check.rc != 0
+
+- name: "Add Traefik repository"
+  ansible.builtin.command:
+    cmd: helm repo add traefik {{ kubernetes_ingress_traefik_helm_repo }}
+  changed_when: false
+  failed_when: false
+
+- name: "Update Helm repositories"
+  ansible.builtin.command:
+    cmd: helm repo update
+  changed_when: false
+
+- name: "Create ingress namespace"
+  kubernetes.core.k8s:
+    name: "{{ kubernetes_ingress_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: "Deploy Traefik Ingress Controller"
+  kubernetes.core.helm:
+    name: traefik
+    chart_ref: "{{ kubernetes_ingress_traefik_helm_chart }}"
+    release_namespace: "{{ kubernetes_ingress_namespace }}"
+    create_namespace: true
+    values:
+      ingressClass:
+        enabled: true
+        isDefaultClass: true
+        name: "{{ kubernetes_ingress_class_name }}"
+      ports:
+        web:
+          port: {{ kubernetes_ingress_http_port }}
+          exposedPort: {{ kubernetes_ingress_http_port }}
+        websecure:
+          port: {{ kubernetes_ingress_https_port }}
+          exposedPort: {{ kubernetes_ingress_https_port }}
+      service:
+        type: "{{ kubernetes_ingress_service_type }}"
+        externalIPs: "{{ [kubernetes_ingress_external_ip] if kubernetes_ingress_external_ip else omit }}"
+      metrics:
+        prometheus:
+          enabled: {{ kubernetes_ingress_enable_metrics | bool }}
+          entryPoint: metrics
+      providers:
+        kubernetesIngress:
+          enabled: true
+        kubernetesCRD:
+          enabled: true
+      securityContext:
+        fsGroup: 65532
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+      resources:
+        limits:
+          cpu: "{{ kubernetes_ingress_controller_resources.limits.cpu }}"
+          memory: "{{ kubernetes_ingress_controller_resources.limits.memory }}"
+        requests:
+          cpu: "{{ kubernetes_ingress_controller_resources.requests.cpu }}"
+          memory: "{{ kubernetes_ingress_controller_resources.requests.memory }}"
+    wait: true
+    wait_timeout: "300s"
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Set fact for installed controller"
+  ansible.builtin.set_fact:
+    _ingress_controller_installed: true
+    _ingress_controller_type: "traefik"

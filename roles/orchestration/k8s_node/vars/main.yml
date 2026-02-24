@@ -1,1 +1,77 @@
 ---
+# Internal variables for orchestration/k8s_node role
+# Kubernetes Node Readiness Configuration
+
+# Kubernetes API endpoints
+k8s_api_endpoint_local: "https://127.0.0.1:{{ k8s_api_server_port | default(6443) }}"
+k8s_api_health_endpoint: "/healthz"
+k8s_api_ready_endpoint: "/readyz"
+k8s_api_version_endpoint: "/version"
+
+# Kubernetes service names
+k8s_service_kubelet: "kubelet"
+k8s_service_kube_proxy: "kube-proxy"
+k8s_service_container_runtime: "containerd"
+k8s_service_docker: "docker"
+
+# Kubernetes node configuration paths
+k8s_node_config_dir: "/var/lib/kubelet"
+k8s_node_config_file: "{{ k8s_node_config_dir }}/config.yaml"
+k8s_node_kubeconfig_file: "/var/lib/kubelet/kubeconfig"
+k8s_node_pki_dir: "/var/lib/kubelet/pki"
+k8s_node_ca_cert: "{{ k8s_node_pki_dir }}/ca.crt"
+k8s_node_client_cert: "{{ k8s_node_pki_dir }}/kubelet-client-current.pem"
+k8s_node_client_key: "{{ k8s_node_pki_dir }}/kubelet-client-current.pem"
+
+# Kubernetes sysctl configuration
+k8s_sysctl_config_file: "/etc/sysctl.d/k8s.conf"
+k8s_sysctl_reload: true
+
+# Kubernetes kernel modules
+k8s_required_kernel_modules:
+  - overlay
+  - br_netfilter
+
+# Kubernetes networking sysctl values
+k8s_net_sysctl_values:
+  - name: 'net.bridge.bridge-nf-call-iptables'
+    value: '1'
+  - name: 'net.bridge.bridge-nf-call-ip6tables'
+    value: '1'
+  - name: 'net.ipv4.ip_forward'
+    value: '1'
+
+# GPU device plugin configuration
+k8s_gpu_nvidia_namespace: "kube-system"
+k8s_gpu_nvidia_daemonset_name: "nvidia-device-plugin-daemonset"
+k8s_gpu_amd_namespace: "kube-system"
+k8s_gpu_amd_daemonset_name: "amd-gpu-device-plugin"
+k8s_gpu_intel_namespace: "kube-system"
+k8s_gpu_intel_daemonset_name: "intel-gpu-plugin"
+
+# GPU device plugin wait timeout
+k8s_gpu_plugin_wait_timeout: 120
+k8s_gpu_plugin_check_interval: 5
+
+# Kubernetes node labels for GPU
+k8s_gpu_default_node_labels:
+  nvidia:
+    - "nvidia.com/gpu.present=true"
+    - "nvidia.com/gpu.deploy.device-plugin=true"
+  amd:
+    - "amd.com/gpu.present=true"
+    - "amd.com/gpu.deploy.device-plugin=true"
+  intel:
+    - "intel.com/gpu.present=true"
+    - "intel.com/gpu.deploy.device-plugin=true"
+
+# Kubernetes CNI configuration
+k8s_cni_config_path: "/etc/cni/net.d"
+k8s_cni_bin_path: "/opt/cni/bin"
+
+# Kubernetes manifests directory
+k8s_static_pods_dir: "/etc/kubernetes/manifests"
+
+# Node readiness checks
+k8s_node_readiness_timeout: 300
+k8s_node_readiness_check_interval: 10

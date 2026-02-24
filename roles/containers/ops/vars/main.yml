@@ -1,2 +1,93 @@
 ---
 # vars file for containers/ops
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/ops
+# Standards: CIS Docker Benchmark 5.x, STIG V-230440,
+#            NIST IA-2/SC-8/AC-3, ISO 27001 §9.2/§10.1
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "5.x"
+    description: "Container Applications Security"
+    controls:
+      - id: "5.1"
+        name: "Ops secret verifications"
+        stig: "V-230440"
+        nist: ["IA-2"]
+      - id: "5.2"
+        name: "Pull Ops Images"
+        stig: "V-230440"
+        nist: ["SC-8"]
+      - id: "5.3"
+        name: "Vaultwarden admin token validation"
+        stig: "V-230440"
+        nist: ["IA-2"]
+      - id: "5.4"
+        name: "Ops Network Quadlet"
+        stig: "V-230440"
+        nist: ["SC-8"]
+      - id: "5.5"
+        name: "Ops Directories"
+        stig: "V-230440"
+        nist: ["AC-3"]
+      - id: "5.6"
+        name: "Ops Pod Quadlet"
+        stig: "V-230440"
+        nist: ["SC-8"]
+      - id: "5.7"
+        name: "Ops proxy hosts"
+        stig: "V-230440"
+        nist: ["AC-3"]
+      - id: "5.8"
+        name: "Ops Caddy Configuration"
+        stig: "V-230440"
+        nist: ["SC-8"]
+        iso: "9.4"
+      - id: "5.9"
+        name: "Homarr Container Quadlet"
+        stig: "V-230440"
+        nist: ["AC-3"]
+        iso: "8.20"
+      - id: "5.10"
+        name: "Vaultwarden Secrets File"
+        stig: "V-230440"
+        nist: ["IA-2"]
+      - id: "5.11"
+        name: "Vaultwarden Container Quadlet"
+        stig: "V-230440"
+        nist: ["IA-2"]
+        iso: "8.20"
+      - id: "5.12"
+        name: "Wiki.js Container Quadlet"
+        stig: "V-230440"
+        nist: ["AC-3"]
+      - id: "5.13"
+        name: "Wiki.js Postgres Quadlet"
+        stig: "V-230440"
+        nist: ["SC-8"]
+      - id: "5.14"
+        name: "Wastebin Container Quadlet"
+        stig: "V-230440"
+        nist: ["AC-3"]
+      - id: "5.15"
+        name: "Filebrowser Container Quadlet"
+        stig: "V-230440"
+        nist: ["AC-3"]
+  stig:
+    container_apps:
+      - id: "V-230440"
+        title: "Container Applications Security"
+        severity: "medium"
+  nist:
+    ia_2: "Identification and Authentication"
+    sc_8: "Transmission Confidentiality and Integrity"
+    ac_3: "Access Enforcement"
+    cm_6: "Configuration Settings"
+  iso_27001:
+    "9.2": "User Access Management"
+    "9.4": "System and Application Access Control"
+    "10.1": "Cryptographic Controls"

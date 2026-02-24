@@ -1,1 +1,53 @@
 ---
+# Internal variables for core/identity role
+# Entropy-backed UUID generation and system identity
+# CIS 5.1.x | STIG V-230340 | NIST IA-2, IA-3 | ISO 27001 §9.2
+
+# Role metadata
+core_identity_role_version: "1.0.0"
+
+# UUID generation paths
+core_identity_uuid_source: "/proc/sys/kernel/random/uuid"
+core_identity_uuid_command: "cat /proc/sys/kernel/random/uuid"
+
+# Identity storage paths
+core_identity_config_dir: "/etc/ansible/identity"
+core_identity_uuid_file: "/etc/ansible/identity/object_uuid"
+core_identity_hostname_file: "/etc/ansible/identity/hostname"
+
+# Default domain settings
+core_identity_default_domain: "local"
+
+# Hostname configuration paths
+core_identity_hostname_paths:
+  Debian: "/etc/hostname"
+  RedHat: "/etc/hostname"
+  Alpine: "/etc/hostname"
+  Archlinux: "/etc/hostname"
+
+# ISO 27001 compliance references
+core_identity_iso_controls:
+  - "ISO 27001 §9.2"
+  - "ISO 8000-110"
+core_identity_action_code: "400011"
+
+# Identity fact names
+core_identity_fact_names:
+  uuid: "object_uuid"
+  hostname: "object_hostname"
+  domain: "object_domain"
+
+# Entropy requirements
+core_identity_min_entropy_bits: 128
+
+# Compliance mappings
+core_identity_compliance:
+  cis:
+    - "CIS 5.1.1"
+  stig:
+    - "V-230340"
+  nist:
+    - "IA-2"
+    - "IA-3"
+  iso_27001:
+    - "§9.2"

@@ -3,6 +3,7 @@
 # Properly isolated via relative path mapping and explicit private scope
 
 - name: Include repository-level save_checkpoint
+  tags: [hardware, gpu, checkpoint]
   ansible.builtin.include_tasks:
     file: "../../../../tasks/save_checkpoint.yml"
   vars:

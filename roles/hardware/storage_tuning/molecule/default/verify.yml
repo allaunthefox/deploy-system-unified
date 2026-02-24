@@ -1,0 +1,39 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check fstrim timer status (informational)
+      ansible.builtin.command: systemctl is-enabled fstrim.timer
+      register: fstrim_status
+      failed_when: false
+      changed_when: false
+      when: ansible_virtualization_type not in ['docker', 'podman', 'container', 'lxc']
+
+    - name: Display fstrim timer status
+      ansible.builtin.debug:
+        msg: "fstrim.timer status: {{ fstrim_status.stdout | default('not available / container environment') }}"
+
+    - name: Check I/O scheduler udev rules exist
+      ansible.builtin.stat:
+        path: /etc/udev/rules.d/60-disk-scheduler.rules
+      register: scheduler_rules
+
+    - name: Assert scheduler rules file exists
+      ansible.builtin.assert:
+        that: scheduler_rules.stat.exists
+        fail_msg: "I/O scheduler udev rules should be created."
+
+    - name: Verify scheduler rules content
+      ansible.builtin.shell: grep -E 'mq-deadline|none' /etc/udev/rules.d/60-disk-scheduler.rules
+      register: scheduler_content
+      changed_when: false
+
+    - name: Assert scheduler rules have correct content
+      ansible.builtin.assert:
+        that: scheduler_content.rc == 0
+        fail_msg: "Scheduler rules should contain mq-deadline or none scheduler settings."
+
+    - name: Display scheduler rules content
+      ansible.builtin.debug:
+        msg: "Scheduler rules verified successfully"

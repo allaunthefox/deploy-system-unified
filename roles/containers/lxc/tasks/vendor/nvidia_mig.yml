@@ -1,10 +1,13 @@
 ---
 - name: Configure LXC container for NVIDIA MIG
+  tags: [containers, lxc, gpu, nvidia]
   block:
     - name: Set MIG devices
+  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.set_fact:
         lxc_gpu_mig_devices: []
     - name: Discover NVIDIA MIG devices
+  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.command:
         cmd: nvidia-smi mig -lgi
       register: nvidia_mig_devices
@@ -12,10 +15,12 @@
       failed_when: false
       become: true
     - name: Parse NVIDIA MIG devices
+  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.set_fact:
         lxc_gpu_mig_devices: "{{ nvidia_mig_devices.stdout | regex_findall('GPU-\\w+-\\w+-\\w+-\\w+-\\w+') }}"
       when: nvidia_mig_devices.stdout | length > 0
     - name: Create LXC MIG configuration template
+  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/mig.conf

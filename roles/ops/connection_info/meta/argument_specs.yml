@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: connection_info role for connection management
+    description:
+      - Manages connection information and configuration
+      - Placeholder role for connection operations
+    options:
+      connection_info_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable connection_info role

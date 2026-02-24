@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove mac_apparmor test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - mac-apparmor-ubuntu-2204
+        - mac-apparmor-debian-12
+        - mac-apparmor-alpine-319
+        - mac-apparmor-rockylinux-9

@@ -2,6 +2,7 @@
 # x86_64 specific firmware/microcode tasks
 
 - name: Set distribution-specific hardware package names (x86_64)
+  tags: [hardware, firmware, remediate]
   ansible.builtin.set_fact:
     microcode_packages: >-
       {{ ['intel-ucode', 'amd-ucode'] if ansible_os_family == 'Archlinux' else ['intel-microcode', 'amd64-microcode'] }}
@@ -17,3 +18,4 @@
   become: true
   failed_when: false
   when: not _hw_is_container
+  tags: [hardware, firmware, remediate]

@@ -2,5 +2,39 @@
 - name: Converge
   hosts: all
   become: true
+
+  pre_tasks:
+    - name: Disable apt sandbox in containers
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/99molecule-no-sandbox
+        content: 'APT::Sandbox::User "root";'
+        mode: '0644'
+      when:
+        - ansible_facts['os_family'] == 'Debian'
+        - (ansible_facts['virtualization_type'] | default('')) in ['docker', 'podman', 'container', 'lxc']
+
+    - name: Update apt cache (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Update apk cache (Alpine)
+      ansible.builtin.command: apk update
+      changed_when: false
+      when: ansible_facts['os_family'] == 'Alpine'
+
+    - name: Install sudo if missing (Alpine)
+      ansible.builtin.package:
+        name: sudo
+        state: present
+      when: ansible_facts['os_family'] == 'Alpine'
+
+    - name: Mock /usr/bin/systemctl prevents failures in docker
+      ansible.builtin.file:
+        path: /usr/bin/systemctl
+        state: touch
+        mode: '0755'
+      changed_when: false
+
   roles:
     - role: core/entropy

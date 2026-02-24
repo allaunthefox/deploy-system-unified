@@ -1,1 +1,49 @@
 ---
+# Internal variables for ops/session role
+# Session Management Configuration
+
+# TMUX session configuration
+session_tmux_binary: "/usr/bin/tmux"
+session_tmux_config_file: "/etc/tmux.conf"
+session_tmux_socket_path: "/tmp/tmux-{{ ansible_user_id | default(1000) }}/default"
+
+# Session naming and identification
+session_name_prefix: "deploy"
+session_identifier_format: "{{ session_name_prefix }}-{{ deployment_id | default('unknown') }}"
+
+# Session state tracking
+session_state_dir: "/var/lib/deploy-system/session"
+session_state_file: "{{ session_state_dir }}/session_state.json"
+session_lock_file: "/var/run/deploy-system/session.lock"
+
+# Session timeout configuration
+session_idle_timeout_minutes: 120
+session_max_duration_hours: 24
+session_keepalive_interval_seconds: 60
+
+# Session attachment configuration
+session_auto_attach: false
+session_detach_on_exit: true
+session_kill_on_complete: false
+
+# Session logging
+session_log_enabled: true
+session_log_dir: "/var/log/deploy-system/sessions"
+session_log_file: "{{ session_log_dir }}/{{ tmux_session_name }}.log"
+
+# Session validation
+session_validation_timeout: 30
+session_validation_retries: 3
+session_health_check_interval: 30
+
+# Session environment variables
+session_environment:
+  DEPLOY_SYSTEM_SESSION: "true"
+  SESSION_TYPE: "tmux"
+  SESSION_NAME: "{{ tmux_session_name }}"
+
+# Session hooks
+session_pre_create_hooks: []
+session_post_create_hooks: []
+session_pre_destroy_hooks: []
+session_post_destroy_hooks: []

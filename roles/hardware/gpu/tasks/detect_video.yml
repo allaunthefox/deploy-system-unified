@@ -3,8 +3,10 @@
 # Detects Installed GPU Vendors to override generic defaults
 
 - name: Ensure Discovery Dependencies are Present (pciutils)
+  tags: [hardware, gpu, audit]
   ansible.builtin.package:
     name: pciutils
+  tags: [hardware, gpu, audit]
     state: present
   register: _pciutils_install
   until: _pciutils_install is success
@@ -14,6 +16,7 @@
   when: not _gpu_is_container | default(false)
 
 - name: Handle Dependency Installation Failure
+  tags: [hardware, gpu, audit]
   ansible.builtin.fail:
     msg: >-
       CRITICAL: Failed to install 'pciutils' on the target host. 
@@ -25,15 +28,18 @@
     - _pciutils_install is failed
 
 - name: Run Advanced GPU Discovery Script
+  tags: [hardware, gpu, audit]
   ansible.builtin.script: gpu_discovery.py
   register: gpu_discovery_raw
   changed_when: false
 
 - name: Parse GPU Discovery Output
+  tags: [hardware, gpu, audit]
   ansible.builtin.set_fact:
     _gpu_discovery_results: "{{ gpu_discovery_raw.stdout | from_json }}"
 
 - name: Apply Detected Vendors (Internal Facts)
+  tags: [hardware, gpu, audit]
   ansible.builtin.set_fact:
     _gpu_detected_vendor_list: "{{ _gpu_discovery_results.detected_vendor_list }}"
     _gpu_primary_detected_vendor: "{{ _gpu_discovery_results.primary_detected_vendor }}"
@@ -43,6 +49,7 @@
     _gpu_is_multi_vendor: "{{ _gpu_discovery_results.is_multi_vendor }}"
 
 - name: Report Detected GPUs
+  tags: [hardware, gpu, audit]
   ansible.builtin.debug:
     msg:
       - "Detected GPU Vendors: {{ _gpu_detected_vendor_list }}"
@@ -52,6 +59,7 @@
       - "Multi-Vendor: {{ _gpu_is_multi_vendor }}"
 
 - name: Ensure Evidence Directory Exists
+  tags: [hardware, gpu, audit]
   ansible.builtin.file:
     path: "/var/lib/deploy-system/evidence/gpu"
     state: directory
@@ -59,6 +67,7 @@
   become: true
 
 - name: Save GPU Discovery Evidence
+  tags: [hardware, gpu, audit]
   ansible.builtin.copy:
     content: |
       {
@@ -72,6 +81,7 @@
   register: _dsu_gpu_evidence_file
 
 - name: Encrypt Evidence (Optional - Secure Mode)
+  tags: [hardware, gpu, audit]
   ansible.builtin.command:
     argv:
       - ansible-vault

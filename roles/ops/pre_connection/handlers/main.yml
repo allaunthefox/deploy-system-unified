@@ -1,1 +1,40 @@
 ---
+# Handlers for ops/pre_connection role
+# ISO 9001 Structural Consistency - Handler definitions for pre-connection setup
+# Note: This role runs on controller for SSH connectivity checks
+
+- name: restart_ssh
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - ops
+    - connection
+    - ssh
+
+- name: reload_ssh_config
+  ansible.builtin.systemd:
+    name: sshd
+    state: reloaded
+  become: true
+  tags:
+    - ops
+    - connection
+    - ssh
+
+- name: restart_sshd_service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - sshd
+    - ssh
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - connection
+    - ssh

@@ -1,1 +1,45 @@
 ---
+# Internal variables for virtualization/storage role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_storage_role_name: virt_storage
+_storage_role_version: "1.0.0"
+
+# Service names
+_storage_services: []
+
+# Package names (internal reference - inherits from parent kvm role)
+_storage_packages:
+  - qemu-utils
+  - libguestfs-tools
+
+# Configuration paths
+_storage_config_base: /etc/libvirt/storage
+_storage_pool_definitions_dir: /etc/libvirt/storage
+_storage_pool_data_dir: /var/lib/libvirt/images
+
+# Storage pool types
+_storage_pool_types:
+  - dir
+  - fs
+  - netfs
+  - logical
+  - disk
+  - iscsi
+  - scsi
+  - mpath
+  - gluster
+  - rbd
+
+# Default storage configuration
+_storage_default_pool_name: default
+_storage_default_pool_path: /var/lib/libvirt/images
+
+# NBD configuration
+_storage_nbd_module: nbd
+_storage_nbd_max_part: 8
+
+# Internal state tracking
+_storage_initialized: false
+_storage_pools_configured: []

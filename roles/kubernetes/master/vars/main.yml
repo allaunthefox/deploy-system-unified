@@ -1,0 +1,50 @@
+---
+# Internal variables for kubernetes/master role
+# Part of ISO 9001 Structural Consistency
+
+# K3s Master paths
+_k3s_master_binary_path: /usr/local/bin/k3s
+_k3s_master_config_dir: /etc/rancher/k3s
+_k3s_master_data_dir: /var/lib/rancher/k3s
+_k3s_master_kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+_k3s_master_token_path: /var/lib/deploy-system/kubernetes/token
+_k3s_master_config_yaml: /etc/rancher/k3s/config.yaml
+_k3s_master_config_yaml_dir: /etc/rancher/k3s
+
+# K3s Master service names
+_k3s_master_service_name: k3s
+_k3s_master_systemd_unit: k3s.service
+
+# K3s Master API ports
+_k3s_master_api_port: 6443
+_k3s_master_api_localhost_port: 10250
+_k3s_master_etcd_port: 2379
+_k3s_master_etcd_peer_port: 2380
+
+# K3s Master directories
+_k3s_master_manifests_dir: /var/lib/rancher/k3s/server/manifests
+_k3s_master_db_dir: /var/lib/rancher/k3s/server/db
+_k3s_master_tls_dir: /var/lib/rancher/k3s/server/tls
+_k3s_master_static_pods_dir: /var/lib/rancher/k3s/server/manifests
+
+# K3s Master symlinks
+_k3s_master_symlinks:
+  - src: /usr/local/bin/k3s
+    dest: /usr/local/bin/kubectl
+  - src: /usr/local/bin/k3s
+    dest: /usr/local/bin/crictl
+  - src: /usr/local/bin/k3s
+    dest: /usr/local/bin/ctr
+
+# K3s Master internal flags
+_k3s_master_disable_components:
+  - "{{ 'traefik' if kubernetes_disable_traefik else omit }}"
+  - "{{ 'servicelb' if kubernetes_disable_servicelb else omit }}"
+
+# K3s Master systemd configuration
+_k3s_master_systemd_path: /etc/systemd/system/k3s.service
+_k3s_master_environment_file: /etc/systemd/system/k3s.service.env
+
+# K3s Master checkpoint
+_k3s_master_checkpoint_dir: /var/lib/deploy-system/checkpoints
+_k3s_master_checkpoint_file: kubernetes_master_checkpoint.json

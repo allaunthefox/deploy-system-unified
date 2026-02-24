@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: Container configuration role
+    description:
+      - Manages global container storage settings in storage.conf
+      - Configures user lingering for rootless Podman services
+      - Prepares standard container storage directories
+    options:
+      container_linger_users:
+        type: list
+        elements: str
+        description: List of users to enable lingering for
+        default: []

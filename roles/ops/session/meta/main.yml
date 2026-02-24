@@ -1,0 +1,35 @@
+---
+galaxy_info:
+  role_name: session
+  author: deploysystemunified
+  description: "SOP-OPS | Management of interactive deployment sessions (TMUX)"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - ops
+    - session
+    - tmux
+    - deployment
+    - persistence
+    - shell
+    - interactive
+    - operational
+    - linux
+    - automation
+    - iso9001
+
+collections:
+  - ansible.builtin
+
+dependencies: []

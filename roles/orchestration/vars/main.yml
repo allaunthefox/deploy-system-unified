@@ -1,0 +1,50 @@
+---
+# Internal variables for orchestration role
+# Part of ISO 9001 Structural Consistency
+
+# Orchestration workflow configuration
+orchestration_workflow_timeout: 3600
+orchestration_retry_count: 3
+orchestration_retry_delay: 30
+
+# Kubernetes cluster configuration
+k8s_cluster_name: "deploy-system-cluster"
+k8s_api_server_port: 6443
+k8s_api_server_bind_address: "0.0.0.0"
+
+# Kubernetes networking
+k8s_pod_network_cidr: "10.244.0.0/16"
+k8s_service_cidr: "10.96.0.0/12"
+k8s_cluster_dns: "10.96.0.10"
+
+# Kubernetes paths
+k8s_config_dir: "/etc/kubernetes"
+k8s_manifests_dir: "/etc/kubernetes/manifests"
+k8s_pki_dir: "/etc/kubernetes/pki"
+k8s_kubelet_config_dir: "/var/lib/kubelet"
+k8s_cni_config_dir: "/etc/cni/net.d"
+k8s_cni_bin_dir: "/opt/cni/bin"
+
+# Kubernetes system namespaces
+k8s_system_namespace: "kube-system"
+k8s_default_namespace: "default"
+
+# Container runtime configuration
+k8s_container_runtime: "containerd"
+k8s_container_runtime_endpoint: "unix:///run/containerd/containerd.sock"
+k8s_cri_socket: "/run/containerd/containerd.sock"
+
+# Kubernetes version pinning
+k8s_version_major: "1"
+k8s_version_minor: "29"
+k8s_version_patch: "0"
+k8s_version: "{{ k8s_version_major }}.{{ k8s_version_minor }}.{{ k8s_version_patch }}"
+
+# Kubernetes component versions
+k8s_kubeadm_version: "{{ k8s_version }}"
+k8s_kubelet_version: "{{ k8s_version }}"
+k8s_kubectl_version: "{{ k8s_version }}"
+
+# Orchestration state tracking
+orchestration_state_dir: "/var/lib/deploy-system/orchestration"
+orchestration_state_file: "{{ orchestration_state_dir }}/state.json"

@@ -4,3 +4,4 @@
 # without modifying the existing role logic.
 - name: Include repository-level save_checkpoint
   ansible.builtin.include_tasks: "../../../../tasks/save_checkpoint.yml"
+  tags: [security, scanning]

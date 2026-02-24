@@ -1,2 +1,69 @@
 ---
 # vars file for containers/authentik
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/authentik
+# Standards: CIS Docker Benchmark 4.x, STIG V-230490,
+#            NIST IA-2/IA-3/IA-4, ISO 27001 §9.2/§9.3
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "4.x"
+    description: "Identity Management Security"
+    controls:
+      - id: "4.1"
+        name: "Authentik secrets verification"
+        stig: "V-230490"
+        nist: ["IA-2"]
+      - id: "4.2"
+        name: "Authentik Directories"
+        stig: "V-230490"
+        nist: ["AC-3"]
+      - id: "4.3"
+        name: "Authentik secrets file"
+        stig: "V-230490"
+        nist: ["IA-2"]
+        iso: "10.1"
+      - id: "4.4"
+        name: "Authentik Postgres Quadlet"
+        stig: "V-230490"
+        nist: ["SC-8"]
+        iso: "8.20"
+      - id: "4.5"
+        name: "Authentik Redis Quadlet"
+        stig: "V-230490"
+        nist: ["SC-8"]
+        iso: "8.20"
+      - id: "4.6"
+        name: "Authentik Server Quadlet"
+        stig: "V-230490"
+        nist: ["IA-2"]
+        iso: "8.20"
+      - id: "4.7"
+        name: "Authentik Worker Quadlet"
+        stig: "V-230490"
+        nist: ["IA-3"]
+        iso: "8.20"
+      - id: "4.8"
+        name: "Caddy Authentik Configuration"
+        stig: "V-230490"
+        nist: ["IA-2"]
+        iso: "9.2"
+  stig:
+    identity_management:
+      - id: "V-230490"
+        title: "Identity Management Security"
+        severity: "high"
+  nist:
+    ia_2: "Identification and Authentication (Organizational Users)"
+    ia_3: "Device Identification and Authentication"
+    ia_4: "Identifier Management"
+    sc_8: "Transmission Confidentiality and Integrity"
+    ac_3: "Access Enforcement"
+  iso_27001:
+    "9.2": "User Access Management"
+    "9.3": "User Responsibilities"
+    "10.1": "Cryptographic Controls"

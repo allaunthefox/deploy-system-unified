@@ -2,6 +2,7 @@
 # x86_64 specific memory tasks
 
 - name: Detect Shared Video Memory (UMA) - x86_64
+  tags: [core, memory, remediate]
   ansible.builtin.shell: |
     if lspci -v 2>/dev/null | grep -i "VGA" | grep -i "Intel"; then echo "true";
     elif [ "$(lspci 2>/dev/null | grep -c "VGA")" -eq 1 ] && lspci 2>/dev/null | grep -i "VGA" | grep -E "Renoir|Cezanne|Raven|Picasso|VanGogh|Rembrandt|Phoenix|Stoney|Carrizo|Kaveri|Temash|Kabini|Mullins"; then echo "true";

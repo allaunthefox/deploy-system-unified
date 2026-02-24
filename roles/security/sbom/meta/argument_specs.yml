@@ -1,0 +1,20 @@
+---
+argument_specs:
+  main:
+    short_description: Supply Chain Bill of Materials auditing
+    description:
+      - Generates SBOM reports for supply chain security
+      - Performs forensic dependency scanning
+      - Creates audit artifacts for compliance
+    options:
+      sbom_output_dir:
+        type: str
+        description: Directory for SBOM output files
+        default: "{{ playbook_dir }}/ci-artifacts/sbom"
+      sbom_format:
+        type: str
+        description: SBOM output format
+        default: cyclonedx
+        choices:
+          - cyclonedx
+          - spdx

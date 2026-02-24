@@ -1,0 +1,26 @@
+# Goss tests for core/grub role
+# CIS 1.4.1 | ISO 27001 §8.9 | NIST CM-2
+---
+file:
+  /etc/default/grub:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+  /boot/grub:
+    exists: true
+    is-dir: true
+  /boot/grub2:
+    exists: true
+    is-dir: true
+  /etc/grub.d:
+    exists: true
+    is-dir: true
+
+command:
+  # Verify GRUB is installed
+  which grub-install:
+    exit-status: 0
+  # Verify GRUB config can be parsed
+  grep 'GRUB_CMDLINE_LINUX_DEFAULT' /etc/default/grub:
+    exit-status: 0

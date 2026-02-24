@@ -13,6 +13,12 @@
     state: present
   when: ansible_facts['os_family'] == 'Debian'
   become: true
+  tags:
+    - cis_1_1_1
+    - stig_v_230217
+    - nist_cm_6
+    - security
+    - hardening
 
 - name: Ensure security-related packages are installed (RedHat/CentOS)
   ansible.builtin.dnf:
@@ -21,6 +27,12 @@
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   become: true
+  tags:
+    - cis_1_1_1
+    - stig_v_230217
+    - nist_cm_6
+    - security
+    - hardening
 
 - name: Ensure security-related packages are installed (Arch Linux)
   community.general.pacman:
@@ -29,6 +41,12 @@
     state: present
   when: ansible_distribution == 'Archlinux'
   become: true
+  tags:
+    - cis_1_1_1
+    - stig_v_230217
+    - nist_cm_6
+    - security
+    - hardening
 
 - name: Ensure security-related packages are installed (Alpine)
   community.general.apk:
@@ -37,6 +55,12 @@
     state: present
   when: ansible_os_family == 'Alpine'
   become: true
+  tags:
+    - cis_1_1_1
+    - stig_v_230217
+    - nist_cm_6
+    - security
+    - hardening
 
 - name: Configure auditd service
   ansible.builtin.systemd:
@@ -47,8 +71,16 @@
   when:
     - ansible_facts['service_mgr'] == 'systemd'
     - not (is_virtualized | default(false))
+  tags:
+    - cis_4_1_1
+    - cis_4_1_2
+    - stig_v_230250
+    - nist_au_2
+    - nist_au_4
+    - security
+    - audit
 
-- name: Harden file system permissions
+- name: "CIS 1.1.1 | STIG V-230217 | ISO 27001 §8.8 | NIST CM-2 | NIST CM-6 | NIST SC-28 | Action 600113 | Harden file system permissions"
   block:
     - name: Set secure permissions on sensitive files
       ansible.builtin.file:
@@ -75,9 +107,18 @@
       register: sticky_result
       changed_when: (sticky_result.stdout | default('0') | trim | int) > 0
       failed_when: false
-      args:
-        pipefail: true
-- name: Harden user accounts
+  tags:
+    - cis_1_1_1
+    - stig_v_230217
+    - iso_27001_8_8
+    - nist_cm_2
+    - nist_cm_6
+    - nist_sc_28
+    - remediate
+    - high_severity
+    - security
+
+- name: "CIS 1.1.8 | CIS 2.1.13 | STIG V-230218 | ISO 27001 §9.2 | NIST IA-2 | NIST IA-5 | Action 510003 | Harden user accounts"
   block:
     - name: Lock system accounts that should not login
       ansible.builtin.user:
@@ -92,6 +133,14 @@
         - shutdown
         - halt
         - mail
+        - uucp
+        - operator
+        - games
+        - gopher
+        - ftp
+        - nobody
+        - systemd-network
+        - systemd-resolve
       become: true
     - name: Set password aging limits
       ansible.builtin.lineinfile:
@@ -103,7 +152,193 @@
         - { regex: 'PASS_MIN_DAYS', line: 'PASS_MIN_DAYS   7' }
         - { regex: 'PASS_MAX_DAYS', line: 'PASS_MAX_DAYS   90' }
         - { regex: 'PASS_WARN_AGE', line: 'PASS_WARN_AGE   14' }
-- name: Harden PAM configuration (Debian)
+  tags:
+    - cis_1_1_8
+    - cis_level_2
+    - cis_2_1_13
+    - cis_level_2
+    - cis_5_3_1
+    - cis_level_2
+    - cis_5_3_2
+    - cis_level_2
+    - cis_5_3_3
+    - cis_5_4_1
+    - stig_v_230218
+    - stig_v_230219
+    - stig_v_230220
+    - iso_27001_9_2
+    - nist_ia_2
+    - nist_ia_5
+    - nist_ac_2
+    - remediate
+    - medium_severity
+    - security
+
+- name: "CIS 5.3.6 | STIG V-230221 | NIST AC-7 | NIST IA-5 | Configure account lockout (pam_faillock)"
+  block:
+    - name: Configure pam_faillock for Debian/Ubuntu
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/common-auth
+        regexp: '^auth.*pam_faillock.so'
+        line: 'auth required pam_faillock.so deny=3 unlock_time=600 fail_interval=900'
+        insertafter: '^auth'
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      failed_when: false
+    - name: Configure pam_faillock for RHEL/CentOS
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/password-auth
+        regexp: '^auth.*pam_faillock.so'
+        line: 'auth required pam_faillock.so deny=3 unlock_time=600 fail_interval=900'
+        insertafter: '^auth'
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      failed_when: false
+    - name: Configure pam_faillock for RHEL/CentOS system-auth
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/system-auth
+        regexp: '^auth.*pam_faillock.so'
+        line: 'auth required pam_faillock.so deny=3 unlock_time=600 fail_interval=900'
+        insertafter: '^auth'
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      failed_when: false
+  tags:
+    - cis_level_2
+    - cis_5_3_6
+    - stig_v_230221
+    - nist_ac_7
+    - nist_ia_5
+    - security
+    - hardening
+    - remediate
+
+- name: "CIS 1.1.2 | CIS 1.1.3 | CIS 1.1.4 | CIS 1.1.5 | CIS 1.1.6 | CIS 1.1.7 | CIS 1.1.8 | STIG V-230222 | NIST CM-6 | NIST SC-28 | Disable unused filesystems"
+  block:
+    - name: Create modprobe blacklist configuration for unused filesystems
+      ansible.builtin.copy:
+        dest: /etc/modprobe.d/blacklist-unused-filesystems.conf
+        content: |
+          # Disable unused filesystems per CIS 1.1.x
+          # CIS 1.1.2 - UDF filesystem
+          install udf /bin/true
+          blacklist udf
+          # CIS 1.1.3 - cramfs filesystem
+          install cramfs /bin/true
+          blacklist cramfs
+          # CIS 1.1.4 - freevxfs filesystem
+          install freevxfs /bin/true
+          blacklist freevxfs
+          # CIS 1.1.5 - jffs2 filesystem
+          install jffs2 /bin/true
+          blacklist jffs2
+          # CIS 1.1.6 - hfs filesystem
+          install hfs /bin/true
+          blacklist hfs
+          # CIS 1.1.7 - hfsplus filesystem
+          install hfsplus /bin/true
+          blacklist hfsplus
+          # CIS 1.1.8 - squashfs filesystem
+          install squashfs /bin/true
+          blacklist squashfs
+        mode: '0644'
+      become: true
+      failed_when: false
+  tags:
+    - cis_1_1_2
+    - cis_1_1_3
+    - cis_1_1_4
+    - cis_1_1_5
+    - cis_1_1_6
+    - cis_1_1_7
+    - cis_1_1_8
+    - stig_v_230222
+    - nist_cm_6
+    - nist_sc_28
+    - security
+    - kernel
+
+- name: "CIS 2.1.1 | CIS 2.1.2 | CIS 2.1.3 | CIS 2.1.4 | CIS 2.1.5 | CIS 2.1.6 | CIS 2.1.7 | CIS 2.1.8 | CIS 2.1.9 | CIS 2.1.10 | CIS 2.1.11 | CIS 2.1.12 | CIS 2.1.13 | STIG V-230223 | NIST CM-7 | Remove unnecessary packages"
+  block:
+    - name: Remove unnecessary packages (Debian/Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - xorg
+          - avahi-daemon
+          - isc-dhcp-server
+          - bind9
+          - vsftpd
+          - samba
+          - squid
+          - dovecot-imapd
+          - dovecot-pop3d
+          - nfs-kernel-server
+          - rpcbind
+          - tftp-hpa
+          - telnetd
+          - snmpd
+          - nis
+        state: absent
+        purge: true
+      become: true
+      failed_when: false
+      when: ansible_facts['os_family'] == 'Debian'
+    - name: Remove unnecessary packages (RedHat/CentOS)
+      ansible.builtin.dnf:
+        name:
+          - xorg-x11-server-Xorg
+          - avahi
+          - dhcp-server
+          - bind
+          - vsftpd
+          - samba
+          - squid
+          - dovecot
+          - nfs-utils
+          - rpcbind
+          - tftp
+          - telnet-server
+          - snmp
+          - ypbind
+          - nis
+        state: absent
+      become: true
+      failed_when: false
+      when: ansible_facts['os_family'] == 'RedHat'
+  tags:
+    - cis_level_2
+    - cis_2_1_1
+    - cis_level_2
+    - cis_2_1_2
+    - cis_level_2
+    - cis_2_1_3
+    - cis_level_2
+    - cis_2_1_4
+    - cis_level_2
+    - cis_2_1_5
+    - cis_level_2
+    - cis_2_1_6
+    - cis_level_2
+    - cis_2_1_7
+    - cis_level_2
+    - cis_2_1_8
+    - cis_level_2
+    - cis_2_1_9
+    - cis_level_2
+    - cis_2_1_10
+    - cis_level_2
+    - cis_2_1_11
+    - cis_level_2
+    - cis_2_1_12
+    - cis_level_2
+    - cis_2_1_13
+    - stig_v_230223
+    - nist_cm_7
+    - security
+    - hardening
+    - remediate
+
+- name: "CIS 6.1.1 | NIST CM-3 | NIST CM-8 | NIST SC-4 | NIST IA-5 | Harden PAM configuration (Debian)"
   ansible.builtin.lineinfile:
     path: "{{ item.path }}"
     regexp: "{{ item.regexp }}"
@@ -113,6 +348,38 @@
     - { path: '/etc/pam.d/common-session', regexp: '^session.*pam_tmpdir.so', line: 'session optional        pam_tmpdir.so' }
   when: ansible_facts['os_family'] == 'Debian'
   become: true
+  tags:
+    - cis_level_2
+    - cis_6_1_1
+    - nist_cm_3
+    - nist_cm_8
+    - nist_sc_4
+    - nist_ia_5
+    - security
+    - hardening
+
+- name: "CIS 8.1.2 | NIST AC-18 | NIST SC-18 | Disable wireless interfaces"
+  ansible.builtin.shell: |
+    set -o pipefail
+    for iface in $(iw dev 2>/dev/null | grep -i interface | awk '{print $2}'); do
+      ip link set "$iface" down 2>/dev/null || true
+    done
+  args:
+    executable: /bin/bash
+  become: true
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_level_2
+    - cis_8_1_2
+    - nist_ac_18
+    - nist_sc_18
+    - security
+    - hardening
+
 - name: Set security hardening completion flag
   ansible.builtin.set_fact:
     security_hardening_complete: true
+  tags:
+    - security
+    - hardening

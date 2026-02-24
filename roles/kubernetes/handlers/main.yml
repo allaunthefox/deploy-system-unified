@@ -1,0 +1,27 @@
+---
+# Handlers for kubernetes role
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  listen: "reload systemd"
+  failed_when: false
+
+- name: restart_k3s
+  ansible.builtin.systemd:
+    name: k3s
+    state: restarted
+  become: true
+  listen: "restart k3s"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+  become: true
+  listen: "restart kubelet"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false

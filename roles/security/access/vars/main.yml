@@ -1,1 +1,8 @@
 ---
+# Internal variables for security/access role
+security_access_sudoers_dir: "/etc/sudoers.d"
+security_access_pam_dir: "/etc/pam.d"
+
+# Access Control Standards
+security_access_standard: "ISO-27001-Section-9"
+security_access_nist_control: "AC-2"

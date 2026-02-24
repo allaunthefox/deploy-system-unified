@@ -1,0 +1,17 @@
+# Goss tests for storage/backup/rclone role
+# Compliance: ISO 27001 §8.13
+
+package:
+  rclone:
+    installed: true
+
+command:
+  rclone:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /etc/rclone:
+    exists: true
+    is-directory: true

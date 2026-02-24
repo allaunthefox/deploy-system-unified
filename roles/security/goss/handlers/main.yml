@@ -1,0 +1,10 @@
+---
+- name: run_goss_validation
+  ansible.builtin.command:
+    cmd: goss validate --format {{ goss_output_format }}
+  listen: run_goss_validation
+
+- name: goss_remediate
+  ansible.builtin.command:
+    cmd: goss validate --format {{ goss_output_format }} --remediate
+  listen: goss_remediate

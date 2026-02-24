@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: bootstrap
-  author: deploy-system-unified
-  description: Core system initialization and base configuration
+  author: deploysystemunified
+  description: "STD-CORE | System initialization and base configuration with virtualization awareness"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -16,9 +16,26 @@ galaxy_info:
       versions: [all]
     - name: Alpine
       versions: [all]
+    - name: Rocky
+      versions: [9]
   galaxy_tags:
     - core
-    - system
-    - init
+    - bootstrap
+    - initialization
+    - iso9001
+    - iso27001
+    - iso8000
+    - systems
+    - provisioning
+    - automation
+    - multiarch
+    - debian
+    - redhat
+    - archlinux
+    - alpine
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

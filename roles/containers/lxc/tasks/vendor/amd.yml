@@ -1,5 +1,6 @@
 ---
 - name: Set AMD variables
+  tags: [containers, lxc, gpu, amd]
   ansible.builtin.set_fact:
     lxc_gpu_passthrough_devices: "{{ lxc_gpu_slicing.passthrough.devices | default(lxc_gpu_default_configs.amd.devices) }}"
     lxc_gpu_passthrough_mounts: "{{ lxc_gpu_slicing.passthrough.mounts | default(lxc_gpu_default_configs.amd.mounts) }}"

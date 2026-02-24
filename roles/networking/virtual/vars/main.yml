@@ -1,1 +1,116 @@
 ---
+# vars/main.yml for virtual networking role
+# Role-specific internal variables for VLAN and VXLAN management
+# Compliance: CIS 3.3.x | STIG V-230400 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.21
+# NOT meant to be overridden by users
+
+# =============================================================================
+# VLAN Configuration
+# =============================================================================
+_vlan_kernel_module: 8021q
+_vlan_config_dir: /etc/vlan
+_vlan_proc_path: /proc/net/vlan
+
+# VLAN naming conventions
+_vlan_naming_scheme: DEV_PLUS_VID
+_vlan_name_prefix: vlan
+_vlan_max_id: 4094
+_vlan_min_id: 1
+
+# VLAN default settings
+_vlan_default_mtu: 1500
+_vlan_default_priority: 0
+_vlan_ingress_map_enabled: false
+_vlan_egress_map_enabled: false
+
+# =============================================================================
+# VXLAN Configuration
+# =============================================================================
+_vxlan_kernel_module: vxlan
+_vxlan_default_port: 4789
+_vxlan_default_vni_min: 1
+_vxlan_default_vni_max: 16777215
+_vxlan_default_ttl: 64
+_vxlan_default_tos: auto
+_vxlan_default_learning: true
+_vxlan_default_rsc: false
+_vxlan_default_proxy: false
+_vxlan_default_l2miss: true
+_vxlan_default_l3miss: true
+
+# VXLAN interface naming
+_vxlan_name_prefix: vxlan
+_vxlan_interface_pattern: "vxlan.*"
+
+# VXLAN multicast defaults
+_vxlan_default_group: 239.1.1.1
+_vxlan_default_dev: null
+
+# =============================================================================
+# Bridge Configuration for Virtual Networks
+# =============================================================================
+_bridge_kernel_module: bridge
+_bridge_config_dir: /etc/systemd/network
+_bridge_stp_default: true
+_bridge_forward_delay: 2
+_bridge_hello_time: 2
+_bridge_max_age: 20
+_bridge_ageing_time: 300
+_bridge_priority: 32768
+
+# =============================================================================
+# Virtual Network Interface Types
+# =============================================================================
+_virtual_interface_types:
+  - bridge
+  - vlan
+  - vxlan
+  - macvlan
+  - ipvlan
+  - veth
+  - bond
+
+# =============================================================================
+# systemd-networkd Integration
+# =============================================================================
+_systemd_networkd_config_dir: /etc/systemd/network
+_systemd_networkd_service: systemd-networkd
+_systemd_networkd_wait_timeout: 30
+
+# =============================================================================
+# Kernel Module Paths
+# =============================================================================
+_kernel_modules_disabled_path: /proc/sys/kernel/modules_disabled
+_kernel_modules_path: /proc/modules
+
+# =============================================================================
+# Compliance and Security Tags
+# =============================================================================
+_virtual_cis_controls:
+  - cis_3_3_1   # Assign network UUID
+  - cis_3_3_2   # Import VLAN tasks
+  - cis_3_3_3   # Import VXLAN tasks
+  - cis_3_3_4   # Report VLAN configuration
+  - cis_3_3_5   # Ensure VXLAN VTEP interface
+  - cis_3_3_6   # Configure VXLAN kernel readiness
+
+_virtual_stig_controls:
+  - stig_v_230400  # Virtual Network Segmentation (VLAN/VXLAN)
+
+_virtual_nist_controls:
+  - nist_sc_7   # Boundary Protection
+  - nist_ac_4   # Information Flow Enforcement
+
+_virtual_iso_controls:
+  - iso_27001_8_20  # Network Security
+  - iso_27001_8_21  # Security of Network Services
+  - iso_27001_9_4   # Access Control
+
+# =============================================================================
+# Compliance Control Descriptions
+# =============================================================================
+_virtual_compliance_description:
+  cis: "CIS Benchmark Section 3.3 - Network Segmentation (VLAN/VXLAN)"
+  stig: "STIG Network Infrastructure - Virtual Network Segmentation"
+  nist: "NIST SP 800-53 SC-7 (Boundary Protection), AC-4 (Information Flow)"
+  iso: "ISO 27001:2022 Annex A 8.20-8.21 (Network Security)"

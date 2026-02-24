@@ -1,1 +1,218 @@
 ---
+# Security/mac_apparmor Role - Internal Variables
+# ISO 9001 Structural Consistency | POL-SEC | Mandatory Access Control
+# These are role-specific internal variables not intended for user override
+
+# =============================================================================
+# COMPLIANCE FRAMEWORK MAPPINGS
+# =============================================================================
+
+# CIS Benchmark Controls covered by AppArmor
+mac_apparmor_cis_controls:
+  - id: "1.6.1"
+    title: "Ensure AppArmor is installed"
+    severity: "high"
+  - id: "1.6.2"
+    title: "Ensure AppArmor is enabled in bootloader configuration"
+    severity: "high"
+  - id: "1.6.3"
+    title: "Ensure all AppArmor profiles are in enforce or complain mode"
+    severity: "high"
+  - id: "1.6.4"
+    title: "Ensure all AppArmor profiles are enforcing"
+    severity: "high"
+
+# STIG Controls covered by AppArmor
+mac_apparmor_stig_controls:
+  - id: "V-230240"
+    title: "AppArmor must be installed"
+    severity: "high"
+  - id: "V-230241"
+    title: "AppArmor must be enabled"
+    severity: "high"
+  - id: "V-230242"
+    title: "AppArmor profiles must be enforcing"
+    severity: "high"
+  - id: "V-230243"
+    title: "AppArmor must be configured for mandatory access control"
+    severity: "high"
+
+# NIST 800-53 Controls covered by AppArmor
+mac_apparmor_nist_controls:
+  - id: "AC-3"
+    title: "Access Enforcement"
+    family: "Access Control"
+  - id: "AC-4"
+    title: "Information Flow Enforcement"
+    family: "Access Control"
+  - id: "AC-6"
+    title: "Least Privilege"
+    family: "Access Control"
+  - id: "CM-7"
+    title: "Least Functionality"
+    family: "Configuration Management"
+  - id: "SC-39"
+    title: "Process Isolation"
+    family: "System and Communications Protection"
+
+# ISO 27001:2022 Controls covered by AppArmor
+mac_apparmor_iso_27001_controls:
+  - id: "8.26"
+    title: "Application security requirements"
+    category: "Technological controls"
+  - id: "8.25"
+    title: "Secure development life cycle"
+    category: "Technological controls"
+  - id: "8.23"
+    title: "Web filtering"
+    category: "Technological controls"
+
+# =============================================================================
+# SERVICE NAMES (OS-specific)
+# =============================================================================
+
+mac_apparmor_service_names:
+  debian:
+    apparmor: "apparmor"
+    apparmor_parser: "apparmor_parser"
+  ubuntu:
+    apparmor: "apparmor"
+    apparmor_parser: "apparmor_parser"
+  alpine:
+    apparmor: "apparmor"
+    apparmor_parser: "apparmor_parser"
+
+# =============================================================================
+# PACKAGE LISTS (OS-specific)
+# =============================================================================
+
+mac_apparmor_packages:
+  debian:
+    - "apparmor"
+    - "apparmor-utils"
+    - "apparmor-profiles"
+    - "apparmor-profiles-extra"
+  ubuntu:
+    - "apparmor"
+    - "apparmor-utils"
+    - "apparmor-profiles"
+    - "apparmor-profiles-extra"
+  alpine:
+    - "apparmor"
+    - "apparmor-utils"
+    - "apparmor-parser"
+
+# =============================================================================
+# PATHS AND DIRECTORIES
+# =============================================================================
+
+mac_apparmor_paths:
+  config_dir: "/etc/apparmor.d"
+  profiles_dir: "/etc/apparmor.d"
+  cache_dir: "/etc/apparmor.d/cache"
+  include_dir: "/etc/apparmor.d/include"
+  tunables_dir: "/etc/apparmor.d/tunables"
+  abstractions_dir: "/etc/apparmor.d/abstractions"
+  force_complain_dir: "/etc/apparmor.d/force-complain"
+  disable_dir: "/etc/apparmor.d/disable"
+  parser_bin: "/sbin/apparmor_parser"
+  status_file: "/sys/kernel/security/apparmor/profiles"
+  proc_status: "/proc/sys/kernel/apparmor_display_secid_mode"
+
+# AppArmor profile states
+mac_apparmor_profile_states:
+  enforce: "enforce"
+  complain: "complain"
+  disable: "disable"
+
+# =============================================================================
+# APPARMOR SECURITY PARAMETERS
+# =============================================================================
+
+# GRUB kernel parameters for AppArmor
+mac_apparmor_grub_params:
+  - "apparmor=1"
+  - "security=apparmor"
+
+# AppArmor sysctl settings
+mac_apparmor_sysctl:
+  kernel.apparmor_display_secid_mode: "1"
+
+# =============================================================================
+# DEFAULT APPARMOR PROFILES
+# =============================================================================
+
+# Standard profiles that should be enforced
+mac_apparmor_standard_profiles:
+  - "usr.bin.man"
+  - "usr.sbin.rsyslogd"
+  - "usr.sbin.named"
+  - "usr.sbin.mysqld"
+  - "usr.sbin.postfix"
+  - "usr.sbin.ntpd"
+  - "usr.bin.tcpdump"
+  - "usr.sbin.identd"
+  - "usr.sbin.avahi-daemon"
+  - "usr.sbin.cupsd"
+  - "usr.lib.libreoffice.*"
+  - "usr.bin.evince"
+  - "usr.bin.firefox"
+  - "usr.bin.google-chrome"
+
+# Container-related profiles
+mac_apparmor_container_profiles:
+  - "docker-default"
+  - "docker"
+  - "lxc-container-default"
+  - "lxc-container-default-cgns"
+  - "lxc-container-default-with-mounting"
+  - "lxc-container-default-with-nesting"
+
+# =============================================================================
+# APPARMOR TUNABLES
+# =============================================================================
+
+mac_apparmor_tunables:
+  home_dir: "/home"
+  tmp_dir: "/tmp"
+  cache_dir: "/var/cache"
+  log_dir: "/var/log"
+  run_dir: "/run"
+  lock_dir: "/var/lock"
+
+# =============================================================================
+# COMPLETION FLAGS
+# =============================================================================
+
+# Role completion tracking (internal state)
+_mac_apparmor_complete: false
+
+# =============================================================================
+# SEVERITY CLASSIFICATIONS
+# =============================================================================
+
+mac_apparmor_severity_levels:
+  critical:
+    cis: ["1.6.4"]
+    stig: ["V-230242", "V-230243"]
+  high:
+    cis: ["1.6.1", "1.6.2", "1.6.3"]
+    stig: ["V-230240", "V-230241"]
+  medium: []
+  low: []
+
+# =============================================================================
+# AUDIT AND REPORTING
+# =============================================================================
+
+mac_apparmor_audit_settings:
+  log_denials: true
+  log_rejects: true
+  audit_mode: "complain"  # Initial mode for new profiles
+
+# Profile statistics tracking
+mac_apparmor_stats:
+  profiles_loaded: 0
+  profiles_enforcing: 0
+  profiles_complaining: 0
+  profiles_unconfined: 0

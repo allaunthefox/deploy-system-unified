@@ -4,9 +4,7 @@
 # USE THE ROOT-LEVEL PLAYBOOKS (e.g., production_deploy.yml) INSTEAD.
 
 # GPU Slicing Bare Metal Deployment Template (riscv64)
-# For RISC-V Server (Milk-V Pioneer, Spacemit K1/M1)
-# Features: Generic GPU support (Mesa) or specialized vendor drivers
-
+# Features: Quantum-Ready (PQC Hybrid), ISO 27001 Compliant, RISC-V Architecture
 - ansible.builtin.import_playbook: ../base_hardened.yml
 - name: Deploy GPU Slicing (Bare Metal - RISCV64)
   hosts: all

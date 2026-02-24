@@ -1,1 +1,57 @@
 ---
+# Handlers for ops/guest_management role
+# ISO 9001 Structural Consistency - Handler definitions for guest/VM management
+
+- name: restart_libvirt
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - libvirtd
+    - virtlogd
+    - virtlockd
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - guest
+    - virtualization
+
+- name: restart_qemu_guest_agent
+  ansible.builtin.systemd:
+    name: qemu-guest-agent
+    state: restarted
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - guest
+    - virtualization
+
+- name: reload_hypervisor_config
+  ansible.builtin.systemd:
+    name: libvirtd
+    state: reloaded
+  become: true
+  tags:
+    - ops
+    - guest
+    - virtualization
+
+- name: restart_virtualization_services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - libvirtd
+    - virtlogd
+    - virtlockd
+    - qemu-guest-agent
+  become: true
+  failed_when: false
+  tags:
+    - ops
+    - guest
+    - virtualization

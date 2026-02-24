@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Endlessh service role
+    description:
+      - Installs and configures Endlessh, an SSH tarpit
+      - Delays attackers by keeping SSH connections open indefinitely
+      - Aligns with ISO 27001 §9.4 for system access control and incident delay
+    options:
+      endlessh_port:
+        type: int
+        description: Port for Endlessh to listen on
+        default: 22
+      endlessh_delay:
+        type: int
+        description: Delay in milliseconds between banner lines
+        default: 10000
+      endlessh_max_clients:
+        type: int
+        description: Maximum number of concurrent clients
+        default: 4096
+      system_enable_endlessh:
+        type: bool
+        description: Whether to enable the Endlessh service
+        default: false

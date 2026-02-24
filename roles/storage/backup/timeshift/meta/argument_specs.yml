@@ -1,0 +1,45 @@
+---
+argument_specs:
+  main:
+    short_description: timeshift role for system snapshot management
+    description:
+      - Manages Timeshift system snapshots for backup and recovery
+      - Supports Debian/Ubuntu systems
+      - Aligns with ISO 27040 requirements for backup and recovery
+    options:
+      timeshift_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable timeshift role execution
+      timeshift_device:
+        type: str
+        required: false
+        default: "/dev/sda1"
+        description:
+          - Device to use for timeshift snapshots
+      timeshift_backup_path:
+        type: str
+        required: false
+        default: "/timeshift"
+        description:
+          - Path to store timeshift snapshots
+      backup_security_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable backup security features
+      backup_security_dir:
+        type: str
+        required: false
+        default: "/var/backups/security"
+        description:
+          - Directory for backup security metadata
+      backup_name:
+        type: str
+        required: false
+        default: "timeshift"
+        description:
+          - Name identifier for backup

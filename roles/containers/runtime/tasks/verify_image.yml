@@ -1,0 +1,27 @@
+---
+# Reusable task for verifying image signatures via Cosign
+# Use: ansible.builtin.include_tasks: roles/containers/runtime/tasks/verify_image.yml
+# vars: { image_to_verify: "docker.io/library/alpine:latest" }
+
+- name: "ISO 27001 §14.2 | Action 700014 | Verify Image Signature (Supply Chain)"
+  ansible.builtin.shell: |
+    set -o pipefail
+    # We use --allow-import-from-signer-repo for better registry compatibility
+    cosign verify --key {{ containers_cosign_public_key | default('') }} {{ image_to_verify }}
+  args:
+    executable: /bin/bash
+  register: image_signature_result
+  changed_when: false
+  become: true
+  failed_when: false
+  when: containers_cosign_enable | bool
+
+- name: "Action 700015 | Enforce Trusted Supply Chain"
+  ansible.builtin.assert:
+    that:
+      - (not containers_cosign_enable | bool) or (image_signature_result.rc == 0)
+    fail_msg: |-
+      CRITICAL: Supply Chain Violation detected for image: {{ image_to_verify }}
+      The image signature could not be verified via Cosign.
+      Reason: {{ image_signature_result.stderr | default('Signature missing or invalid') }}
+  tags: [containers, supply_chain, audit]

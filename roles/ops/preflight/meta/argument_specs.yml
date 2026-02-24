@@ -1,0 +1,57 @@
+---
+argument_specs:
+  main:
+    short_description: Pre-deployment validation role
+    description:
+      - Validates system requirements (OS, memory, binaries)
+      - Verifies inventory for "CHANGE_ME" placeholders and insecure defaults
+      - Enforces least-privilege policies for NFS and Rsync
+    options:
+      preflight_require_systemd:
+        type: bool
+        description: Require systemd as the service manager
+        default: true
+      preflight_check_memory:
+        type: bool
+        description: Whether to check minimum memory requirements
+        default: false
+      preflight_min_memory_mb:
+        type: int
+        description: Minimum required memory in MB
+        default: 512
+      preflight_check_network:
+        type: bool
+        description: Whether to check network connectivity
+        default: false
+      preflight_check_license:
+        type: bool
+        description: Whether to run license compliance checks
+        default: true
+      preflight_check_gpu_vendor:
+        type: bool
+        description: Whether to validate GPU vendor matches configuration
+        default: false
+      preflight_strict_gpu_vendor:
+        type: bool
+        description: Fail on GPU vendor mismatch (vs warning)
+        default: true
+      preflight_check_container_runtime:
+        type: bool
+        description: Whether to validate container runtime availability
+        default: false
+      preflight_required_container_runtime:
+        type: str
+        description: Required container runtime (podman or docker)
+        default: podman
+      preflight_check_kubernetes:
+        type: bool
+        description: Whether to validate kubectl and K8s connectivity
+        default: false
+      preflight_require_kubectl:
+        type: bool
+        description: Require kubectl to be installed
+        default: true
+      preflight_require_cluster_connectivity:
+        type: bool
+        description: Require Kubernetes cluster to be accessible
+        default: false

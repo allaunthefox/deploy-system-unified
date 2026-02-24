@@ -1,0 +1,260 @@
+# Goss tests for security/firejail role
+# Application Sandboxing with Firejail
+# CIS Benchmark: 5.x - Access Control (Application Isolation)
+# ISO 27001 §8.26 | STIG V-23029x | NIST AC-6/SC-4
+
+# =============================================================================
+# PACKAGE TESTS - Verify Firejail packages are installed
+# =============================================================================
+package:
+  # CIS 5.x - Firejail sandboxing tool
+  firejail:
+    installed: true
+  # CIS 5.x - Firejail profile collection
+  firejail-profiles:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Firejail does not run as a service
+# =============================================================================
+# Note: Firejail is invoked per-application, not as a system service
+
+# =============================================================================
+# FILE TESTS - Verify Firejail configuration files
+# =============================================================================
+file:
+  # CIS 5.x - Firejail binary
+  /usr/bin/firejail:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: file
+
+  # CIS 5.x - Firejail configuration directory
+  /etc/firejail:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail profiles directory
+  /etc/firejail/profiles.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail main configuration
+  /etc/firejail/firejail.config:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^seccomp/
+      - /^caps.drop all/
+      - /^netfilter/
+
+  # CIS 5.x - Firejail default profile
+  /etc/firejail/default.profile:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^seccomp/
+      - /^private-tmp/
+      - /^private-dev/
+
+  # CIS 5.x - Firejail disable configuration
+  /etc/firejail/disable-common.inc:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail network configuration
+  /etc/firejail/network:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail local overrides
+  /etc/firejail/local:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail login configuration
+  /etc/firejail/login.users:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail restricted shell
+  /usr/bin/fssh:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail application-specific profiles
+  /etc/firejail/firefox.profile:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail chromium profile
+  /etc/firejail/chromium.profile:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - Firejail systemd integration
+  /etc/systemd/system/firejail@.service:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify Firejail configuration and operation
+# =============================================================================
+command:
+  # CIS 5.x - Verify Firejail is installed and working
+  firejail_version:
+    exec: 'firejail --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /firejail version/
+    timeout: 5000
+
+  # CIS 5.x - Verify Firejail can list profiles
+  firejail_list_profiles:
+    exec: 'firejail --list 2>&1 | head -1'
+    exit-status: 0
+    timeout: 5000
+
+  # CIS 5.x - Verify seccomp is enabled in default profile
+  firejail_seccomp_enabled:
+    exec: 'grep -c "^seccomp" /etc/firejail/default.profile'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify private-tmp is enabled
+  firejail_private_tmp:
+    exec: 'grep -c "^private-tmp" /etc/firejail/default.profile'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify private-dev is enabled
+  firejail_private_dev:
+    exec: 'grep -c "^private-dev" /etc/firejail/default.profile'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify caps.drop all is configured
+  firejail_caps_drop:
+    exec: 'grep -c "^caps.drop all" /etc/firejail/default.profile'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify netfilter is configured
+  firejail_netfilter:
+    exec: 'grep -c "^netfilter" /etc/firejail/firejail.config'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Count available profiles
+  firejail_profile_count:
+    exec: 'ls -1 /etc/firejail/profiles.d/*.profile 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify firejail binary has correct permissions
+  firejail_binary_perms:
+    exec: 'stat -c "%a" /usr/bin/firejail'
+    exit-status: 0
+    stdout:
+      - /^755$/
+    timeout: 5000
+
+  # CIS 5.x - Verify firejail is setuid (if required)
+  firejail_setuid:
+    exec: 'stat -c "%A" /usr/bin/firejail | grep -c "s" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^[01]$/
+    timeout: 5000
+
+  # CIS 5.x - Verify Firefox profile exists and is configured
+  firefox_profile_configured:
+    exec: 'grep -c "^include" /etc/firejail/firefox.profile'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify Chromium profile exists and is configured
+  chromium_profile_configured:
+    exec: 'grep -c "^include" /etc/firejail/chromium.profile'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify Firejail can run a test command
+  firejail_test_run:
+    exec: 'firejail --quiet --noprofile echo "test" 2>&1'
+    exit-status: 0
+    stdout:
+      - /^test$/
+    timeout: 5000
+
+  # CIS 5.x - Verify Firejail security features are available
+  firejail_features:
+    exec: 'firejail --help 2>&1 | grep -c "seccomp\|caps\|netfilter" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /[1-9]/
+    timeout: 5000
+
+  # CIS 5.x - Verify Firejail configuration directory permissions
+  firejail_config_perms:
+    exec: 'stat -c "%a" /etc/firejail'
+    exit-status: 0
+    stdout:
+      - /^755$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Firejail runs per-application
+# =============================================================================
+# Note: Firejail is invoked per-application, not as a continuous process
+
+# =============================================================================
+# PORT TESTS - Not applicable for Firejail
+# =============================================================================
+# Note: Firejail does not listen on network ports

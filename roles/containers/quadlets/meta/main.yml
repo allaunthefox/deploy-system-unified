@@ -1,0 +1,37 @@
+---
+galaxy_info:
+  role_name: quadlets
+  author: deploysystemunified
+  description: "WI-CONT | Management of Podman Quadlet systemd unit files"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - containers
+    - podman
+    - quadlet
+    - systemd
+    - generator
+    - infrastructure
+    - orchestration
+    - automation
+    - linux
+    - services
+    - hardening
+    - security
+    - iso27001
+
+collections:
+  - ansible.builtin
+
+dependencies: []

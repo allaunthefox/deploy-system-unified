@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove resource_protection test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - resource-protection-ubuntu-2204
+        - resource-protection-debian-12
+        - resource-protection-alpine-319
+        - resource-protection-rockylinux-9

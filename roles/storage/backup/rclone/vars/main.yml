@@ -1,1 +1,61 @@
 ---
+# Internal variables for storage/backup/rclone role
+# These are NOT user-overridable and define internal state
+
+# Role identification
+_rclone_role_name: rclone
+_rclone_role_version: "1.0.0"
+
+# Service names
+_rclone_service: rclone-mount
+_rclone_sync_service: rclone-sync
+
+# Package names (internal reference)
+_rclone_packages:
+  - rclone
+
+# Configuration paths
+_rclone_config_base: /etc/rclone
+_rclone_config_file: /etc/rclone/rclone.conf
+_rclone_cache_dir: /var/cache/rclone
+_rclone_log_dir: /var/log/rclone
+
+# Data paths
+_rclone_data_base: /srv/rclone
+_rclone_mount_base: /mnt/rclone
+
+# User/Group settings
+_rclone_default_user: root
+_rclone_default_group: root
+_rclone_config_mode: '0700'
+_rclone_conf_file_mode: '0600'
+
+# Remote types (commonly used)
+_rclone_remote_types:
+  - drive
+  - s3
+  - sftp
+  - webdav
+  - dropbox
+  - onedrive
+  - box
+
+# Sync options
+_rclone_default_sync_flags:
+  - "--progress"
+  - "--stats=1s"
+_rclone_default_copy_flags:
+  - "--progress"
+  - "-v"
+
+# Mount options
+_rclone_default_mount_flags:
+  - "--daemon"
+  - "--allow-other"
+  - "--vfs-cache-mode=writes"
+
+# Internal state tracking
+_rclone_initialized: false
+_rclone_config_deployed: false
+_rclone_remotes_configured: []
+_rclone_mounts_active: []

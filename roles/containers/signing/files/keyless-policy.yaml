@@ -1,0 +1,28 @@
+# Keyless Cosign Verification Policy
+# This policy uses Sigstore's keyless signing infrastructure
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: keyless-policy
+  annotations:
+    description: "Keyless verification policy using Sigstore Fulcio"
+spec:
+  images:
+  - glob: "**/*"
+  
+  authorities:
+  - keyless:
+      url: https://fulcio.sigstore.dev
+      identity:
+        issuer: https://github.com/*
+        subject: .*@example.com
+        regex: true
+  
+  - keyless:
+      url: https://fulcio.sigstore.dev
+      ctlog:
+        url: https://rekor.sigstore.dev
+  
+  mode: warn

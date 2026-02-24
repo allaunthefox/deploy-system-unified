@@ -1,0 +1,35 @@
+---
+galaxy_info:
+  role_name: dedupe
+  author: deploysystemunified
+  description: "NoDupeLabs-inspired deduplication and archival optimization"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+  galaxy_tags:
+    - storage
+    - deduplication
+    - btrfs
+    - restic
+    - optimization
+    - iso27040
+    - data-reduction
+    - archival
+    - backup
+    - efficiency
+    - cis
+    - nist80053
+    - automation
+    - linux
+    - storage-management
+
+collections:
+  - ansible.builtin
+
+dependencies: []

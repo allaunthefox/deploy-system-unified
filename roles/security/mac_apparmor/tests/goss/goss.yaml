@@ -1,0 +1,117 @@
+# Goss tests for security/mac_apparmor role
+# Mandatory Access Control (MAC) management via AppArmor
+# ISO 27001 §8.26 | CIS 1.6.x | STIG V-23024x | NIST AC-3/AC-4/AC-6
+
+# =============================================================================
+# PACKAGE TESTS - Verify AppArmor packages are installed
+# =============================================================================
+package:
+  apparmor:
+    installed: true
+  apparmor-utils:
+    installed: true
+  apparmor-profiles:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify AppArmor service is running and enabled
+# =============================================================================
+service:
+  apparmor:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify AppArmor configuration files and directories
+# =============================================================================
+file:
+  /etc/apparmor.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /etc/apparmor.d/abstractions:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /etc/apparmor.d/disable:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /etc/apparmor.d/cache:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /etc/apparmor.d/tunables:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /sys/kernel/security/apparmor:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  /sys/kernel/security/apparmor/profiles:
+    exists: true
+    mode: "0444"
+    owner: root
+    group: root
+
+  /etc/default/grub:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - "apparmor=1"
+      - "security=apparmor"
+
+# =============================================================================
+# COMMAND TESTS - Verify AppArmor commands work correctly
+# =============================================================================
+command:
+  aa-status:
+    exit-status: 0
+    stdout:
+      - /apparmor module is loaded/
+      - /profiles are in enforce mode/
+
+  aa-status-enforce-count:
+    exec: "aa-status --enforced 2>/dev/null | wc -l || echo 0"
+    exit-status: 0
+    stdout:
+      - /[1-9][0-9]*/
+
+  apparmor-parser-version:
+    exec: "apparmor_parser --version 2>&1 | head -1"
+    exit-status: 0
+    stdout:
+      - /AppArmor parser version/
+
+  check-apparmor-grub-params:
+    exec: "grep -E 'apparmor=1|security=apparmor' /etc/default/grub 2>/dev/null | grep -v '^#'"
+    exit-status: 0
+    stdout:
+      - /apparmor=1/
+      - /security=apparmor/
+
+# =============================================================================
+# PORT TESTS - Not applicable for AppArmor (no network ports)
+# =============================================================================
+# Note: AppArmor is a MAC system and does not listen on network ports

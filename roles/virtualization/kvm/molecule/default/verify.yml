@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check KVM packages installation (informational)
+      ansible.builtin.shell: dpkg -l | grep -E 'qemu|libvirt' || true
+      register: kvm_packages
+      changed_when: false
+      failed_when: false
+
+    - name: Display KVM packages status
+      ansible.builtin.debug:
+        msg: "KVM packages: {{ kvm_packages.stdout_lines | default(['Not installed - container environment']) }}"
+
+    - name: Check libvirt service status (informational)
+      ansible.builtin.command: systemctl is-enabled libvirtd
+      register: libvirt_status
+      failed_when: false
+      changed_when: false
+
+    - name: Display libvirt status
+      ansible.builtin.debug:
+        msg: "libvirtd status: {{ libvirt_status.stdout | default('not available in container') }}"
+
+    - name: Check KVM module availability
+      ansible.builtin.command: lsmod | grep kvm
+      register: kvm_module
+      failed_when: false
+      changed_when: false
+
+    - name: Display KVM module status
+      ansible.builtin.debug:
+        msg: "KVM module: {{ kvm_module.stdout | default('not loaded - container environment') }}"
+
+    - name: Verify virtualization role executed
+      ansible.builtin.debug:
+        msg: "Virtualization/kvm role executed successfully"

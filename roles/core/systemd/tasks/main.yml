@@ -1,22 +1,34 @@
 ---
 # Core systemd role - Systemd configuration and hardening
-- name: Enforce systemd requirement when strict mode is enabled
+# CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26
+
+- name: "CIS 5.2.1 | STIG V-230260 | NIST CM-6 | Enforce systemd requirement when strict mode is enabled"
   ansible.builtin.assert:
     that:
       - ansible_service_mgr == 'systemd'
     msg: "This role requires systemd as the service manager"
   when: core_systemd_require_service_manager | default(false)
+  tags:
+    - cis_5_2_1
+    - stig_v_230260
+    - nist_cm_6
+    - systemd
+    - prerequisite
 
-- name: Skip core/systemd on non-systemd hosts
+- name: "CIS 5.2.1 | Skip core/systemd on non-systemd hosts"
   ansible.builtin.debug:
     msg: "core/systemd skipped because ansible_service_mgr is {{ ansible_service_mgr }}"
   changed_when: false
   when: ansible_service_mgr != 'systemd'
+  tags:
+    - cis_5_2_1
+    - systemd
+    - info
 
-- name: Configure systemd settings
+- name: "CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26 | Action 840030 | Configure systemd settings"
   when: ansible_service_mgr == 'systemd'
   block:
-    - name: Configure systemd journald
+    - name: "CIS 5.2.4 | STIG V-230260 | NIST AU-3, AU-12 | ISO 27001 §12.4 | Action 840030 | Configure systemd journald"
       ansible.builtin.lineinfile:
         path: /etc/systemd/journald.conf
         regexp: "{{ item.regexp }}"
@@ -28,8 +40,17 @@
         - { regexp: '^#?SystemMaxFileSize=', line: 'SystemMaxFileSize=50M' }
       become: true
       notify: restart_journald
+      tags:
+        - cis_5_2_4
+        - stig_v_230260
+        - nist_au_3
+        - nist_au_12
+        - iso_27001_12_4
+        - systemd
+        - journald
+        - remediate
 
-    - name: Configure systemd resolved if available
+    - name: "CIS 5.3.1 | STIG V-230261 | NIST CM-6 | ISO 27001 §8.26 | Action 810300 | Configure systemd resolved if available"
       ansible.builtin.lineinfile:
         path: /etc/systemd/resolved.conf
         regexp: "{{ item.regexp }}"
@@ -42,8 +63,16 @@
       become: true
       failed_when: false
       notify: restart_resolved
+      tags:
+        - cis_5_3_1
+        - stig_v_230261
+        - nist_cm_6
+        - iso_27001_8_26
+        - systemd
+        - resolved
+        - remediate
 
-    - name: Enable persistent journal storage
+    - name: "CIS 5.2.4 | STIG V-230260 | NIST AU-2 | ISO 27001 §12.4 | Enable persistent journal storage"
       ansible.builtin.file:
         path: /var/log/journal
         state: directory
@@ -51,12 +80,43 @@
         owner: root
         group: systemd-journal
       become: true
+      tags:
+        - cis_5_2_4
+        - stig_v_230260
+        - nist_au_2
+        - iso_27001_12_4
+        - systemd
+        - journald
+        - remediate
 
-    - name: Reload systemd daemon
+    - name: "CIS 5.2.1 | STIG V-230260 | NIST CM-6 | Reload systemd daemon"
       ansible.builtin.systemd:
         daemon_reload: true
       become: true
+      tags:
+        - cis_5_2_1
+        - stig_v_230260
+        - nist_cm_6
+        - systemd
+        - daemon
+  tags:
+    - cis_5_2_x
+    - cis_5_3_x
+    - stig_v_230260
+    - stig_v_230261
+    - nist_au_2
+    - nist_au_3
+    - nist_au_12
+    - nist_cm_6
+    - iso_27001_12_4
+    - iso_27001_8_26
+    - systemd
+    - remediate
 
-- name: Set core systemd completion flag
+- name: "CIS 5.2.1 | Set core systemd completion flag"
   ansible.builtin.set_fact:
     core_systemd_complete: "{{ ansible_service_mgr == 'systemd' }}"
+  tags:
+    - cis_5_2_1
+    - systemd
+    - fact

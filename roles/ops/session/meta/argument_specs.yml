@@ -1,0 +1,20 @@
+---
+argument_specs:
+  main:
+    short_description: Deployment session role
+    description:
+      - Ensures a persistent TMUX session is available for the deployment
+      - Facilitates long-running deployments and interactive debugging
+      - Aligns with ISO 9001 requirements for operational consistency
+    options:
+      tmux_session_for_deployment:
+        type: bool
+        description: Whether to ensure a TMUX session exists
+        default: true
+      tmux_session_name:
+        type: str
+        description: Name of the TMUX session to create
+        default: deployment-session
+      tmux_session_ok:
+        type: bool
+        description: Flag to indicate session status

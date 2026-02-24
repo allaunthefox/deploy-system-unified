@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: firewall
-  author: deploy-system-unified
+  author: deploysystemunified
   description: Multi-distro firewall management (UFW, Firewalld, Nftables)
   license: MIT
   min_ansible_version: "2.15"
@@ -20,5 +20,18 @@ galaxy_info:
     - networking
     - security
     - firewall
+    - ufw
+    - firewalld
+    - nftables
+    - hardening
+    - accesscontrol
+    - forensic
+    - iso27001
+    - nist80053
+    - perimeter
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

@@ -1,7 +1,7 @@
 ---
 # Install Podman and Core Runtime Dependencies
 
-- name: Install Podman on Debian/Ubuntu
+- name: "ISO 27001 §8.26 | Action 700000 | Install Podman on Debian/Ubuntu"
   ansible.builtin.apt:
     name:
       - podman
@@ -14,8 +14,12 @@
     state: present
   when: ansible_facts['os_family'] == 'Debian'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
 
-- name: Install Podman on RedHat/CentOS
+- name: "ISO 27001 §8.26 | Action 700000 | Install Podman on RedHat/CentOS"
   ansible.builtin.dnf:
     name:
       - podman
@@ -27,8 +31,12 @@
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
 
-- name: Install Podman on Arch
+- name: "ISO 27001 §8.26 | Action 700000 | Install Podman on Arch"
   community.general.pacman:
     name:
       - podman
@@ -39,8 +47,12 @@
     state: present
   when: ansible_facts['distribution'] | lower == 'archlinux'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
 
-- name: Install Podman on Alpine
+- name: "ISO 27001 §8.26 | Action 700000 | Install Podman on Alpine"
   community.general.apk:
     name:
       - podman
@@ -51,8 +63,12 @@
     state: present
   when: ansible_facts['os_family'] == 'Alpine'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
 
-- name: Enable IPv4 forwarding for container networking
+- name: "ISO 27001 §8.26 | Action 450002 | Enable IPv4 forwarding for container networking"
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: '1'
@@ -60,8 +76,13 @@
     state: present
     reload: true
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
+    - remediate
 
-- name: Configure container security settings
+- name: "ISO 27001 §8.26 | Action 410002 | Configure container security settings"
   ansible.builtin.copy:
     dest: /etc/containers/containers.conf
     content: |
@@ -82,6 +103,11 @@
       events_logger = "journald"
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
+    - remediate
 
 - name: Validate default_capabilities contain only CAP_* entries
   ansible.builtin.shell: |
@@ -100,8 +126,11 @@
     PY
   changed_when: false
   become: true
+  tags:
+    - security
+    - containers
 
-- name: Configure container signature policy
+- name: "ISO 27001 §8.26 | Action 410002 | Configure container signature policy"
   ansible.builtin.copy:
     dest: /etc/containers/policy.json
     content: |
@@ -133,8 +162,13 @@
       }
     mode: '0644'
   become: true
+  tags:
+    - iso_27001_8_26
+    - containers
+    - runtime
+    - remediate
 
-- name: Enable AppArmor for containers (Debian/Ubuntu)
+- name: "ISO 27001 §8.26 | Action 440001 | Enable AppArmor for containers (Debian/Ubuntu)"
   ansible.builtin.command:
     cmd: aa-enforce /etc/apparmor.d/containers/*
   register: apparmor_result
@@ -142,8 +176,13 @@
   failed_when: false
   become: true
   when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - iso_27001_8_26
+    - containers
+    - apparmor
+    - remediate
 
-- name: Enable SELinux for containers (RedHat/CentOS)
+- name: "ISO 27001 §8.26 | Action 440001 | Enable SELinux for containers (RedHat/CentOS)"
   ansible.posix.seboolean:
     name: "{{ item }}"
     state: true
@@ -153,6 +192,11 @@
     - container_use_nfs
   become: true
   when: ansible_facts['os_family'] == 'RedHat'
+  tags:
+    - iso_27001_8_26
+    - containers
+    - selinux
+    - remediate
 
 - name: Create podman configuration directory
   ansible.builtin.file:

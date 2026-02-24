@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: Hardware firmware role
+    description:
+      - Installs and manages hardware security tools (TPM2)
+      - Configures the hardware real-time clock (RTC)
+      - Implements platform-specific firmware tuning
+    options:
+      monitoring_packages:
+        type: list
+        elements: str
+        description: List of hardware monitoring packages to install

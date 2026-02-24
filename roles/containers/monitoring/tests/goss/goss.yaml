@@ -1,0 +1,52 @@
+# Goss tests for containers/monitoring role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+  prometheus:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify monitoring container configuration
+# =============================================================================
+file:
+  /srv/containers/monitoring:
+    exists: true
+    filetype: directory
+    mode: "0755"
+
+  /etc/prometheus:
+    exists: true
+    filetype: directory
+
+# =============================================================================
+# SERVICE TESTS
+# =============================================================================
+service:
+  prometheus:
+    enabled: true
+    running: true
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  prometheus_version:
+    exec: 'prometheus --version'
+    exit-status: 0
+    timeout: 10000
+
+  prometheus_metrics:
+    exec: 'curl -s http://localhost:9090/metrics || true'
+    exit-status: 0
+    timeout: 10000
+
+# =============================================================================
+# PORT TESTS
+# =============================================================================
+port:
+  tcp:9090:
+    listening: true

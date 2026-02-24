@@ -1,0 +1,164 @@
+# Goss tests for security/hardening role
+# CIS Benchmark: 5.x - Access Control, 1.x - Filesystem
+
+file:
+  /etc/shadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: shadow
+
+  /etc/passwd:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/group:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/gshadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: shadow
+
+  /etc/issue:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /Authorized Use Only/
+
+  /etc/issue.net:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /Authorized Use Only/
+
+  /etc/cron.allow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  /etc/at.allow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  /etc/cron.deny:
+    exists: false
+
+  /etc/at.deny:
+    exists: false
+
+# CIS 5.1.x - File permissions
+command:
+  no_world_writable_files:
+    exec: 'find / -type f -perm -002 -not -path "/proc/*" -not -path "/sys/*" 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 60000
+
+  no_unowned_files:
+    exec: 'find / -type f -nouser -not -path "/proc/*" -not -path "/sys/*" 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 60000
+
+  no_ungrouped_files:
+    exec: 'find / -type f -nogroup -not -path "/proc/*" -not -path "/sys/*" 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 60000
+
+# CIS 5.2.x - SUID/SGID executables
+command:
+  suid_executables_reviewed:
+    exec: 'find / -type f -perm -4000 -not -path "/proc/*" -not -path "/sys/*" 2>/dev/null | wc -l'
+    exit-status: 0
+    timeout: 60000
+
+  sgid_executables_reviewed:
+    exec: 'find / -type f -perm -2000 -not -path "/proc/*" -not -path "/sys/*" 2>/dev/null | wc -l'
+    exit-status: 0
+    timeout: 60000
+
+# CIS 5.3.x - Password aging
+command:
+  password_max_days:
+    exec: 'grep "^PASS_MAX_DAYS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^[1-9][0-9]?$/
+    timeout: 5000
+
+  password_min_days:
+    exec: 'grep "^PASS_MIN_DAYS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^7$/
+    timeout: 5000
+
+  password_warn_age:
+    exec: 'grep "^PASS_WARN_AGE" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^7$/
+    timeout: 5000
+
+# CIS 5.4.1 - Ensure system accounts are secured
+command:
+  system_accounts_locked:
+    exec: 'awk -F: '\''($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print $1}'\'' /etc/passwd | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+# CIS 5.5 - Ensure root account is locked
+command:
+  root_account_locked:
+    exec: 'passwd -S root 2>/dev/null | grep -c "L" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+# Verify no duplicate UIDs
+command:
+  no_duplicate_uids:
+    exec: 'cut -f3 -d":" /etc/passwd | sort -n | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+# Verify no duplicate GIDs
+command:
+  no_duplicate_gids:
+    exec: 'cut -f3 -d":" /etc/group | sort -n | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+# Verify root is only UID 0 account
+command:
+  root_only_uid_zero:
+    exec: 'awk -F: '\''($3 == 0) {print $1}'\'' /etc/passwd | wc -l'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000

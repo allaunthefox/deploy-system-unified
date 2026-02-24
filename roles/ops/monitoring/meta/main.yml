@@ -1,10 +1,9 @@
 ---
 galaxy_info:
   role_name: monitoring
-  author: deploy-system-unified
-  description: Operational monitoring and observability stack (Node Exporter, Smartmon)
-  company: "Deploy System Unified"
-  license: "MIT"
+  author: deploysystemunified
+  description: "SOP-OPS | Host-level metrics collection and health monitoring (Node Exporter, Smartd)"
+  license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
@@ -18,9 +17,21 @@ galaxy_info:
     - name: Alpine
       versions: [all]
   galaxy_tags:
+    - ops
     - monitoring
-    - observability
     - prometheus
     - node_exporter
+    - smartd
+    - health
+    - metrics
+    - observability
+    - systems
+    - forensic
+    - audit
+    - iso9001
+    - iso27001
+
+collections:
+  - ansible.builtin
 
 dependencies: []

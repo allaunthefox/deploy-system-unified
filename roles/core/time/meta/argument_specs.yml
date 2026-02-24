@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: Core time synchronization role
+    description:
+      - Ensures accurate system time via Chrony
+      - Critical for forensic log integrity and certificate validation
+      - Aligns with ISO 27001 §8.17
+    options:
+      core_time_service_mapping:
+        type: dict
+        description: Map of distributions to service, package, and config directory names
+        default: {}

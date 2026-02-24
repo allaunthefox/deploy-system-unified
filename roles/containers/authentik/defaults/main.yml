@@ -1,38 +1,38 @@
 ---
 # Defaults for containers/authentik
 
-authentik_enable: true
-authentik_image: ghcr.io/goauthentik/server:2024.2.1
-authentik_redis_image: docker.io/library/redis:alpine
-authentik_postgres_image: docker.io/library/postgres:16-alpine
+containers_authentik_enable: true
+containers_authentik_image: ghcr.io/goauthentik/server:2024.2.1
+containers_authentik_redis_image: docker.io/library/redis:alpine
+containers_authentik_postgres_image: docker.io/library/postgres:16-alpine
 
 # Configuration Paths - Namespaced by instance for multi-tenancy support if needed
-authentik_base_dir: /srv/containers/authentik
-authentik_data_dir: "{{ authentik_base_dir }}/data"
-authentik_config_dir: "{{ authentik_base_dir }}/config"
+containers_authentik_base_dir: /srv/containers/authentik
+containers_authentik_data_dir: "{{ containers_authentik_base_dir }}/data"
+containers_authentik_config_dir: "{{ containers_authentik_base_dir }}/config"
 
 # Ports
-authentik_port_http: 9000
-authentik_port_https: 9443
+containers_authentik_port_http: 9000
+containers_authentik_port_https: 9443
 
 # Database Config
-authentik_pg_user: authentik
-authentik_pg_db: authentik
-authentik_pg_pass: "changeme_please_secure_me"
+containers_authentik_pg_user: authentik
+containers_authentik_pg_db: authentik
+containers_authentik_pg_pass: "changeme_please_secure_me"
 
 # Secret Key (Must be generated)
-authentik_secret_key: "generate_me_with_openssl_rand_base64_60"
+containers_authentik_secret_key: "generate_me_with_openssl_rand_base64_60"
 
 # Hardening: fail-secure gating for Authentik secret checks
 containers_authentik_fail_secure: "{{ containers_fail_secure | default(true) }}"
 
 # Email Configuration
-authentik_email_host: "smtp.example.com"
-authentik_email_port: 587
-authentik_email_username: "user"
-authentik_email_password: "password"
-authentik_email_from: "authentik@example.com"
-authentik_email_use_tls: true
+containers_authentik_email_host: "smtp.example.com"
+containers_authentik_email_port: 587
+containers_authentik_email_username: "user"
+containers_authentik_email_password: "password"
+containers_authentik_email_from: "authentik@example.com"
+containers_authentik_email_use_tls: true
 
 # Networking
-authentik_network_name: "deploy-net"
+containers_authentik_network_name: "deploy-net"

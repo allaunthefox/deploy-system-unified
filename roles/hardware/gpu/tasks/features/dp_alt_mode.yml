@@ -3,19 +3,23 @@
 # Ensures USB-C and display diagnostics tools are available
 
 - name: Install USB and Display Diagnostics
+  tags: [hardware, gpu, remediate]
   ansible.builtin.package:
     name:
+  tags: [hardware, gpu, remediate]
       - usbutils
       - hwinfo
     state: present
   become: true
 
 - name: Check for USB Type-C Class support in kernel
+  tags: [hardware, gpu, remediate]
   ansible.builtin.stat:
     path: /sys/class/typec
   register: typec_sysfs
 
 - name: Log Type-C Support Status
+  tags: [hardware, gpu, remediate]
   ansible.builtin.debug:
     msg: >-
       USB Type-C subsystem detected: {{ typec_sysfs.stat.exists }}.
@@ -23,8 +27,10 @@
       If missing, ensure 'typec' and 'typec_displayport' modules are loaded.
 
 - name: Load Type-C DisplayPort modules (if available)
+  tags: [hardware, gpu, remediate]
   community.general.modprobe:
     name: typec_displayport
+  tags: [hardware, gpu, remediate]
     state: present
   become: true
   failed_when: false

@@ -1,0 +1,45 @@
+---
+# vars/main.yml for networking role
+# Role-specific internal variables - NOT meant to be overridden by users
+# Part of ISO 9001 Structural Consistency
+
+# Network interface management paths
+_networking_sysctl_dir: /etc/sysctl.d
+_networking_modules_load_dir: /etc/modules-load.d
+_networking_systemd_network_dir: /etc/systemd/network
+_networking_resolv_conf: /etc/resolv.conf
+
+# Kernel module names for networking
+_networking_kernel_modules:
+  - bridge
+  - br_netfilter
+  - veth
+  - macvlan
+  - ipvlan
+  - bonding
+  - vlan
+  - 8021q
+
+# Network configuration backends
+_networking_config_backends:
+  - systemd_networkd
+  - networkmanager
+  - netplan
+
+# Default network driver for virtualization
+_networking_default_bridge_driver: bridge
+
+# DNS resolution defaults
+_networking_dns_timeout: 5
+_networking_dns_attempts: 2
+
+# Network readiness checks
+_networking_wait_timeout: 30
+_networking_wait_interval: 2
+
+# ISO 27001 compliance tracking
+_networking_iso_controls:
+  - iso_27001_8_20
+  - iso_27001_8_21
+  - iso_27001_8_22
+  - iso_27001_8_23

@@ -3,6 +3,7 @@
 # Use: ansible.builtin.include_tasks: roles/shared/tasks/assertions.yml
 
 - name: Check required variables are defined
+  tags: [shared, audit]
   ansible.builtin.assert:
     that:
       - item.key in vars or item.key in hostvars[inventory_hostname]
@@ -14,12 +15,14 @@
   when: item.key not in vars
 
 - name: Verify OS is supported
+  tags: [shared, audit]
   ansible.builtin.assert:
     that:
       - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine', 'Archlinux']
     fail_msg: "Unsupported OS: {{ ansible_facts['os_family'] }}"
 
 - name: Check network connectivity
+  tags: [shared, audit]
   ansible.builtin.wait_for:
     host: "{{ item.host }}"
     port: "{{ item.port | default(22) }}"
@@ -30,6 +33,7 @@
   failed_when: false
 
 - name: Verify package manager availability
+  tags: [shared, audit]
   ansible.builtin.assert:
     that:
       - ansible_facts['pkg_mgr'] is defined

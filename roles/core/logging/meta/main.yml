@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: logging
-  author: deploy-system-unified
-  description: System logging and journald configuration
+  author: deploysystemunified
+  description: "STD-CORE | Forensic logging and centralized log management (journald, rsyslog)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -19,6 +19,19 @@ galaxy_info:
   galaxy_tags:
     - core
     - logging
+    - forensic
     - journald
+    - rsyslog
+    - audit
+    - monitoring
+    - iso27001
+    - iso27037
+    - nist80053
+    - security
+    - multiarch
+
+collections:
+  - ansible.builtin
+  - community.general
 
 dependencies: []

@@ -1,0 +1,20 @@
+# Goss tests for virtualization/storage role
+# Compliance: NIST SC-39, ISO 27001
+
+command:
+  qemu-img:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  virsh:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /var/lib/libvirt/images:
+    exists: true
+    is-directory: true
+  /etc/libvirt/storage:
+    exists: true
+    is-directory: true

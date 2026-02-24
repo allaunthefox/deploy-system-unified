@@ -1,1 +1,4 @@
 ---
+# Handlers for core/bootstrap role
+# Note: Bootstrap role handles initial system setup and base package installation
+# No service restarts are required as this is a foundational role that runs once

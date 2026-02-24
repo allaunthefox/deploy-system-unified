@@ -1,0 +1,30 @@
+---
+galaxy_info:
+  role_name: filesystems
+  author: deploysystemunified
+  description: filesystems management and configuration
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - filesystems
+    - storage
+    - disk
+    - mount
+    - partition
+    - iso27001
+    - iso27040
+    - compliance
+    - linux
+    - ubuntu
+    - debian
+    - infrastructure
+    - system
+    - data_management
+    - volume
+collections:
+  - ansible.builtin
+
+dependencies: []

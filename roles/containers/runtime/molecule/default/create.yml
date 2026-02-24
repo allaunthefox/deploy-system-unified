@@ -1,0 +1,18 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Create identity test container
+      containers.podman.podman_container:
+        name: runtime-molecule
+        image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+        command: /lib/systemd/systemd
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        tmpfs:
+          /run: "rw"
+          /tmp: "rw"
+        state: started

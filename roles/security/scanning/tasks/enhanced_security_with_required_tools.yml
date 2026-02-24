@@ -7,8 +7,9 @@
   loop: ["trivy", "bwrap", "firejail", "endlessh", "chronyd"]
   failed_when: false
   changed_when: false
+  tags: [security, scanning]
 
-- name: Install standard security packages (Distro-Specific)
+- name: "ISO 27001 §12.2 | Action 530001 | Install standard security packages (Distro-Specific)"
   ansible.builtin.package:
     name: "{{ security_package_mapping[ansible_distribution | lower].packages + security_scanning_extra_packages }}"
     state: present
@@ -16,10 +17,10 @@
   when:
     - security_scanning_install_tools | bool
     - ansible_distribution | lower in security_package_mapping.keys()
-
-# Note: Modern scanning tools (Trivy, TruffleHog) often require binary installation script.
-# We skip complex binary installation here to keep the role lightweight.
-# Users should ensure these tools are installed via core/bootstrap or manually if they want the full scan.
+  tags:
+    - iso27001
+    - security
+    - scanning
 
 - name: Verify security tools are functional (idempotent)
   ansible.builtin.shell: |
@@ -32,14 +33,16 @@
   loop: ["trivy", "bwrap", "firejail", "endlessh"]
   changed_when: false
   failed_when: false
+  tags: [security, scanning]
 
 - name: Enforce security tool presence (idempotent)
   ansible.builtin.fail:
     msg: "Critical Security Tool Missing: {{ item.item }}"
   when: "'MISSING:' in item.stdout"
   loop: "{{ security_framework_tool_verification.results }}"
+  tags: [security, scanning, audit]
 
-- name: Run comprehensive security scan with proper validation (idempotent)
+- name: "ISO 27001 §12.2 | Action 520010 | Run comprehensive security scan with proper validation (idempotent)"
   ansible.builtin.shell: |
     set -o pipefail
     scan_results=""
@@ -75,6 +78,12 @@
   register: security_framework_comprehensive_scan
   changed_when: false
   no_log: true
+  tags:
+    - iso27001
+    - security
+    - scanning
+    - audit
+
 - name: Parse comprehensive security scan results (idempotent)
   ansible.builtin.set_fact:
     security_framework_chkrootkit_infections: >-
@@ -92,7 +101,9 @@
     security_framework_checkov_issues: >-
       {{ security_framework_comprehensive_scan.stdout.split('CHECKOV:')[1].split()[0] | default('0') | int
          if 'CHECKOV:' in security_framework_comprehensive_scan.stdout else 0 }}
-- name: Validate comprehensive security scan results (idempotent)
+  tags: [security, scanning]
+
+- name: "Action 520011 | Validate comprehensive security scan results (idempotent)"
   ansible.builtin.assert:
     that:
       - security_framework_chkrootkit_infections == 0
@@ -108,3 +119,8 @@
       - Lynis issues: {{ security_framework_lynis_issues }}
       - Checkov issues: {{ security_framework_checkov_issues }}
       - Deployment halted for security review
+  tags:
+    - iso27001
+    - security
+    - scanning
+    - audit

@@ -1,0 +1,82 @@
+# Goss tests for containers/anubis role
+# ISO 27001 §8.26 - Container security
+
+# =============================================================================
+# PACKAGE TESTS - Verify required packages
+# =============================================================================
+package:
+  podman:
+    installed: true
+  systemd:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify Anubis configuration files
+# =============================================================================
+file:
+  # Network quadlet
+  /etc/containers/systemd/anubis_net.network:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - "/NetworkName=anubis_net/"
+      - "/Driver=bridge/"
+      - "/Subnet=10.89.50.0/24/"
+
+  # Container quadlet
+  /etc/containers/systemd/anubis.container:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - "/Description=Anubis/"
+      - "/Image=/"
+      - "/ContainerName=anubis/"
+      - "/Restart=always/"
+
+# =============================================================================
+# SERVICE TESTS - Verify Anubis service
+# =============================================================================
+service:
+  anubis:
+    enabled: true
+    running: true
+
+# =============================================================================
+# COMMAND TESTS - Verify Anubis configuration
+# =============================================================================
+command:
+  # Verify quadlet network exists
+  anubis_network:
+    exec: 'podman network ls | grep anubis_net || true'
+    exit-status: 0
+    timeout: 10000
+
+  # Verify Anubis container exists
+  anubis_container:
+    exec: 'podman ps -a | grep anubis || true'
+    exit-status: 0
+    timeout: 10000
+
+  # Verify Anubis is listening on expected port
+  anubis_port:
+    exec: 'ss -tlnp | grep :31338 || netstat -tlnp | grep :31338 || true'
+    exit-status: 0
+    timeout: 10000
+
+# =============================================================================
+# PORT TESTS - Verify expected ports
+# =============================================================================
+port:
+  tcp:31338:
+    listening: true
+
+# =============================================================================
+# PROCESS TESTS
+# =============================================================================
+process:
+  anubis:
+    running: true

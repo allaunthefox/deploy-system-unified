@@ -1,0 +1,50 @@
+---
+# Internal variables for virtualization role
+# These are NOT user-overridable and define internal state
+
+# Service names
+_virtualization_services:
+  - libvirtd
+  - virtlogd
+  - virtlockd
+
+# Package names (internal reference)
+_virtualization_packages:
+  - qemu-kvm
+  - qemu-utils
+  - libvirt-daemon-system
+  - libvirt-clients
+  - bridge-utils
+  - virt-manager
+  - ovmf
+  - libguestfs-tools
+  - swtpm
+  - swtpm-tools
+
+# Configuration paths
+_virtualization_config_base: /etc/libvirt
+_virtualization_config_file: /etc/libvirt/qemu.conf
+_virtualization_network_dir: /etc/libvirt/qemu/networks
+_virtualization_storage_dir: /var/lib/libvirt
+_virtualization_images_dir: /var/lib/libvirt/images
+_virtualization_logs_dir: /var/log/libvirt
+
+# Kernel modules
+_virtualization_kernel_modules:
+  - kvm
+  - kvm_intel
+  - kvm_amd
+  - vhost_net
+  - nbd
+
+# Security contexts
+_virtualization_libvirt_user: libvirt-qemu
+_virtualization_libvirt_group: libvirt-qemu
+
+# TPM configuration
+_virtualization_tpm_emulator: swtpm
+_virtualization_tpm_socket_dir: /var/lib/swtpm
+
+# Internal state tracking
+_virtualization_initialized: false
+_virtualization_libvirtd_active: false

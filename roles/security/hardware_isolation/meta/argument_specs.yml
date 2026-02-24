@@ -1,0 +1,34 @@
+---
+argument_specs:
+  main:
+    short_description: Hardware isolation role
+    description:
+      - Configures IOMMU for PCIe device isolation
+      - Implements DMA protection by blacklisting dangerous kernel modules
+      - Aligns with ISO 27001 §8.26 hardware security requirements
+    options:
+      hardware_isolation_iommu_enabled:
+        type: bool
+        description: Enable IOMMU for PCIe isolation
+        default: true
+      hardware_isolation_iommu_vendor:
+        type: str
+        description: IOMMU vendor mode (auto, intel, amd)
+        choices: [auto, intel, amd]
+        default: auto
+      hardware_isolation_iommu_pt:
+        type: bool
+        description: Enable IOMMU pass-through mode
+        default: true
+      hardware_isolation_dma_protection_enabled:
+        type: bool
+        description: Enable DMA protection
+        default: true
+      hardware_isolation_blacklist_modules:
+        type: list
+        elements: str
+        description: List of kernel modules to blacklist for DMA isolation
+      hardware_isolation_acs_override:
+        type: bool
+        description: Enable PCIe ACS override
+        default: false

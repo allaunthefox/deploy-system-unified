@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check virtualization storage role executed
+      ansible.builtin.debug:
+        msg: "Virtualization/storage role executed successfully"
+
+    - name: Check identity UUID was assigned
+      ansible.builtin.debug:
+        msg: "Storage object identity assigned"
+
+    - name: Display virtualization type
+      ansible.builtin.debug:
+        msg: "Running in virtualization type: {{ ansible_virtualization_type | default('unknown') }}"

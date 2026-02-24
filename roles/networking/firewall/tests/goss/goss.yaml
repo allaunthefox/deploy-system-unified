@@ -1,0 +1,189 @@
+# Goss tests for networking/firewall role
+# CIS Benchmark: 4.4.x - Firewall Configuration
+# STIG V-230270, V-230271 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.23
+
+# =============================================================================
+# PACKAGE TESTS - Verify firewall packages are installed
+# =============================================================================
+package:
+  # CIS 4.4.1 - Ensure a firewall package is installed
+  ufw:
+    installed: true
+    # Only check on Debian/Ubuntu/Arch systems
+
+  firewalld:
+    installed: true
+    # Only check on RedHat systems
+
+  nftables:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify firewall services
+# =============================================================================
+service:
+  # CIS 4.4.1.4 - Ensure UFW service is enabled and running
+  ufw:
+    enabled: true
+    running: true
+
+  # CIS 4.4.1.4 - Ensure Firewalld service is enabled and running
+  firewalld:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify firewall configuration files
+# =============================================================================
+file:
+  # CIS 4.4.1.2 - Ensure default forward policy is configured
+  /etc/default/ufw:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^DEFAULT_FORWARD_POLICY="DROP"/
+
+  # CIS 4.4.1.3 - Ensure UFW rules files exist
+  /etc/ufw/ufw.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/ufw/user.rules:
+    exists: true
+
+  /etc/ufw/user6.rules:
+    exists: true
+
+  # Firewalld configuration directory
+  /etc/firewalld:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # Nftables configuration
+  /etc/nftables.conf:
+    exists: true
+
+# =============================================================================
+# COMMAND TESTS - Verify firewall configurations
+# =============================================================================
+command:
+  # CIS 4.4.1.4 - Verify UFW is active
+  ufw_status:
+    exec: 'ufw status'
+    exit-status: 0
+    stdout:
+      - /Status: active/
+    timeout: 10000
+    skip: false
+
+  # CIS 4.4.1.1 - Verify UFW default incoming policy is deny
+  ufw_default_incoming:
+    exec: 'ufw status verbose'
+    exit-status: 0
+    stdout:
+      - /Default: deny \(incoming\)/i
+    timeout: 10000
+    skip: false
+
+  # CIS 4.4.1.1 - Verify UFW default outgoing policy is allow
+  ufw_default_outgoing:
+    exec: 'ufw status verbose'
+    exit-status: 0
+    stdout:
+      - /Default: allow \(outgoing\)/i
+    timeout: 10000
+    skip: false
+
+  # CIS 4.4.1.2 - Verify UFW default forward policy is DROP
+  ufw_default_forward:
+    exec: 'ufw status verbose'
+    exit-status: 0
+    stdout:
+      - /Default: deny \(forwarded\)/i
+    timeout: 10000
+    skip: false
+
+  # CIS 4.4.1.12 - Verify SSH port is allowed
+  ufw_ssh_allowed:
+    exec: 'ufw status | grep -E "^22.*ALLOW" || ufw status | grep -E "22.*Anywhere" || true'
+    exit-status: 0
+    timeout: 10000
+    skip: false
+
+  # Verify UFW version
+  ufw_version:
+    exec: 'ufw version'
+    exit-status: 0
+    timeout: 10000
+    skip: false
+
+  # Firewalld state check
+  firewalld_state:
+    exec: 'firewall-cmd --state'
+    exit-status: 0
+    stdout:
+      - /running/
+    timeout: 10000
+    skip: false
+
+  # CIS 4.4.1.x - Verify firewalld default zone
+  firewalld_default_zone:
+    exec: 'firewall-cmd --get-default-zone'
+    exit-status: 0
+    stdout:
+      - /public/
+    timeout: 10000
+    skip: false
+
+  # CIS 4.4.1.12 - Verify SSH service is allowed in firewalld
+  firewalld_ssh_allowed:
+    exec: 'firewall-cmd --list-services'
+    exit-status: 0
+    stdout:
+      - /ssh/
+    timeout: 10000
+    skip: false
+
+  # Verify Nftables ruleset is loaded
+  nftables_ruleset:
+    exec: 'nft list ruleset'
+    exit-status: 0
+    timeout: 10000
+    skip: false
+
+  # Nftables table exists
+  nftables_table_filter:
+    exec: 'nft list table ip filter'
+    exit-status: 0
+    timeout: 10000
+    skip: false
+
+# =============================================================================
+# PORT TESTS - Verify expected ports are listening
+# =============================================================================
+port:
+  # CIS 4.4.1.12 - SSH port should be listening
+  tcp:22:
+    listening: true
+    ip:
+      - 0.0.0.0
+
+# =============================================================================
+# PROCESS TESTS - Verify firewall processes
+# =============================================================================
+process:
+  ufw:
+    running: true
+
+  firewalld:
+    running: true
+
+  nft:
+    running: true

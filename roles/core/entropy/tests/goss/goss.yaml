@@ -1,0 +1,48 @@
+# Goss tests for core/entropy role
+# CIS 3.5.x | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1
+---
+package:
+  haveged:
+    installed: true
+  rng-tools:
+    installed: true
+  rng-tools5:
+    installed: true
+
+service:
+  haveged:
+    enabled: true
+    running: true
+  rngd:
+    enabled: true
+    running: true
+  rng-tools:
+    enabled: true
+    running: true
+
+command:
+  # Verify entropy is available
+  cat /proc/sys/kernel/random/entropy_avail:
+    exit-status: 0
+    stdout:
+      - "^[0-9]+$"
+  # Verify UUID generation works (requires entropy)
+  cat /proc/sys/kernel/random/uuid:
+    exit-status: 0
+
+file:
+  # Check for RNG devices
+  /dev/random:
+    exists: true
+  /dev/urandom:
+    exists: true
+  # Check for haveged config if it exists
+  /etc/default/haveged:
+    exists: true
+    mode: "0644"
+  /etc/haveged.conf:
+    exists: true
+  /etc/default/rng-tools:
+    exists: true
+  /etc/default/rng-tools-debian:
+    exists: true

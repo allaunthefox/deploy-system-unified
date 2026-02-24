@@ -1,0 +1,39 @@
+---
+argument_specs:
+  main:
+    short_description: Compliance validation and reporting
+    description:
+      - Validates system configuration against CIS Benchmarks
+      - Maps controls to STIG and NIST frameworks
+      - Generates compliance reports for audits
+    options:
+      compliance_framework_enable:
+        type: bool
+        description: Enable compliance framework validation
+        default: true
+      compliance_frameworks:
+        type: list
+        description: List of compliance frameworks to validate
+        default:
+          - cis_level_1
+          - cis_level_2
+      cis_sshd_level:
+        type: int
+        description: CIS SSH hardening level (1 or 2)
+        default: 1
+      cis_firewall_level:
+        type: int
+        description: CIS firewall hardening level
+        default: 1
+      cis_auditd_enable:
+        type: bool
+        description: Enable CIS auditd validation
+        default: true
+      generate_compliance_report:
+        type: bool
+        description: Generate compliance report
+        default: true
+      compliance_report_path:
+        type: str
+        description: Path for compliance report output
+        default: /var/lib/deploy-system/compliance

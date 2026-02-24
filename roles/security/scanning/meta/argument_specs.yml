@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Security scanning and validation role
+    description:
+      - Performs system validation, vulnerability scanning, and forensic clock checks
+      - Supports Trivy, Checkov, and TruffleHog integration
+      - Aligns with ISO 27001 §12.2 and §12.4
+    options:
+      security_scanning_enable:
+        type: bool
+        description: Enable security scanning
+        default: true
+      security_scanning_install_tools:
+        type: bool
+        description: Install security tools automatically
+        default: true

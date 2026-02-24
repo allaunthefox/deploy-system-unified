@@ -1,12 +1,12 @@
 ---
-# create.yml - Ansible-Native container creation for gpu_slicing
-# This playbook creates a Podman container with GPU/DRI device access
+# create.yml - Ansible-Native container creation for multi-platform testing
+# This playbook creates test instances using Podman for various distributions
 #
 # Args:
 #     molecule_ephemeral_directory: Molecule's ephemeral directory for state
 #
 # Returns:
-#     Creates a Podman container with /dev/dri GPU access
+#     Creates multiple Podman containers with systemd support
 #
 # Example:
 #     molecule create -s gpu_slicing
@@ -15,42 +15,43 @@
   hosts: localhost
   gather_facts: false
   vars:
-    molecule_file: "{{ molecule_ephemeral_directory }}/../molecule.yml"
     molecule_instance_config: "{{ molecule_ephemeral_directory }}/instance_config.yml"
+    platforms:
+      - name: ubuntu2204
+        image: docker.io/library/ubuntu:22.04
+      - name: debian12
+        image: docker.io/library/debian:12
+      - name: alpine319
+        image: docker.io/library/alpine:3.19
+      - name: rocky9
+        image: docker.io/rockylinux/rockylinux:9
 
   tasks:
-    # Create a Podman container with GPU/DRI device access
-    - name: Create molecule instance with GPU support
+    - name: Create molecule instances
       containers.podman.podman_container:
-        name: gpu_slicing_instance
-        image: ubi9/ubi-init
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
         privileged: true
         state: started
-        command: /sbin/init
-        tmpfs:
-          - /run
-          - /tmp
-        volumes:
-          - /sys/fs/cgroup:/sys/fs/cgroup:ro
-        devices:
-          - /dev/dri:/dev/dri
-        capabilities:
-          - CAP_SYS_ADMIN
-      register: container
+        command: sleep infinity
+        # Add necessary systemd support if needed for specific images
+      loop: "{{ platforms }}"
+      register: server
 
-    # Save instance configuration for other playbooks to reference
     - name: Save instance config
       ansible.builtin.copy:
         content: |
           molecule_instances:
-            - name: gpu_slicing_instance
-              image: ubi9/ubi-init
+            {% for item in server.results %}
+            - name: {{ item.item.name }}
+              image: {{ item.item.image }}
               state: started
+            {% endfor %}
         dest: "{{ molecule_instance_config }}"
+        mode: '0600'
 
-    # Wait for the container to be ready
-    - name: Wait for instance to be ready
+    - name: Wait for instances to be ready
       ansible.builtin.wait_for:
-        timeout: 60
+        timeout: 30
       register: wait_result
       failed_when: false

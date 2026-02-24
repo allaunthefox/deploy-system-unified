@@ -1,0 +1,28 @@
+---
+# Goss-based Testing Role - Internal Variables
+
+# Goss installation paths
+goss_install_dir: /usr/local/bin
+goss_config_path: /etc/goss
+goss_tests_path: /etc/goss/tests
+goss_log_path: /var/log/goss
+
+# Goss binary
+goss_binary: goss
+
+# Goss version download URLs
+goss_download_base: "https://github.com/aelsabbahy/goss/releases/download"
+goss_checksum_url: "{{ goss_download_base }}/v{{ goss_version }}/goss-checksum"
+
+# Test output settings
+goss_output_format: json
+goss_junit_output: /var/log/goss/junit.xml
+
+# Test settings
+goss_timeout: 10s
+goss_retry_count: 3
+goss_sleep: 1s
+
+# Drift detection
+goss_drift_state_file: /var/lib/goss/drift.json
+goss_auto_remediation_log: /var/log/goss/auto-remediation.log

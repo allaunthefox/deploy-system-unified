@@ -1,0 +1,284 @@
+# Goss tests for security/advanced role
+# Advanced Hardening Measures
+# CIS Benchmark: 1.x, 3.x, 5.x - System Hardening
+# ISO 27001 §8.26 | STIG V-23026x | NIST SC-7/SC-8/SC-12
+
+# =============================================================================
+# PACKAGE TESTS - Verify advanced hardening packages
+# =============================================================================
+package:
+  # CIS 1.x - Coreutils for secure file operations
+  coreutils:
+    installed: true
+  # CIS 3.x - iptables for advanced network filtering
+  iptables:
+    installed: true
+  # CIS 5.x - AIDE for file integrity (also in file_integrity role)
+  aide-common:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify hardening services
+# =============================================================================
+service:
+  # CIS 4.x - Journal service for secure logging
+  systemd-journald:
+    enabled: true
+    running: true
+
+# =============================================================================
+# FILE TESTS - Verify advanced hardening configuration files
+# =============================================================================
+file:
+  # CIS 1.7.1 - Ensure core dumps are restricted
+  /etc/security/limits.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /hard\s+core\s+0/
+      - /soft\s+core\s+0/
+
+  # CIS 1.7.2 - Ensure core dump backtraces are disabled
+  /etc/systemd/coredump.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[Coredump\]/
+      - /^ProcessSizeMax=0/
+      - /^ExternalSizeMax=0/
+
+  # CIS 3.x - Sysctl hardening configuration
+  /etc/sysctl.d/99-advanced-hardening.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^kernel.kptr_restrict = 2/
+      - /^kernel.dmesg_restrict = 1/
+      - /^kernel.unprivileged_bpf_disabled = 1/
+      - /^kernel.unprivileged_userns_clone = 0/
+      - /^kernel.yama.ptrace_scope = 3/
+
+  # CIS 5.x - PAM advanced security configuration
+  /etc/security/pwquality.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^minlen = 14/
+      - /^dcredit = -1/
+      - /^ucredit = -1/
+      - /^ocredit = -1/
+      - /^lcredit = -1/
+
+  # CIS 5.x - PAM faillock configuration
+  /etc/security/faillock.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^deny = 5/
+      - /^unlock_time = 900/
+      - /^fail_interval = 900/
+
+  # CIS 1.x - Modprobe security configuration
+  /etc/modprobe.d/security-hardening.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /install cramfs/
+      - /install freevxfs/
+      - /install jffs2/
+      - /install hfs/
+      - /install hfsplus/
+
+  # CIS 5.x - Login security configuration
+  /etc/login.defs:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^UMASK\s+027/
+      - /^ENCRYPT_METHOD\s+SHA512/
+      - /^SHA_CRYPT_MIN_ROUNDS\s+5000/
+      - /^SHA_CRYPT_MAX_ROUNDS\s+10000/
+
+  # CIS 5.x - Secure shell initialization
+  /etc/profile:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 5.x - Secure TMP configuration
+  /etc/tmpfiles.d/tmp.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /tmp/
+      - /systemd-tmpfiles-clean/
+
+  # CIS 1.x - Ensure /etc/hosts.deny exists for default deny
+  /etc/hosts.deny:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /ALL: ALL/
+
+  # CIS 1.x - Ensure /etc/hosts.allow is configured
+  /etc/hosts.allow:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# =============================================================================
+# COMMAND TESTS - Verify advanced hardening configurations
+# =============================================================================
+command:
+  # CIS 1.7.1 - Ensure core dumps are disabled
+  core_dumps_disabled:
+    exec: 'ulimit -c'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 3.x - Ensure kernel pointer restriction is enabled
+  kernel_kptr_restrict:
+    exec: 'sysctl -n kernel.kptr_restrict'
+    exit-status: 0
+    stdout:
+      - /^[12]$/
+    timeout: 5000
+
+  # CIS 3.x - Ensure dmesg access is restricted
+  kernel_dmesg_restrict:
+    exec: 'sysctl -n kernel.dmesg_restrict'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+  # CIS 3.x - Ensure unprivileged BPF is disabled
+  kernel_bpf_disabled:
+    exec: 'sysctl -n kernel.unprivileged_bpf_disabled'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+  # CIS 3.x - Ensure unprivileged user namespace clone is disabled
+  kernel_userns_clone:
+    exec: 'sysctl -n kernel.unprivileged_userns_clone'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # CIS 3.x - Ensure ptrace scope is restricted
+  kernel_ptrace_scope:
+    exec: 'sysctl -n kernel.yama.ptrace_scope'
+    exit-status: 0
+    stdout:
+      - /^[23]$/
+    timeout: 5000
+
+  # CIS 5.x - Verify password quality settings
+  pwquality_minlen:
+    exec: 'grep "^minlen" /etc/security/pwquality.conf | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^1[4-9]$|^2[0-9]$|^[3-9][0-9]$/
+    timeout: 5000
+
+  # CIS 5.x - Verify faillock deny setting
+  faillock_deny:
+    exec: 'grep "^deny" /etc/security/faillock.conf | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^[1-5]$/
+    timeout: 5000
+
+  # CIS 5.x - Verify faillock unlock time
+  faillock_unlock_time:
+    exec: 'grep "^unlock_time" /etc/security/faillock.conf | awk -F= "{print $2}" | tr -d " "'
+    exit-status: 0
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
+
+  # CIS 5.x - Verify UMASK setting
+  umask_setting:
+    exec: 'grep "^UMASK" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^0[27][07]$/
+    timeout: 5000
+
+  # CIS 5.x - Verify password encryption method
+  encrypt_method:
+    exec: 'grep "^ENCRYPT_METHOD" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^SHA512$/
+    timeout: 5000
+
+  # CIS 1.x - Verify TCP wrappers default deny
+  tcp_wrappers_deny:
+    exec: 'grep -c "^ALL: ALL" /etc/hosts.deny'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 3.x - Verify sysctl settings are applied
+  sysctl_applied:
+    exec: 'sysctl --system 2>&1 | grep -c "error" || echo "0"'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 10000
+
+  # CIS 1.x - Verify no world-writable directories exist in PATH
+  no_world_writable_path:
+    exec: 'echo $PATH | tr ":" "\n" | xargs -I {} find {} -type d -perm -002 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 10000
+
+  # CIS 5.x - Verify SHA_CRYPT_MIN_ROUNDS
+  sha_crypt_min_rounds:
+    exec: 'grep "^SHA_CRYPT_MIN_ROUNDS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^5000$/
+    timeout: 5000
+
+# =============================================================================
+# PROCESS TESTS - Verify hardening processes
+# =============================================================================
+process:
+  # CIS 4.x - Ensure journald is running
+  systemd-journald:
+    running: true
+
+# =============================================================================
+# PORT TESTS - Not applicable for advanced hardening
+# =============================================================================
+# Note: Advanced hardening does not involve network ports

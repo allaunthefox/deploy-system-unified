@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  role_name: ips
+  author: deploysystemunified
+  description: "POL-SEC | Intrusion Prevention System (IPS) management (Fail2Ban)"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - security
+    - ips
+    - fail2ban
+    - monitoring
+    - intrusion
+    - detection
+    - prevention
+    - forensic
+    - brute-force
+    - defensive
+    - iso27001
+    - nist80053
+
+collections:
+  - ansible.builtin
+
+dependencies: []

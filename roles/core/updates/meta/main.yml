@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: updates
-  author: deploy-system-unified
-  description: Automatic security patching and system updates
+  author: deploysystemunified
+  description: "STD-CORE | Automatic security patching and system updates"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -18,7 +18,19 @@ galaxy_info:
       versions: [all]
   galaxy_tags:
     - core
-    - system
     - updates
+    - patching
+    - security
+    - maintenance
+    - systems
+    - automation
+    - linux
+    - debian
+    - redhat
+    - iso27001
+    - nist80053
+
+collections:
+  - ansible.builtin
 
 dependencies: []

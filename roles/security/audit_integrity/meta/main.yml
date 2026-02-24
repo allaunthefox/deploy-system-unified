@@ -1,0 +1,34 @@
+---
+galaxy_info:
+  role_name: audit_integrity
+  author: deploysystemunified
+  description: "POL-SEC | Cryptographic log immutability and audit verification"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+  galaxy_tags:
+    - security
+    - audit
+    - integrity
+    - forensic
+    - journald
+    - logs
+    - immutability
+    - iso27001
+    - iso27037
+    - nist80053
+    - identification
+    - authentication
+
+collections:
+  - ansible.builtin
+
+dependencies: []

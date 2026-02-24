@@ -1,14 +1,22 @@
 ---
 # Tasks for backup/timeshift - System Snapshots
-- name: Install timeshift (Debian/Ubuntu)
+- name: "ISO 27040 | Action 900020 | Install timeshift (Debian/Ubuntu)"
   ansible.builtin.apt:
     name: timeshift
     state: present
   when: ansible_facts['os_family'] == 'Debian'
   become: true
+  tags:
+    - iso_27040
+    - backup
+    - timeshift
+
 - name: Create timeshift configuration directory
   ansible.builtin.file:
     path: /etc/timeshift
     state: directory
     mode: '0755'
   become: true
+  tags:
+    - backup
+    - timeshift

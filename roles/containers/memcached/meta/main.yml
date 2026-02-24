@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: memcached
+  author: deploysystemunified
+  description: "WI-CONT | memcached management and configuration"
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - containers
+    - memcached
+    - caching
+    - performance
+    - database
+    - storage
+    - podman
+    - quadlet
+    - hardening
+    - security
+    - distributed
+    - iso27001
+
+collections:
+  - ansible.builtin
+
+dependencies: []

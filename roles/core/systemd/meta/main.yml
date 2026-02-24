@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: systemd
-  author: deploy-system-unified
-  description: Systemd configuration and hardening
+  author: deploysystemunified
+  description: "STD-CORE | Core systemd configuration and hardening (journald, resolved)"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -14,11 +14,21 @@ galaxy_info:
       versions: [all]
     - name: Archlinux
       versions: [all]
-    - name: Alpine
-      versions: [all]
   galaxy_tags:
     - core
-    - system
     - systemd
+    - journald
+    - resolved
+    - logging
+    - dns
+    - hardening
+    - security
+    - linux
+    - iso27001
+    - nist80053
+    - automation
+
+collections:
+  - ansible.builtin
 
 dependencies: []

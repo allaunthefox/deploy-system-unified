@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove sbom test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - sbom-ubuntu-2204
+        - sbom-debian-12
+        - sbom-alpine-319
+        - sbom-rockylinux-9

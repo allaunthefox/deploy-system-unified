@@ -1,0 +1,32 @@
+---
+argument_specs:
+  main:
+    short_description: Container monitoring role
+    description:
+      - Deploys a full monitoring stack including Prometheus, Grafana, and Loki
+      - Implements forensic log aggregation and visualization
+      - Aligns with ISO 27001 §12.4 monitoring and logging requirements
+    options:
+      monitoring_enable:
+        type: bool
+        description: Enable or disable the monitoring stack
+        default: true
+      monitoring_instance:
+        type: str
+        description: Unique name for the monitoring instance
+        default: default
+      monitoring_loki_enable:
+        type: bool
+        description: Enable Loki log aggregation
+        default: true
+      monitoring_promtail_enable:
+        type: bool
+        description: Enable Promtail log collection
+        default: true
+      monitoring_forensic_dashboard_enabled:
+        type: bool
+        description: Whether to provision the DSU Forensic Dashboard
+        default: true
+      monitoring_grafana_admin_password:
+        type: str
+        description: Admin password for Grafana (sensitive)

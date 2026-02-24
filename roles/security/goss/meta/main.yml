@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: goss
+  author: deploysystemunified
+  description: Goss server validation and health checking
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+  galaxy_tags:
+    - security
+    - validation
+    - testing
+    - goss
+    - healthcheck
+    - monitoring
+    - compliance
+    - iso27001
+
+collections:
+  - ansible.builtin
+
+dependencies: []

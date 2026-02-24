@@ -1,0 +1,46 @@
+# Goss Configuration
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+gossfile:
+  tests/security_tests.yaml: {}
+  tests/system_tests.yaml: {}
+
+# Timeout settings
+timeout: 10s
+
+# Retries
+retries: 3
+
+# Active service checks
+service:
+  sshd:
+    enabled: true
+    running: true
+  {% if goss_check_systemd | default(true) %}
+  systemd:
+    enabled: true
+    running: true
+  {% endif %}
+
+# Port checks
+port:
+  sshd:
+    addr: localhost
+    port: 22
+    listen: true
+    ip: 127.0.0.1
+
+# User checks
+user:
+  root:
+    exists: true
+    uid: 0
+    gid: 0
+    groups:
+      - root
+
+# Group checks
+group:
+  root:
+    exists: true
+    gid: 0

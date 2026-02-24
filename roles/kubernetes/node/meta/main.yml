@@ -1,0 +1,39 @@
+---
+galaxy_info:
+  role_name: node
+  author: deploysystemunified
+  description: Kubernetes worker node installation and management (K3s Agent)
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - kubernetes
+    - k8s
+    - node
+    - worker
+    - k3s
+    - iso27001
+    - container
+    - orchestration
+    - cluster
+    - compute
+    - cis
+    - nist80053
+    - automation
+    - linux
+    - cloud-native
+
+collections:
+  - ansible.builtin
+
+dependencies: []

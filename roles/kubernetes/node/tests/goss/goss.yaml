@@ -1,0 +1,138 @@
+---
+# Goss tests for kubernetes/node role
+# Tests K3s worker, kubelet
+
+# K3s Binary Tests
+file:
+  /usr/local/bin/k3s:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+# K3s Agent Service Tests
+service:
+  k3s-agent:
+    enabled: true
+    running: true
+
+# K3s Configuration Directory Tests
+directory:
+  /etc/rancher/k3s:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+  /var/lib/rancher/k3s:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+# K3s Agent Configuration Tests
+file:
+  /etc/rancher/k3s/config.yaml:
+    exists: true
+    mode: "0640"
+    owner: root
+    contains:
+      - "server:"
+
+# Token file for node authentication
+file:
+  /etc/rancher/k3s/token:
+    exists: true
+    mode: "0640"
+    owner: root
+
+# Kubeconfig for node
+file:
+  /etc/rancher/k3s/k3s.yaml:
+    exists: true
+    mode: "0644"
+    owner: root
+    contains:
+      - "apiVersion:"
+      - "clusters:"
+
+# Port Tests - Kubelet
+port:
+  10250:
+    listening: true
+    ip: "0.0.0.0"
+
+# Process Tests - K3s Agent
+process:
+  k3s-agent:
+    running: true
+
+# Command Tests - K3s Node Functionality
+command:
+  # K3s version check
+  /usr/local/bin/k3s --version:
+    exit-status: 0
+    stdout:
+      - "k3s"
+    stderr: []
+
+  # kubectl should be available
+  /usr/local/bin/k3s kubectl version --client:
+    exit-status: 0
+    stdout:
+      - "Client Version"
+    stderr: []
+
+  # List nodes - should show at least this node
+  /usr/local/bin/k3s kubectl get nodes:
+    exit-status: 0
+    stdout:
+      - "Ready"
+    stderr: []
+
+  # Check this node's status
+  /usr/local/bin/k3s kubectl get nodes -o wide:
+    exit-status: 0
+    stdout:
+      - "STATUS"
+    stderr: []
+
+  # Get pods - should work from node
+  /usr/local/bin/k3s kubectl get pods -A:
+    exit-status: 0
+    stdout:
+      - "NAMESPACE"
+    stderr: []
+
+# CNI configuration
+directory:
+  /etc/cni/net.d:
+    exists: true
+  /opt/cni/bin:
+    exists: true
+
+# Agent data directories
+directory:
+  /var/lib/rancher/k3s/agent:
+    exists: true
+  /var/lib/rancher/k3s/agent/pod-manifests:
+    exists: true
+  /var/lib/rancher/k3s/agent/etc:
+    exists: true
+
+# Node client certificates
+file:
+  /var/lib/rancher/k3s/agent/client-kubelet.crt:
+    exists: true
+
+# Node kubelet kubeconfig
+file:
+  /var/lib/rancher/k3s/agent/kubelet.kubeconfig:
+    exists: true
+    mode: "0640"
+
+# Storage class availability
+command:
+  /usr/local/bin/k3s kubectl get storageclass:
+    exit-status: 0
+    stdout:
+      - "storageclass"

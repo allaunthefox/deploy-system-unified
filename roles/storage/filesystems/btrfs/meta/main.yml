@@ -1,0 +1,34 @@
+---
+galaxy_info:
+  role_name: btrfs
+  author: deploysystemunified
+  description: Btrfs filesystem management and maintenance
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+  galaxy_tags:
+    - storage
+    - filesystems
+    - btrfs
+    - snapshot
+    - iso27040
+    - linux
+    - system
+    - data-protection
+    - backup
+    - volume-management
+    - cis
+    - nist80053
+    - automation
+    - infrastructure
+
+collections:
+  - ansible.builtin
+
+dependencies: []

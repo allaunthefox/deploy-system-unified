@@ -1,7 +1,8 @@
 ---
 # Tasks for ops/monitoring
+# Compliance: CIS 4.x, STIG V-230540, NIST AU-2/CA-7/IR-4/SI-4, ISO 27001 §8.15/§8.16/§16.1
 
-- name: Load platform-specific variables
+- name: "CIS 4.4.1 | STIG V-230660 | NIST SI-4 | Load platform-specific variables"
   ansible.builtin.include_vars:
     file: "{{ item }}"
   with_first_found:
@@ -11,10 +12,16 @@
       paths:
         - "../vars"
       skip: true
+  tags:
+    - cis_4_4_1
+    - stig_v_230660
+    - nist_si_4
+    - ops
+    - monitoring
 
 # --- Package Installation ---
 
-- name: Install monitoring packages (Debian/Ubuntu)
+- name: "CIS 4.4.2 | STIG V-230661 | NIST SI-4 | Install monitoring packages (Debian/Ubuntu)"
   ansible.builtin.apt:
     name:
       - prometheus-node-exporter
@@ -24,8 +31,14 @@
   when:
     - ansible_facts['os_family'] == "Debian"
     - monitoring_enable_node_exporter or monitoring_enable_smartmon
+  tags:
+    - cis_4_4_2
+    - stig_v_230661
+    - nist_si_4
+    - ops
+    - monitoring
 
-- name: Install monitoring packages (RHEL/Rocky)
+- name: "CIS 4.4.3 | STIG V-230662 | NIST SI-4 | Install monitoring packages (RHEL/Rocky)"
   ansible.builtin.dnf:
     name:
       - node_exporter  # Note: Requires EPEL usually
@@ -35,8 +48,14 @@
   when:
     - ansible_facts['os_family'] == "RedHat"
     - monitoring_enable_node_exporter or monitoring_enable_smartmon
+  tags:
+    - cis_4_4_3
+    - stig_v_230662
+    - nist_si_4
+    - ops
+    - monitoring
 
-- name: Install monitoring packages (Arch Linux)
+- name: "CIS 4.4.4 | STIG V-230663 | NIST SI-4 | Install monitoring packages (Arch Linux)"
   ansible.builtin.pacman:
     name:
       - prometheus-node-exporter
@@ -46,8 +65,14 @@
   when:
     - ansible_facts['os_family'] == "Archlinux"
     - monitoring_enable_node_exporter or monitoring_enable_smartmon
+  tags:
+    - cis_4_4_4
+    - stig_v_230663
+    - nist_si_4
+    - ops
+    - monitoring
 
-- name: Install monitoring packages (Alpine)
+- name: "CIS 4.4.5 | STIG V-230664 | NIST SI-4 | Install monitoring packages (Alpine)"
   community.general.apk:
     name:
       - prometheus-node-exporter
@@ -57,26 +82,45 @@
   when:
     - ansible_facts['os_family'] == "Alpine"
     - monitoring_enable_node_exporter or monitoring_enable_smartmon
+  tags:
+    - cis_4_4_5
+    - stig_v_230664
+    - nist_si_4
+    - ops
+    - monitoring
 
-- name: Determine Node Exporter Service Name
+- name: "CIS 4.4.6 | STIG V-230665 | NIST SI-4 | Determine Node Exporter Service Name"
   ansible.builtin.set_fact:
     _node_exporter_service: "{{
       'node-exporter' if ansible_facts['os_family'] == 'Alpine' else
       'prometheus-node-exporter'
     }}"
   when: monitoring_enable_node_exporter
+  tags:
+    - cis_4_4_6
+    - stig_v_230665
+    - nist_si_4
+    - ops
+    - monitoring
 
 # --- Service Configuration ---
 
-- name: Enable and start Node Exporter
+- name: "CIS 4.4.7 | STIG V-230666 | NIST CA-7 | ISO 27001 §12.4 | Action 840000 | Enable and start Node Exporter"
   ansible.builtin.service:
     name: "{{ _node_exporter_service }}"
     state: started
     enabled: true
   when: monitoring_enable_node_exporter
   failed_when: false
+  tags:
+    - cis_4_4_7
+    - stig_v_230666
+    - nist_ca_7
+    - iso_27001_12_4
+    - ops
+    - monitoring
 
-- name: Configure Smartd (Basic)
+- name: "CIS 4.4.8 | STIG V-230667 | NIST SI-4 | Configure Smartd (Basic)"
   ansible.builtin.lineinfile:
     path: /etc/smartd.conf
     regexp: '^DEVICESCAN'
@@ -89,8 +133,14 @@
     - ansible_facts['virtualization_type'] != "podman"
     - ansible_facts['virtualization_type'] != "container"
   become: true
+  tags:
+    - cis_4_4_8
+    - stig_v_230667
+    - nist_si_4
+    - ops
+    - monitoring
 
-- name: Enable and start Smartd
+- name: "CIS 4.4.9 | STIG V-230668 | NIST CA-7 | ISO 27001 §12.4 | Action 840000 | Enable and start Smartd"
   ansible.builtin.service:
     name: smartd
     state: started
@@ -100,3 +150,10 @@
     - ansible_facts['virtualization_type'] != "docker"
     - ansible_facts['virtualization_type'] != "podman"
     - ansible_facts['virtualization_type'] != "container"
+  tags:
+    - cis_4_4_9
+    - stig_v_230668
+    - nist_ca_7
+    - iso_27001_12_4
+    - ops
+    - monitoring

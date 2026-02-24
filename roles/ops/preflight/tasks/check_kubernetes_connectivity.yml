@@ -1,0 +1,146 @@
+---
+# Preflight Kubernetes Connectivity Validation
+# Validates kubectl availability and K8s cluster connectivity for K8s profiles
+# Addresses: POTENTIAL_PROBLEMS.md - Kubernetes Cluster State
+
+- name: "Kubernetes | Check for kubectl availability"
+  ansible.builtin.command: which kubectl
+  register: preflight_kubectl_check
+  changed_when: false
+  failed_when: false
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Get kubectl version"
+  ansible.builtin.command: kubectl version --client
+  register: preflight_kubectl_version
+  changed_when: false
+  failed_when: false
+  when: preflight_kubectl_check.rc == 0
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Check kubeconfig file exists"
+  ansible.builtin.stat:
+    path: "{{ lookup('env', 'HOME') }}/.kube/config"
+  register: preflight_kubeconfig
+  changed_when: false
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Check kubeconfig location from KUBECONFIG env"
+  ansible.builtin.stat:
+    path: "{{ lookup('env', 'KUBECONFIG') }}"
+  register: preflight_kubeconfig_env
+  changed_when: false
+  when: lookup('env', 'KUBECONFIG') | length > 0
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Test cluster connectivity"
+  ansible.builtin.command: kubectl cluster-info
+  register: preflight_k8s_cluster_info
+  changed_when: false
+  failed_when: false
+  when: preflight_kubectl_check.rc == 0
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Get cluster nodes"
+  ansible.builtin.command: kubectl get nodes
+  register: preflight_k8s_nodes
+  changed_when: false
+  failed_when: false
+  when: preflight_kubectl_check.rc == 0
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Set Kubernetes availability fact"
+  ansible.builtin.set_fact:
+    preflight_kubernetes_available: >-
+      {{
+        (preflight_k8s_cluster_info.rc == 0) | bool
+      }}
+    preflight_kubectl_available: >-
+      {{
+        (preflight_kubectl_check.rc == 0) | bool
+      }}
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Debug Kubernetes detection results"
+  ansible.builtin.debug:
+    msg: >-
+      kubectl available: {{ preflight_kubectl_available }}
+      kubectl version: {{ preflight_kubectl_version.stdout | default('N/A') }}
+      Cluster accessible: {{ preflight_kubernetes_available }}
+      {% if preflight_k8s_nodes.rc == 0 %}Nodes: {{ preflight_k8s_nodes.stdout }}{% endif %}
+  when: preflight_check_kubernetes | default(false) | bool
+  changed_when: false
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Validate kubectl is available"
+  ansible.builtin.assert:
+    that:
+      - preflight_kubectl_available | bool
+    fail_msg: >-
+      kubectl is not available on this system.
+      Install kubectl before deploying Kubernetes profiles.
+    success_msg: kubectl is available
+  when:
+    - preflight_check_kubernetes | default(false) | bool
+    - preflight_require_kubectl | default(true) | bool
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Validate cluster connectivity (optional for some profiles)"
+  ansible.builtin.assert:
+    that:
+      - preflight_kubernetes_available | bool
+    fail_msg: >-
+      Cannot connect to Kubernetes cluster.
+      Check kubeconfig and ensure the cluster is running.
+      Error: {{ preflight_k8s_cluster_info.stderr | default('Unknown error') }}
+    success_msg: Kubernetes cluster is accessible
+  when:
+    - preflight_check_kubernetes | default(false) | bool
+    - preflight_require_cluster_connectivity | default(false) | bool
+    - preflight_kubectl_available | bool
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6
+
+- name: "Kubernetes | Warn if kubectl not found"
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: kubectl not found on this system.
+      Kubernetes profiles may fail without kubectl installed.
+      Set preflight_check_kubernetes=false to skip this check.
+  when:
+    - preflight_check_kubernetes | default(false) | bool
+    - not preflight_kubectl_available | bool
+  changed_when: false
+  tags:
+    - preflight
+    - kubernetes
+    - nist_cm_6

@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Hardware SAS role
+    description:
+      - Installs SAS management utilities (ethtool, sdparm)
+      - Configures SAS kernel drivers and persistent loading
+      - Implements performance tuning for SAS SSDs (queue depth, write cache)
+    options:
+      hardware_sas_install_tools:
+        type: bool
+        description: Whether to install SAS management tools
+        default: true
+      hardware_sas_load_drivers:
+        type: bool
+        description: Whether to load SAS kernel drivers
+        default: true
+      hardware_sas_queue_depth:
+        type: int
+        description: Targeted SAS queue depth
+        default: 128
+      hardware_sas_enable_write_cache:
+        type: bool
+        description: Enable write caching on SAS SSDs (Dangerous without battery backup)
+        default: false

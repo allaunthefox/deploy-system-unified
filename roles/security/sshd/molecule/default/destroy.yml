@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove sshd test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - sshd-ubuntu-2204
+        - sshd-debian-12
+        - sshd-alpine-319
+        - sshd-rockylinux-9

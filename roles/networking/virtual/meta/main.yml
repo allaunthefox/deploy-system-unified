@@ -1,0 +1,36 @@
+---
+galaxy_info:
+  role_name: virtual
+  author: deploysystemunified
+  description: Virtual networking management (VLAN, VXLAN)
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - networking
+    - virtual
+    - vlan
+    - vxlan
+    - isolation
+    - tunneling
+    - sdn
+    - bridge
+    - routing
+    - linux
+    - virtualization
+    - iso27001
+
+collections:
+  - ansible.builtin
+
+dependencies: []

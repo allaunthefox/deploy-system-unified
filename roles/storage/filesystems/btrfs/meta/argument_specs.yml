@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: Btrfs management role
+    description:
+      - Installs btrfs-progs and manages Btrfs subvolumes
+      - Configures maintenance tasks like balancing and scrubbing
+      - Aligns with ISO 27040 requirements for storage integrity
+    options:
+      btrfs_manage_subvolumes:
+        type: bool
+        description: Whether to manage Btrfs subvolumes
+        default: true

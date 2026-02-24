@@ -1,76 +1,76 @@
 ---
 # Security/Scanning role - Focused on system validation and vulnerability scanning
-- name: Validate preflight requirements (idempotent)
+
+- name: "CIS 3.3.1 | STIG V-230340 | NIST RA-5 | NIST SI-2 | ISO 27001 §8.15 | Action 600030 | Validate Scanning Eligibility (Ephemeral Guard)"
+  ansible.builtin.assert:
+    that:
+      - not security_scanning_ephemeral_skip | bool
+    fail_msg: "Heavy security scanning is skipped in ephemeral profiles. Use standard validation or set system_security_scanning_ephemeral_allow: true."
+  tags: [cis_3_3_1, stig_v_230340, nist_ra_5, nist_si_2, iso_27001_8_15, security, scanning, profile_guard]
+  when: security_scanning_enable | bool and (deployment_profile | default('') == 'ephemeral')
+
+- name: "CIS 3.3.1 | STIG V-230340 | NIST RA-5 | NIST SI-2 | NIST SI-5 | ISO 27001 §8.15 | Action 520001 | Validate preflight requirements (idempotent)"
   ansible.builtin.include_role:
     name: ops/preflight
   loop: [1]
   loop_control:
     loop_var: _preflight_include
   register: preflight_result
-- name: Checkpoint preflight completion (only when no changes)
-  ansible.builtin.include_tasks: save_checkpoint.yml
-  vars:
-    additional_phases:
-      - "security/scanning:preflight"
-  when:
-    - preflight_result is defined
-    - not (
-        (preflight_result.get('changed', false))
-        or
-        (preflight_result.get('results', [])
-         | map('combine', dict(changed=false))
-         | selectattr('changed', 'equalto', true)
-         | list
-         | length > 0)
-      )
-- name: Verify directory structure (idempotent)
+  tags:
+    - cis_3_3_1
+    - stig_v_230340
+    - nist_ra_5
+    - nist_si_2
+    - nist_si_5
+    - iso_27001_8_15
+    - security
+    - scanning
+
+- name: "CIS 3.3.2 | STIG V-230340 | NIST RA-5 | NIST SI-2 | NIST SI-6 | ISO 27001 §8.15 | Action 520003 | Verify directory structure (idempotent)"
   ansible.builtin.include_tasks: directory_verification.yml
   loop: [1]
   loop_control:
     loop_var: _directory_include
   register: directory_verification_result
-- name: Checkpoint directory verification completion (only when no changes)
-  ansible.builtin.include_tasks: save_checkpoint.yml
-  vars:
-    additional_phases:
-      - "security/scanning:directory_verification"
-  when:
-    - directory_verification_result is defined
-    - not (
-        (directory_verification_result.get('changed', false))
-        or
-        (directory_verification_result.get('results', [])
-         | map('combine', dict(changed=false))
-         | selectattr('changed', 'equalto', true)
-         | list
-         | length > 0)
-      )
-- name: Configure security tools (idempotent)
+  tags:
+    - cis_3_3_2
+    - stig_v_230340
+    - nist_ra_5
+    - nist_si_2
+    - nist_si_6
+    - iso_27001_8_15
+    - security
+    - scanning
+
+- name: "CIS 3.3.3 | STIG V-230341 | NIST SI-2 | NIST SI-3 | NIST SI-6 | ISO 27001 §8.8 | Action 520010 | Configure security tools (idempotent)"
   ansible.builtin.include_tasks: enhanced_security_with_required_tools.yml
   loop: [1]
   loop_control:
     loop_var: _tools_include
   register: security_tools_result
-- name: Mark security tools configured
+  tags:
+    - cis_3_3_3
+    - stig_v_230341
+    - nist_si_2
+    - nist_si_3
+    - nist_si_6
+    - iso_27001_8_8
+    - security
+    - scanning
+
+- name: "CIS 3.3.3 | STIG V-230341 | NIST SI-2 | NIST SI-3 | Mark security tools configured"
   ansible.builtin.set_fact:
     enhanced_security_tools_configured: true
-- name: Checkpoint security tools configuration (only when no changes)
-  ansible.builtin.include_tasks: save_checkpoint.yml
-  vars:
-    additional_phases:
-      - "security/scanning:tools_configured"
-  when:
-    - security_tools_result is defined
-    - not (
-        (security_tools_result.get('changed', false))
-        or
-        (security_tools_result.get('results', [])
-         | map('combine', dict(changed=false))
-         | selectattr('changed', 'equalto', true)
-         | list
-         | length > 0)
-      )
-- name: Verify Forensic Clock Synchronization (Chrony)
+  tags:
+    - cis_3_3_3
+    - stig_v_230341
+    - nist_si_2
+    - nist_si_3
+    - iso_27001_8_8
+    - security
+    - scanning
+
+- name: "CIS 3.3.4 | STIG V-230340 | NIST AU-2 | NIST AU-8 | ISO 27001 §8.15 | Action 520013 | Verify Forensic Clock Synchronization (Chrony)"
   ansible.builtin.shell: |
     set -o pipefail
     chronyc tracking | grep -q "System time.*slow\|System time.*fast\|Reference ID"
@@ -80,66 +80,75 @@
   changed_when: false
   become: true
   failed_when: false
-- name: Validate clock precision
+  tags:
+    - cis_3_3_4
+    - stig_v_230340
+    - nist_au_2
+    - nist_au_8
+    - iso_27001_8_15
+    - security
+    - scanning
+    - time
+
+- name: "CIS 3.3.4 | STIG V-230340 | NIST AU-2 | NIST AU-8 | ISO 27001 §8.15 | Action 520014 | Validate clock precision"
   ansible.builtin.assert:
     that:
       - chrony_sync_check.rc == 0
     fail_msg: "System clock is not synchronized. Forensic logs and certificate validation may fail."
   register: chrony_validation_result
-- name: Checkpoint chrony validation (only when no changes)
-  ansible.builtin.include_tasks: save_checkpoint.yml
-  vars:
-    additional_phases:
-      - "security/scanning:chrony_validated"
-  when: not (chrony_validation_result.changed | default(false))
-- name: Run enhanced security scanning (idempotent)
+  tags:
+    - cis_3_3_4
+    - stig_v_230340
+    - nist_au_2
+    - nist_au_8
+    - iso_27001_8_15
+    - security
+    - scanning
+    - time
+
+- name: "CIS 3.3.5 | STIG V-230341 | NIST SI-2 | NIST SI-3 | NIST SI-6 | NIST SI-8 | ISO 27001 §8.8 | Action 520010 | Run enhanced security scanning (idempotent)"
   ansible.builtin.include_tasks: enhanced_scanning.yml
   loop: [1]
   loop_control:
     loop_var: _scanning_include
   register: enhanced_scanning_result
-- name: Mark security scanning configured
+  tags:
+    - cis_3_3_5
+    - stig_v_230341
+    - nist_si_2
+    - nist_si_3
+    - nist_si_6
+    - nist_si_8
+    - iso_27001_8_8
+    - security
+    - scanning
+
+- name: "CIS 3.3.5 | STIG V-230341 | NIST SI-2 | NIST SI-3 | Mark security scanning configured"
   ansible.builtin.set_fact:
     security_scanning_configured: true
     enhanced_security_scanning_complete: true
-- name: Checkpoint enhanced scanning completion (only when no changes)
-  ansible.builtin.include_tasks: save_checkpoint.yml
-  vars:
-    additional_phases:
-      - "security/scanning:enhanced_scanning"
-  when:
-    - enhanced_scanning_result is defined
-    - not (
-        (enhanced_scanning_result.get('changed', false))
-        or
-        (enhanced_scanning_result.get('results', [])
-         | map('combine', dict(changed=false))
-         | selectattr('changed', 'equalto', true)
-         | list
-         | length > 0)
-      )
-- name: Set security framework applied flag
-  ansible.builtin.set_fact:
-    security_framework_applied: true
-- name: Validate final security state (idempotent)
+  tags:
+    - cis_3_3_5
+    - stig_v_230341
+    - nist_si_2
+    - nist_si_3
+    - iso_27001_8_8
+    - security
+    - scanning
+
+- name: "CIS 3.3.6 | STIG V-230341 | NIST SI-2 | NIST SI-6 | NIST SI-10 | ISO 27001 §8.8 | Action 520011 | Validate final security state (idempotent)"
   ansible.builtin.include_tasks: validation.yml
   loop: [1]
   loop_control:
     loop_var: _validation_include
   register: security_validation_result
-- name: Checkpoint final validation (only when no changes)
-  ansible.builtin.include_tasks: save_checkpoint.yml
-  vars:
-    additional_phases:
-      - "security/scanning:final_validation"
-  when:
-    - security_validation_result is defined
-    - not (
-        (security_validation_result.get('changed', false))
-        or
-        (security_validation_result.get('results', [])
-         | map('combine', dict(changed=false))
-         | selectattr('changed', 'equalto', true)
-         | list
-         | length > 0)
-      )
+  tags:
+    - cis_3_3_6
+    - stig_v_230341
+    - nist_si_2
+    - nist_si_6
+    - nist_si_10
+    - iso_27001_8_8
+    - security
+    - scanning
+    - audit

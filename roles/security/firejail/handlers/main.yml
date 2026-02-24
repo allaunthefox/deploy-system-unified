@@ -1,1 +1,18 @@
 ---
+# Handlers for security/firejail - Application Sandboxing
+
+- name: Reload firejail configuration
+  ansible.builtin.command: firejail --profile.print-default
+  become: true
+  changed_when: false
+  failed_when: false
+
+- name: Restart firejail managed applications
+  ansible.builtin.debug:
+    msg: "Firejail configuration updated - sandboxed applications must be restarted to apply new profiles"
+
+- name: Validate firejail profiles
+  ansible.builtin.command: firejail --check
+  become: true
+  changed_when: false
+  failed_when: false

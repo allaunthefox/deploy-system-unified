@@ -1,0 +1,40 @@
+---
+argument_specs:
+  main:
+    short_description: falco role for runtime security monitoring
+    description:
+      - Installs and configures Falco for runtime security monitoring
+      - Supports package and binary installation
+      - Includes custom security rules and Kubernetes audit rules
+      - Aligns with ISO 27001 and NIST 800-53 requirements
+    options:
+      falco_version:
+        type: str
+        required: false
+        default: "0.36.2"
+        description:
+          - Falco version to install
+      falco_install_method:
+        type: str
+        required: false
+        default: "package"
+        description:
+          - Installation method: package, binary, kubernetes
+      falco_log_level:
+        type: str
+        required: false
+        default: "info"
+        description:
+          - Log level for Falco
+      falco_json_output:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable JSON output format
+      falco_outputs:
+        type: list
+        required: false
+        default: []
+        description:
+          - List of output configurations

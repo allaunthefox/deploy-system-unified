@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: Core system updates role
+    description:
+      - Configures automatic security patching (Unattended-Upgrades, DNF-Automatic)
+      - Ensures keyrings are updated on rolling-release distributions
+      - Aligns with ISO 27001 §8.9 configuration and vulnerability management
+    options:
+      core_updates_enabled:
+        type: bool
+        description: Enable or disable automatic updates
+        default: true

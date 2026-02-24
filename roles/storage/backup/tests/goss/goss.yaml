@@ -1,0 +1,10 @@
+# Goss tests for storage/backup role
+# Compliance: ISO 27001 §8.13
+
+file:
+  /var/backups:
+    exists: true
+    is-directory: true
+  /srv/backups:
+    exists: true
+    is-directory: true

@@ -1,0 +1,43 @@
+# Goss tests for core/logging role
+# CIS 4.2.x | STIG V-230330 | NIST AU-2, AU-3 | ISO 27001 §12.3
+---
+package:
+  systemd:
+    installed: true
+  rsyslog:
+    installed: true
+
+service:
+  systemd-journald:
+    enabled: true
+    running: true
+  rsyslog:
+    enabled: true
+    running: true
+
+file:
+  /etc/systemd/journald.conf:
+    exists: true
+    mode: "0644"
+  /var/log:
+    exists: true
+    is-dir: true
+  /run/log:
+    exists: true
+    is-dir: true
+
+command:
+  # Verify journalctl works
+  journalctl --no-pager -n 1:
+    exit-status: 0
+  # Verify log directory is writable
+  touch /var/log/test_journal_write:
+    exit-status: 0
+  rm -f /var/log/test_journal_write:
+    exit-status: 0
+
+# Check journal storage configuration
+file:
+  /etc/systemd/journald.conf:
+    contains:
+      - "^\\[Journal\\]"

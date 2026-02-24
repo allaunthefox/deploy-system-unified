@@ -1,0 +1,113 @@
+---
+argument_specs:
+  main:
+    short_description: Kubernetes Ingress Controller role
+    description:
+      - Installs and configures ingress controllers (nginx-ingress, traefik, ambassador)
+      - Manages TLS configuration and ingress class
+      - Supports rate limiting and custom annotations
+    options:
+      kubernetes_ingress_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable ingress controller deployment
+      kubernetes_ingress_controller:
+        type: str
+        required: false
+        default: "traefik"
+        choices:
+          - nginx-ingress
+          - traefik
+          - ambassador
+        description:
+          - Ingress controller to install
+      kubernetes_ingress_namespace:
+        type: str
+        required: false
+        default: "ingress-nginx"
+        description:
+          - Kubernetes namespace for ingress controller
+      kubernetes_ingress_helm_version:
+        type: str
+        required: false
+        default: "4.11.0"
+        description:
+          - Helm version for ingress controller
+      kubernetes_ingress_class_name:
+        type: str
+        required: false
+        default: "nginx"
+        description:
+          - Ingress class name
+      kubernetes_ingress_tls_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable TLS for ingress
+      kubernetes_ingress_tls_secret_name:
+        type: str
+        required: false
+        default: "ingress-tls"
+        description:
+          - TLS secret name
+      kubernetes_ingress_tls_letsencrypt_enabled:
+        type: bool
+        required: false
+        default: false
+        description:
+          - Enable Let's Encrypt for TLS
+      kubernetes_ingress_tls_letsencrypt_email:
+        type: str
+        required: false
+        default: ""
+        description:
+          - Let's Encrypt registration email
+      kubernetes_ingress_service_type:
+        type: str
+        required: false
+        default: "LoadBalancer"
+        choices:
+          - LoadBalancer
+          - NodePort
+          - ClusterIP
+        description:
+          - Kubernetes service type
+      kubernetes_ingress_external_ip:
+        type: str
+        required: false
+        default: ""
+        description:
+          - External IP for static assignment
+      kubernetes_ingress_enable_metrics:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable metrics exporter
+      kubernetes_ingress_rate_limit_enabled:
+        type: bool
+        required: false
+        default: false
+        description:
+          - Enable rate limiting
+      kubernetes_ingress_rate_limit_requests:
+        type: int
+        required: false
+        default: 100
+        description:
+          - Rate limit requests per period
+      kubernetes_ingress_rate_limit_period:
+        type: str
+        required: false
+        default: "1s"
+        description:
+          - Rate limit period
+      kubernetes_ingress_annotations:
+        type: dict
+        required: false
+        default: {}
+        description:
+          - Custom annotations for ingress

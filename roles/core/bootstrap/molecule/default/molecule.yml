@@ -2,20 +2,58 @@
 dependency:
   name: galaxy
 driver:
-  name: podman
+  name: default
+  options:
+    managed: false
+    ansible_connection_options:
+      ansible_connection: containers.podman.podman
 platforms:
-  - name: instance
+  - name: bootstrap-ubuntu-2204
     image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    command: /lib/systemd/systemd
-    tmps:
-      - /run
-      - /tmp
+  - name: bootstrap-debian-12
+    image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  - name: bootstrap-alpine-319
+    image: docker.io/geerlingguy/docker-alpine319-ansible:latest
+  - name: bootstrap-rockylinux-9
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+prerun: false
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      deprecation_warnings: false
+  inventory:
+    host_vars:
+      bootstrap-ubuntu-2204:
+        ansible_connection: containers.podman.podman
+        ansible_host: bootstrap-ubuntu-2204
+      bootstrap-debian-12:
+        ansible_connection: containers.podman.podman
+        ansible_host: bootstrap-debian-12
+      bootstrap-alpine-319:
+        ansible_connection: containers.podman.podman
+        ansible_host: bootstrap-alpine-319
+      bootstrap-rockylinux-9:
+        ansible_connection: containers.podman.podman
+        ansible_host: bootstrap-rockylinux-9
   env:
     ANSIBLE_ROLES_PATH: ../../../../
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    prepare: prepare.yml
+    cleanup: cleanup.yml
+    side_effect: side_effect.yml
+    verify: verify.yml
 verifier:
   name: ansible
+scenario:
+  test_sequence:
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy

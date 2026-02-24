@@ -1,0 +1,31 @@
+---
+# Falco Runtime Security Role - Internal Variables
+
+# Falco installation paths
+falco_install_dir: /usr/bin
+falco_config_path: /etc/falco
+falco_rules_path: /etc/falco/rules.d
+falco_log_path: /var/log/falco
+
+# Falco binary
+falco_binary: falco
+
+# Falco kernel module
+falco_kernel_module: falco
+falco_kernel_module_path: /lib/modules
+
+# Syscall events buffer
+falco_buffer_size: 16384
+falco_dropped_events_enabled: true
+
+# Falco outputs
+falco_syslog_enabled: true
+falco_file_output_enabled: false
+
+# Performance tuning
+falco_cpu_affinity: ""
+falco_priority: debug
+
+# Rule tuning
+falco_rules_loader: "falco"
+falco_ruleset: modern

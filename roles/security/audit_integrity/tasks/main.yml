@@ -1,74 +1,128 @@
 ---
 # Tasks for security/audit_integrity role - Cryptographic Log Immutability
-- name: Derive audit integrity guards
+- name: "CIS 4.2.1.1 | STIG V-230250 | NIST AU-2 | ISO 27001 §12.4 | Action 520020 | Derive audit integrity guards"
   ansible.builtin.set_fact:
-    _audit_integrity_is_container: "{{ ansible_virtualization_type | default('') in ['docker', 'podman', 'container', 'lxc'] }}"
-    _audit_integrity_is_systemd: "{{ ansible_service_mgr | default('') == 'systemd' }}"
+    _security_audit_integrity_is_container: "{{ ansible_virtualization_type | default('') in ['docker', 'podman', 'container', 'lxc'] }}"
+    _security_audit_integrity_is_systemd: "{{ ansible_service_mgr | default('') == 'systemd' }}"
   changed_when: false
+  tags:
+    - cis_4_2_1_1
+    - stig_v_230250
+    - nist_au_2
+    - nist_au_3
+    - nist_au_4
+    - nist_au_5
+    - nist_au_6
+    - nist_au_9
+    - nist_au_10
+    - nist_au_11
+    - nist_au_12
+    - nist_si_4
+    - nist_si_7
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Detect systemd-journal group
+- name: "CIS 4.2.1.1 | STIG V-230250 | NIST AU-2 | ISO 27001 §12.4 | Action 520021 | Detect systemd-journal group"
   ansible.builtin.getent:
     database: group
     key: systemd-journal
-  register: audit_integrity_journal_group
+  register: security_audit_integrity_journal_group
   failed_when: false
   changed_when: false
-  when: _audit_integrity_is_systemd
+  when: _security_audit_integrity_is_systemd
+  tags:
+    - cis_4_2_1_1
+    - stig_v_230250
+    - nist_au_2
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Select journald group
+- name: "CIS 4.2.1.1 | STIG V-230250 | NIST AU-2 | ISO 27001 §12.4 | Action 520022 | Select journald group"
   ansible.builtin.set_fact:
-    _audit_integrity_journal_group: >-
+    _security_audit_integrity_journal_group: >-
       {{
         'systemd-journal'
-        if 'systemd-journal' in (audit_integrity_journal_group.ansible_facts | default({})).get('getent_group', {})
+        if 'systemd-journal' in (security_audit_integrity_journal_group.ansible_facts | default({})).get('getent_group', {})
         else 'root'
       }}
   changed_when: false
-  when: _audit_integrity_is_systemd
+  when: _security_audit_integrity_is_systemd
+  tags:
+    - cis_4_2_1_1
+    - stig_v_230250
+    - nist_au_2
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Ensure persistent journal directory exists
+- name: "CIS 4.2.1.2 | STIG V-230250 | NIST AU-3 | ISO 27001 §12.4 | Action 520023 | Ensure persistent journal directory exists"
   ansible.builtin.file:
     path: /var/log/journal
     state: directory
     owner: root
-    group: "{{ _audit_integrity_journal_group | default('root') }}"
+    group: "{{ _security_audit_integrity_journal_group | default('root') }}"
     mode: '2755'
   become: true
   when:
-    - _audit_integrity_is_systemd
-    - not _audit_integrity_is_container
+    - _security_audit_integrity_is_systemd
+    - not _security_audit_integrity_is_container
+  tags:
+    - cis_4_2_1_2
+    - stig_v_230250
+    - nist_au_3
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Check if journal FSS keys are already initialized
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520030 | Check if journal FSS keys are already initialized"
   ansible.builtin.find:
     paths: /var/log/journal
     patterns: fss.pub
     file_type: file
-  register: journal_fss_stat
+  register: security_audit_integrity_security_audit_integrity_journal_fss_stat
   become: true
   failed_when: false
   changed_when: false
   when:
-    - _audit_integrity_is_systemd
-    - not _audit_integrity_is_container
+    - _security_audit_integrity_is_systemd
+    - not _security_audit_integrity_is_container
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Initialize Forward Secure Sealing (FSS) keys
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520030 | Initialize Forward Secure Sealing (FSS) keys"
   ansible.builtin.shell: |
     set -o pipefail
     journalctl --setup-keys --force 2>&1 | grep -E "[0-9a-f]{6}-[0-9a-f]{6}" | tail -n 1
   args:
     executable: /bin/bash
-  register: fss_verification_key_output
+  register: security_audit_integrity_security_audit_integrity_fss_verification_key_output
   become: true
+  changed_when: security_audit_integrity_fss_verification_key_output.rc == 0
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - iso27037
+    - security
+    - audit
   when:
-    - _audit_integrity_is_systemd
-    - not _audit_integrity_is_container
-    - (journal_fss_stat.matched | default(0) | int) == 0
-  notify: restart_journald
+    - _security_audit_integrity_is_systemd
+    - not _security_audit_integrity_is_container
+    - (security_audit_integrity_journal_fss_stat.matched | default(0) | int) == 0
+  notify: Restart Journald
   no_log: true
 
-- name: Resolve vault password file (controller)
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520031 | Resolve vault password file (controller)"
   ansible.builtin.set_fact:
-    _audit_integrity_vault_password_file: >-
+    _security_audit_integrity_vault_password_file: >-
       {{
         lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') | default('', true)
         or lookup(
@@ -84,110 +138,177 @@
   delegate_to: localhost
   become: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Fail if vault password file is unavailable
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520032 | Fail if vault password file is unavailable"
   ansible.builtin.fail:
     msg: "No vault password file found. Set ANSIBLE_VAULT_PASSWORD_FILE or create .vault_pass in the playbook or repo root."
   delegate_to: localhost
   become: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
-    - _audit_integrity_vault_password_file | default('') | length == 0
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+    - _security_audit_integrity_vault_password_file | default('') | length == 0
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Create secure temporary file for FSS key capture
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520033 | Create secure temporary file for FSS key capture"
   ansible.builtin.tempfile:
     state: file
     prefix: "fss_key_{{ inventory_hostname }}_"
     suffix: ".txt"
-  register: fss_temp_file
+  register: security_audit_integrity_security_audit_integrity_fss_temp_file
   delegate_to: localhost
   become: false
+  changed_when: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
   no_log: true
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Store FSS verification key on controller
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520034 | Store FSS verification key on controller"
   ansible.builtin.copy:
     content: |
       TARGET: {{ inventory_hostname }}
       TIMESTAMP: {{ ansible_date_time.iso8601 | default('unknown') }}
-      VERIFICATION_KEY: {{ fss_verification_key_output.stdout }}
-    dest: "{{ fss_temp_file.path }}"
+      VERIFICATION_KEY: {{ security_audit_integrity_fss_verification_key_output.stdout }}
+    dest: "{{ security_audit_integrity_fss_temp_file.path }}"
     mode: '0600'
   delegate_to: localhost
   become: false
+  changed_when: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
-    - fss_temp_file.path is defined
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_fss_temp_file.path is defined
   no_log: true
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Encrypt FSS key with Ansible Vault
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520035 | Encrypt FSS key with Ansible Vault"
   ansible.builtin.command:
     argv:
       - ansible-vault
       - encrypt
       - --vault-password-file
-      - "{{ _audit_integrity_vault_password_file }}"
+      - "{{ _security_audit_integrity_vault_password_file }}"
       - --encrypt-vault-id
-      - "{{ audit_integrity_vault_encrypt_id }}"
-      - "{{ fss_temp_file.path }}"
+      - "{{ security_audit_integrity_vault_encrypt_id }}"
+      - "{{ security_audit_integrity_fss_temp_file.path }}"
   delegate_to: localhost
   become: false
+  changed_when: true
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
-    - fss_temp_file.path is defined
-    - _audit_integrity_vault_password_file | default('') | length > 0
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_fss_temp_file.path is defined
+    - _security_audit_integrity_vault_password_file | default('') | length > 0
   no_log: true
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Ensure audit integrity output directory exists
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520036 | Ensure audit integrity output directory exists"
   ansible.builtin.file:
-    path: "{{ audit_integrity_output_dir }}"
+    path: "{{ security_audit_integrity_output_dir }}"
     state: directory
     mode: '0700'
   delegate_to: localhost
   become: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Move encrypted FSS key to final destination
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520037 | Move encrypted FSS key to final destination"
   ansible.builtin.copy:
-    src: "{{ fss_temp_file.path }}"
-    dest: "{{ audit_integrity_output_dir }}/fss_v_{{ inventory_hostname }}_{{ deployment_id | default('manual') }}.vault"
+    src: "{{ security_audit_integrity_fss_temp_file.path }}"
+    dest: "{{ security_audit_integrity_output_dir }}/fss_v_{{ inventory_hostname }}_{{ deployment_id | default('manual') }}.vault"
     mode: '0600'
   delegate_to: localhost
   become: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
-    - fss_temp_file.path is defined
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_fss_temp_file.path is defined
   no_log: true
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Remove temporary FSS key file
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520038 | Remove temporary FSS key file"
   ansible.builtin.file:
-    path: "{{ fss_temp_file.path }}"
+    path: "{{ security_audit_integrity_fss_temp_file.path }}"
     state: absent
   delegate_to: localhost
   become: false
   when:
-    - audit_integrity_store_keys | bool
-    - fss_verification_key_output.changed | default(false)
-    - fss_temp_file.path is defined
+    - security_audit_integrity_store_keys | bool
+    - security_audit_integrity_fss_verification_key_output.changed | default(false)
+    - security_audit_integrity_fss_temp_file.path is defined
   no_log: true
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
 
-- name: Ensure Seal is enabled in journald configuration
+- name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520000 | Ensure Seal is enabled in journald configuration"
   ansible.builtin.lineinfile:
     path: /etc/systemd/journald.conf
     regexp: '^#?Seal='
     line: 'Seal=yes'
   become: true
+  tags:
+    - cis_4_2_1_3
+    - stig_v_230251
+    - nist_au_12
+    - iso_27001_12_4
+    - security
+    - audit
   notify: restart_journald
   when:
-    - _audit_integrity_is_systemd
-    - not _audit_integrity_is_container
+    - _security_audit_integrity_is_systemd
+    - not _security_audit_integrity_is_container
+

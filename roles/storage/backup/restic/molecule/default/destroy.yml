@@ -1,0 +1,9 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: "Destroy molecule instance"
+      ansible.builtin.debug:
+        msg: "Destroying molecule instance"

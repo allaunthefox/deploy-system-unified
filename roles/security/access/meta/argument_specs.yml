@@ -1,0 +1,28 @@
+---
+argument_specs:
+  main:
+    short_description: Security access management role
+    description:
+      - Manages administrator user accounts and password hashes
+      - Configures conditional SSH Match blocks for granular access control
+      - Aligns with ISO 27001 §9.2 access provisioning requirements
+    options:
+      ssh_match_rules:
+        type: list
+        elements: dict
+        description: List of SSH Match rules to apply
+      access_admin_user:
+        type: str
+        description: Admin user account name
+        default: admin
+      access_admin_password_hash:
+        type: str
+        description: Hashed password for the admin account
+      access_admin_password_enforce:
+        type: bool
+        description: Whether to strictly enforce password hash validation
+        default: false
+      access_admin_password_placeholders:
+        type: list
+        elements: str
+        description: List of placeholder values to reject

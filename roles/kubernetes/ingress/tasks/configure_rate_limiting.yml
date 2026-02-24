@@ -1,0 +1,36 @@
+---
+# Configure rate limiting for Ingress
+
+- name: "Create rate limiting configuration"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: ingress-nginx-rate-limit
+        namespace: "{{ kubernetes_ingress_namespace }}"
+      data:
+        {{ kubernetes_ingress_class_annotation }}.ingress.kubernetes.io/limit-connections: "50"
+        {{ kubernetes_ingress_class_annotation }}.ingress.kubernetes.io/limit-rps: "{{ kubernetes_ingress_rate_limit_requests }}"
+  when: kubernetes_ingress_rate_limit_enabled | bool
+  failed_when: false
+
+- name: "Create GlobalRateLimit resource for Traefik"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: traefik.io/v1alpha1
+      kind: Middleware
+      metadata:
+        name: rate-limit-global
+        namespace: "{{ kubernetes_ingress_namespace }}"
+      spec:
+        rateLimit:
+          average: {{ kubernetes_ingress_rate_limit_requests }}
+          burst: {{ (kubernetes_ingress_rate_limit_requests * 1.5) | int }}
+          period: {{ kubernetes_ingress_rate_limit_period }}
+  when: 
+    - kubernetes_ingress_rate_limit_enabled | bool
+    - kubernetes_ingress_controller == "traefik"
+  failed_when: false

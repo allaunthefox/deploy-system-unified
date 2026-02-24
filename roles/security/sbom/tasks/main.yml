@@ -1,0 +1,90 @@
+---
+# Tasks for security/sbom - Supply Chain Auditing
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520040 | Initialize SBOM Generation"
+  ansible.builtin.set_fact:
+    sbom_output_dir: "{{ playbook_dir }}/ci-artifacts/sbom"
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom
+    - supply_chain
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520042 | Ensure SBOM output directory exists"
+  ansible.builtin.file:
+    path: "{{ sbom_output_dir }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520043 | Generate SBOM Report (Forensic Scan)"
+  ansible.builtin.template:
+    src: sbom_gen.py.j2
+    dest: /tmp/sbom_gen.py
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520041 | Execute SBOM Audit"
+  ansible.builtin.shell: "python3 /tmp/sbom_gen.py > {{ sbom_output_dir }}/sbom.json"
+  delegate_to: localhost
+  run_once: true
+  changed_when: true
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom
+    - audit
+    - supply_chain
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520047 | Sign SBOM Audit Record (Immutable Trace)"
+  ansible.builtin.shell: "sha256sum {{ sbom_output_dir }}/sbom.json > {{ sbom_output_dir }}/sbom.json.sha256"
+  delegate_to: localhost
+  run_once: true
+  changed_when: true
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom
+    - audit
+    - supply_chain
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520041 | Validate SBOM Integrity"
+  ansible.builtin.stat:
+    path: "{{ sbom_output_dir }}/sbom.json"
+  register: sbom_file
+  delegate_to: localhost
+  run_once: true
+  failed_when: not sbom_file.stat.exists
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom
+    - audit
+
+- name: "NIST SI-22 | ISO 27001 §8.14 | Action 520048 | Clean up temporary generator"
+  ansible.builtin.file:
+    path: /tmp/sbom_gen.py
+    state: absent
+  delegate_to: localhost
+  run_once: true
+  tags:
+    - nist_si_22
+    - iso_27001_8_14
+    - security
+    - sbom

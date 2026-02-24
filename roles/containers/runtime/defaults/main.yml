@@ -34,10 +34,14 @@ intel_oneapi_gpg_fingerprint: "BF4385F91CA5FC005AB39E1C1A8497B11911E097"
 intel_oneapi_gpg_fingerprint_verify: false
 
 # Image Pull Safety / Rate Limit Avoidance
-# Docker Hub Anonymous Limit: 100 pulls / 6 hrs
-# Safe Retry Strategy to avoid Abuse Detection blocking:
 containers_pull_retries: 5
 containers_pull_delay: 30
+
+# Supply Chain Security (Cosign)
+containers_cosign_enable: "{{ system_container_cosign_verify | default(true) }}"
+containers_cosign_version: "2.4.1"
+containers_cosign_checksum: "" # Optional SHA256 checksum for binary
+containers_cosign_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}"
 
 # Architecture override (explicit target architecture)
 containers_arch_override: ""

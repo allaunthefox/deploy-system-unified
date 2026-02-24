@@ -1,0 +1,57 @@
+---
+argument_specs:
+  main:
+    short_description: anubis role for API gateway and rate limiting
+    description:
+      - Deploys Anubis API gateway with rate limiting
+      - Manages container configuration and target routing
+      - Aligns with ISO 27001 §8.26 requirements
+    options:
+      anubis_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable anubis container
+      anubis_port:
+        type: int
+        required: false
+        default: 8080
+        description:
+          - Port for anubis to listen on
+      anubis_difficulty:
+        type: int
+        required: false
+        default: 5
+        description:
+          - Difficulty level for rate limiting
+      anubis_target_url:
+        type: str
+        required: false
+        default: "http://app:80"
+        description:
+          - Target application URL to protect
+      anubis_image:
+        type: str
+        required: false
+        default: "ghcr.io/techarohq/anubis:v1.24.0"
+        description:
+          - Container image for anubis
+      anubis_container_name:
+        type: str
+        required: false
+        default: "anubis-gatekeeper"
+        description:
+          - Name for the anubis container
+      quadlet_enable_gpu_support:
+        type: bool
+        required: false
+        default: false
+        description:
+          - Enable GPU support for the container
+      quadlet_gpu_capabilities:
+        type: list
+        required: false
+        default: []
+        description:
+          - Linux capabilities for GPU access

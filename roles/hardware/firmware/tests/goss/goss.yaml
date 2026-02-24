@@ -1,0 +1,37 @@
+# Goss tests for hardware/firmware role
+# Compliance: CIS 3.5.x, STIG V-2305xx, NIST SC-28/SC-39/SC-43, ISO 27001 §8.9/§8.17/§8.20/§8.26
+
+package:
+  tpm2-tools:
+    installed: true
+  tpm2-abrmd:
+    installed: true
+
+command:
+  tpm2_print:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+  timedatectl:
+    exit-status: 0
+    stderr: []
+    timeout: 5000
+
+file:
+  /dev/tpm0:
+    exists: true
+  /dev/tpmrm0:
+    exists: true
+  /sys/firmware/efi:
+    exists: true
+  /dev/watchdog:
+    exists: true
+  /etc/watchdog.conf:
+    exists: true
+  /sys/class/hwmon:
+    exists: true
+    is-directory: true
+
+group:
+  tss:
+    exists: true

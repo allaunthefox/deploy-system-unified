@@ -1,0 +1,38 @@
+---
+# Internal variables for security/sbom role
+security_sbom_tool: "syft"
+security_sbom_enabled: true
+security_sbom_generation_schedule: "daily"
+
+# SBOM Standards
+security_sbom_standard: "ISO-27001-14.2"
+security_sbom_nist_control: "SI-22"
+
+# =============================================================================
+# COMPLIANCE FRAMEWORK MAPPINGS
+# =============================================================================
+
+# NIST 800-53 Controls covered by SBOM
+security_sbom_nist_controls:
+  - id: "SI-22"
+    title: "Information Input Validation"
+    family: "System and Information Integrity"
+  - id: "SR-3"
+    title: "Acquisition Processes, Tools, and Methods"
+    family: "Supply Chain Risk Management"
+
+# ISO 27001:2022 Controls covered by SBOM
+security_sbom_iso_27001_controls:
+  - id: "8.14"
+    title: "Information security in supplier relationships"
+    category: "Technological controls"
+  - id: "8.9"
+    title: "Configuration management"
+    category: "Technological controls"
+
+# SSDF (Secure Software Development Framework) Controls
+security_sbom_ssdf_controls:
+  - id: "PS.2.1"
+    title: "Create and maintain a bill of materials"
+  - id: "PS.2.2"
+    title: "Verify SBOM integrity"

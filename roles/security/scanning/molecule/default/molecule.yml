@@ -2,34 +2,68 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: default
+  options:
+    managed: false
+    ansible_connection_options:
+      ansible_connection: containers.podman.podman
 platforms:
-  - name: ubuntu
-    image: geerlingguy/docker-ubuntu2204-ansible:latest
-    privileged: true
-    pre_build_image: true
-  - name: debian
-    image: geerlingguy/docker-debian11-ansible:latest
-    privileged: true
-    pre_build_image: true
-  - name: fedora
-    image: geerlingguy/docker-fedora37-ansible:latest
-    privileged: true
-    pre_build_image: true
+  - name: scanning-ubuntu-2204
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+  - name: scanning-ubuntu-2404
+    image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+  - name: scanning-debian-12
+    image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  - name: scanning-alpine-319
+    image: docker.io/geerlingguy/docker-alpine319-ansible:latest
+  - name: scanning-rockylinux-9
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+  - name: scanning-amazonlinux-2023
+    image: docker.io/geerlingguy/docker-amazonlinux2023-ansible:latest
+prerun: false
 provisioner:
   name: ansible
   config_options:
     defaults:
-      interpreter_python: auto_silent
-      callbacks_enabled: profile_tasks, timer
+      deprecation_warnings: false
+  inventory:
+    host_vars:
+      scanning-ubuntu-2204:
+        ansible_connection: containers.podman.podman
+        ansible_host: scanning-ubuntu-2204
+      scanning-ubuntu-2404:
+        ansible_connection: containers.podman.podman
+        ansible_host: scanning-ubuntu-2404
+      scanning-debian-12:
+        ansible_connection: containers.podman.podman
+        ansible_host: scanning-debian-12
+      scanning-alpine-319:
+        ansible_connection: containers.podman.podman
+        ansible_host: scanning-alpine-319
+      scanning-rockylinux-9:
+        ansible_connection: containers.podman.podman
+        ansible_host: scanning-rockylinux-9
+      scanning-amazonlinux-2023:
+        ansible_connection: containers.podman.podman
+        ansible_host: scanning-amazonlinux-2023
+  env:
+    ANSIBLE_ROLES_PATH: ../../../../
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    prepare: prepare.yml
+    cleanup: cleanup.yml
+    side_effect: side_effect.yml
+    verify: verify.yml
 verifier:
   name: ansible
 scenario:
   test_sequence:
-    - destroy
     - create
     - prepare
     - converge
     - idempotence
     - verify
+    - cleanup
     - destroy

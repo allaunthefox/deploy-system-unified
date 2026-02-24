@@ -1,7 +1,8 @@
 ---
 # Tasks for networking/desktop
+# Compliance: CIS 3.6.x | STIG V-230380 | NIST SC-7, CM-6 | ISO 27001 §8.20
 
-- name: Define Desktop Networking Packages
+- name: "CIS 3.6.1 | NIST CM-6 | Define Desktop Networking Packages"
   ansible.builtin.set_fact:
     _net_desktop_packages: "{{
       ['network-manager', 'network-manager-gnome', 'wireless-tools'] if ansible_os_family == 'Debian' else
@@ -14,29 +15,53 @@
       'networkmanager' if ansible_os_family == 'Alpine' else
       'NetworkManager'
     }}"
+  tags:
+    - cis_3_6_1
+    - nist_cm_6
+    - networking
+    - desktop
 
-- name: Add Wi-Fi Backend Packages
+- name: "CIS 3.6.2 | NIST CM-6 | Add Wi-Fi Backend Packages"
   ansible.builtin.set_fact:
     _net_desktop_packages: "{{ _net_desktop_packages + [_wifi_pkg] }}"
   vars:
     _wifi_pkg: "{{ 'wpasupplicant' if networking_desktop_wifi_backend == 'wpa_supplicant' and ansible_os_family == 'Debian' else networking_desktop_wifi_backend }}"
   when: networking_desktop_enable_wifi | bool
+  tags:
+    - cis_3_6_2
+    - nist_cm_6
+    - networking
+    - desktop
 
-- name: Install Desktop Networking Tools
+- name: "CIS 3.6.3 | STIG V-230380 | Install Desktop Networking Tools"
   ansible.builtin.package:
     name: "{{ _net_desktop_packages }}"
     state: present
   become: true
   register: _net_install
+  tags:
+    - cis_3_6_3
+    - stig_v_230380
+    - nist_sc_7
+    - iso_27001_8_20
+    - networking
+    - desktop
 
-- name: Enable NetworkManager Service
+- name: "CIS 3.6.4 | STIG V-230380 | ISO 27001 §9.4 | Action 810202 | Enable NetworkManager Service"
   ansible.builtin.service:
     name: "{{ _net_service_name }}"
     enabled: true
     state: started
   become: true
+  tags:
+    - cis_3_6_4
+    - stig_v_230380
+    - nist_sc_7
+    - iso_27001_9_4
+    - networking
+    - desktop
 
-- name: Configure Wi-Fi Backend (NetworkManager.conf)
+- name: "CIS 3.6.5 | STIG V-230380 | ISO 27001 §9.4 | Action 810201 | Configure Wi-Fi Backend (NetworkManager.conf)"
   ansible.builtin.ini_file:
     path: /etc/NetworkManager/NetworkManager.conf
     section: device
@@ -44,14 +69,27 @@
     value: "{{ networking_desktop_wifi_backend }}"
     mode: '0644'
   become: true
+  tags:
+    - cis_3_6_5
+    - stig_v_230380
+    - nist_sc_7
+    - iso_27001_9_4
+    - networking
+    - desktop
+    - remediate
   when:
     - networking_desktop_enable_wifi | bool
     - _net_service_name in ["NetworkManager", "networkmanager"]
   notify: restart_networkmanager
 
-- name: Ensure NetworkManager-wait-online is enabled
+- name: "CIS 3.6.6 | NIST SC-7 | Ensure NetworkManager-wait-online is enabled"
   ansible.builtin.service:
     name: NetworkManager-wait-online
     enabled: true
   become: true
   when: ansible_facts['service_mgr'] == 'systemd'
+  tags:
+    - cis_3_6_6
+    - nist_sc_7
+    - networking
+    - desktop

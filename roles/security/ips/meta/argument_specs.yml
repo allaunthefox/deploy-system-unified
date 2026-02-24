@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Intrusion Prevention System role
+    description:
+      - Configures Fail2Ban for SSH and web protection
+      - Implements forensic log analysis for IP blocking
+      - Aligns with ISO 27001 §16.1
+    options:
+      ips_fail2ban_sshd_enabled:
+        type: bool
+        description: Enable Fail2Ban for SSH
+        default: true
+      ips_fail2ban_caddy_enabled:
+        type: bool
+        description: Enable Fail2Ban for Caddy/Web
+        default: true

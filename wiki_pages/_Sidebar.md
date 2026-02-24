@@ -28,6 +28,9 @@
 - [Tooling](TOOLING)
 - [LLM Context Map](LLM_MAP)
 - [Research Guidelines](RESEARCH_GUIDELINES)
+- [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
+- [ISO Tagging Standard](ISO_TAGGING_STANDARD)
+- [Role Implementation Standards](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)
 
 ---
 
@@ -63,8 +66,37 @@
 ### 📅 Planning
 - [Versioning Policy](VERSIONING_POLICY)
 - [Release Cycles](RELEASE_CYCLES)
+- [Stability Plan](STABILITY_PLAN)
 - [Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)
+- [Security Enhancement Plan 2026](SECURITY_ENHANCEMENT_PLAN_2026)
+- [Role Enhancement Plan 2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)
+- [Determinism Roadmap](DETERMINISM_ROADMAP)
 - [Migration Plan](MIGRATION_PLAN)
 - [Restructuring Plan](RESTRUCTURING_PLAN_2026)
 - [GPU Enhanced Plan](GPU_ENHANCED_PLAN)
+- [Community Enhancement Plan](COMMUNITY_ENHANCEMENT_PLAN)
+- [Compliance Framework Integration](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)
 - [Architecture Migration](ARCHITECTURE_MIGRATION_GUIDE)
+
+---
+
+### 🔧 Deployment Extensions
+- [DP Alt Mode Guide](DP_ALT_MODE)
+- [Restore Runbook](RESTORE_RUNBOOK)
+- [SOPS Key Rotation SOP](SOPS_KEY_ROTATION_SOP)
+- [SOPS Migration Guide](SOPS_MIGRATION_GUIDE)
+- [Vulkan Examples](VULKAN_EXAMPLES)
+
+---
+
+### 📐 Development Standards
+- [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
+- [ISO Tagging Standard](ISO_TAGGING_STANDARD)
+- [Role Implementation Standards](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)
+
+---
+
+### 📊 Implementation Status
+- [Base Layer Implementation Status](BASE_LAYER_IMPLEMENTATION_STATUS)
+- [Role Reference: Containers](Role_Reference_Containers)
+- [Role Reference: Security](Role_Reference_Security)

@@ -1,11 +1,21 @@
 ---
 # Tasks for security/ips - Intrusion Prevention System (Fail2Ban)
-- name: Install Fail2Ban
+- name: "CIS 5.6.1 | STIG V-230344 | NIST AC-7 | NIST SI-3 | Action 460002 | Install Fail2Ban"
   ansible.builtin.package:
     name: fail2ban
     state: present
   become: true
-- name: Configure Fail2Ban for SSH protection
+  tags:
+    - cis_5_6_1
+    - stig_v_230344
+    - nist_ac_7
+    - nist_si_3
+    - iso_27001_16_1
+    - security
+    - ips
+    - forensic
+
+- name: "CIS 5.6.1 | STIG V-230345 | NIST AC-7 | NIST SI-3 | ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for SSH protection"
   ansible.builtin.copy:
     content: |
       [sshd]
@@ -19,17 +29,33 @@
     dest: /etc/fail2ban/jail.d/99-sshd-hardened.local
     mode: '0644'
   become: true
+  tags:
+    - cis_5_6_1
+    - stig_v_230345
+    - nist_ac_7
+    - nist_si_3
+    - iso_27001_16_1
+    - security
+    - ips
+    - forensic
+    - remediate
   notify: restart_fail2ban
 
-- name: Install Caddy Filter
+- name: "CIS 5.6.1 | STIG V-230346 | NIST SI-3 | Install Caddy Filter"
   ansible.builtin.copy:
     src: filter_caddy.conf
     dest: /etc/fail2ban/filter.d/caddy.conf
     mode: '0644'
   become: true
+  tags:
+    - cis_5_6_1
+    - stig_v_230346
+    - nist_si_3
+    - security
+    - ips
   notify: restart_fail2ban
 
-- name: Configure Fail2Ban for Caddy (Web Protection)
+- name: "CIS 5.6.1 | STIG V-230347 | NIST SI-3 | ISO 27001 §16.1 | Action 460003 | Configure Fail2Ban for Caddy (Web Protection)"
   ansible.builtin.copy:
     content: |
       [caddy]
@@ -43,11 +69,27 @@
     dest: /etc/fail2ban/jail.d/99-caddy-hardened.local
     mode: '0644'
   become: true
+  tags:
+    - cis_5_6_1
+    - stig_v_230347
+    - nist_si_3
+    - iso_27001_16_1
+    - security
+    - ips
+    - forensic
+    - remediate
   notify: restart_fail2ban
 
-- name: Enable and start Fail2Ban
+- name: "CIS 5.6.1 | STIG V-230348 | NIST AC-7 | NIST SI-3 | Enable and start Fail2Ban"
   ansible.builtin.systemd:
     name: fail2ban
     enabled: true
     state: started
   become: true
+  tags:
+    - cis_5_6_1
+    - stig_v_230348
+    - nist_ac_7
+    - nist_si_3
+    - security
+    - ips

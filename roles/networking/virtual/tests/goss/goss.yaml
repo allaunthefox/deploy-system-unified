@@ -1,0 +1,34 @@
+# Goss tests for networking/virtual role
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  iproute2:
+    installed: true
+
+# =============================================================================
+# COMMAND TESTS - Verify VLAN/VXLAN configuration
+# =============================================================================
+command:
+  ip_link:
+    exec: 'ip link show'
+    exit-status: 0
+    timeout: 10000
+
+  ip_addr:
+    exec: 'ip addr show'
+    exit-status: 0
+    timeout: 10000
+
+  # Check for VLAN interfaces
+  ip_link_vlan:
+    exec: 'ip link show type vlan || true'
+    exit-status: 0
+    timeout: 10000
+
+  # Check for VXLAN interfaces
+  ip_link_vxlan:
+    exec: 'ip link show type vxlan || true'
+    exit-status: 0
+    timeout: 10000

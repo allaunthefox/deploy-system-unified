@@ -1,0 +1,9 @@
+---
+- name: Prepare
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Prepare placeholder
+      ansible.builtin.debug:
+        msg: "No prepare steps required for ops/guest_management."

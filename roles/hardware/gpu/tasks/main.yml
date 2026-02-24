@@ -1,24 +1,49 @@
 ---
 # Main entry point for hardware/gpu
+# Compliance: CIS 3.x, STIG V-230510, NIST SC-39/SC-43/SC-28, ISO 27001 §8.20/§8.26
 
-- name: Check if GPU Stack is enabled
+- name: "CIS 3.1.1 | STIG V-230510 | NIST SC-39 | Check if GPU Stack is enabled"
   ansible.builtin.debug:
     msg: "GPU Stack is {{ 'enabled' if gpu_stack_enable else 'disabled' }}"
+  tags:
+    - cis_3_1_1
+    - stig_v_230510
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: End play if GPU Stack is disabled
+- name: "CIS 3.1.2 | STIG V-230511 | NIST SC-43 | End play if GPU Stack is disabled"
   ansible.builtin.meta: end_play
   when: not gpu_stack_enable
+  tags:
+    - cis_3_1_2
+    - stig_v_230511
+    - nist_sc_43
+    - hardware
+    - gpu
 
-- name: Check for EFI Environment
+- name: "CIS 3.1.3 | STIG V-230512 | NIST SC-39 | Check for EFI Environment"
   ansible.builtin.stat:
     path: /sys/firmware/efi
   register: efi_sysfs
+  tags:
+    - cis_3_1_3
+    - stig_v_230512
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Set EFI Fact
+- name: "CIS 3.1.4 | STIG V-230513 | NIST SC-28 | Set EFI Fact"
   ansible.builtin.set_fact:
     gpu_stack_efi_present: "{{ efi_sysfs.stat.exists }}"
+  tags:
+    - cis_3_1_4
+    - stig_v_230513
+    - nist_sc_28
+    - hardware
+    - gpu
 
-- name: Normalize Architecture
+- name: "CIS 3.1.5 | STIG V-230514 | NIST CM-6 | Normalize Architecture for GPU"
   ansible.builtin.set_fact:
     _gpu_norm_arch: >-
       {{
@@ -27,37 +52,74 @@
         'riscv64' if gpu_stack_arch in ['riscv64', 'risc64', 'riscv'] else
         gpu_stack_arch
       }}
+  tags:
+    - cis_3_1_5
+    - stig_v_230514
+    - nist_cm_6
+    - hardware
+    - gpu
 
-- name: Normalize Vendor List (Single or Multi-Vendor)
+- name: "CIS 3.1.6 | STIG V-230515 | NIST SC-39 | Normalize Vendor List (Single or Multi-Vendor)"
   ansible.builtin.set_fact:
     _gpu_vendor_list: "{{ [gpu_stack_vendor] if gpu_stack_vendor is string else gpu_stack_vendor }}"
+  tags:
+    - cis_3_1_6
+    - stig_v_230515
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Detect Virtualization Environment
+- name: "CIS 3.1.7 | STIG V-230516 | NIST SC-43 | Detect Virtualization Environment"
   ansible.builtin.set_fact:
     _gpu_is_container: "{{ (ansible_facts['virtualization_type'] | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_facts['is_chroot'] | default(false)) }}"
     _gpu_is_vm: "{{ (ansible_facts['virtualization_role'] | default('unknown') == 'guest') and (ansible_facts['virtualization_type'] | default('unknown') not in ['docker', 'podman', 'container', 'lxc']) }}"
+  tags:
+    - cis_3_1_7
+    - stig_v_230516
+    - nist_sc_43
+    - hardware
+    - gpu
 
-- name: Validate Global Config
+- name: "CIS 3.1.8 | STIG V-230517 | NIST AC-6 | Validate Global Config"
   ansible.builtin.assert:
     that:
       - gpu_stack_mode in ['server', 'desktop', 'hybrid']
     fail_msg: "Invalid GPU mode: {{ gpu_stack_mode }}"
+  tags:
+    - cis_3_1_8
+    - stig_v_230517
+    - nist_ac_6
+    - hardware
+    - gpu
 
-- name: Run Video Hardware Detection
+- name: "CIS 3.1.9 | STIG V-230518 | NIST SC-39 | ISO 9001 | Action 800400 | Run Video Hardware Detection"
   ansible.builtin.include_tasks: detect_video.yml
+  tags:
+    - cis_3_1_9
+    - stig_v_230518
+    - nist_sc_39
+    - iso_9001
+    - hardware
+    - gpu
+    - discovery
 
-
-- name: Resolve Driver Conflicts
+- name: "CIS 3.1.10 | STIG V-230519 | NIST SC-28 | Resolve Driver Conflicts"
   ansible.builtin.include_tasks: driver_integrity.yml
+  tags:
+    - cis_3_1_10
+    - stig_v_230519
+    - nist_sc_28
+    - hardware
+    - gpu
 
-- name: Resolve and Validate GPU Vendor
+- name: "CIS 3.1.11 | STIG V-230520 | NIST SC-39 | Resolve and Validate GPU Vendor"
   block:
-    - name: Set Vendor from Auto-Detection
+    - name: "CIS 3.1.11a | Set Vendor from Auto-Detection"
       ansible.builtin.set_fact:
         gpu_stack_vendor: "{{ _gpu_primary_detected_vendor }}"
       when: gpu_stack_vendor in ['auto', 'generic']
 
-    - name: Validate Manual Vendor Configuration
+    - name: "CIS 3.1.11b | Validate Manual Vendor Configuration"
       ansible.builtin.assert:
         that:
           - (gpu_stack_vendor in _gpu_detected_vendor_list) or (gpu_stack_vendor == 'generic')
@@ -65,55 +127,130 @@
       when:
         - gpu_stack_vendor not in ['auto', 'generic']
         - not (gpu_force_vendor | default(false))
+  tags:
+    - cis_3_1_11
+    - stig_v_230520
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Normalize Vendor List (Final)
+- name: "CIS 3.1.12 | STIG V-230521 | NIST SC-39 | Normalize Vendor List (Final)"
   ansible.builtin.set_fact:
     _gpu_vendor_list: "{{ [gpu_stack_vendor] if gpu_stack_vendor is string else gpu_stack_vendor }}"
+  tags:
+    - cis_3_1_12
+    - stig_v_230521
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Iterate over defined vendors
+- name: "CIS 3.1.13 | STIG V-230522 | NIST SC-28 | ISO 27001 §8.9 | Action 800410 | Iterate over defined vendors"
   ansible.builtin.include_tasks: vendor_setup.yml
   loop: "{{ _gpu_vendor_list }}"
   loop_control:
     loop_var: current_vendor
+  tags:
+    - cis_3_1_13
+    - stig_v_230522
+    - nist_sc_28
+    - iso_27001_8_9
+    - hardware
+    - gpu
+    - remediate
 
-- name: Optional - Configure Hybrid Graphics (Prime/Optimus)
+- name: "CIS 3.1.14 | STIG V-230523 | NIST SC-39 | Optional - Configure Hybrid Graphics (Prime/Optimus)"
   ansible.builtin.include_tasks: features/hybrid_setup.yml
   when: gpu_stack_mode in ['hybrid', 'desktop'] and _gpu_vendor_list | length > 1
+  tags:
+    - cis_3_1_14
+    - stig_v_230523
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Optional - Configure Desktop Environment Features
+- name: "CIS 3.1.15 | STIG V-230524 | NIST SC-43 | Optional - Configure Desktop Environment Features"
   ansible.builtin.include_tasks: features/desktop_setup.yml
   when: gpu_stack_mode in ['desktop', 'hybrid']
+  tags:
+    - cis_3_1_15
+    - stig_v_230524
+    - nist_sc_43
+    - hardware
+    - gpu
 
-- name: Optional - Configure eGPU Support
+- name: "CIS 3.1.16 | STIG V-230525 | NIST SC-39 | Optional - Configure eGPU Support"
   ansible.builtin.include_tasks: features/egpu.yml
   when: gpu_stack_enable_egpu | default(false)
+  tags:
+    - cis_3_1_16
+    - stig_v_230525
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Optional - Configure GPU Slicing Support
+- name: "CIS 3.1.17 | STIG V-230526 | NIST SC-28 | ISO 27001 §8.26 | Action 800420 | Optional - Configure GPU Slicing Support"
   ansible.builtin.include_tasks: features/gpu_slicing.yml
   when: gpu_stack_enable_slicing | default(false) or gpu_stack_slicing_strategy | default('none') != 'none'
+  tags:
+    - cis_3_1_17
+    - stig_v_230526
+    - nist_sc_28
+    - iso_27001_8_26
+    - hardware
+    - gpu
+    - remediate
 
-- name: Optional - Configure RDMA Support
+- name: "CIS 3.1.18 | STIG V-230527 | NIST SC-39 | Optional - Configure RDMA Support"
   ansible.builtin.include_tasks: features/rdma.yml
   when: gpu_stack_enable_rdma | default(false)
+  tags:
+    - cis_3_1_18
+    - stig_v_230527
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Optional - Configure DP Alt Mode
+- name: "CIS 3.1.19 | STIG V-230528 | NIST SC-43 | Optional - Configure DP Alt Mode"
   ansible.builtin.include_tasks: features/dp_alt_mode.yml
   when: gpu_stack_enable_dp_alt_mode | default(false)
+  tags:
+    - cis_3_1_19
+    - stig_v_230528
+    - nist_sc_43
+    - hardware
+    - gpu
 
-- name: Optional - Verify Vulkan Capabilities
+- name: "CIS 3.1.20 | STIG V-230529 | NIST SC-39 | Optional - Verify Vulkan Capabilities"
   ansible.builtin.include_tasks: features/vulkan_validation.yml
   when: gpu_stack_mode in ['desktop', 'hybrid']
+  tags:
+    - cis_3_1_20
+    - stig_v_230529
+    - nist_sc_39
+    - hardware
+    - gpu
 
-- name: Optional - Verify Containerized Vulkan Projection
+- name: "CIS 3.1.21 | STIG V-230530 | NIST SC-28 | Optional - Verify Containerized Vulkan Projection"
   ansible.builtin.include_tasks: features/verify_container_vulkan.yml
-  when: 
+  when:
     - gpu_stack_mode in ['desktop', 'hybrid']
     - gpu_vulkan_supported | bool
+  tags:
+    - cis_3_1_21
+    - stig_v_230530
+    - nist_sc_28
+    - hardware
+    - gpu
 
-
-- name: Save Role Checkpoint
+- name: "CIS 3.1.22 | STIG V-230531 | NIST CM-6 | Save Role Checkpoint"
   ansible.builtin.include_tasks: save_checkpoint.yml
   vars:
     additional_phases: ["hardware/gpu"]
+  tags:
+    - cis_3_1_22
+    - stig_v_230531
+    - nist_cm_6
+    - hardware
+    - gpu
 
 

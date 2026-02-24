@@ -1,0 +1,35 @@
+---
+galaxy_info:
+  role_name: sandboxing
+  author: deploysystemunified
+  description: "POL-SEC | User-space application isolation via Bubblewrap and Landlock"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+  galaxy_tags:
+    - security
+    - sandboxing
+    - isolation
+    - bubblewrap
+    - landlock
+    - restricted
+    - hardening
+    - application
+    - linux
+    - iso27001
+    - nist80053
+    - identification
+    - authentication
+
+collections:
+  - ansible.builtin
+
+dependencies: []

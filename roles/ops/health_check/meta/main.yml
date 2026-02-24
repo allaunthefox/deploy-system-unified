@@ -1,0 +1,37 @@
+---
+galaxy_info:
+  role_name: health_check
+  author: deploysystemunified
+  description: "SOP-OPS | Post-deploy automated health verification and artifact generation"
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+    - name: Debian
+      versions: [all]
+    - name: Fedora
+      versions: [all]
+    - name: Archlinux
+      versions: [all]
+    - name: Alpine
+      versions: [all]
+  galaxy_tags:
+    - ops
+    - health
+    - verification
+    - validation
+    - diagnostics
+    - post-deploy
+    - reporting
+    - automated
+    - forensic
+    - security
+    - monitoring
+    - iso9001
+    - iso27001
+
+collections:
+  - ansible.builtin
+
+dependencies: []

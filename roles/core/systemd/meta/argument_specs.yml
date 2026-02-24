@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    short_description: Core systemd management role
+    description:
+      - Configures systemd core components including journald and resolved
+      - Hardens DNS resolution settings and persistent logging
+      - Aligns with ISO 27001 logging and access control requirements
+    options:
+      systemd_configure_journald:
+        type: bool
+        description: Whether to configure journald settings
+        default: true
+      systemd_configure_resolved:
+        type: bool
+        description: Whether to configure systemd-resolved settings
+        default: true
+      systemd_persistent_journal:
+        type: bool
+        description: Whether to enable persistent journal storage
+        default: true
+      core_systemd_require_service_manager:
+        type: bool
+        description: Fail if systemd is not the service manager
+        default: false

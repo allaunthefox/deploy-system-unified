@@ -1,1 +1,77 @@
 ---
+# Handlers for k8s_node role - Kubernetes Node Services
+# ISO 9001 Structural Consistency - Handler definitions for Kubernetes node management
+
+- name: restart_kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - kubernetes
+    - orchestration
+    - node
+
+- name: restart_kube_proxy
+  ansible.builtin.systemd:
+    name: kube-proxy
+    state: restarted
+    daemon_reload: true
+  become: true
+  failed_when: false
+  tags:
+    - kubernetes
+    - orchestration
+    - node
+
+- name: restart_container_runtime
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - containerd
+    - crio
+    - docker
+  become: true
+  failed_when: false
+  tags:
+    - kubernetes
+    - orchestration
+    - node
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  tags:
+    - kubernetes
+    - orchestration
+    - node
+
+- name: restart_kubernetes_node_services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - kubelet
+    - kube-proxy
+    - containerd
+  become: true
+  failed_when: false
+  tags:
+    - kubernetes
+    - orchestration
+    - node
+
+- name: reload_kubelet_config
+  ansible.builtin.systemd:
+    name: kubelet
+    state: reloaded
+  become: true
+  tags:
+    - kubernetes
+    - orchestration
+    - node

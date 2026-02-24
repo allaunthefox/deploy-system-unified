@@ -1,0 +1,29 @@
+---
+argument_specs:
+  main:
+    short_description: Container Quadlets role
+    description:
+      - Deploys and manages Podman Quadlet .container and .pod files
+      - Automates systemd unit generation for container workloads
+      - Supports complex network and GPU configurations
+    options:
+      containers_quadlet_network_name:
+        type: str
+        description: Name of the Quadlet network
+        default: deploy-net
+      containers_quadlet_create_network:
+        type: bool
+        description: Whether to create the Quadlet network
+        default: true
+      containers_quadlet_network_subnet:
+        type: str
+        description: Subnet for the Quadlet network
+        default: 10.89.0.0/24
+      containers_quadlet_custom_files:
+        type: list
+        elements: str
+        description: List of custom Quadlet files to deploy
+      containers_quadlet_enable_gpu_support:
+        type: bool
+        description: Enable GPU support for Quadlet containers
+        default: false

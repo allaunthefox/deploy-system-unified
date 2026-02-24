@@ -1,0 +1,33 @@
+---
+argument_specs:
+  main:
+    short_description: filesystems role for storage management
+    description:
+      - Manages filesystem configurations and mount points
+      - Supports various filesystem types (ext4, xfs, btrfs, etc.)
+      - Aligns with ISO 27040 requirements for storage management
+    options:
+      filesystem_mounts:
+        type: list
+        required: false
+        default: []
+        description:
+          - List of mount points to configure
+      filesystem_type:
+        type: str
+        required: false
+        default: "ext4"
+        description:
+          - Default filesystem type
+      filesystem_options:
+        type: dict
+        required: false
+        default: {}
+        description:
+          - Additional filesystem mount options
+      filesystem_backup_enabled:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable filesystem backup features

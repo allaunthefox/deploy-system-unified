@@ -5,6 +5,7 @@
 
 # K8s Secure Node - Orchestration Solution Stack
 # Solution: Base Hardened Infrastructure + K8s Node Readiness
+# Features: Quantum-Ready (PQC Hybrid), ISO 27001 §9.2/10.1 Compliant
 - ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy Kubernetes Readiness Workload
   hosts: all

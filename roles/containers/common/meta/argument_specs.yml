@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: common role for container common configuration
+    description:
+      - Placeholder role for common container configurations
+      - Aligns with ISO 27001 §8.26 requirements
+    options:
+      container_common_enable:
+        type: bool
+        required: false
+        default: true
+        description:
+          - Enable or disable container common role

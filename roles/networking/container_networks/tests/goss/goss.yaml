@@ -1,0 +1,31 @@
+# Goss tests for networking/container_networks role
+# ISO 27001 §8.20 - Network security
+
+# =============================================================================
+# PACKAGE TESTS
+# =============================================================================
+package:
+  podman:
+    installed: true
+
+# =============================================================================
+# FILE TESTS - Verify container network configuration
+# =============================================================================
+file:
+  /etc/containers/systemd:
+    exists: true
+    filetype: directory
+
+# =============================================================================
+# COMMAND TESTS
+# =============================================================================
+command:
+  podman_network_ls:
+    exec: 'podman network ls'
+    exit-status: 0
+    timeout: 10000
+
+  podman_network_inspect:
+    exec: 'podman network inspect podman || true'
+    exit-status: 0
+    timeout: 10000

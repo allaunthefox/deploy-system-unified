@@ -1,13 +1,23 @@
 ---
 # Tasks for hardware/storage_tuning - Physical Storage Optimization
-- name: Enable SSD TRIM timer (FSTRIM)
+# Compliance: CIS 3.x, STIG V-230520, NIST CP-9/SC-28/SC-12, ISO 27001 §8.11/§8.12
+
+- name: "CIS 3.3.1 | STIG V-230560 | NIST SC-28 | Enable SSD TRIM timer (FSTRIM)"
   ansible.builtin.systemd:
     name: fstrim.timer
     enabled: true
     state: started
   become: true
   failed_when: false
-- name: Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)
+  when: ansible_virtualization_type not in ['docker', 'podman', 'container', 'lxc']
+  tags:
+    - cis_3_3_1
+    - stig_v_230560
+    - nist_sc_28
+    - hardware
+    - storage
+
+- name: "CIS 3.3.2 | STIG V-230561 | NIST SC-28 | ISO 27040 | Action 500024 | Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)"
   ansible.builtin.copy:
     content: |
       # Physical Flash (SSD/NVMe/SD/eMMC/USB-Flash) - Low Latency
@@ -22,14 +32,30 @@
     mode: '0644'
   become: true
   notify: reload_udev
+  tags:
+    - cis_3_3_2
+    - stig_v_230561
+    - nist_sc_28
+    - iso_27040
+    - hardware
+    - storage
+    - remediate
 
-- name: Gather storage device facts (Robust & Aligned)
+- name: "CIS 3.3.3 | STIG V-230562 | NIST SC-12 | ISO 9001 | Action 500050 | Gather storage device facts (Robust & Aligned)"
   ansible.builtin.command: lsblk -d -o NAME,SIZE,ROTA,PHY-SEC,OPT-IO -n --bytes
   register: lsblk_output
   changed_when: false
   become: true
+  tags:
+    - cis_3_3_3
+    - stig_v_230562
+    - nist_sc_12
+    - iso_9001
+    - hardware
+    - storage
+    - discovery
 
-- name: Normalize Storage Device Capacities & Alignment
+- name: "CIS 3.3.4 | STIG V-230563 | NIST SC-28 | Normalize Storage Device Capacities & Alignment"
   vars:
     # Standardize all storage to Megabytes (MB)
     # Robustly handles bits (insane), bytes, and IEC/SI prefixes up to Exabytes
@@ -59,8 +85,14 @@
       }
     }) }}"
   loop: "{{ lsblk_output.stdout_lines }}"
+  tags:
+    - cis_3_3_4
+    - stig_v_230563
+    - nist_sc_28
+    - hardware
+    - storage
 
-- name: Apply Aligned Read-Ahead Tuning (>1TB)
+- name: "CIS 3.3.5 | STIG V-230564 | NIST CP-9 | Apply Aligned Read-Ahead Tuning (>1TB)"
   vars:
     # Default Read-Ahead: 2MB (4096 sectors * 512b)
     # Alignment fallback: Ensure multiple of Physical Sector
@@ -86,3 +118,9 @@
   become: true
   changed_when: false
   failed_when: false
+  tags:
+    - cis_3_3_5
+    - stig_v_230564
+    - nist_cp_9
+    - hardware
+    - storage

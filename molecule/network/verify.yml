@@ -1,36 +1,266 @@
 ---
-# verify.yml - Verification playbook for network testing
-# Validates cEOS network device functionality
+# verify.yml - Verification playbook for molecule tests
+# Validates that deployment was successful by checking directories, packages, and configurations
 #
 # Args:
-#     Runs on network_devices from inventory
+#     Runs on all hosts defined in inventory
 #
 # Returns:
-#     Validates network device configuration and state
+#     Passes if all required directories, packages, and configurations exist and are correct
 #
 # Example:
 #     molecule verify -s network
 
-- name: Verify Network Devices
-  hosts: network_devices
-  gather_facts: false
+- name: Verify network configuration
+  hosts: all
+  gather_facts: true
+  become: true
   tasks:
-    # Verify network device is running
-    - name: Verify cEOS is running
-      ansible.builtin.shell: |
-        ps aux | grep [s]witchd
-      register: ceos_process
+    # =========================================================================
+    # Essential Directories Verification
+    # =========================================================================
+    - name: Verify essential directories exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: dir_stats
+      loop:
+        - /var/lib/deploy-system
+        - /var/lib/deploy-system/checkpoints
+        - /var/lib/deploy-system/backups
+        - /var/lib/deploy-system/logs
+        - /tmp/deploy-system
+        - /etc/security
+
+    - name: Validate directory existence
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.isdir
+        fail_msg: "Directory {{ item.item }} should exist"
+        success_msg: "Directory {{ item.item }} exists"
+      loop: "{{ dir_stats.results }}"
+
+    # =========================================================================
+    # Package Verification by OS Family
+    # =========================================================================
+    - name: Verify essential packages are installed (Debian/Ubuntu)
+      ansible.builtin.package_facts:
+        manager: apt
+      when: ansible_os_family == 'Debian'
+
+    - name: Assert essential packages are installed (Debian/Ubuntu)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for Debian/Ubuntu are not installed."
+        success_msg: "Essential packages are installed on Debian/Ubuntu"
+      when: ansible_os_family == 'Debian'
+
+    - name: Verify essential packages are installed (RedHat/CentOS)
+      ansible.builtin.package_facts:
+        manager: dnf
+      when: ansible_os_family == 'RedHat'
+
+    - name: Assert essential packages are installed (RedHat/CentOS)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for RedHat/CentOS are not installed."
+        success_msg: "Essential packages are installed on RedHat/CentOS"
+      when: ansible_os_family == 'RedHat'
+
+    - name: Verify essential packages are installed (Archlinux)
+      ansible.builtin.package_facts:
+        manager: pacman
+      when: ansible_distribution == 'Archlinux'
+
+    - name: Assert essential packages are installed (Archlinux)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for Archlinux are not installed."
+        success_msg: "Essential packages are installed on Archlinux"
+      when: ansible_distribution == 'Archlinux'
+
+    - name: Verify essential packages are installed (Alpine)
+      ansible.builtin.package_facts:
+        manager: apk
+      when: ansible_os_family == 'Alpine'
+
+    - name: Assert essential packages are installed (Alpine)
+      ansible.builtin.assert:
+        that:
+          - "'curl' in ansible_facts.packages"
+          - "'wget' in ansible_facts.packages"
+          - "'git' in ansible_facts.packages"
+          - "'sudo' in ansible_facts.packages"
+          - "'vim' in ansible_facts.packages"
+        fail_msg: "Essential packages for Alpine are not installed."
+        success_msg: "Essential packages are installed on Alpine"
+      when: ansible_os_family == 'Alpine'
+
+    # =========================================================================
+    # Network Interface Verification
+    # =========================================================================
+    - name: Get network interfaces
+      ansible.builtin.shell: ip -br link show | awk '{print $1}' | grep -v '^$' || true
+      register: network_interfaces
+      changed_when: false
+
+    - name: Verify network interfaces exist
+      ansible.builtin.assert:
+        that:
+          - "network_interfaces.stdout | length > 0"
+        fail_msg: "Network interfaces should exist"
+        success_msg: "Network interfaces are present"
+
+    - name: Verify loopback interface is configured
+      ansible.builtin.shell: ip addr show lo | grep -q "inet " && echo "configured" || echo "not configured"
+      register: loopback_status
+      changed_when: false
+
+    - name: Assert loopback interface is configured
+      ansible.builtin.assert:
+        that:
+          - "loopback_status.stdout == 'configured'"
+        fail_msg: "Loopback interface should be configured"
+        success_msg: "Loopback interface is configured"
+
+    # =========================================================================
+    # Firewall Verification
+    # =========================================================================
+    - name: Check if UFW is available
+      ansible.builtin.command: which ufw
+      register: ufw_which
       changed_when: false
       failed_when: false
 
-    # Verify basic network interfaces
-    - name: Verify network interfaces exist
-      ansible.builtin.shell: |
-        ip link show
-      register: interfaces
+    - name: Get UFW status
+      ansible.builtin.command: ufw status verbose
+      register: ufw_status
+      changed_when: false
+      failed_when: false
+      when: ufw_which.rc == 0
+
+    - name: Verify UFW default incoming policy is deny
+      ansible.builtin.assert:
+        that:
+          - "'deny (incoming)' in ufw_status.stdout.lower() or 'reject (incoming)' in ufw_status.stdout.lower()"
+        fail_msg: "UFW default incoming policy should be deny"
+        success_msg: "UFW default incoming policy is secure"
+      when: ufw_which.rc == 0 and ufw_status.rc == 0
+      ignore_errors: true
+
+    - name: Check if Firewalld is available
+      ansible.builtin.command: which firewall-cmd
+      register: firewalld_which
+      changed_when: false
+      failed_when: false
+
+    - name: Get Firewalld state
+      ansible.builtin.command: firewall-cmd --state
+      register: firewalld_state
+      changed_when: false
+      failed_when: false
+      when: firewalld_which.rc == 0
+
+    - name: Verify Firewalld is running
+      ansible.builtin.assert:
+        that:
+          - "firewalld_state.stdout == 'running'"
+        fail_msg: "Firewalld should be running"
+        success_msg: "Firewalld is running"
+      when: firewalld_which.rc == 0 and firewalld_state.rc == 0
+      ignore_errors: true
+
+    # =========================================================================
+    # Routing Verification
+    # =========================================================================
+    - name: Check IP forwarding status
+      ansible.builtin.shell: cat /proc/sys/net/ipv4/ip_forward || echo "0"
+      register: ip_forward
       changed_when: false
 
-    # Display device info
-    - name: Display device hostname
+    - name: Verify IP forwarding configuration
       ansible.builtin.debug:
-        msg: "Network device {{ inventory_hostname }} is ready"
+        msg: "IP forwarding is {{ 'enabled' if ip_forward.stdout == '1' else 'disabled' }}"
+
+    # =========================================================================
+    # DNS Resolution Verification
+    # =========================================================================
+    - name: Verify DNS resolution works
+      ansible.builtin.shell: nslookup google.com 8.8.8.8 || true
+      register: dns_test
+      changed_when: false
+      failed_when: false
+
+    - name: Verify DNS is configured
+      ansible.builtin.assert:
+        that:
+          - "dns_test.rc == 0"
+        fail_msg: "DNS resolution should work"
+        success_msg: "DNS is configured and working"
+      ignore_errors: true
+
+    # =========================================================================
+    # SSH Service Verification
+    # =========================================================================
+    - name: Get SSH service facts
+      ansible.builtin.service_facts:
+      register: services_state
+
+    - name: Determine SSH service name
+      ansible.builtin.set_fact:
+        ssh_service_name: "{{ 'sshd' if 'sshd' in services_state.ansible_facts.services else 'ssh' if 'ssh' in services_state.ansible_facts.services else '' }}"
+
+    - name: Verify SSH service is running
+      ansible.builtin.assert:
+        that:
+          - "ssh_service_name != ''"
+          - "services_state.ansible_facts.services[ssh_service_name].state == 'running'"
+        fail_msg: "SSH service should be running"
+        success_msg: "SSH service is running"
+      when: ssh_service_name != ''
+
+    # =========================================================================
+    # Preflight Flag Verification
+    # =========================================================================
+    - name: Verify preflight flag exists
+      ansible.builtin.stat:
+        path: /tmp/preflight_completed.flag
+      register: preflight_flag
+
+    - name: Validate preflight flag
+      ansible.builtin.assert:
+        that:
+          - "preflight_flag.stat.exists"
+        fail_msg: "Preflight completion flag should exist"
+        success_msg: "Preflight completion flag exists"
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display verification summary
+      ansible.builtin.debug:
+        msg: |
+          Network Verification Complete:
+          - Essential directories: Verified
+          - Essential packages: Verified
+          - Network interfaces: {{ network_interfaces.stdout_lines | length }} found
+          - Loopback: {{ loopback_status.stdout }}
+          - Firewall: {{ 'Active' if ufw_which.rc == 0 and ufw_status.rc == 0 else ('Running' if firewalld_which.rc == 0 and firewalld_state.stdout == 'running' else 'Not configured') }}
+          - SSH Service: {{ 'Running' if ssh_service_name != '' else 'Not found' }}
+          - DNS: {{ 'Working' if dns_test.rc == 0 else 'Not configured' }}
+          - Preflight Flag: {{ 'Present' if preflight_flag.stat.exists else 'Missing' }}

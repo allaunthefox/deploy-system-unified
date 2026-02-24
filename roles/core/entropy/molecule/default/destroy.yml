@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove entropy test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - entropy-ubuntu-2204
+        - entropy-debian-12
+        - entropy-alpine-319
+        - entropy-rockylinux-9

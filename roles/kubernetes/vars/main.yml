@@ -1,0 +1,43 @@
+---
+# Internal variables for kubernetes role
+# Part of ISO 9001 Structural Consistency
+
+# K3s/Kubernetes paths
+_k8s_binary_path: /usr/local/bin/k3s
+_k8s_config_dir: /etc/rancher/k3s
+_k8s_data_dir: /var/lib/rancher/k3s
+_k8s_kubeconfig_dir: /etc/rancher/k3s
+_k8s_kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+_k8s_token_dir: /var/lib/deploy-system/kubernetes
+_k8s_token_path: /var/lib/deploy-system/kubernetes/token
+
+# Service names
+_k8s_service_name: k3s
+_k8s_agent_service_name: k3s-agent
+
+# API endpoints
+_k8s_api_port: 6443
+_k8s_api_secure_port: 6443
+_k8s_api_localhost_port: 10250
+
+# Internal cluster networking
+_k8s_cluster_dns: 10.43.0.10
+_k8s_cluster_domain: cluster.local
+_k8s_pod_cidr: 10.42.0.0/16
+_k8s_service_cidr: 10.43.0.0/16
+
+# K3s component ports
+_k8s_kubelet_port: 10250
+_k8s_scheduler_port: 10251
+_k8s_controller_port: 10257
+_k8s_etcd_port: 2379
+
+# Systemd paths
+_k8s_systemd_unit_path: /etc/systemd/system
+_k8s_systemd_service_path: "{{ _k8s_systemd_unit_path }}/{{ _k8s_service_name }}.service"
+
+# Architecture mappings
+_k8s_arch_map:
+  x86_64: amd64
+  aarch64: arm64
+  riscv64: riscv64

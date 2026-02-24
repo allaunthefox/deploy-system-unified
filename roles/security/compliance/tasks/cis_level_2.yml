@@ -1,0 +1,564 @@
+---
+# CIS Level 2 Validation Tasks
+
+- name: "CIS 1.2.1 | Ensure /tmp is a separate partition"
+  ansible.builtin.shell: |
+    df /tmp 2>&1 | tail -1 | awk '{print $1}'
+  register: cis_1_2_1_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_1
+    - cis_level_2
+
+- name: "CIS 1.2.1 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_1_result.stdout != df_root.stdout | default('') else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_1
+    - cis_level_2
+
+- name: "CIS 1.2.2 | Ensure nodev option set on /tmp partition"
+  ansible.builtin.shell: |
+    mount | grep " /tmp " | grep -c "nodev" || echo "0"
+  register: cis_1_2_2_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_2
+    - cis_level_2
+
+- name: "CIS 1.2.2 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_2_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_2
+    - cis_level_2
+
+- name: "CIS 1.2.3 | Ensure nosuid option set on /tmp partition"
+  ansible.builtin.shell: |
+    mount | grep " /tmp " | grep -c "nosuid" || echo "0"
+  register: cis_1_2_3_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_3
+    - cis_level_2
+
+- name: "CIS 1.2.3 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_3_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_3
+    - cis_level_2
+
+- name: "CIS 1.2.4 | Ensure noexec option set on /tmp partition"
+  ansible.builtin.shell: |
+    mount | grep " /tmp " | grep -c "noexec" || echo "0"
+  register: cis_1_2_4_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_4
+    - cis_level_2
+
+- name: "CIS 1.2.4 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_4_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_4
+    - cis_level_2
+
+- name: "CIS 1.2.5 | Ensure /dev/shm is a separate partition"
+  ansible.builtin.shell: |
+    mount | grep -c "shm tmpfs" || echo "0"
+  register: cis_1_2_5_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_5
+    - cis_level_2
+
+- name: "CIS 1.2.5 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_5_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_5
+    - cis_level_2
+
+- name: "CIS 1.2.6 | Ensure nodev option set on /dev/shm partition"
+  ansible.builtin.shell: |
+    mount | grep "shm " | grep -c "nodev" || echo "0"
+  register: cis_1_2_6_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_6
+    - cis_level_2
+
+- name: "CIS 1.2.6 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_6_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_6
+    - cis_level_2
+
+- name: "CIS 1.2.7 | Ensure nosuid option set on /dev/shm partition"
+  ansible.builtin.shell: |
+    mount | grep "shm " | grep -c "nosuid" || echo "0"
+  register: cis_1_2_7_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_7
+    - cis_level_2
+
+- name: "CIS 1.2.7 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_7_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_7
+    - cis_level_2
+
+- name: "CIS 1.2.8 | Ensure noexec option set on /dev/shm partition"
+  ansible.builtin.shell: |
+    mount | grep "shm " | grep -c "noexec" || echo "0"
+  register: cis_1_2_8_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_1_2_8
+    - cis_level_2
+
+- name: "CIS 1.2.8 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_1_2_8_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_1_2_8
+    - cis_level_2
+
+# CIS 2.1.x - Services (Level 2)
+- name: "CIS 2.1.1 | Ensure xinetd is not installed"
+  ansible.builtin.shell: |
+    dpkg -l xinetd 2>/dev/null || rpm -q xinetd 2>/dev/null || echo "not installed"
+  register: cis_2_1_1_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_1
+    - cis_level_2
+
+- name: "CIS 2.1.1 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_1_result.stdout == 'not installed' or 'not installed' in cis_2_1_1_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_1
+    - cis_level_2
+
+- name: "CIS 2.1.2 | Ensure openbsd-inetd is not installed"
+  ansible.builtin.shell: |
+    dpkg -l openbsd-inetd 2>/dev/null || echo "not installed"
+  register: cis_2_1_2_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_2
+    - cis_level_2
+
+- name: "CIS 2.1.2 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_2_result.stdout == 'not installed' or 'not installed' in cis_2_1_2_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_2
+    - cis_level_2
+
+- name: "CIS 2.1.3 | Ensure telnet server is not installed"
+  ansible.builtin.shell: |
+    dpkg -l telnetd 2>/dev/null || rpm -q telnet-server 2>/dev/null || echo "not installed"
+  register: cis_2_1_3_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_3
+    - cis_level_2
+
+- name: "CIS 2.1.3 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_3_result.stdout == 'not installed' or 'not installed' in cis_2_1_3_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_3
+    - cis_level_2
+
+- name: "CIS 2.1.4 | Ensure rsh server is not installed"
+  ansible.builtin.shell: |
+    dpkg -l rsh-server 2>/dev/null || rpm -q rsh-server 2>/dev/null || echo "not installed"
+  register: cis_2_1_4_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_4
+    - cis_level_2
+
+- name: "CIS 2.1.4 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_4_result.stdout == 'not installed' or 'not installed' in cis_2_1_4_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_4
+    - cis_level_2
+
+- name: "CIS 2.1.5 | Ensure rsh client is not installed"
+  ansible.builtin.shell: |
+    dpkg -l rsh-client 2>/dev/null || rpm -q rsh 2>/dev/null || echo "not installed"
+  register: cis_2_1_5_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_5
+    - cis_level_2
+
+- name: "CIS 2.1.5 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_5_result.stdout == 'not installed' or 'not installed' in cis_2_1_5_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_5
+    - cis_level_2
+
+- name: "CIS 2.1.6 | Ensure talk server is not installed"
+  ansible.builtin.shell: |
+    dpkg -l talk 2>/dev/null || rpm -q talk-server 2>/dev/null || echo "not installed"
+  register: cis_2_1_6_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_6
+    - cis_level_2
+
+- name: "CIS 2.1.6 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_6_result.stdout == 'not installed' or 'not installed' in cis_2_1_6_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_6
+    - cis_level_2
+
+- name: "CIS 2.1.7 | Ensure telnet client is not installed"
+  ansible.builtin.shell: |
+    dpkg -l telnet 2>/dev/null || rpm -q telnet 2>/dev/null || echo "not installed"
+  register: cis_2_1_7_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_7
+    - cis_level_2
+
+- name: "CIS 2.1.7 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_7_result.stdout == 'not installed' or 'not installed' in cis_2_1_7_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_7
+    - cis_level_2
+
+- name: "CIS 2.1.8 | Ensure LDAP is not installed"
+  ansible.builtin.shell: |
+    dpkg -l slapd 2>/dev/null || rpm -q openldap-servers 2>/dev/null || echo "not installed"
+  register: cis_2_1_8_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_8
+    - cis_level_2
+
+- name: "CIS 2.1.8 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_8_result.stdout == 'not installed' or 'not installed' in cis_2_1_8_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_8
+    - cis_level_2
+
+- name: "CIS 2.1.9 | Ensure nfs-utils is not installed"
+  ansible.builtin.shell: |
+    dpkg -l nfs-kernel-server 2>/dev/null || rpm -q nfs-utils 2>/dev/null || echo "not installed"
+  register: cis_2_1_9_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_9
+    - cis_level_2
+
+- name: "CIS 2.1.9 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_9_result.stdout == 'not installed' or 'not installed' in cis_2_1_9_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_9
+    - cis_level_2
+
+- name: "CIS 2.1.10 | Ensure rpcbind is not installed"
+  ansible.builtin.shell: |
+    dpkg -l rpcbind 2>/dev/null || rpm -q rpcbind 2>/dev/null || echo "not installed"
+  register: cis_2_1_10_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_10
+    - cis_level_2
+
+- name: "CIS 2.1.10 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_10_result.stdout == 'not installed' or 'not installed' in cis_2_1_10_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_10
+    - cis_level_2
+
+- name: "CIS 2.1.11 | Ensure bind9 is not installed"
+  ansible.builtin.shell: |
+    dpkg -l bind9 2>/dev/null || rpm -q bind 2>/dev/null || echo "not installed"
+  register: cis_2_1_11_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_11
+    - cis_level_2
+
+- name: "CIS 2.1.11 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_11_result.stdout == 'not installed' or 'not installed' in cis_2_1_11_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_11
+    - cis_level_2
+
+- name: "CIS 2.1.12 | Ensure vsftpd is not installed"
+  ansible.builtin.shell: |
+    dpkg -l vsftpd 2>/dev/null || rpm -q vsftpd 2>/dev/null || echo "not installed"
+  register: cis_2_1_12_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_12
+    - cis_level_2
+
+- name: "CIS 2.1.12 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_12_result.stdout == 'not installed' or 'not installed' in cis_2_1_12_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_12
+    - cis_level_2
+
+- name: "CIS 2.1.13 | Ensure apache2 is not installed"
+  ansible.builtin.shell: |
+    dpkg -l apache2 2>/dev/null || rpm -q httpd 2>/dev/null || echo "not installed"
+  register: cis_2_1_13_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_2_1_13
+    - cis_level_2
+
+- name: "CIS 2.1.13 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_2_1_13_result.stdout == 'not installed' or 'not installed' in cis_2_1_13_result.stdout else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_2_1_13
+    - cis_level_2
+
+# CIS 5.3.x - PAM (Level 2)
+- name: "CIS 5.3.1 | Ensure password creation requirements are configured"
+  ansible.builtin.shell: |
+    grep -c "minlen.*14" /etc/pam.d/common-password 2>/dev/null || echo "0"
+  register: cis_5_3_1_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_5_3_1
+    - cis_level_2
+
+- name: "CIS 5.3.1 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_5_3_1_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_5_3_1
+    - cis_level_2
+
+- name: "CIS 5.3.2 | Ensure password reuse is limited"
+  ansible.builtin.shell: |
+    grep -c "remember.*5" /etc/pam.d/common-password 2>/dev/null || echo "0"
+  register: cis_5_3_2_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_5_3_2
+    - cis_level_2
+
+- name: "CIS 5.3.2 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_5_3_2_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_5_3_2
+    - cis_level_2
+
+- name: "CIS 5.3.3 | Ensure password hashing algorithm is SHA-512"
+  ansible.builtin.shell: |
+    grep -c "sha512" /etc/pam.d/common-password 2>/dev/null || echo "0"
+  register: cis_5_3_3_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_5_3_3
+    - cis_level_2
+
+- name: "CIS 5.3.3 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_5_3_3_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_5_3_3
+    - cis_level_2
+
+- name: "CIS 5.3.6 | Ensure account lockout is configured"
+  ansible.builtin.shell: |
+    grep -c "pam_faillock" /etc/pam.d/common-auth 2>/dev/null || echo "0"
+  register: cis_5_3_6_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_5_3_6
+    - cis_level_2
+
+- name: "CIS 5.3.6 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_5_3_6_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_5_3_6
+    - cis_level_2
+
+# CIS 6.x - Permissions (Level 2)
+- name: "CIS 6.1.1 | Ensure PAM password files have correct permissions"
+  ansible.builtin.shell: |
+    stat -c "%a" /etc/pam.d/common-password 2>/dev/null | grep -c "644\|640\|600" || echo "0"
+  register: cis_6_1_1_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_6_1_1
+    - cis_level_2
+
+- name: "CIS 6.1.1 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_6_1_1_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_6_1_1
+    - cis_level_2
+
+# CIS 8.x - Additional (Level 2)
+- name: "CIS 8.1.2 | Ensure wireless interfaces are disabled"
+  ansible.builtin.shell: |
+    ip link show 2>/dev/null | grep -c "wireless" || echo "0"
+  register: cis_8_1_2_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_8_1_2
+    - cis_level_2
+
+- name: "CIS 8.1.2 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_8_1_2_result.stdout == '0' else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_8_1_2
+    - cis_level_2
+
+- name: "CIS 8.2.1 | Ensure DCCP is disabled"
+  ansible.builtin.shell: |
+    modprobe -c | grep -c "install dccp /bin/true" || echo "0"
+  register: cis_8_2_1_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_8_2_1
+    - cis_level_2
+
+- name: "CIS 8.2.1 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_8_2_1_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_8_2_1
+    - cis_level_2
+
+- name: "CIS 8.2.2 | Ensure SCTP is disabled"
+  ansible.builtin.shell: |
+    modprobe -c | grep -c "install sctp /bin/true" || echo "0"
+  register: cis_8_2_2_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_8_2_2
+    - cis_level_2
+
+- name: "CIS 8.2.2 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_8_2_2_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_8_2_2
+    - cis_level_2
+
+- name: "CIS 8.2.3 | Ensure RDS is disabled"
+  ansible.builtin.shell: |
+    modprobe -c | grep -c "install rds /bin/true" || echo "0"
+  register: cis_8_2_3_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_8_2_3
+    - cis_level_2
+
+- name: "CIS 8.2.3 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_8_2_3_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_8_2_3
+    - cis_level_2
+
+- name: "CIS 8.2.4 | Ensure TIPC is disabled"
+  ansible.builtin.shell: |
+    modprobe -c | grep -c "install tipc /bin/true" || echo "0"
+  register: cis_8_2_4_result
+  changed_when: false
+  failed_when: false
+  tags:
+    - cis_8_2_4
+    - cis_level_2
+
+- name: "CIS 8.2.4 | Record compliance score"
+  ansible.builtin.set_fact:
+    cis_level_2_score: "{{ cis_level_2_score + (1 if cis_8_2_4_result.stdout | int > 0 else 0) }}"
+    cis_level_2_total: "{{ cis_level_2_total + 1 }}"
+  tags:
+    - cis_8_2_4
+    - cis_level_2

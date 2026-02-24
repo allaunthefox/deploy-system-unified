@@ -1,0 +1,37 @@
+---
+# Goss tests for security/goss role
+# Tests that goss is installed and configured
+
+package:
+  goss:
+    installed: true
+
+file:
+  /usr/local/bin/goss:
+    exists: true
+    mode: "0755"
+  /etc/goss:
+    exists: true
+    mode: "0755"
+  /var/log/goss:
+    exists: true
+    mode: "0755"
+
+command:
+  # Check goss version
+  goss --version:
+    exit-status: 0
+    stdout:
+      - "v"
+  # Validate goss itself
+  goss validate:
+    exit-status: 0
+  # Check goss help
+  goss --help:
+    exit-status: 0
+    stdout:
+      - "Usage"
+  # Test goss file exists
+  goss validate --gossfile /etc/goss/goss.yaml:
+    exit-status: 0
+

@@ -1,0 +1,72 @@
+---
+# Install Nginx Ingress Controller via Helm
+
+- name: "Ensure Helm is available"
+  ansible.builtin.command:
+    cmd: helm version --short
+  register: helm_version_check
+  failed_when: false
+  changed_when: false
+
+- name: "Fail if Helm is not installed"
+  ansible.builtin.fail:
+    msg: "Helm is required for ingress controller installation. Please install Helm first."
+  when: helm_version_check.rc != 0
+
+- name: "Add Nginx Ingress repository"
+  kubernetes.core.helm_repository:
+    name: ingress-nginx
+    url: "{{ kubernetes_ingress_helm_repo }}"
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Update Helm repositories"
+  ansible.builtin.command:
+    cmd: helm repo update
+  changed_when: false
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Create ingress namespace"
+  kubernetes.core.k8s:
+    name: "{{ kubernetes_ingress_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: "Deploy Nginx Ingress Controller"
+  kubernetes.core.helm:
+    name: ingress-nginx
+    chart_ref: "{{ kubernetes_ingress_helm_chart }}"
+    release_namespace: "{{ kubernetes_ingress_namespace }}"
+    create_namespace: true
+    values:
+      controller:
+        ingressClass: "{{ kubernetes_ingress_class_name }}"
+        service:
+          type: "{{ kubernetes_ingress_service_type }}"
+          externalIPs: "{{ [kubernetes_ingress_external_ip] if kubernetes_ingress_external_ip else omit }}"
+        ports:
+          http: {{ kubernetes_ingress_http_port }}
+          https: {{ kubernetes_ingress_https_port }}
+        resources:
+          limits:
+            cpu: "{{ kubernetes_ingress_controller_resources.limits.cpu }}"
+            memory: "{{ kubernetes_ingress_controller_resources.limits.memory }}"
+          requests:
+            cpu: "{{ kubernetes_ingress_controller_resources.requests.cpu }}"
+            memory: "{{ kubernetes_ingress_controller_resources.requests.memory }}"
+        metrics:
+          enabled: {{ kubernetes_ingress_enable_metrics | bool }}
+          serviceMonitor:
+            enabled: {{ kubernetes_ingress_enable_prometheus_rule | bool }}
+        securityContext: {{ kubernetes_ingress_security_context }}
+        publishService:
+          enabled: true
+      annotations: {{ kubernetes_ingress_annotations | default({}) | to_nice_yaml }}
+    wait: true
+    wait_timeout: "300s"
+  when: kubernetes_ingress_enabled | bool
+
+- name: "Set fact for installed controller"
+  ansible.builtin.set_fact:
+    _ingress_controller_installed: true
+    _ingress_controller_type: "nginx-ingress"

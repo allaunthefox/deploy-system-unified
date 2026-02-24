@@ -1,12 +1,15 @@
 ---
 - name: Load AMD SR-IOV kernel module
+  tags: [containers, runtime, gpu, sriov]
   community.general.modprobe:
     name: amdgpu
+  tags: [containers, runtime, gpu, sriov]
     params: "sriov_numvfs={{ containers_gpu_slicing.sriov.vf_count }}"
     state: present
   become: true
 
 - name: Create AMD SR-IOV configuration file
+  tags: [containers, runtime, gpu, sriov]
   ansible.builtin.template:
     src: sriov_config.j2
     dest: /etc/modprobe.d/amdgpu-sriov.conf

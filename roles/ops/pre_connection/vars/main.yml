@@ -1,1 +1,61 @@
 ---
+# Internal variables for ops/pre_connection role
+# Pre-Connection Configuration
+
+# SSH configuration paths
+pre_connection_ssh_config_dir: "/etc/ssh"
+pre_connection_sshd_config: "{{ pre_connection_ssh_config_dir }}/sshd_config"
+pre_connection_ssh_config: "{{ ansible_user_dir | default('/root') }}/.ssh/config"
+pre_connection_ssh_known_hosts: "{{ ansible_user_dir | default('/root') }}/.ssh/known_hosts"
+
+# SSH port configuration
+pre_connection_default_ssh_port: 22
+pre_connection_ssh_port_file: "/etc/ssh/sshd_port"
+pre_connection_ssh_port_check_timeout: 10
+
+# SSH port randomization configuration
+pre_connection_random_port_min: 10000
+pre_connection_random_port_max: 20000
+pre_connection_random_port_exclude:
+  - 10000
+  - 10001
+  - 10080
+  - 10443
+
+# Connection testing configuration
+pre_connection_test_timeout: 30
+pre_connection_test_retries: 3
+pre_connection_test_interval: 5
+
+# Port knocking configuration (if applicable)
+pre_connection_knocking_enabled: false
+pre_connection_knocking_sequence: []
+pre_connection_knocking_timeout: 30
+
+# Firewall configuration
+pre_connection_firewall_check: true
+pre_connection_firewall_service: "firewalld"
+pre_connection_ssh_firewall_rule: "ssh"
+
+# Network diagnostics
+pre_connection_network_check_enabled: true
+pre_connection_dns_servers:
+  - "8.8.8.8"
+  - "8.8.4.4"
+pre_connection_ping_hosts:
+  - "8.8.8.8"
+  - "1.1.1.1"
+
+# Connection state tracking
+pre_connection_state_dir: "/var/lib/deploy-system/pre_connection"
+pre_connection_state_file: "{{ pre_connection_state_dir }}/connection_state.json"
+pre_connection_cache_dir: "/var/cache/deploy-system/pre_connection"
+
+# Endlessh integration
+pre_connection_endlessh_enabled: false
+pre_connection_endlessh_port: 2222
+pre_connection_endlessh_config: "/etc/endlessh/config"
+
+# SSH daemon status check
+pre_connection_sshd_service_name: "sshd"
+pre_connection_sshd_check_timeout: 10

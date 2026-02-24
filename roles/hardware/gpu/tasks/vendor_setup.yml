@@ -2,35 +2,42 @@
 # Per-Vendor Setup Logic (Included by tasks/main.yml)
 
 - name: Normalize vendor name (current iteration)
+  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     _gpu_iter_vendor: "{{ current_vendor | lower }}"
 
 - name: Validate GPU vendor
+  tags: [hardware, gpu, remediate]
   ansible.builtin.assert:
     that:
       - _gpu_iter_vendor in ['nvidia', 'amd', 'intel', 'mali', 'adreno', 'img', 'generic']
     fail_msg: "Invalid GPU vendor string: {{ _gpu_iter_vendor }}."
 
 - name: Define architecture path for vendor
+  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     _gpu_arch_path: "{{ role_path }}/arch/{{ _gpu_norm_arch }}/{{ _gpu_iter_vendor }}/main.yml"
 
 - name: Debug Architecture Path
+  tags: [hardware, gpu, remediate]
   ansible.builtin.debug:
     var: _gpu_arch_path
 
 - name: Check for Architecture/Vendor specific tasks
+  tags: [hardware, gpu, remediate]
   ansible.builtin.stat:
     path: "{{ _gpu_arch_path }}"
   register: gpu_arch_tasks
   delegate_to: localhost
 
 - name: Include Architecture/Vendor specific tasks
+  tags: [hardware, gpu, remediate]
   ansible.builtin.include_tasks:
     file: "{{ _gpu_arch_path }}"
   when: gpu_arch_tasks.stat.exists
 
 - name: Fail if no specialized support found and not generic
+  tags: [hardware, gpu, remediate]
   ansible.builtin.fail:
     msg: "No GPU support found for Arch: {{ _gpu_norm_arch }} / Vendor: {{ _gpu_iter_vendor }}"
   when:
@@ -38,6 +45,7 @@
     - _gpu_iter_vendor != 'generic'
 
 - name: Run generic GPU setup if specific vendor not found or generic requested
+  tags: [hardware, gpu, remediate]
   ansible.builtin.debug:
     msg: "Running generic GPU setup (Placeholder for logic)"
   when: not gpu_arch_tasks.stat.exists or _gpu_iter_vendor == 'generic'

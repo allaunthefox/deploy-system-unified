@@ -5,12 +5,18 @@
 
 # Production Container Host - Secure Solution Stack
 # Solution: Base Hardened Infrastructure + Container Workload
+# Features: Quantum-Ready (PQC Hybrid), ISO 27001 §9.2/10.1 Compliant
 - ansible.builtin.import_playbook: base_hardened.yml
 
 - name: Deploy Production Container Workload
   hosts: all
   become: true
   vars:
+    # Forensic Observability Settings
+    system_monitoring_forensics_enabled: true
+    system_monitoring_loki_enabled: true
+    system_monitoring_dashboard_forensic: true
+
     # Define roles sequence in vars
     production_roles:
       # Container Infrastructure Workload
@@ -21,12 +27,13 @@
       - containers/caddy
       # Monitoring
       - ops/monitoring          # Host Agent (Node Exporter)
-      - containers/monitoring   # Stack (Prometheus/Grafana)
+      - containers/monitoring   # Stack (Forensic Dashboards)
       # Backup & Disaster Recovery
       - storage/backup/restic
       - storage/backup/rclone
       # Final Solution Integrity Verification
       - security/scanning
+      - security/sbom
 
   tasks:
     - name: Execute Production Roles with Granular Checkpoints

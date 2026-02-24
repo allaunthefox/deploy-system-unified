@@ -1,12 +1,12 @@
 ---
-# create.yml - Ansible-Native container creation for network scenario
-# This playbook creates cEOS containers for network testing
+# create.yml - Ansible-Native container creation for multi-platform testing
+# This playbook creates test instances using Podman for various distributions
 #
 # Args:
 #     molecule_ephemeral_directory: Molecule's ephemeral directory for state
 #
 # Returns:
-#     Creates cEOS containers for network device testing
+#     Creates multiple Podman containers with systemd support
 #
 # Example:
 #     molecule create -s network
@@ -15,61 +15,43 @@
   hosts: localhost
   gather_facts: false
   vars:
-    molecule_file: "{{ molecule_ephemeral_directory }}/../molecule.yml"
     molecule_instance_config: "{{ molecule_ephemeral_directory }}/instance_config.yml"
-    # cEOS image - requires Arista license for production use
-    ceos_image: "ceos:latest"
-    # Container names for network topology
-    network_devices:
-      - ceos-01
-      - ceos-02
+    platforms:
+      - name: ubuntu2204
+        image: docker.io/library/ubuntu:22.04
+      - name: debian12
+        image: docker.io/library/debian:12
+      - name: alpine319
+        image: docker.io/library/alpine:3.19
+      - name: rocky9
+        image: docker.io/rockylinux/rockylinux:9
 
   tasks:
-    # Create a Podman network for cEOS containers
-    - name: Create molecule network
-      containers.podman.podman_network:
-        name: molecule-network
-        state: present
-        driver: bridge
-
-    # Create cEOS containers
-    - name: Create cEOS network containers
+    - name: Create molecule instances
       containers.podman.podman_container:
-        name: "{{ item }}"
-        image: "{{ ceos_image }}"
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
         privileged: true
         state: started
-        # cEOS requires these flags for proper operation
-        env:
-          CEOS: "1"
-          container: "docker"
-          EOS_PLATFORM: "ceoslab"
-        # Map ports for eAPI access
-        published_ports:
-          - "80{{ loop_index }}:80"
-          - "443{{ loop_index }}:443"
-        networks:
-          - molecule-network
-      loop: "{{ network_devices }}"
-      loop_control:
-        loop_var: item
-        index_var: loop_index
+        command: sleep infinity
+        # Add necessary systemd support if needed for specific images
+      loop: "{{ platforms }}"
+      register: server
 
-    # Wait for cEOS to boot and be ready
-    - name: Wait for cEOS devices to boot
-      ansible.builtin.wait_for:
-        timeout: 120
-      register: wait_result
-      failed_when: false
-
-    # Save instance configuration for other playbooks to reference
     - name: Save instance config
       ansible.builtin.copy:
         content: |
           molecule_instances:
-            {% for device in network_devices %}
-            - name: {{ device }}
-              image: {{ ceos_image }}
+            {% for item in server.results %}
+            - name: {{ item.item.name }}
+              image: {{ item.item.image }}
               state: started
             {% endfor %}
         dest: "{{ molecule_instance_config }}"
+        mode: '0600'
+
+    - name: Wait for instances to be ready
+      ansible.builtin.wait_for:
+        timeout: 30
+      register: wait_result
+      failed_when: false

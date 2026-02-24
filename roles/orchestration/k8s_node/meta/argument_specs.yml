@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: K8s node orchestration role
+    description:
+      - Prepares host for Kubernetes node operations
+      - Disables swap, configures kernel modules, and tunes network sysctl
+      - Aligns with ISO 27001 requirements for orchestration security
+    options:
+      k8s_gpu_device_plugins_enabled:
+        type: bool
+        description: Whether to deploy GPU device plugins
+        default: false

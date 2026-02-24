@@ -54,6 +54,8 @@ ansible-playbook -i inventory/your-server.ini site.yml --extra-vars "ansible_rol
 
 Each template includes:
 
+- **Quantum-Ready (PQC Hybrid)**: Native support for quantum-resistant key exchange (ML-KEM, sntrup761).
+- **ISO 27001 §9.2/10.1 Compliance**: Fully mapped access control and cryptographic tasks.
 - Core system setup
 - Security hardening appropriate for the use case
 - Container runtime setup (Podman)

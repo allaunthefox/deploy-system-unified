@@ -1,13 +1,29 @@
 ---
 # Firewalld-specific rules (RedHat/CentOS/Fedora)
-- name: Enable Firewalld Service
+# Compliance: CIS 4.4.x | STIG V-230271 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.23
+
+- name: "CIS 4.4.1.7 | STIG V-230271 | Enable Firewalld Service"
+  tags:
+    - cis_4_4_1_7
+    - stig_v_230271
+    - nist_sc_7
+    - networking
+    - firewall
+    - remediate
   ansible.builtin.systemd:
     name: firewalld
     enabled: true
     state: started
   become: true
 
-- name: Set Default Zone to Drop (Parity with UFW Default Deny)
+- name: "CIS 4.4.1.8 | STIG V-230271 | Set Default Zone to Drop (Parity with UFW Default Deny)"
+  tags:
+    - cis_4_4_1_8
+    - stig_v_230271
+    - nist_ac_4
+    - networking
+    - firewall
+    - remediate
   ansible.posix.firewalld:
     zone: public
     state: enabled
@@ -15,30 +31,53 @@
     target: DROP
   become: true
 
-- name: Allow Configured TCP Ports (Firewalld)
+- name: "CIS 4.4.1.9 | STIG V-230271 | ISO 27001 §8.20 | Allow Configured TCP Ports (Firewalld)"
+  tags:
+    - cis_4_4_1_9
+    - stig_v_230271
+    - nist_sc_7
+    - iso_27001_8_20
+    - networking
+    - firewall
+    - remediate
   ansible.posix.firewalld:
     port: "{{ item }}/tcp"
     permanent: true
     state: enabled
     immediate: true
-  loop: "{{ firewall_allowed_tcp_ports_effective | default(firewall_allowed_tcp_ports) }}"
+  loop: "{{ networking_firewall_allowed_tcp_ports_effective | default(networking_firewall_allowed_tcp_ports) }}"
   become: true
 
-- name: Allow Configured UDP Ports (Firewalld)
+- name: "CIS 4.4.1.10 | STIG V-230271 | Allow Configured UDP Ports (Firewalld)"
+  tags:
+    - cis_4_4_1_10
+    - stig_v_230271
+    - nist_sc_7
+    - networking
+    - firewall
+    - remediate
   ansible.posix.firewalld:
     port: "{{ item }}/udp"
     permanent: true
     state: enabled
     immediate: true
-  loop: "{{ firewall_allowed_udp_ports | default([]) }}"
+  loop: "{{ networking_firewall_allowed_udp_ports | default([]) }}"
   become: true
 
-- name: Apply Additional Rich Rules
+- name: "CIS 4.4.1.11 | STIG V-230271 | ISO 27001 §8.23 | Apply Additional Rich Rules"
+  tags:
+    - cis_4_4_1_11
+    - stig_v_230271
+    - nist_ac_4
+    - iso_27001_8_23
+    - networking
+    - firewall
+    - remediate
   ansible.posix.firewalld:
     rich_rule: 'rule family="ipv4" source address="{{ item.src }}" port port="{{ item.port }}" protocol="{{ item.proto }}" accept'
     permanent: true
     state: enabled
     immediate: true
-  loop: "{{ firewall_additional_rules | default([]) }}"
+  loop: "{{ networking_firewall_additional_rules | default([]) }}"
   when: item.src is defined
   become: true

@@ -1,0 +1,30 @@
+---
+galaxy_info:
+  role_name: timeshift
+  author: deploysystemunified
+  description: timeshift management and configuration
+  license: MIT
+  min_ansible_version: '2.15'
+  platforms:
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags:
+    - timeshift
+    - backup
+    - snapshot
+    - system_restore
+    - recovery
+    - iso27040
+    - iso27001
+    - compliance
+    - linux
+    - ubuntu
+    - debian
+    - desktop
+    - server
+    - data_protection
+    - point_in_time
+collections:
+  - ansible.builtin
+
+dependencies: []

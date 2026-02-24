@@ -1,0 +1,84 @@
+---
+# Security - HashiCorp Vault Integration Role
+# Supports: Vault agent injector, Kubernetes auth, dynamic secrets
+
+- name: Check if Vault is already configured
+  ansible.builtin.stat:
+    path: /etc/vault/config.hcl
+  register: vault_config_check
+  changed_when: false
+
+- name: Check for Kubernetes environment
+  ansible.builtin.set_fact:
+    is_kubernetes: "{{ true if (ansible_facts['distribution'] == 'Ubuntu' and lookup('env', 'KUBERNETES_SERVICE_HOST') | default('', true) != '') or (lookup('file', '/var/run/secrets/kubernetes.io/serviceaccount/namespace') | default('', true) != '') else false }}"
+  changed_when: false
+  failed_when: false
+
+- name: Install Vault binary (standalone mode)
+  ansible.builtin.unarchive:
+    src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_{{ ansible_facts['system']['hardware'] }}-linux.zip"
+    dest: /usr/local/bin
+    remote_src: true
+    creates: /usr/local/bin/vault
+  become: true
+  when:
+    - vault_install_mode == 'standalone'
+    - not vault_config_check.stat.exists
+  tags:
+    - vault
+    - security
+    - secrets
+
+- name: Create Vault user and group
+  ansible.builtin.group:
+    name: vault
+    system: true
+  become: true
+  when:
+    - vault_install_mode == 'standalone'
+    - not vault_config_check.stat.exists
+  tags:
+    - vault
+    - security
+    - secrets
+
+- name: Create Vault directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: vault
+    group: vault
+    mode: '0750'
+  become: true
+  loop:
+    - /etc/vault
+    - /var/lib/vault
+    - /var/log/vault
+  when:
+    - vault_install_mode == 'standalone'
+    - not vault_config_check.stat.exists
+  tags:
+    - vault
+    - security
+    - secrets
+
+- name: Deploy Vault configuration file
+  ansible.builtin.template:
+    src: vault.hcl.j2
+    dest: /etc/vault/config.hcl
+    owner: vault
+    group: vault
+    mode: '0640'
+    validate: 'vault validate -config=%s'
+  become: true
+  notify: restart_vault
+  when:
+    - vault_install_mode == 'standalone'
+  tags:
+    - vault
+    - security
+    - secrets
+
+- name: Set Vault integration complete flag
+  ansible.builtin.set_fact:
+    vault_integration_complete: true

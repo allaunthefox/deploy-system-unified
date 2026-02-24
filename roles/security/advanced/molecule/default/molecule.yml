@@ -2,22 +2,68 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: default
+  options:
+    managed: false
+    ansible_connection_options:
+      ansible_connection: containers.podman.podman
 platforms:
-  - name: instance
-    image: geerlingguy/docker-ubuntu2204-ansible:latest
-    privileged: true
-    pre_build_image: true
+  - name: advanced-ubuntu-2204
+    image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+  - name: advanced-ubuntu-2404
+    image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+  - name: advanced-debian-12
+    image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  - name: advanced-alpine-319
+    image: docker.io/geerlingguy/docker-alpine319-ansible:latest
+  - name: advanced-rockylinux-9
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+  - name: advanced-amazonlinux-2023
+    image: docker.io/geerlingguy/docker-amazonlinux2023-ansible:latest
+prerun: false
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      deprecation_warnings: false
+  inventory:
+    host_vars:
+      advanced-ubuntu-2204:
+        ansible_connection: containers.podman.podman
+        ansible_host: advanced-ubuntu-2204
+      advanced-ubuntu-2404:
+        ansible_connection: containers.podman.podman
+        ansible_host: advanced-ubuntu-2404
+      advanced-debian-12:
+        ansible_connection: containers.podman.podman
+        ansible_host: advanced-debian-12
+      advanced-alpine-319:
+        ansible_connection: containers.podman.podman
+        ansible_host: advanced-alpine-319
+      advanced-rockylinux-9:
+        ansible_connection: containers.podman.podman
+        ansible_host: advanced-rockylinux-9
+      advanced-amazonlinux-2023:
+        ansible_connection: containers.podman.podman
+        ansible_host: advanced-amazonlinux-2023
+  env:
+    ANSIBLE_ROLES_PATH: ../../../../
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    prepare: prepare.yml
+    cleanup: cleanup.yml
+    side_effect: side_effect.yml
+    verify: verify.yml
 verifier:
   name: ansible
 scenario:
   test_sequence:
-    - destroy
     - create
     - prepare
     - converge
     - idempotence
     - verify
+    - cleanup
     - destroy

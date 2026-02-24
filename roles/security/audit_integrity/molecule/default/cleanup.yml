@@ -1,0 +1,9 @@
+---
+- name: Cleanup
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Cleanup placeholder
+      ansible.builtin.debug:
+        msg: "No cleanup steps required for security/audit_integrity."

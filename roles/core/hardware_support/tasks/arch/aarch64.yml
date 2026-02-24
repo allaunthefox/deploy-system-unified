@@ -2,6 +2,7 @@
 # aarch64 specific hardware tasks
 
 - name: Set Hardware Facts (aarch64)
+  tags: [core, hardware, audit]
   ansible.builtin.set_fact:
     host_cpu_has_avx: false
     host_cpu_has_avx2: false

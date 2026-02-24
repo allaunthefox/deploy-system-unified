@@ -1,0 +1,147 @@
+# Goss tests for security/compliance role
+# Compliance Framework Validation (CIS, NIST, ISO 27001, STIG)
+# Validates security controls and compliance mapping
+
+# =============================================================================
+# FILE TESTS - Verify compliance configuration files
+# =============================================================================
+file:
+  # CIS Benchmark compliance files
+  /etc/shadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: shadow
+
+  /etc/passwd:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/group:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  /etc/gshadow:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: shadow
+
+  # Compliance configuration
+  /etc/login.defs:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # Audit configuration
+  /etc/audit/auditd.conf:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  # CIS 1.5.1 - Ensure core dumps are restricted
+  /etc/security/limits.conf:
+    exists: true
+    mode: "0640"
+    owner: root
+    group: root
+
+  # CIS 1.6 - Ensure SELinux/AppArmor is installed
+  /etc/apparmor:
+    exists: true
+    filetype: directory
+
+# =============================================================================
+# COMMAND TESTS - Verify compliance settings
+# =============================================================================
+command:
+  # Verify root is only UID 0 account
+  root_only_uid_zero:
+    exec: 'awk -F: '\''($3 == 0) {print $1}'\'' /etc/passwd | wc -l'
+    exit-status: 0
+    stdout:
+      - /^1$/
+    timeout: 5000
+
+  # Verify no duplicate UIDs exist
+  no_duplicate_uids:
+    exec: 'cut -f3 -d":" /etc/passwd | sort -n | uniq -d | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # Verify system accounts are secured
+  system_accounts_secured:
+    exec: 'awk -F: '\''($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print $1}'\'' /etc/passwd | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 5000
+
+  # Verify password max days is 90 or less
+  password_max_days:
+    exec: 'grep "^PASS_MAX_DAYS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^(90|[1-8][0-9])$/
+    timeout: 5000
+
+  # Verify password min days is 7 or more
+  password_min_days:
+    exec: 'grep "^PASS_MIN_DAYS" /etc/login.defs | awk "{print $2}"'
+    exit-status: 0
+    stdout:
+      - /^[7-9]|[1-9][0-9]+$/
+    timeout: 5000
+
+  # Verify no world-writable files exist
+  no_world_writable:
+    exec: 'find / -type f -perm -002 -not -path "/proc/*" -not -path "/sys/*" -not -path "/dev/*" 2>/dev/null | wc -l'
+    exit-status: 0
+    stdout:
+      - /^0$/
+    timeout: 60000
+
+  # Verify sticky bit is set on /tmp
+  sticky_bit_tmp:
+    exec: 'ls -ld /tmp | awk "{print $1}"'
+    exit-status: 0
+    stdout:
+      - /^.d.*t/
+    timeout: 5000
+
+  # Verify auditd is installed
+  auditd_installed:
+    exec: 'which auditd || which auditctl'
+    exit-status: 0
+    timeout: 5000
+
+  # Verify audit service is enabled
+  auditd_enabled:
+    exec: 'systemctl is-enabled auditd 2>/dev/null || echo "disabled"'
+    exit-status: 0
+    stdout:
+      - /enabled|disabled/
+    timeout: 5000
+
+# =============================================================================
+# PACKAGE TESTS - Verify compliance packages
+# =============================================================================
+package:
+  audit:
+    installed: true
+
+# =============================================================================
+# SERVICE TESTS - Verify compliance services
+# =============================================================================
+service:
+  auditd:
+    enabled: true
+    running: true

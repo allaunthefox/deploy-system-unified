@@ -1,9 +1,12 @@
 ---
 - name: Configure LXC container for Intel OneAPI
+  tags: [containers, lxc, gpu, intel]
   block:
     - name: Install Intel OneAPI toolkit (Debian/Ubuntu)
+  tags: [containers, lxc, gpu, intel]
       block:
         - name: Download Intel OneAPI GPG key
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.get_url:
             url: "{{ intel_oneapi_gpg_key_url }}"
             dest: "{{ intel_oneapi_gpg_keyring_path }}"
@@ -11,6 +14,7 @@
           become: true
 
         - name: Ensure Intel OneAPI fingerprint is configured when verification is enabled
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.assert:
             that:
               - intel_oneapi_gpg_fingerprint | length > 0
@@ -18,6 +22,7 @@
           when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
 
         - name: Read Intel OneAPI GPG fingerprint
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.command:
             cmd: "gpg --show-keys --with-colons {{ intel_oneapi_gpg_keyring_path }}"
           register: intel_oneapi_keyinfo
@@ -25,6 +30,7 @@
           when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
 
         - name: Extract Intel OneAPI GPG fingerprint
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.set_fact:
             intel_oneapi_actual_fingerprint: >-
               {{ (intel_oneapi_keyinfo.stdout_lines
@@ -36,6 +42,7 @@
           when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
 
         - name: Verify Intel OneAPI GPG fingerprint
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.assert:
             that:
               - intel_oneapi_actual_fingerprint != ""
@@ -44,19 +51,24 @@
           when: intel_oneapi_gpg_fingerprint_verify | default(false) | bool
 
         - name: Add Intel OneAPI repository
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.apt_repository:
             repo: "{{ intel_oneapi_repo }}"
             filename: oneapi
+  tags: [containers, lxc, gpu, intel]
           become: true
 
         - name: Install Intel OneAPI toolkit package
+  tags: [containers, lxc, gpu, intel]
           ansible.builtin.apt:
             name: "intel-oneapi-{{ lxc_gpu_slicing.oneapi.toolkit }}"
+  tags: [containers, lxc, gpu, intel]
             state: present
             update_cache: true
           become: true
       when: ansible_facts['os_family'] == 'Debian'
     - name: Set Intel OneAPI environment variables
+  tags: [containers, lxc, gpu, intel]
       ansible.builtin.lineinfile:
         path: /etc/profile.d/intel-oneapi.sh
         line: "{{ item }}"
@@ -66,6 +78,7 @@
         - 'source /opt/intel/oneapi/setvars.sh'
       become: true
     - name: Create LXC OneAPI configuration template
+  tags: [containers, lxc, gpu, intel]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/oneapi.conf

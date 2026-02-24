@@ -1,4 +1,7 @@
 ---
+# Handlers for container_networks role - Container Network Services
+# ISO 9001 Structural Consistency - Handler definitions for container networking
+
 - name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
@@ -6,3 +9,74 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
+  tags:
+    - networking
+    - containers
+
+- name: restart_podman
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - podman
+    - podman.socket
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  environment: "{{ containers_systemd_env }}"
+  failed_when: false
+  tags:
+    - networking
+    - containers
+
+- name: restart_systemd_networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags:
+    - networking
+    - containers
+
+- name: reload_network_config
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: reloaded
+  become: true
+  tags:
+    - networking
+    - containers
+
+- name: restart_container_networks
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - systemd-networkd
+    - podman
+    - podman.socket
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  environment: "{{ containers_systemd_env }}"
+  failed_when: false
+  tags:
+    - networking
+    - containers
+
+- name: restart_netavark
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - podman
+    - netavark
+  become: true
+  become_user: "{{ containers_systemd_owner }}"
+  environment: "{{ containers_systemd_env }}"
+  failed_when: false
+  tags:
+    - networking
+    - containers
+    - netavark

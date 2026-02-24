@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove virtual_guest test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - virtual-guest-ubuntu-2204
+        - virtual-guest-debian-12
+        - virtual-guest-alpine-319
+        - virtual-guest-rockylinux-9

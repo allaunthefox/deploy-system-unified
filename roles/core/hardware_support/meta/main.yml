@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: hardware_support
-  author: deploy-system-unified
-  description: CPU features and hardware clock synchronization
+  author: deploysystemunified
+  description: "STD-CORE | Hardware capability discovery and platform-specific tuning"
   license: MIT
   min_ansible_version: "2.15"
   platforms:
@@ -19,6 +19,21 @@ galaxy_info:
   galaxy_tags:
     - core
     - hardware
+    - discovery
+    - crypto
+    - iso_9001
+    - iso27001
+    - system
     - cpu
+    - platform
+    - nist80053
+    - cis
+    - automation
+    - linux
+    - infrastructure
+    - tuning
+
+collections:
+  - ansible.builtin
 
 dependencies: []

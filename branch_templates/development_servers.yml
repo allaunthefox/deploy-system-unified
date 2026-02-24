@@ -5,6 +5,7 @@
 
 # Development Workstation - Flexible Solution Stack
 # Solution: Base Hardened Infrastructure + Dev Container Workload
+# Features: Quantum-Ready (PQC Hybrid), ISO 27001 Compliant
 - ansible.builtin.import_playbook: base_hardened.yml
 - name: Deploy Development Container Workload
   hosts: all

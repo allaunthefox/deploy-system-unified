@@ -1,0 +1,28 @@
+---
+argument_specs:
+  main:
+    short_description: Container ops role
+    description:
+      - Deploys operational containerized services (Homarr, Vaultwarden, Wiki.js)
+      - Manages an Ops Pod and its associated networking/storage
+      - Configures Caddy ingress for all operational services
+    options:
+      containers_ops_enable:
+        type: bool
+        description: Enable or disable the ops stack
+        default: true
+      containers_homarr_enable:
+        type: bool
+        description: Enable Homarr dashboard
+        default: true
+      containers_vaultwarden_enable:
+        type: bool
+        description: Enable Vaultwarden password manager
+        default: true
+      containers_vaultwarden_admin_token:
+        type: str
+        description: Argon2 hash for Vaultwarden admin access
+      containers_wiki_enable:
+        type: bool
+        description: Enable Wiki.js
+        default: false

@@ -1,21 +1,39 @@
 ---
 # Tasks for core/entropy role
-- name: Refresh package cache for entropy dependencies (Debian/Ubuntu)
+# CIS 3.5.x | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1
+
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12 | Refresh package cache for entropy dependencies (Debian/Ubuntu)"
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   become: true
   when: ansible_os_family == 'Debian'
+  tags:
+    - cis_3_5_1
+    - stig_v_230300
+    - nist_sc_12
+    - entropy
+    - prerequisite
 
-- name: Install entropy enhancement services (idempotent)
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1 | Action 530001 | Install entropy enhancement services (idempotent)"
   ansible.builtin.package:
     name:
       - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_package }}"
       - "{{ entropy_service_mapping[ansible_distribution | lower].rng_package }}"
     state: present
   become: true
+  tags:
+    - cis_3_5_1
+    - stig_v_230300
+    - nist_sc_12
+    - nist_sp_800_90
+    - iso_27001_10_1
+    - core
+    - entropy
+    - remediate
   when: ansible_distribution | lower in entropy_service_mapping.keys()
-- name: Enable and start entropy enhancement services (idempotent)
+
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12 | ISO 27001 §10.1 | Action 300014 | Enable and start entropy enhancement services (idempotent)"
   ansible.builtin.systemd:
     name: "{{ item }}"
     enabled: true
@@ -24,14 +42,30 @@
     - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_service }}"
     - "{{ entropy_service_mapping[ansible_distribution | lower].rng_service }}"
   become: true
+  tags:
+    - cis_3_5_1
+    - stig_v_230300
+    - nist_sc_12
+    - iso_27001_10_1
+    - core
+    - entropy
+    - remediate
   ignore_errors: "{{ is_virtualized | default(false) }}"
   when:
     - ansible_service_mgr == 'systemd'
     - ansible_distribution | lower in entropy_service_mapping.keys()
     - not (is_virtualized | default(false))
-- name: Validate entropy services are running (idempotent)
+
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12 | Validate entropy services are running (idempotent)"
   ansible.builtin.service_facts:
-- name: Verify entropy services status
+  tags:
+    - cis_3_5_1
+    - stig_v_230300
+    - nist_sc_12
+    - entropy
+    - verify
+
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1 | Verify entropy services status"
   ansible.builtin.assert:
     that:
       - ansible_facts.services[entropy_service_mapping[ansible_distribution | lower].entropy_service + '.service'].state == 'running'
@@ -42,3 +76,11 @@
     - ansible_service_mgr == 'systemd'
     - ansible_distribution | lower in entropy_service_mapping.keys()
     - not is_virtualized | default(false)
+  tags:
+    - cis_3_5_1
+    - stig_v_230300
+    - nist_sc_12
+    - nist_sp_800_90
+    - iso_27001_10_1
+    - entropy
+    - validate

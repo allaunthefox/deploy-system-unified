@@ -1,0 +1,61 @@
+---
+# Handlers for hardware role
+
+- name: reload_udev
+  ansible.builtin.shell: set -o pipefail && udevadm control --reload-rules && udevadm trigger
+  args:
+    executable: /bin/bash
+  become: true
+  listen: "reload udev"
+  changed_when: true
+  failed_when: false
+
+- name: restart_watchdog
+  ansible.builtin.systemd:
+    name: watchdog
+    state: restarted
+  become: true
+  listen: "restart watchdog"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_smartmontools
+  ansible.builtin.systemd:
+    name: smartmontools
+    state: restarted
+  become: true
+  listen: "restart smartmontools"
+  when: ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: update_initramfs
+  ansible.builtin.command: update-initramfs -u
+  become: true
+  listen: "update initramfs"
+  when: ansible_os_family == 'Debian'
+  changed_when: true
+  failed_when: false
+
+- name: update_initramfs_redhat
+  ansible.builtin.command: dracut --force
+  become: true
+  listen: "update initramfs"
+  when: ansible_os_family == 'RedHat'
+  changed_when: true
+  failed_when: false
+
+- name: update_initramfs_arch
+  ansible.builtin.command: mkinitcpio -P
+  become: true
+  listen: "update initramfs"
+  when: ansible_os_family == 'Archlinux'
+  changed_when: true
+  failed_when: false
+
+- name: update_initramfs_alpine
+  ansible.builtin.command: mkinitfs
+  become: true
+  listen: "update initramfs"
+  when: ansible_os_family == 'Alpine'
+  changed_when: true
+  failed_when: false

@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: File integrity monitoring role
+    description:
+      - Installs and configures AIDE (Advanced Intrusion Detection Environment)
+      - Initializes the integrity baseline database
+      - Schedules periodic integrity checks via cron and systemd
+    options:
+      security_file_integrity_enabled:
+        type: bool
+        description: Enable or disable file integrity monitoring
+        default: true

@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: Cryptographic log integrity role
+    description:
+      - Implements systemd Forward Secure Sealing (FSS)
+      - Ensures audit logs are immutable and tamper-evident
+      - Aligns with ISO 27037 and NIST AU-2
+    options:
+      security_audit_integrity_store_keys:
+        type: bool
+        description: Whether to store Forward Secure Sealing (FSS) verification keys on the controller
+        default: true
+      security_audit_integrity_output_dir:
+        type: str
+        description: Directory on the controller where encrypted verification keys are stored
+        default: "/tmp/deploy-system-audit-integrity"
+      security_audit_integrity_vault_encrypt_id:
+        type: str
+        description: Ansible Vault ID to use for encrypting the generated FSS key artifacts
+        default: "default"

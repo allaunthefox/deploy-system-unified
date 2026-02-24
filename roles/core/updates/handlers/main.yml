@@ -1,1 +1,26 @@
 ---
+# Handlers for core/updates role
+# Note: Automatic update services are self-managing and do not require explicit restart handlers
+# unattended-upgrades (Debian/Ubuntu) and dnf-automatic (RedHat/Fedora) are timer-based services
+
+- name: restart_unattended_upgrades
+  ansible.builtin.systemd:
+    name: unattended-upgrades
+    state: restarted
+  become: true
+  listen: "restart unattended-upgrades"
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_service_mgr == 'systemd'
+  failed_when: false
+
+- name: restart_dnf_automatic
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    state: restarted
+  become: true
+  listen: "restart dnf-automatic"
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_service_mgr == 'systemd'
+  failed_when: false

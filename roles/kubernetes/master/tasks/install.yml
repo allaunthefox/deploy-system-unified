@@ -2,6 +2,7 @@
 # Install K3s binary
 
 - name: Create K3s data directory
+  tags: [kubernetes, master, remediate]
   ansible.builtin.file:
     path: "{{ kubernetes_data_dir }}"
     state: directory
@@ -9,6 +10,7 @@
   become: true
 
 - name: Download K3s binary
+  tags: [kubernetes, master, remediate]
   ansible.builtin.get_url:
     url: "{{ kubernetes_k3s_bin_url[_k8s_norm_arch] }}"
     dest: "/usr/local/bin/k3s"
@@ -21,6 +23,7 @@
   delay: 5
 
 - name: Create symbolic links for kubectl/crictl
+  tags: [kubernetes, master, remediate]
   ansible.builtin.file:
     src: "/usr/local/bin/k3s"
     dest: "/usr/local/bin/{{ item }}"

@@ -1,0 +1,16 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove anubis test containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+        force_delete: true
+      loop:
+        - anubis-ubuntu-2204
+        - anubis-debian-12
+        - anubis-alpine-319
+        - anubis-rockylinux-9

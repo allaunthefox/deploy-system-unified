@@ -1,15 +1,26 @@
 ---
 # Security access role - SSH and user access configuration
 
-- name: Ensure OpenSSH Server is installed
+- name: "CIS 1.1.5 | STIG V-230229 | ISO 27001 §9.2 | NIST IA-2 | NIST AC-2 | NIST AC-17 | Action 510000 | Ensure OpenSSH Server is installed"
   ansible.builtin.package:
     name: "{{ 'openssh' if ansible_os_family == 'Archlinux' else 'openssh-server' }}"
     state: present
   become: true
+  tags:
+    - cis_1_1_5
+    - stig_v_230229
+    - nist_ia_2
+    - nist_ac_2
+    - nist_ac_17
+    - security
+    - access
 
 - name: Determine SSH service name
   ansible.builtin.set_fact:
     ssh_service_name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"
+  tags:
+    - security
+    - access
 
 - name: Ensure SSH privilege separation directory exists
   ansible.builtin.file:
@@ -17,6 +28,11 @@
     state: directory
     mode: '0755'
   become: true
+  tags:
+    - cis_1_1_5
+    - stig_v_230229
+    - security
+    - access
 
 - name: Check for systemctl presence
   ansible.builtin.stat:
@@ -24,6 +40,10 @@
   register: systemctl_check
   changed_when: false
   become: true
+  tags:
+    - security
+    - access
+    - internal
 
 - name: Ensure SSH service is running
   ansible.builtin.systemd:
@@ -35,18 +55,45 @@
   when:
     - ansible_facts['service_mgr'] == 'systemd'
     - systemctl_check.stat.exists
-- name: Create wheel group if not exists
+  tags:
+    - cis_1_1_5
+    - stig_v_230229
+    - nist_ac_2
+    - security
+    - access
+
+- name: "CIS 1.1.5 | STIG V-230230 | NIST AC-2 | NIST AC-5 | Action 510010 | Create wheel group if not exists"
   ansible.builtin.group:
     name: wheel
     state: present
   become: true
-- name: Configure sudo for wheel group
+  tags:
+    - cis_1_1_5
+    - stig_v_230230
+    - nist_ac_2
+    - nist_ac_5
+    - security
+    - access
+
+- name: "CIS 7.1 | STIG V-230235 | STIG V-230236 | ISO 27001 §9.2 | NIST AC-2 | NIST AC-5 | NIST AC-6 | NIST IA-2 | NIST IA-5 | Action 510023 | Configure sudo for wheel group"
   ansible.builtin.lineinfile:
     path: /etc/sudoers
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
   become: true
+  tags:
+    - cis_7_1
+    - stig_v_230235
+    - stig_v_230236
+    - iso_27001_9_2
+    - nist_ac_2
+    - nist_ac_5
+    - nist_ac_6
+    - nist_ia_2
+    - nist_ia_5
+    - security
+    - access
 
 - name: Validate admin password hash (if enforcement enabled)
   ansible.builtin.assert:
@@ -58,22 +105,34 @@
       Admin password hash is missing, placeholder, or not hashed. Store a valid
       hash in encrypted secrets (SOPS/Vault) and set access_admin_password_enforce: true.
   when: access_admin_password_enforce | bool
+  tags:
+    - nist_ia_5
+    - nist_ia_2
+    - security
+    - access
 
-- name: Set admin account password hash (idempotent)
+- name: "ISO 27001 §9.2 | NIST IA-2 | NIST IA-5 | Action 510005 | Set admin account password hash (idempotent)"
   ansible.builtin.user:
     name: "{{ access_admin_user }}"
     password: "{{ access_admin_password_hash }}"
     update_password: always
   become: true
+  tags:
+    - iso_27001_9_2
+    - nist_ia_2
+    - nist_ia_5
+    - security
+    - access
+    - remediate
   when:
     - access_admin_password_hash | default('') | length > 0
     - access_admin_password_hash not in access_admin_password_placeholders
     - access_admin_password_hash is match('^\\$')
-- name: Configure SSH Match blocks (User-level IP restrictions)
+
+- name: "NIST AC-14 | NIST IA-3 | ISO 27001 §9.2 | Action 510005 | Configure SSH Match blocks (User-level IP restrictions)"
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
     marker: "# {mark} ANSIBLE MANAGED SSH MATCH RULES"
-    insertafter: EOF
     block: |
       {% for rule in ssh_match_rules %}
       Match {{ rule.type | default('User') }} {{ rule.name }}{% if rule.address is defined %} Address {{ rule.address }}{% endif %}
@@ -84,7 +143,21 @@
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
   notify: 'restart_sshd'
+  tags:
+    - nist_ac_14
+    - nist_ia_3
+    - iso_27001_9_2
+    - nist_ac_3
+    - nist_ac_17
+    - security
+    - access
+    - ssh
+    - remediate
   when: ssh_match_rules is defined and ssh_match_rules | length > 0
+
 - name: Set access configuration completion flag
   ansible.builtin.set_fact:
     security_access_complete: true
+  tags:
+    - security
+    - access

@@ -4,12 +4,16 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: ubuntu
+  - name: ubuntu-2204
     image: geerlingguy/docker-ubuntu2204-ansible:latest
     privileged: true
     pre_build_image: true
-  - name: fedora
-    image: geerlingguy/docker-fedora37-ansible:latest
+  - name: debian-12
+    image: geerlingguy/docker-debian12-ansible:latest
+    privileged: true
+    pre_build_image: true
+  - name: fedora-39
+    image: geerlingguy/docker-fedora39-ansible:latest
     privileged: true
     pre_build_image: true
 provisioner:

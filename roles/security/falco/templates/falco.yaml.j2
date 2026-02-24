@@ -1,0 +1,168 @@
+# Falco Configuration
+# Managed by Ansible - DO NOT EDIT MANUALLY
+
+# Rules
+rules_file:
+  - /etc/falco/falco_rules.yaml
+  - /etc/falco/falco_rules.local.yaml
+{% if falco_custom_rules_src is defined %}
+  - /etc/falco/rules.d/falco-rules.yaml
+{% endif %}
+
+# Plugins
+plugins: []
+
+# Load on startup
+load_plugins: []
+
+# Time
+time_format: "{{ '%Y-%m-%d %T' }}"
+
+# Log level
+log_level: {{ falco_config.log_level | default('info') }}
+
+# Priority
+priority: {{ falco_config.priority | default('debug') }}
+
+# Outputs
+{% if falco_outputs is defined and falco_outputs | length > 0 %}
+outputs:
+{% for output in falco_outputs %}
+  - type: {{ output.type }}
+{% if output.file_path is defined %}
+    file_path: {{ output.file_path }}
+{% endif %}
+{% if output.format is defined %}
+    format: "{{ output.format }}"
+{% endif %}
+{% if output.webhook_url is defined %}
+    webhook_url: {{ output.webhook_url }}
+{% endif %}
+{% if output.webhook_auth is defined %}
+    webhook_auth: {{ output.webhook_auth }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+# Buffered outputs
+buffered_outputs: false
+
+# Syscall event sources
+syscall_event_sources:
+  - syscall
+
+# Syscall drop failed exit code
+syscall_drop_failed_exit_code: 0
+
+# Syscall event timeouts
+syscall_event_timeouts:
+  max_ns: {{ 6000000000 | default('6s') }}
+
+# Syscall buffer dimension
+syscall_buf_size_preset: {{ 4 }}
+
+# The truncation number below is for handling the backward compatibility with old Falco versions.
+# It is not a parameter that the user is expected to change.
+truncation_file_size: 1048576
+
+# falco_gui: the address where Falco will listen for gRPC connections.
+# gRPC is disabled by default.
+# By specifying an address, a self-signed certificate will be generated.
+# This should be in the format <ip>:<port>
+# Make sure the port is available and reachable from the gRPC client.
+# Examples: "0.0.0.0:5060" or "localhost:5060"
+# NOTE: The gRPC server is disabled by default. To enable, set grpc_enabled to true.
+grpc:
+  enabled: false
+  bind_address: "0.0.0.0:5060"
+  threadiness: 0
+  max_connections: 1000
+  max_message_size: 4194304
+
+# gRPC output service. This is a simple service to get the alert stream.
+grpc_output:
+  enabled: false
+
+# Container engine settings
+container_engine:
+  engine: {{ falco_container_engine | default('docker') }}
+
+# Base OS image detection
+base_images:
+  docker:
+    - docker.io/library/
+
+# For example, set "default" to select all the engine fields and all the container and pod labels
+# of the underlying container runtime (e.g. docker, containerd, etc).
+# You can also select specific container runtime and specific fields.
+# The available fields are those under the container_label and runtime_container_label dictionaries.
+# The format is <container runtime>.<dictionary with fields>
+# E.g.:
+#   - container_label
+#   - runtime_container_label
+# These are ignored if container_label_fields is empty.
+container_label_fields:
+  - container_label
+
+# Pod namespace label. Different fields are used for different runtimes.
+pod_labels:
+  - pod_label
+
+# Namespace label. The pod namespace label.
+namespace_label: "io.kubernetes.pod.namespace"
+
+# Container JSON logging
+json_output: {{ falco_config.json_output | default(true) }}
+json_include_output_properties: true
+json_include_tags_if_contained: true
+
+# Use a dummy JSON output if one is not enabled in outputs
+# (the JSON output must be enabled to use this feature)
+json_dummy_connectors:
+  - name: dummy
+
+# Send Falco logs to standard error
+stderr_output: {{ falco_config.console_output | default(false) }}
+
+# The `rules` tag is an advanced feature and is not meant for casual users.
+# It is used to enable or disable loading of custom rules tags that might be present in the
+# /etc/falco/rules.d directory.
+# Loading rules tagged with some tag that is not in this list, will be prevented.
+# Leave empty or remove to load all rules.
+# The default is a safe and backward-compatible configuration.
+# This option is currently experimental and might change in the future.
+rules_tags:
+  - [main]
+  - [maturity_stable]
+  - [maturity_ga]
+  - [maturity_deprecated]
+
+# Syscall actions (for internal use only, no CLI flag)
+syscall_actions:
+  - log
+  - alert
+
+# Action for a rule that doesn't match any syscall event
+# Available actions:
+#   log, send_alert, ignore, exit
+default_rules_actions:
+  - log
+  - ignore
+
+# syscalls here are only added as a fail-safe
+# They are excluded in favor of custom rules
+syscall_drop_exceptions: []
+
+# Drop the first syscall that can't be returned in k8s audit logs
+# when an error occurs
+k8s_audit_rate_limit: 1
+
+# Drop the following syscalls before truncating k8s audit event
+k8s_audit_truncation_max_size: 16384
+k8s_audit_truncation_max_field: 80
+k8s_audit_truncation_max_items: 100
+
+# Pause output for a time
+# Not used anywhere, but kept for backward compatibility
+# It might be implemented again in the future.
+output_timeout: 2000

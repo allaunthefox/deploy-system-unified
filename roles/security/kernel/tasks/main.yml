@@ -4,8 +4,12 @@
 - name: Detect Virtualization Environment (Internal)
   ansible.builtin.set_fact:
     _sec_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+  tags:
+    - security
+    - kernel
+    - internal
 
-- name: Apply kernel hardening parameters
+- name: "CIS 3.1.1 | CIS 3.1.2 | CIS 3.2.1 | CIS 3.2.2 | CIS 3.2.3 | CIS 3.2.4 | CIS 3.2.5 | CIS 3.2.6 | CIS 3.2.7 | CIS 3.3.1 | CIS 3.3.2 | CIS 3.3.3 | STIG V-230231 | ISO 27001 §8.26 | NIST SC-8 | NIST SC-7 | NIST SC-5 | NIST SC-4 | NIST SC-3 | NIST AC-4 | NIST SI-16 | NIST CM-6 | Action 450002 | Apply kernel hardening parameters"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -21,6 +25,9 @@
     - { name: 'net.ipv4.conf.all.log_martians', value: '1' }
     - { name: 'net.ipv4.tcp_syncookies', value: '1' }
     - { name: 'net.ipv4.tcp_rfc1337', value: '1' }
+    # IPv6 Hardening
+    - { name: 'net.ipv6.conf.all.accept_ra', value: '0' }
+    - { name: 'net.ipv6.conf.all.accept_redirects', value: '0' }
     # System Hardening
     - { name: 'kernel.kptr_restrict', value: '2' }
     - { name: 'kernel.dmesg_restrict', value: '1' }
@@ -32,11 +39,43 @@
     # Memory Hardening & Purging
     - { name: 'kernel.panic_on_oops', value: '1' }
     - { name: 'vm.swappiness', value: '1' } # Minimize swapping of sensitive memory to disk
+    # Reverse Path Filtering
+    - { name: 'net.ipv4.conf.all.rp_filter', value: '1' }
+    # ICMP Settings
+    - { name: 'net.ipv4.icmp_echo_ignore_broadcasts', value: '1' }
+    - { name: 'net.ipv4.icmp_ignore_bogus_error_responses', value: '1' }
   become: true
   when: not _sec_is_container
-  tags: [security, kernel]
+  tags:
+    - cis_3_1_1
+    - cis_3_1_2
+    - cis_3_2_1
+    - cis_3_2_2
+    - cis_3_2_3
+    - cis_3_2_4
+    - cis_3_2_5
+    - cis_3_2_6
+    - cis_3_2_7
+    - cis_3_3_1
+    - cis_3_3_2
+    - cis_3_3_3
+    - stig_v_230231
+    - stig_v_230232
+    - iso_27001_8_26
+    - nist_sc_8
+    - nist_sc_7
+    - nist_sc_5
+    - nist_sc_4
+    - nist_sc_3
+    - nist_ac_4
+    - nist_si_16
+    - nist_cm_6
+    - remediate
+    - high_severity
+    - security
+    - kernel
 
-- name: Register Kernel Security Parameters for GRUB
+- name: "CIS 1.4.1 | STIG V-230232 | ISO 27001 §8.26 | NIST SC-8 | NIST SI-16 | NIST CM-6 | Action 450001 | Register Kernel Security Parameters for GRUB"
   ansible.builtin.set_fact:
     core_grub_security_params: >-
       {{
@@ -44,4 +83,234 @@
         ['init_on_free=1', 'page_poison=1', 'slab_nomerge']
       }}
   when: not _sec_is_container
-  tags: [security, kernel]
+  tags:
+    - cis_1_4_1
+    - stig_v_230232
+    - iso_27001_8_26
+    - nist_sc_8
+    - nist_si_16
+    - nist_cm_6
+    - remediate
+    - high_severity
+    - security
+    - kernel
+
+- name: "CIS 8.2.1 | CIS 8.2.2 | CIS 8.2.3 | CIS 8.2.4 | STIG V-230233 | NIST CM-6 | Disable unused network protocols"
+  block:
+    - name: Create modprobe blacklist for unused network protocols
+      ansible.builtin.copy:
+        dest: /etc/modprobe.d/blacklist-unused-protocols.conf
+        content: |
+          # Disable unused network protocols per CIS 8.2.x
+          # CIS 8.2.1 - DCCP
+          install dccp /bin/true
+          blacklist dccp
+          # CIS 8.2.2 - SCTP
+          install sctp /bin/true
+          blacklist sctp
+          # CIS 8.2.3 - RDS
+          install rds /bin/true
+          blacklist rds
+          # CIS 8.2.4 - TIPC
+          install tipc /bin/true
+          blacklist tipc
+        mode: '0644'
+      become: true
+      failed_when: false
+  tags:
+    - cis_level_2
+    - cis_8_2_1
+    - cis_level_2
+    - cis_8_2_2
+    - cis_level_2
+    - cis_8_2_3
+    - cis_level_2
+    - cis_8_2_4
+    - stig_v_230233
+    - nist_cm_6
+    - security
+    - kernel
+
+- name: "NIST SC-12 | NIST SC-13 | NIST SC-20 | ISO 27001 §10.1 | Configure kernel cryptographic settings"
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-crypto.conf
+    reload: true
+  loop:
+    # Cryptographic hardening - FIPS 140-2 compliance
+    - { name: 'crypto.fips_enabled', value: '1' }
+    # Enable kernel lockdown mode
+    - { name: 'kernel.lockdown', value: 'confidentiality' }
+  become: true
+  when: not _sec_is_container
+  failed_when: false
+  tags:
+    - nist_sc_12
+    - nist_sc_13
+    - nist_sc_20
+    - iso_27001_10_1
+    - security
+    - kernel
+    - fips
+
+- name: "ISO 27001 §8.26 | NIST SC-3 | Action 450003 | Configure Landlock LSM for filesystem sandboxing"
+  block:
+    - name: Check if Landlock is supported
+      ansible.builtin.shell: cat /proc/filesystems | grep -q landlock && echo "supported" || echo "not_supported"
+      register: landlock_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create Landlock configuration
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-landlock.conf
+        content: |
+          # Landlock Linux Security Module Configuration
+          # Per ISO 27001 §8.26 - Application Security
+          # NIST SC-3 - Access Control Enforcement
+          
+          # Landlock is a kernel feature available since Linux 5.13
+          # It provides filesystem sandboxing without requiring root privileges
+          
+          # Enable Landlock by default (kernel feature, not a sysctl)
+          # Applications must opt-in to use Landlock
+          
+          # Landlock ruleset configuration
+          # Filesystem access control rules:
+          # - read_file: Read file contents
+          # - write_file: Modify file contents
+          # - read_dir: List directory contents
+          # - add_file: Create new files
+          # - remove_file: Delete files
+          # - add_dir: Create directories
+          # - remove_dir: Delete directories
+          # - exec: Execute files
+          # - readlink: Follow symlinks
+          
+          # Example Landlock rule:
+          # landlock-add-rule --fs0 read_file,read_dir /home/user
+          # landlock-add-rule --fs1 write_file /tmp
+          
+          # Landlock is enabled at runtime by applications
+          # No sysctl required - it's built into the kernel
+        mode: '0644'
+      become: true
+      failed_when: false
+
+    - name: Create Landlock user guide
+      ansible.builtin.copy:
+        dest: /etc/landlock/README.md
+        content: |
+          # Landlock Filesystem Sandbox
+          
+          ## Overview
+          Landlock is a Linux Security Module (LSM) that enables unprivileged processes to restrict their own filesystem access.
+          
+          ## Usage
+          
+          ### Using landlock-helper utility
+          ```bash
+          # Allow read-only access to /home
+          landlock-helper restrict --path /home --access read_file,read_dir
+          
+          # Allow read-write access to /tmp only
+          landlock-helper restrict --path /tmp --access read_file,write_file,add_file,remove_file
+          ```
+          
+          ### Using bwrap (Bubblewrap)
+          ```bash
+          bwrap --unshare-net --unshare-ipc -- landlock /bin/bash
+          ```
+          
+          ### Using Python (pylandlock)
+          ```python
+          import landlock
+          
+          ruleset = landlock.create_ruleset(
+              access=landlock.ACCESS_READ | landlock.ACCESS_EXEC,
+              handled=landlock.ACCESS_FS_READ_FILE | landlock.ACCESS_FS_READ_DIR | landlock.ACCESS_FS_EXEC
+          )
+          ruleset.add_path("/usr", flags=landlock.FS_ACCESS)
+          ruleset.restrict_self()
+          ```
+          
+          ## Security Benefits
+          - Defense in depth for applications
+          - Limits damage from compromised processes
+          - No root privileges required
+          - Compatible with containers
+          
+          ## References
+          - https://docs.kernel.org/security/landlock.html
+          - https://landlock.io/
+        mode: '0644'
+      become: true
+      failed_when: false
+  when: landlock_check.stdout == "supported"
+  tags:
+    - iso_27001_8_26
+    - nist_sc_3
+    - action_450003
+    - security
+    - kernel
+    - landlock
+    - sandbox
+
+- name: "ISO 27001 §8.26 | Action 450004 | Configure Yama LSM for additional process restrictions"
+  block:
+    - name: Configure Yama LSM
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+        sysctl_file: /etc/sysctl.d/99-yama.conf
+        reload: true
+      loop:
+        # Yama LSM - Additional process restrictions
+        - { name: 'kernel.yama.ptrace_scope', value: '1' }  # Restricted ptrace
+      become: true
+      failed_when: false
+  tags:
+    - iso_27001_8_26
+    - action_450004
+    - security
+    - kernel
+    - yama
+    - ptrace
+
+- name: "ISO 27001 §8.26 | Action 450005 | Configure TOMOYO LSM for mandatory access control"
+  block:
+    - name: Check if TOMOYO is supported
+      ansible.builtin.shell: cat /proc/filesystems | grep -q tomoyo && echo "supported" || echo "not_supported"
+      register: tomoyo_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create TOMOYO configuration
+      ansible.builtin.copy:
+        dest: /etc/tomoyo/tomoyo.conf
+        content: |
+          # TOMOYO Linux Configuration
+          # Per ISO 27001 §8.26 - Application Security
+          
+          # TOMOYO is a Mandatory Access Control (MAC) system
+          # It profiles application behavior and enforces policies
+          
+          # Enable TOMOYO in /etc/default/tomoyo-login
+          # Then use /usr/sbin/tomoyo-editpolicy to create policies
+          
+          # Learning mode: Monitor and create policies
+          # Enforcing mode: Enforce policies
+        mode: '0644'
+      become: true
+      failed_when: false
+  when: tomoyo_check.stdout == "supported"
+  tags:
+    - iso_27001_8_26
+    - action_450005
+    - security
+    - kernel
+    - tomoyo
+    - mac

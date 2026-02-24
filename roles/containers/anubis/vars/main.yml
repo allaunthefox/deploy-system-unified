@@ -1,1 +1,93 @@
 ---
+# Internal variables for containers/anubis role
+# Anubis Web AI Firewall service configuration
+
+# Service identification
+_anubis_service_name: anubis
+_anubis_container_name: anubis-gatekeeper
+_anubis_description: Anubis Web AI Firewall
+
+# Container image configuration
+_anubis_image_registry: ghcr.io
+_anubis_image_repository: techarohq/anubis
+_anubis_image_tag: v1.24.0
+_anubis_image: ghcr.io/techarohq/anubis:v1.24.0
+
+# Alternative image sources
+_anubis_image_latest: ghcr.io/techarohq/anubis:latest
+_anubis_image_dockerhub: docker.io/techarohq/anubis:latest
+
+# Directory structure
+_anubis_base_dir: /srv/containers/anubis
+_anubis_config_dir: /srv/containers/anubis/config
+_anubis_data_dir: /srv/containers/anubis/data
+_anubis_logs_dir: /srv/containers/anubis/logs
+
+# Port configuration
+_anubis_port_default: 31338
+_anubis_port_rootless: 31338
+_anubis_bind_address: :31338
+
+# Network configuration
+_anubis_network_name: anubis_net
+_anubis_network_driver: bridge
+_anubis_network_subnet: 10.89.50.0/24
+_anubis_network_gateway: 10.89.50.1
+_anubis_network_iprange: 10.89.50.0/24
+
+# Quadlet file paths
+_anubis_quadlet_file: anubis.container
+_anubis_network_quadlet_file: anubis_net.network
+_anubis_quadlet_dest_dir: /etc/containers/systemd
+
+# Application configuration
+_anubis_default_difficulty: 5
+_anubis_default_target: http://app:80
+_anubis_default_validators:
+  - user-agent
+  - proof-of-work
+
+# Environment variables
+_anubis_env_vars:
+  - PORT
+  - TARGET
+  - DIFFICULTY
+  - VALIDATORS
+
+# Anubis configuration options
+_anubis_config_options:
+  difficulty: DIFFICULTY
+  target: TARGET
+  port: PORT
+  validators: VALIDATORS
+
+# Security configuration
+_anubis_default_challenge_type: proof-of-work
+_anubis_default_cookie_name: anubis_challenge
+_anubis_default_cookie_ttl: 86400
+
+# Logging configuration
+_anubis_log_level: info
+_anubis_log_format: json
+
+# Systemd service configuration
+_anubis_wanted_by:
+  - multi-user.target
+  - default.target
+_anubis_restart_policy: always
+_anubis_timeout_start_sec: 300
+
+# Dependencies
+_anubis_after_services:
+  - network-online.target
+_anubis_wants_services:
+  - network-online.target
+
+# Health check configuration
+_anubis_healthcheck_endpoint: /health
+_anubis_healthcheck_interval: 30s
+_anubis_healthcheck_timeout: 10s
+
+# Checkpoint configuration
+_anubis_checkpoint_dir: /var/lib/deploy-system/checkpoints
+_anubis_checkpoint_file: anubis_checkpoint.json

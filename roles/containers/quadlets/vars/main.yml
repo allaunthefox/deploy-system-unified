@@ -1,1 +1,159 @@
----
+# Internal variables for containers/quadlets role
+# Quadlet service management and network configuration
+
+# =============================================================================
+# COMPLIANCE MAPPINGS - CIS, STIG, NIST, ISO 27001
+# =============================================================================
+# Role: containers/quadlets
+# Standards: CIS Docker Benchmark 2.x, STIG V-230470,
+#            NIST CM-6/SC-39, ISO 27001 §8.20
+# =============================================================================
+
+_compliance_framework:
+  cis_docker_benchmark:
+    version: "2.x"
+    description: "Systemd Quadlet Integration"
+    controls:
+      - id: "2.1"
+        name: "Checkpoint directory"
+        stig: "V-230470"
+        nist: ["CM-6"]
+      - id: "2.2"
+        name: "Quadlet checkpoint check"
+        stig: "V-230470"
+        nist: ["SC-39"]
+      - id: "2.3"
+        name: "Read existing checkpoint"
+        stig: "V-230470"
+        nist: ["SC-39"]
+      - id: "2.4"
+        name: "Restore object UUID"
+        stig: "V-230470"
+        nist: ["CM-6"]
+      - id: "2.5"
+        name: "Generate new Network UUID"
+        stig: "V-230470"
+        nist: ["SC-39"]
+      - id: "2.6"
+        name: "Determine quadlet object UUID"
+        stig: "V-230470"
+        nist: ["CM-6"]
+      - id: "2.7"
+        name: "Ensure quadlet directory exists"
+        stig: "V-230470"
+        nist: ["AC-6"]
+      - id: "2.8"
+        name: "Quadlet network configuration"
+        stig: "V-230470"
+        nist: ["SC-8"]
+        iso: "8.20"
+      - id: "2.9"
+        name: "Deploy custom quadlet files"
+        stig: "V-230470"
+        nist: ["CM-6"]
+        iso: "8.20"
+      - id: "2.10"
+        name: "Reload systemd"
+        stig: "V-230470"
+        nist: ["CM-7"]
+      - id: "2.11"
+        name: "List quadlet services"
+        stig: "V-230470"
+        nist: ["CA-7"]
+      - id: "2.12"
+        name: "Display quadlet services"
+        stig: "V-230470"
+        nist: ["CA-7"]
+      - id: "2.13"
+        name: "Set quadlets completion flag"
+        stig: "V-230470"
+        nist: ["CM-6"]
+      - id: "2.14"
+        name: "Save Quadlet checkpoint"
+        stig: "V-230470"
+        nist: ["SC-39"]
+  stig:
+    quadlet_systemd:
+      - id: "V-230470"
+        title: "Quadlet Systemd Integration Security"
+        severity: "medium"
+  nist:
+    cm_6: "Configuration Settings"
+    cm_7: "Least Functionality"
+    cm_2: "Baseline Configuration"
+    sc_39: "Protection of Information at Rest"
+    sc_8: "Transmission Confidentiality and Integrity"
+    ac_6: "Least Privilege"
+    ca_7: "Continuous Monitoring"
+  iso_27001:
+    "8.20": "Networks Security"
+
+# Quadlet directory paths
+_quadlet_system_dir: /etc/containers/systemd
+_quadlet_user_dir: .config/containers/systemd
+_quadlet_networks_dir: /etc/containers/systemd/networks
+_quadlet_volumes_dir: /etc/containers/systemd/volumes
+
+# Quadlet file extensions
+_quadlet_container_ext: .container
+_quadlet_pod_ext: .pod
+_quadlet_network_ext: .network
+_quadlet_volume_ext: .volume
+_quadlet_kube_ext: .kube
+
+# Default network configuration
+_quadlet_default_network_name: deploy-net
+_quadlet_default_network_driver: bridge
+_quadlet_default_network_subnet: 10.89.0.0/24
+_quadlet_default_network_gateway: 10.89.0.1
+_quadlet_default_network_iprange: 10.89.0.0/24
+
+# Network isolation subnets by service type
+_quadlet_network_subnets:
+  proxy: 10.89.10.0/24
+  media: 10.89.20.0/24
+  ops: 10.89.30.0/24
+  monitoring: 10.89.40.0/24
+  anubis: 10.89.50.0/24
+  authentik: 10.89.60.0/24
+  app: 10.89.70.0/24
+  database: 10.89.80.0/24
+
+# Quadlet label prefixes
+_quadlet_label_prefix: org.deploy-system
+_quadlet_uuid_label: org.deploy-system.uuid
+_quadlet_role_label: org.deploy-system.role
+_quadlet_managed_label: org.deploy-system.managed
+
+# Systemd service integration
+_quadlet_systemd_scope_system: system
+_quadlet_systemd_scope_user: user
+_quadlet_wanted_by_default:
+  - multi-user.target
+  - default.target
+
+# Quadlet restart policies
+_quadlet_restart_always: always
+_quadlet_restart_on_failure: on-failure
+_quadlet_restart_never: never
+
+# Container security defaults
+_quadlet_default_read_only: false
+_quadlet_default_privileged: false
+_quadlet_default_init: true
+
+# GPU passthrough configuration
+_quadlet_gpu_nvidia_runtime: nvidia
+_quadlet_gpu_amd_runtime: runc
+_quadlet_gpu_intel_runtime: crun
+
+# Volume mount options
+_quadlet_volume_mount_opts_ro: ro
+_quadlet_volume_mount_opts_rw: rw
+_quadlet_volume_mount_opts_z: Z
+_quadlet_volume_mount_opts_noexec: noexec
+_quadlet_volume_mount_opts_nosuid: nosuid
+
+# Checkpoint configuration
+_quadlet_checkpoint_dir: /var/lib/deploy-system/checkpoints
+_quadlet_checkpoint_file: quadlets_checkpoint.json
