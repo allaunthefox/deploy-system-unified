@@ -1,4 +1,4 @@
-# Roadmap
+# ROADMAP
 
 Our detailed planning and execution documents are maintained in the `docs/planning/` directory.
 

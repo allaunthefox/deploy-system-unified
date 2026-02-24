@@ -1,4 +1,4 @@
-# Kubernetes Ingress Controller Setup
+# INGRESS_CONTROLLER_SETUP
 
 **Created:** February 13, 2026  
 **Status:** In Progress  

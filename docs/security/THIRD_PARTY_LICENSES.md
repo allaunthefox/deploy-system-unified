@@ -1,4 +1,4 @@
-# Third-Party License Acknowledgments
+# THIRD_PARTY_LICENSES
 
 This project incorporates third-party open source software components. This document lists the licenses of dependencies used in Deploy-System-Unified.
 
