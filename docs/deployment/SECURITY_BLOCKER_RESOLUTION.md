@@ -325,9 +325,9 @@ From this incident, the following best practices are recommended:
 
 ## Related Documentation
 
-- [SSH_INCIDENT_POSTMORTEM.md](../docs/deployment/SSH_INCIDENT_POSTMORTEM.md) - Prior SSH configuration issues
-- [POTENTIAL_PROBLEMS.md](../docs/deployment/POTENTIAL_PROBLEMS.md) - General deployment issues
-- [SSH_IDEMPOTENCE_GUARDRAILS.md](../docs/deployment/SSH_IDEMPOTENCE_GUARDRAILS.md) - SSH stability guardrails
+- [SSH_INCIDENT_POSTMORTEM.md](./SSH_INCIDENT_POSTMORTEM.md) - Prior SSH configuration issues
+- [POTENTIAL_PROBLEMS.md](./POTENTIAL_PROBLEMS.md) - General deployment issues
+- [SSH_IDEMPOTENCE_GUARDRAILS.md](./SSH_IDEMPOTENCE_GUARDRAILS.md) - SSH stability guardrails
 
 ---
 
