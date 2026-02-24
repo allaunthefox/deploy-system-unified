@@ -21,6 +21,3 @@ security_sshd_config_path: "/etc/ssh/sshd_config"
 # - Populate sshd_trusted_groups with group names (e.g., ['ssh-trusted'])
 security_sshd_enable_trusted_group_exceptions: false
 security_sshd_trusted_groups: []
-
-# PQC KEX algorithms (computed at runtime based on OpenSSH version)
-security_sshd_kex_algorithms_pqc: []
