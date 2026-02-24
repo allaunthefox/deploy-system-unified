@@ -5,3 +5,9 @@
 **Entropy Enhancement**
 Ensures high-quality random number generation by installing and configuring entropy enhancement services.
 
+## Variables
+
+### `entropy_service_mapping`{#entropyservicemapping}
+- `entropy_service_mapping`
+
+

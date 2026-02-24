@@ -5,3 +5,9 @@
 **General Container Config**
 Manages storage directories and general environment configuration for container workloads.
 
+## Variables
+
+### `container_linger_users`{#containerlingerusers}
+- `container_linger_users`
+
+

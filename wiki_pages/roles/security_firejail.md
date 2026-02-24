@@ -5,3 +5,9 @@
 **Application Sandboxing**
 Configures Firejail profiles for isolating vulnerable applications in restricted environments.
 
+## Variables
+
+### `firejail_enable_gpu`{#firejailenablegpu}
+- `firejail_enable_gpu`
+
+

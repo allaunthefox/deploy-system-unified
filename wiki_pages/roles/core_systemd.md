@@ -5,3 +5,15 @@
 **Systemd Configuration & Hardening**
 Ensures systemd components (journald, resolved) are configured and hardened according to project standards.
 
+## Variables
+
+### `systemd_configure_journald`{#systemdconfigurejournald}
+- `systemd_configure_journald`
+
+### `systemd_configure_resolved`{#systemdconfigureresolved}
+- `systemd_configure_resolved`
+
+### `systemd_persistent_journal`{#systemdpersistentjournal}
+- `systemd_persistent_journal`
+
+

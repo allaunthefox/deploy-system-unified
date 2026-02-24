@@ -2,4 +2,12 @@
 
 **role**: `storage/backup`
 
-TODO: Add role description and examples.
+## Variables
+
+### `backup_security_enabled`{#backupsecurityenabled}
+- `backup_security_enabled`
+
+### `backup_security_dir`{#backupsecuritydir}
+- `backup_security_dir`
+
+
