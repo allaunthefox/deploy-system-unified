@@ -1,0 +1,18 @@
+---
+# Defaults for security/ima_enforcement - Runtime Binary Integrity
+
+ima_enabled: true
+
+# IMA Policy Mode
+# tcb: Trusted Computing Base (measures all execs, files opened for read by root)
+# appraise_tcb: Appraises all execs, files opened for read by root
+ima_policy: "tcb"
+
+# IMA Appraisal Mode
+# enforce: Refuse execution of unsigned binaries
+# log: Audit only (Mirage mode - avoid in production)
+ima_appraise_mode: "enforce"
+
+# IMA Template
+# template=ima-sig: Includes cryptographic signatures in measurements
+ima_template: "ima-sig"

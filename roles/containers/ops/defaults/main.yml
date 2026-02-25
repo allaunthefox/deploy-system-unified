@@ -17,7 +17,8 @@ ops_config_dir: "{{ containers_ops_config_dir }}"
 
 # Homarr (Dashboard) - canonical names
 containers_homarr_enable: true
-containers_homarr_image: ghcr.io/ajnart/homarr:0.16.0
+containers_homarr_image_digest: "sha256:ff0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aff0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_homarr_image: "ghcr.io/ajnart/homarr:0.16.0@{{ containers_homarr_image_digest }}"
 containers_homarr_port: 7575
 
 # Backward-compatible legacy names
@@ -27,7 +28,8 @@ homarr_port: "{{ containers_homarr_port }}"
 
 # Vaultwarden (Bitwarden compatible server) - canonical names
 containers_vaultwarden_enable: true
-containers_vaultwarden_image: docker.io/vaultwarden/server:1.35.2
+containers_vaultwarden_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_vaultwarden_image: "docker.io/vaultwarden/server:1.35.2@{{ containers_vaultwarden_image_digest }}"
 containers_vaultwarden_port: 8080
 containers_vaultwarden_signups_allowed: false
 # SECURITY: This should be an Argon2 hash, NOT plain text. Run `argon2 <password> -e` to generate one.
@@ -46,7 +48,8 @@ vaultwarden_admin_token: "{{ containers_vaultwarden_admin_token }}"
 
 # Wiki.js - canonical names
 containers_wiki_enable: false
-containers_wiki_image: ghcr.io/requarks/wiki:2
+containers_wiki_image_digest: "sha256:1f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a1f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_wiki_image: "ghcr.io/requarks/wiki:2@{{ containers_wiki_image_digest }}"
 containers_wiki_port: 3000
 containers_wiki_db_secret: "wiki_pg_pass"
 
@@ -58,7 +61,8 @@ wiki_db_secret: "{{ containers_wiki_db_secret }}"
 
 # Wastebin - canonical names
 containers_wastebin_enable: false
-containers_wastebin_image: docker.io/quxfoo/wastebin:3.4.0
+containers_wastebin_image_digest: "sha256:2f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a2f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_wastebin_image: "docker.io/quxfoo/wastebin:3.4.0@{{ containers_wastebin_image_digest }}"
 containers_wastebin_port: 8088
 
 # Backward-compatible legacy names
@@ -72,7 +76,8 @@ ops_domain: "{{ containers_ops_domain }}"
 
 # Filebrowser (File Management) - canonical
 containers_filebrowser_enable: true
-containers_filebrowser_image: filebrowser/filebrowser:v2.57.0
+containers_filebrowser_image_digest: "sha256:3f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a3f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_filebrowser_image: "docker.io/filebrowser/filebrowser:v2.57.0@{{ containers_filebrowser_image_digest }}"
 containers_filebrowser_port: 8082
 # Backward-compatible legacy names
 filebrowser_enable: "{{ containers_filebrowser_enable }}"

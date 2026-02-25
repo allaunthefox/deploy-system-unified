@@ -1,0 +1,24 @@
+---
+- name: Verify Forensics
+  hosts: all
+  tasks:
+    - name: VERIFY | Forensics directory exists
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/ci-artifacts/forensics"
+      delegate_to: localhost
+      register: _forensic_dir
+      failed_when: not _forensic_dir.stat.exists
+
+    - name: VERIFY | Provenance record exists
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/ci-artifacts/forensics/provenance.json"
+      delegate_to: localhost
+      register: _provenance_file
+      failed_when: not _provenance_file.stat.exists
+
+    - name: VERIFY | Provenance signature exists
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/ci-artifacts/forensics/provenance.json.sha256"
+      delegate_to: localhost
+      register: _provenance_sig
+      failed_when: not _provenance_sig.stat.exists

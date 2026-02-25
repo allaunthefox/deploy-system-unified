@@ -3,6 +3,29 @@
 # Retry logic implemented to handle transient network issues and avoid aggressive polling
 # Safe Level: 5 retries with 30s delay prevents triggering abuse detection while handling blips.
 
+- name: "Supply Chain | Verify Media Image Signatures"
+  ansible.builtin.include_tasks: ../../runtime/tasks/verify_image.yml
+  vars:
+    image_to_verify: "{{ item.image }}"
+  loop:
+    - { image: "{{ jellyfin_image }}", enable: "{{ jellyfin_enable }}" }
+    - { image: "{{ plex_image }}", enable: "{{ plex_enable }}" }
+    - { image: "{{ radarr_image }}", enable: "{{ radarr_enable }}" }
+    - { image: "{{ sonarr_image }}", enable: "{{ sonarr_enable }}" }
+    - { image: "{{ lidarr_image }}", enable: "{{ lidarr_enable }}" }
+    - { image: "{{ readarr_image }}", enable: "{{ readarr_enable }}" }
+    - { image: "{{ prowlarr_image }}", enable: "{{ prowlarr_enable }}" }
+    - { image: "{{ jellyseerr_image }}", enable: "{{ jellyseerr_enable }}" }
+    - { image: "{{ navidrome_image }}", enable: "{{ navidrome_enable }}" }
+    - { image: "{{ transmission_image }}", enable: "{{ transmission_enable }}" }
+    - { image: "{{ bazarr_image }}", enable: "{{ bazarr_enable }}" }
+    - { image: "{{ kavita_image }}", enable: "{{ kavita_enable }}" }
+    - { image: "{{ audiobookshelf_image }}", enable: "{{ audiobookshelf_enable }}" }
+  when: 
+    - item.enable | bool
+    - containers_cosign_enable | default(false) | bool
+  tags: [supply_chain, pull_images]
+
 - name: Pull Media Images (Safe Retry)
   containers.podman.podman_image:
     name: "{{ item.image }}"

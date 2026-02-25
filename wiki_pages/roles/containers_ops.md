@@ -41,6 +41,9 @@ This role deploys operational dashboard and utility tools alongside the media st
 <a id="containers-homarr-enable"></a>### `containers_homarr_enable`
 - `containers_homarr_enable`
 
+<a id="containers-homarr-image-digest"></a>### `containers_homarr_image_digest`
+- `containers_homarr_image_digest` — Example
+
 <a id="containers-homarr-image"></a>### `containers_homarr_image`
 - `containers_homarr_image`
 
@@ -58,6 +61,9 @@ This role deploys operational dashboard and utility tools alongside the media st
 
 <a id="containers-vaultwarden-enable"></a>### `containers_vaultwarden_enable`
 - `containers_vaultwarden_enable`
+
+<a id="containers-vaultwarden-image-digest"></a>### `containers_vaultwarden_image_digest`
+- `containers_vaultwarden_image_digest` — Example
 
 <a id="containers-vaultwarden-image"></a>### `containers_vaultwarden_image`
 - `containers_vaultwarden_image`
@@ -95,6 +101,9 @@ This role deploys operational dashboard and utility tools alongside the media st
 <a id="containers-wiki-enable"></a>### `containers_wiki_enable`
 - `containers_wiki_enable`
 
+<a id="containers-wiki-image-digest"></a>### `containers_wiki_image_digest`
+- `containers_wiki_image_digest` — Example
+
 <a id="containers-wiki-image"></a>### `containers_wiki_image`
 - `containers_wiki_image`
 
@@ -119,6 +128,9 @@ This role deploys operational dashboard and utility tools alongside the media st
 <a id="containers-wastebin-enable"></a>### `containers_wastebin_enable`
 - `containers_wastebin_enable`
 
+<a id="containers-wastebin-image-digest"></a>### `containers_wastebin_image_digest`
+- `containers_wastebin_image_digest` — Example
+
 <a id="containers-wastebin-image"></a>### `containers_wastebin_image`
 - `containers_wastebin_image`
 
@@ -142,6 +154,9 @@ This role deploys operational dashboard and utility tools alongside the media st
 
 <a id="containers-filebrowser-enable"></a>### `containers_filebrowser_enable`
 - `containers_filebrowser_enable`
+
+<a id="containers-filebrowser-image-digest"></a>### `containers_filebrowser_image_digest`
+- `containers_filebrowser_image_digest` — Example
 
 <a id="containers-filebrowser-image"></a>### `containers_filebrowser_image`
 - `containers_filebrowser_image`

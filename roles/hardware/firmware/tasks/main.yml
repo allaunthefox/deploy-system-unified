@@ -115,7 +115,6 @@
   register: timedate_status
   changed_when: false
   become: true
-  failed_when: false
   when: not _hw_is_container
   tags:
     - cis_3_5_10
@@ -125,6 +124,15 @@
     - firmware
     - time
 
+- name: VERIFY | RTC and NTP status (Zero-Tolerance)
+  ansible.builtin.shell: |
+    timedatectl show | grep -q "RTCInLocalTime=no" && \
+    timedatectl show | grep -q "NTP=yes"
+  become: true
+  when: not _hw_is_container
+  changed_when: false
+  tags: [hardware, time, verification]
+
 - name: "CIS 3.5.11 | STIG V-230590 | NIST SC-43 | NIST SP 800-193 | Action 800510 | Verify Secure Boot Status"
   ansible.builtin.shell: |
     set -o pipefail
@@ -132,15 +140,16 @@
       mokutil --sb-state
     elif [ -d /sys/firmware/efi ]; then
       echo "SecureBoot unknown (mokutil missing)"
+      exit 1
     else
       echo "SecureBoot disabled (Legacy BIOS)"
+      exit 1
     fi
   args:
     executable: /bin/bash
   register: hardware_secure_boot_status
   changed_when: false
   become: true
-  failed_when: false
   tags:
     - cis_3_5_11
     - stig_v_230590
@@ -168,7 +177,6 @@
 
 - name: "CIS 3.5.13 | STIG V-230592 | NIST CM-6 | Load Architecture Specific Firmware Tasks"
   ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
-  ignore_errors: true
   tags:
     - cis_3_5_13
     - stig_v_230592
@@ -215,10 +223,17 @@
   loop: "{{ ['smartmontools'] + watchdog_service }}"
   become: true
   when: not _hw_is_container
-  failed_when: false
   tags:
     - cis_3_5_16
     - stig_v_230595
     - nist_si_4
     - hardware
     - firmware
+
+- name: VERIFY | Hardware services active (Zero-Tolerance)
+  ansible.builtin.shell: systemctl is-active {{ item }}
+  loop: "{{ ['smartmontools'] + watchdog_service }}"
+  become: true
+  when: not _hw_is_container
+  changed_when: false
+  tags: [hardware, verification]

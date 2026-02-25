@@ -1,0 +1,16 @@
+---
+# Defaults for security/tpm_guard
+
+# Enable TPM Guard
+tpm_guard_enabled: false # Default off, enabled in hardened profiles
+
+# Monitoring Interval
+tpm_guard_interval: "1m"
+
+# Actions on Breach
+tpm_guard_wipe_secrets: true
+tpm_guard_isolate_network: true
+tpm_guard_purge_kernel: false # Extreme measure, default off
+
+# Secrets Path to Wipe (Must match Volatile Secrets path)
+tpm_guard_secrets_path: "/run/secrets/dsu"

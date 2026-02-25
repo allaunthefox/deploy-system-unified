@@ -1,0 +1,10 @@
+---
+# K3s Binary SHA256 Checksums
+# Source: https://github.com/k3s-io/k3s/releases/latest
+# Last Updated: 2026-02-24
+# CVE-DSU-006 Remediation: Binary integrity verification
+
+k3s_checksums:
+  v1.31.2+k3s1:
+    x86_64: "sha256:e406ca6e47673d747ab4665c90a9285615fe082e2593343725ed043ae163abbf"
+    aarch64: "sha256:c8d08bc38ad51be20ba531b3c412855c38d534f99cdff30fde6891b6f555a846"

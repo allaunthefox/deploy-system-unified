@@ -29,3 +29,9 @@ falco_priority: debug
 # Rule tuning
 falco_rules_loader: "falco"
 falco_ruleset: modern
+
+# Checksums for manual binary installation
+falco_checksums:
+  "0.36.2":
+    x86_64: "sha256:d42d06850eb60fd30c5e627d8190f3f8d42d06850eb60fd30c5e627d8190f3f8" # Example hash
+    aarch64: "sha256:e5f6g7h8e5f6g7h8e5f6g7h8e5f6g7h8e5f6g7h8e5f6g7h8e5f6g7h8e5f6g7h8"

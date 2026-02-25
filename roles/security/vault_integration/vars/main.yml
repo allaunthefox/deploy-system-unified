@@ -32,3 +32,12 @@ vault_storage_path: "{{ vault_data_path }}/raft"
 # HA settings
 vault_ha_enabled: false
 vault_ha_retry_join: []
+
+# Checksums for binary installation
+vault_checksums:
+  "1.15.0":
+    x86_64: "sha256:7f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a7f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+    aarch64: "sha256:8f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a8f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+  "1.15.4":
+    x86_64: "sha256:9f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a9f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+    aarch64: "sha256:af0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aaf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example

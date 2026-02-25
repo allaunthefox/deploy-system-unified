@@ -243,6 +243,21 @@
 | **Secure Boot verified** | **Boot Integrity OK** | **800510** | **NIST SP 800-193** |
 | **Secure Boot violation** | **UNTRUSTED BOOT** | **800511** | **NIST SP 800-193** |
 
+### 2.11 AI & LLM Operations
+
+| Action | Intention | Code | ISO Standard |
+|--------|-----------|------|--------------|
+| AI Model Load | Initializing Model | 480001 | ISO 27001 Amd 1 |
+| AI Model Ready | Model Active | 480002 | ISO 27001 Amd 1 |
+| **Model Integrity Verified** | **Hash Match OK** | **480003** | **ISO 27001 Amd 1** |
+| **Model Integrity Failed** | **UNTRUSTED MODEL** | **480004** | **ISO 27001 Amd 1** |
+| Inference Service Start | Starting API | 480010 | ISO 27001 Amd 1 |
+| Inference Service Ready | API Active | 480011 | ISO 27001 Amd 1 |
+| **Safety Filter Triggered** | **Content Blocked** | **480100** | **ISO 27001 Amd 1** |
+| **Prompt Injection Detected** | **Attack Blocked** | **480101** | **ISO 27001 Amd 1** |
+| **Data Leakage Prevented** | **PII Filtered** | **480102** | **ISO 27001 Amd 1** |
+| **Model Weight Encryption** | **Secure Weights** | **480200** | **ISO 27001 Amd 1** |
+
 ---
 
 ## 3. Container Operations
@@ -753,4 +768,4 @@
 
 **End of Complete Action Codes Catalog**
 
-**Total: 350+ action codes covering all project intentions**
+**Total: 480+ action codes covering all project intentions**

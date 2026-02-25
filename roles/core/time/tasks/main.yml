@@ -71,11 +71,10 @@
   register: core_time_sync_status
   changed_when: false
   become: true
-  failed_when: false
   check_mode: false
   retries: 5
   delay: 5
-  until: time_sync_status.rc == 0
+  until: core_time_sync_status.rc == 0
   when: (virt_type | default('container')) != "container"
   tags:
     - cis_5_4_2
@@ -87,19 +86,18 @@
 - name: "CIS 5.4.2 | STIG V-230270 | NIST AU-8 | ISO 27001 §8.17 | Validate time synchronization quality (idempotent)"
   ansible.builtin.assert:
     that:
-      - time_sync_status.rc == 0
+      - core_time_sync_status.rc == 0
       - >-
-        ('System time' in time_sync_status.stdout) or
-        ('Reference ID' in time_sync_status.stdout) or
-        ('Leap status' in time_sync_status.stdout)
+        ('System time' in core_time_sync_status.stdout) or
+        ('Reference ID' in core_time_sync_status.stdout) or
+        ('Leap status' in core_time_sync_status.stdout)
     fail_msg: >-
       Time synchronization not properly configured - checkpoint functionality may be unreliable.
       chronyc tracking output:
-      {{ time_sync_status.stdout | default('NO OUTPUT') }}
-      {{ time_sync_status.stderr | default('NO ERROR OUTPUT') }}
+      {{ core_time_sync_status.stdout | default('NO OUTPUT') }}
+      {{ core_time_sync_status.stderr | default('NO ERROR OUTPUT') }}
   when:
     - (virt_type | default('container')) != "container"
-    - not time_sync_status.failed
   tags:
     - cis_5_4_2
     - stig_v_230270

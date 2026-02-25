@@ -15,8 +15,8 @@
 - name: "Restart ingress controller"
   ansible.builtin.command:
     cmd: >-
-      kubectl rollout restart deployment 
-      -n {{ kubernetes_ingress_namespace }} 
+      kubectl rollout restart deployment
+      -n {{ kubernetes_ingress_namespace }}
       {{ 'ingress-nginx-controller' if kubernetes_ingress_controller == 'nginx-ingress' else kubernetes_ingress_controller }}
   become: true
   become_user: root

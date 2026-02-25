@@ -1,41 +1,48 @@
 # MODULAR_LAYERS
 
-Deploy-System-Unified utilizes a layered architecture to maintain a clear separation of concerns. This design ensures that infrastructure hardening is decoupled from application workloads.
-
-## 🏗️ Layer 1: The Infrastructure Base
-
-"The Base" defines the system's security personality and foundational environment. It is intended to be workload-agnostic.
-
-### [Base Hardened](base_hardened)
-The standard foundation for persistent systems (Bare Metal, VPS, VMs).
-- **Security**: Firewall (L3/L4), SSH hardening (L7), Kernel hardening.
-- **Consistency**: Time synchronization (Chrony), Repository initialization.
-- **Audit**: Log integrity and system auditing (auditd).
-
-### [Base Ephemeral](base_ephemeral)
-A specialized foundation for high-security, zero-footprint environments.
-- **Volatility**: RAM-disk backed structures.
-- **Security**: Aggressive shredding on cleanup, immutable audit trails.
+Deploy-System-Unified utilizes a 7-layer architecture to ensure absolute isolation and "Strict Enforcement" security standards.
 
 ---
 
-## 🚀 Layer 2: The Solution Stack
+## 🏗️ Layer 1: Infrastructure Foundation
+**Roles**: `core/bootstrap`, `core/repositories`, `core/updates`
+- **Purpose**: Establishes identity and package provenance.
+- **Enforcement**: Mandatory GPG/SHA256 verification for all sources.
 
-"The Stack" is the application layer that sits on top of a Base. Stacks are typically represented by branch templates or specific solution playbooks.
+## 🔒 Layer 2: Hardware Root of Trust (HRoT)
+**Roles**: `core/secrets`, `security/tpm_guard`
+- **Purpose**: Binds logical security to physical hardware states.
+- **Enforcement**: **Volatile Secret Infrastructure** protected by a **TPM Integrity Watchdog**.
 
-### [Production Deploy](production_deploy)
-The canonical production stack.
-- **Foundation**: Imports `base_hardened.yml`.
-- **Workload**: Container runtimes (Podman), Orchestration (Quadlets), Reverse Proxy (Caddy).
-- **Integrity**: Integrated security scanning.
+## 🛡️ Layer 3: Operating System Hardening
+**Roles**: `networking/firewall`, `security/kernel`, `security/hardening`, `security/sshd`
+- **Purpose**: Attack surface reduction and kernel self-protection.
+- **Enforcement**: **Verified Configuration** for sysctl and protocol blacklisting.
 
-### Specialized Stacks
-- **GPU Workstations**: Base Hardened + Universal GPU Drivers + Compute Stacks.
-- **K8s Secure Node**: Base Hardened + Kubernetes runtime readiness.
-- **Media Stack**: Base Hardened + Containerized media services (Jellyfin, *Arr suite).
+## 🧪 Layer 4: Mandatory Access Control (MAC)
+**Roles**: `security/mac_apparmor`, `security/firejail`, `security/sandboxing`
+- **Purpose**: Process containment and lateral movement prevention.
+- **Enforcement**: Strict enforcement of **AppArmor/SELinux** for all containerized workloads.
 
-## 💡 Why This Split?
+## 👁️ Layer 5: Runtime Execution Monitoring
+**Roles**: `core/logging`, `security/audit_integrity`, `security/falco`
+- **Purpose**: Real-time behavioral tracing and log immutability.
+- **Enforcement**: **eBPF-based Policy Enforcement** for unauthorized syscalls.
 
-1. **Reusability**: One "Hardened Base" can power ten different "Solution Stacks."
-2. **Auditability**: Security teams can audit the Base layer independently of the applications.
-3. **Idempotence**: Changes to the application stack do not require a complete re-run of the infrastructure base.
+## 👻 Layer 6: Internal Socket Isolation
+**Roles**: `containers/runtime`, `containers/caddy`, `containers/media`
+- **Purpose**: Zero-Trust network exposure via IPC.
+- **Enforcement**: **Unix Socket Migration** for internal service communication.
+
+## 🧠 Layer 7: Automated Threat Analysis & Provenance
+**Roles**: `security/cognitive_sentinel`, `ops/forensics`, `security/sbom`
+- **Purpose**: AI-driven log auditing and signed deployment metadata.
+- **Enforcement**: **Local LLM Anomaly Detection** and signed **Deployment Provenance**.
+
+---
+
+## 💡 Architectural Principle: The Validated Chain
+
+Each layer depends on the integrity of the layer below it. If any verification task in Layer 1-4 fails, the deployment **immediately terminates** before Layer 5-7 (the application workloads) are initialized. This ensures no system enters a production state without full security certification.
+
+

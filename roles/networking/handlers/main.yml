@@ -48,6 +48,7 @@
   ansible.builtin.command:
     cmd: systemctl restart systemd-resolved
   become: true
+  changed_when: true
   failed_when: false
   tags:
     - networking

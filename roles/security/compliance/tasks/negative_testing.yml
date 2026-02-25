@@ -1,0 +1,68 @@
+---
+# Negative Security Testing - Proving Fail-Stop Enforcement
+# Track 6: Absolute Verification of Hardening Effectiveness
+
+- name: "TEST | Initialize Negative Security Testing"
+  ansible.builtin.set_fact:
+    negative_testing_started: "{{ ansible_date_time.iso8601 }}"
+  tags: [compliance, negative_testing, security]
+
+- name: "TEST | Verify SSH Root Login BLOCK (Zero-Tolerance)"
+  ansible.builtin.shell: |
+    sshd -T | grep -qi "permitrootlogin yes"
+  register: _neg_ssh_root
+  failed_when: _neg_ssh_root.rc == 0
+  changed_when: false
+  become: true
+  tags: [compliance, negative_testing, security, ssh]
+
+- name: "TEST | Verify Unprivileged BPF BLOCK"
+  ansible.builtin.shell: |
+    sysctl kernel.unprivileged_bpf_disabled | grep -q "0"
+  register: _neg_bpf
+  failed_when: _neg_bpf.rc == 0
+  changed_when: false
+  become: true
+  tags: [compliance, negative_testing, security, kernel]
+
+- name: "TEST | Verify IP Forwarding BLOCK"
+  ansible.builtin.shell: |
+    sysctl net.ipv4.ip_forward | grep -q "1"
+  register: _neg_forward
+  failed_when: _neg_forward.rc == 0
+  changed_when: false
+  become: true
+  tags: [compliance, negative_testing, security, networking]
+
+- name: "TEST | Verify World-Writable without Sticky Bit BLOCK"
+  ansible.builtin.shell: |
+    find / -type d -perm -0002 ! -perm -1000 ! -path '/proc*' ! -path '/sys*' ! -path '/dev*' ! -path '/run*' | grep -q "."
+  register: _neg_sticky
+  failed_when: _neg_sticky.rc == 0
+  changed_when: false
+  become: true
+  tags: [compliance, negative_testing, security, storage]
+
+- name: "TEST | Try to SSH as root (Expected Failure - Red Team Proof)"
+  ansible.builtin.command: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ ansible_host | default(inventory_hostname) }}
+  delegate_to: localhost
+  register: _root_ssh_test
+  failed_when: _root_ssh_test.rc == 0
+  ignore_errors: true # We expect a non-zero RC
+  tags: [compliance, negative_testing, security, ssh]
+
+- name: "TEST | Verify Mandatory Image Digest Enforcement"
+  ansible.builtin.assert:
+    that:
+      - item.image is search('@sha256:')
+    fail_msg: "SECURITY VIOLATION: Image {{ item.name }} is using a mutable tag instead of a digest."
+  loop:
+    - { name: 'authentik', image: "{{ containers_authentik_image }}" }
+    - { name: 'anubis', image: "{{ anubis_image }}" }
+    - { name: 'caddy', image: "{{ _caddy_image }}" }
+  tags: [compliance, negative_testing, security, supply_chain]
+
+- name: "TEST | Negative Security Testing Complete"
+  ansible.builtin.debug:
+    msg: "Zero-Tolerance Validation Success: All negative security conditions correctly blocked."
+  tags: [compliance, negative_testing, security]

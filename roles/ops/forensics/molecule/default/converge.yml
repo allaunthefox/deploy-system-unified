@@ -1,0 +1,7 @@
+---
+- name: Converge Forensics
+  hosts: all
+  tasks:
+    - name: "Include ops/forensics"
+      ansible.builtin.include_role:
+        name: "ops/forensics"

@@ -34,6 +34,12 @@ Handles Caddy reverse proxy configuration with Red Team hardening for secrets.
 <a id="containers-caddy-extra-networks"></a>### `containers_caddy_extra_networks`
 - `containers_caddy_extra_networks`
 
+<a id="containers-caddy-use-unix-sockets"></a>### `containers_caddy_use_unix_sockets`
+- `containers_caddy_use_unix_sockets`
+
+<a id="containers-caddy-socket-dir"></a>### `containers_caddy_socket_dir`
+- `containers_caddy_socket_dir`
+
 <a id="containers-crowdsec-enable"></a>### `containers_crowdsec_enable`
 - `containers_crowdsec_enable`
 

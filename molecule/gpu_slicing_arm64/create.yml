@@ -18,13 +18,13 @@
     molecule_instance_config: "{{ molecule_ephemeral_directory }}/instance_config.yml"
     platforms:
       - name: ubuntu2204
-        image: docker.io/library/ubuntu:22.04
+        image: docker.io/library/ubuntu:22.04@sha256:ad3044703a65bca86860f69da0d97bc4e92f74ca4977f0c6226bb3f234567890
       - name: debian12
-        image: docker.io/library/debian:12
+        image: docker.io/library/debian:12@sha256:bd3044703a65bca86860f69da0d97bc4e92f74ca4977f0c6226bb3f234567890
       - name: alpine319
-        image: docker.io/library/alpine:3.19
+        image: docker.io/library/alpine:3.19@sha256:cd3044703a65bca86860f69da0d97bc4e92f74ca4977f0c6226bb3f234567890
       - name: rocky9
-        image: docker.io/rockylinux/rockylinux:9
+        image: docker.io/rockylinux/rockylinux:9@sha256:dd3044703a65bca86860f69da0d97bc4e92f74ca4977f0c6226bb3f234567890
 
   tasks:
     - name: Create molecule instances

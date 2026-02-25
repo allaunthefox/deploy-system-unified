@@ -86,11 +86,13 @@
   loop:
     - { direction: 'incoming', policy: 'deny' }
     - { direction: 'outgoing', policy: 'allow' }
+    - { direction: 'routed', policy: 'deny' }
   when:
     - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
     - not (is_virtualized | default(false))
   become: true
   tags:
+    - cis_level_2
     - cis_4_4_1_1
     - cis_4_4_1_2
     - stig_v_230271
@@ -100,6 +102,17 @@
     - networking
     - firewall
     - forensic
+
+- name: VERIFY | Firewall default-deny policy (Zero-Tolerance)
+  ansible.builtin.shell: |
+    if command -v ufw >/dev/null 2>&1; then
+      ufw status verbose | grep -q "Default: deny (incoming), allow (outgoing), deny (routed)"
+    elif command -v firewall-cmd >/dev/null 2>&1; then
+      firewall-cmd --get-default-zone | xargs firewall-cmd --zone --query-target | grep -q "DROP"
+    fi
+  become: true
+  changed_when: false
+  tags: [networking, firewall, verification]
 
 - name: "CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | Import Firewalld Rules"
   ansible.builtin.include_tasks: rules_firewalld.yml
@@ -148,6 +161,40 @@
     - networking
     - firewall
     - forensic
+
+- name: VERIFY | UFW Firewall state (Zero-Tolerance)
+  ansible.builtin.shell: ufw status | grep -q "Status: active"
+  when:
+    - (ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux')
+    - networking_firewall_enabled | bool
+    - not (is_virtualized | default(false))
+  become: true
+  changed_when: false
+  tags: [networking, firewall, verification]
+
+- name: VERIFY | Firewalld state (Zero-Tolerance)
+  ansible.builtin.shell: firewall-cmd --state | grep -q "running"
+  when:
+    - ansible_os_family == 'RedHat'
+    - networking_firewall_enabled | bool
+    - not (is_virtualized | default(false))
+  become: true
+  changed_when: false
+  tags: [networking, firewall, verification]
+
+- name: VERIFY | Firewall persistence configuration (Zero-Tolerance)
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - /etc/ufw/user.rules
+    - /etc/ufw/before.rules
+  register: _firewall_persist_files
+  when: 
+    - ansible_os_family == 'Debian'
+    - networking_firewall_enabled | bool
+  failed_when: not _firewall_persist_files.results[0].stat.exists
+  become: true
+  tags: [networking, firewall, verification]
 
 - name: "CIS 4.4.3 | NIST SC-7 | Fail on unsupported OS Family"
   ansible.builtin.fail:

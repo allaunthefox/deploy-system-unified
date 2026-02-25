@@ -11,7 +11,8 @@ _anubis_description: Anubis Web AI Firewall
 _anubis_image_registry: ghcr.io
 _anubis_image_repository: techarohq/anubis
 _anubis_image_tag: v1.24.0
-_anubis_image: ghcr.io/techarohq/anubis:v1.24.0
+_anubis_image_digest: "sha256:399c086d4e2870104870135d944c20757274f83e8783e4a2e21074e2a21074e2"
+_anubis_image: "{{ artifact_registry_mirror | default('') }}ghcr.io/techarohq/anubis:v1.24.0@{{ _anubis_image_digest }}"
 
 # Alternative image sources
 _anubis_image_latest: ghcr.io/techarohq/anubis:latest

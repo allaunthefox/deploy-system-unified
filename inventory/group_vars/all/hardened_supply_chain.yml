@@ -42,3 +42,21 @@ rpmfusion_verify_checksum: true
 # Verify against: https://mirrors.rpmfusion.org/
 rpmfusion_free_sha256: ""
 rpmfusion_nonfree_sha256: ""
+
+# -----------------------------------------------------------------------------
+# Sovereign Supply Chain (Mirroring)
+# -----------------------------------------------------------------------------
+
+# Container Registry Mirror
+# Prepend this to all image names if defined.
+# Example: "registry.internal.corp/"
+artifact_registry_mirror: ""
+
+# Binary Artifact Mirror
+# Use this as the base URL for binary downloads if defined.
+# Example: "http://nexus.internal.corp/repository/binaries"
+artifact_binary_mirror_base: ""
+
+# Enforcement: Force all roles to use the mirror if true
+artifact_mirror_enforced: false
+

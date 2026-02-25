@@ -45,6 +45,7 @@ def extract_variables(role_path):
         return []
 
     vars_found = []
+    seen_vars = set()
     content = defaults_file.read_text()
     # Simple parser for top-level keys and comments
     # Matches "key: value # comment" or just "key: value"
@@ -55,6 +56,9 @@ def extract_variables(role_path):
         m = re.match(r'^([a-zA-Z0-9_]+):\s*(.*)$', line)
         if m:
             varname = m.group(1)
+            if varname in seen_vars:
+                continue
+            seen_vars.add(varname)
             val_and_comment = m.group(2)
             comment = ""
             if '#' in val_and_comment:

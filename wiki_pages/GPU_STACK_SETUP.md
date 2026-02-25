@@ -193,6 +193,7 @@ python3 roles/hardware/gpu/files/gpu_discovery.py --egpu-rdma
 
 ## Related Documentation
 
+- [Intel GPU Guide](INTEL_GPU_GUIDE) - Detailed Intel-specific configuration and Battlemage setup
 - [Vulkan Examples](../docs/deployment/VULKAN_EXAMPLES.md) - Running Vulkan applications in containers
 - [DisplayPort Alt Mode Guide](../docs/deployment/DP_ALT_MODE.md) - USB-C/Thunderbolt eGPU setup
 - [GPU Slicing](GPU_SLICING.md) - Slicing strategies and configuration

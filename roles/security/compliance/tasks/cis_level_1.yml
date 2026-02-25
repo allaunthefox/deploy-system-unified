@@ -7,7 +7,7 @@
     modprobe -n -v squashfs 2>&1 | grep -c "install /bin/true" || echo "0"
   register: cis_1_1_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_1_1_1
     - cis_level_1
@@ -25,7 +25,7 @@
     sysctl net.ipv4.ip_forward 2>&1 | awk '{print $NF}'
   register: cis_3_1_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_3_1_1
     - cis_level_1
@@ -43,7 +43,7 @@
     sysctl net.ipv4.conf.all.accept_redirects 2>&1 | awk '{print $NF}'
   register: cis_3_2_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_3_2_1
     - cis_level_1
@@ -61,7 +61,7 @@
     sysctl net.ipv4.tcp_syncookies 2>&1 | awk '{print $NF}'
   register: cis_3_2_7_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_3_2_7
     - cis_level_1
@@ -79,7 +79,7 @@
     dpkg -l auditd 2>&1 | grep -c "^ii" || rpm -q auditd 2>&1 | grep -c "auditd" || echo "0"
   register: cis_4_1_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_4_1_1
     - cis_level_1
@@ -113,7 +113,7 @@
     sshd -T 2>/dev/null | grep -c "^permitrootlogin no" || grep -c "^PermitRootLogin no" /etc/ssh/sshd_config || echo "0"
   register: cis_5_5_9_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_5_9
     - cis_level_1
@@ -131,7 +131,7 @@
     sshd -T 2>/dev/null | grep -c "^permitemptypasswords no" || grep -c "^PermitEmptyPasswords no" /etc/ssh/sshd_config || echo "0"
   register: cis_5_5_10_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_5_10
     - cis_level_1
@@ -149,7 +149,7 @@
     sshd -T 2>/dev/null | grep "^maxauthtries" | awk '{print $2}' || grep "^MaxAuthTries" /etc/ssh/sshd_config | awk '{print $2}' || echo "6"
   register: cis_5_5_5_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_5_5
     - cis_level_1

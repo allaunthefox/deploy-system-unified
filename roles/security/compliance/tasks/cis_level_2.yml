@@ -6,7 +6,6 @@
     df /tmp 2>&1 | tail -1 | awk '{print $1}'
   register: cis_1_2_1_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_1
     - cis_level_2
@@ -24,7 +23,6 @@
     mount | grep " /tmp " | grep -c "nodev" || echo "0"
   register: cis_1_2_2_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_2
     - cis_level_2
@@ -42,7 +40,6 @@
     mount | grep " /tmp " | grep -c "nosuid" || echo "0"
   register: cis_1_2_3_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_3
     - cis_level_2
@@ -60,7 +57,6 @@
     mount | grep " /tmp " | grep -c "noexec" || echo "0"
   register: cis_1_2_4_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_4
     - cis_level_2
@@ -78,7 +74,6 @@
     mount | grep -c "shm tmpfs" || echo "0"
   register: cis_1_2_5_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_5
     - cis_level_2
@@ -96,7 +91,6 @@
     mount | grep "shm " | grep -c "nodev" || echo "0"
   register: cis_1_2_6_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_6
     - cis_level_2
@@ -114,7 +108,6 @@
     mount | grep "shm " | grep -c "nosuid" || echo "0"
   register: cis_1_2_7_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_7
     - cis_level_2
@@ -132,7 +125,6 @@
     mount | grep "shm " | grep -c "noexec" || echo "0"
   register: cis_1_2_8_result
   changed_when: false
-  failed_when: false
   tags:
     - cis_1_2_8
     - cis_level_2
@@ -151,7 +143,7 @@
     dpkg -l xinetd 2>/dev/null || rpm -q xinetd 2>/dev/null || echo "not installed"
   register: cis_2_1_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_1
     - cis_level_2
@@ -169,7 +161,7 @@
     dpkg -l openbsd-inetd 2>/dev/null || echo "not installed"
   register: cis_2_1_2_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_2
     - cis_level_2
@@ -187,7 +179,7 @@
     dpkg -l telnetd 2>/dev/null || rpm -q telnet-server 2>/dev/null || echo "not installed"
   register: cis_2_1_3_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_3
     - cis_level_2
@@ -205,7 +197,7 @@
     dpkg -l rsh-server 2>/dev/null || rpm -q rsh-server 2>/dev/null || echo "not installed"
   register: cis_2_1_4_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_4
     - cis_level_2
@@ -223,7 +215,7 @@
     dpkg -l rsh-client 2>/dev/null || rpm -q rsh 2>/dev/null || echo "not installed"
   register: cis_2_1_5_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_5
     - cis_level_2
@@ -241,7 +233,7 @@
     dpkg -l talk 2>/dev/null || rpm -q talk-server 2>/dev/null || echo "not installed"
   register: cis_2_1_6_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_6
     - cis_level_2
@@ -259,7 +251,7 @@
     dpkg -l telnet 2>/dev/null || rpm -q telnet 2>/dev/null || echo "not installed"
   register: cis_2_1_7_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_7
     - cis_level_2
@@ -277,7 +269,7 @@
     dpkg -l slapd 2>/dev/null || rpm -q openldap-servers 2>/dev/null || echo "not installed"
   register: cis_2_1_8_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_8
     - cis_level_2
@@ -295,7 +287,7 @@
     dpkg -l nfs-kernel-server 2>/dev/null || rpm -q nfs-utils 2>/dev/null || echo "not installed"
   register: cis_2_1_9_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_9
     - cis_level_2
@@ -313,7 +305,7 @@
     dpkg -l rpcbind 2>/dev/null || rpm -q rpcbind 2>/dev/null || echo "not installed"
   register: cis_2_1_10_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_10
     - cis_level_2
@@ -331,7 +323,7 @@
     dpkg -l bind9 2>/dev/null || rpm -q bind 2>/dev/null || echo "not installed"
   register: cis_2_1_11_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_11
     - cis_level_2
@@ -349,7 +341,7 @@
     dpkg -l vsftpd 2>/dev/null || rpm -q vsftpd 2>/dev/null || echo "not installed"
   register: cis_2_1_12_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_12
     - cis_level_2
@@ -367,7 +359,7 @@
     dpkg -l apache2 2>/dev/null || rpm -q httpd 2>/dev/null || echo "not installed"
   register: cis_2_1_13_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_2_1_13
     - cis_level_2
@@ -386,7 +378,7 @@
     grep -c "minlen.*14" /etc/pam.d/common-password 2>/dev/null || echo "0"
   register: cis_5_3_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_3_1
     - cis_level_2
@@ -404,7 +396,7 @@
     grep -c "remember.*5" /etc/pam.d/common-password 2>/dev/null || echo "0"
   register: cis_5_3_2_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_3_2
     - cis_level_2
@@ -422,7 +414,7 @@
     grep -c "sha512" /etc/pam.d/common-password 2>/dev/null || echo "0"
   register: cis_5_3_3_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_3_3
     - cis_level_2
@@ -440,7 +432,7 @@
     grep -c "pam_faillock" /etc/pam.d/common-auth 2>/dev/null || echo "0"
   register: cis_5_3_6_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_5_3_6
     - cis_level_2
@@ -459,7 +451,7 @@
     stat -c "%a" /etc/pam.d/common-password 2>/dev/null | grep -c "644\|640\|600" || echo "0"
   register: cis_6_1_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_6_1_1
     - cis_level_2
@@ -478,7 +470,7 @@
     ip link show 2>/dev/null | grep -c "wireless" || echo "0"
   register: cis_8_1_2_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_8_1_2
     - cis_level_2
@@ -496,7 +488,7 @@
     modprobe -c | grep -c "install dccp /bin/true" || echo "0"
   register: cis_8_2_1_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_8_2_1
     - cis_level_2
@@ -514,7 +506,7 @@
     modprobe -c | grep -c "install sctp /bin/true" || echo "0"
   register: cis_8_2_2_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_8_2_2
     - cis_level_2
@@ -532,7 +524,7 @@
     modprobe -c | grep -c "install rds /bin/true" || echo "0"
   register: cis_8_2_3_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_8_2_3
     - cis_level_2
@@ -550,7 +542,7 @@
     modprobe -c | grep -c "install tipc /bin/true" || echo "0"
   register: cis_8_2_4_result
   changed_when: false
-  failed_when: false
+  
   tags:
     - cis_8_2_4
     - cis_level_2

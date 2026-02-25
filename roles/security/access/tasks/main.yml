@@ -75,12 +75,11 @@
     - security
     - access
 
-- name: "CIS 7.1 | STIG V-230235 | STIG V-230236 | ISO 27001 §9.2 | NIST AC-2 | NIST AC-5 | NIST AC-6 | NIST IA-2 | NIST IA-5 | Action 510023 | Configure sudo for wheel group"
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    regexp: '^%wheel'
-    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-    validate: 'visudo -cf %s'
+- name: "CIS 7.1 | STIG V-230235 | STIG V-230236 | ISO 27001 §9.2 | NIST AC-2 | NIST AC-5 | NIST AC-6 | NIST IA-2 | NIST IA-5 | Action 510023 | Create sudoers.d directory"
+  ansible.builtin.file:
+    path: /etc/sudoers.d
+    state: directory
+    mode: '0750'
   become: true
   tags:
     - cis_7_1
@@ -94,6 +93,41 @@
     - nist_ia_5
     - security
     - access
+
+- name: "CIS 7.1 | STIG V-230235 | STIG V-230236 | ISO 27001 §9.2 | NIST AC-2 | NIST AC-5 | NIST AC-6 | NIST IA-2 | NIST IA-5 | Action 510023 | Configure wheel group sudo access (restricted commands)"
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/wheel
+    content: |
+      # Wheel group sudo access - restricted to specific commands
+      %wheel ALL=(ALL) NOPASSWD: /usr/bin/systemctl * nginx
+      %wheel ALL=(ALL) NOPASSWD: /usr/bin/systemctl * docker
+      %wheel ALL=(ALL) NOPASSWD: /usr/bin/systemctl * podman
+      %wheel ALL=(ALL) NOPASSWD: /usr/bin/systemctl * k3s
+      %wheel ALL=(ALL) NOPASSWD: /usr/bin/journalctl *
+    mode: '0440'
+    validate: 'visudo -cf %s'
+  become: true
+  vars:
+    ansible_no_log: true
+  tags:
+    - cis_7_1
+    - stig_v_230235
+    - stig_v_230236
+    - iso_27001_9_2
+    - nist_ac_2
+    - nist_ac_5
+    - nist_ac_6
+    - nist_ia_2
+    - nist_ia_5
+    - security
+    - access
+    - access
+
+- name: VERIFY | Sudoers configuration (Zero-Tolerance)
+  ansible.builtin.command: visudo -cf /etc/sudoers.d/wheel
+  become: true
+  changed_when: false
+  tags: [security, access, verification]
 
 - name: Validate admin password hash (if enforcement enabled)
   ansible.builtin.assert:
@@ -154,6 +188,36 @@
     - ssh
     - remediate
   when: ssh_match_rules is defined and ssh_match_rules | length > 0
+
+- name: "CIS 5.4.4 | NIST AC-6 | ISO 27001 §9.2 | Action 510005 | Harden system-wide umask (idempotent)"
+  block:
+    - name: Set umask in /etc/login.defs
+      ansible.builtin.lineinfile:
+        path: /etc/login.defs
+        regexp: '^UMASK'
+        line: 'UMASK           027'
+      become: true
+
+    - name: Set umask in /etc/profile
+      ansible.builtin.lineinfile:
+        path: /etc/profile
+        regexp: '^umask'
+        line: 'umask 027'
+      become: true
+
+    - name: VERIFY | System-wide umask (Zero-Tolerance)
+      ansible.builtin.shell: |
+        grep -q "UMASK           027" /etc/login.defs && \
+        grep -q "umask 027" /etc/profile
+      become: true
+      changed_when: false
+  tags:
+    - cis_5_4_4
+    - nist_ac_6
+    - iso_27001_9_2
+    - security
+    - access
+    - remediate
 
 - name: Set access configuration completion flag
   ansible.builtin.set_fact:

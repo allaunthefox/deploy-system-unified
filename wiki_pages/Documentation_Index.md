@@ -1,107 +1,92 @@
-# Documentation_Index
+# Documentation Index
 
-Welcome to the documentation for **Deploy-System-Unified**, a modular, security-first infrastructure deployment system built on Ansible.
+Welcome to the **Deploy-System-Unified (DSU)** Knowledge Base. This repository contains the complete technical specifications and operational guides for our high-resilience, security-first infrastructure.
 
-## 📖 Philosophical Foundation
+---
 
-This project is built on a core architectural principle:
-> **"Complexity is not a problem, but comingling tasks is."**
+## 🏛️ 1. Architecture & Philosophy
+The core logic and design patterns governing the project.
 
-Every role, task, and playbook is designed to be granular, single-purpose, and explicit.
+*   **[Modular Layers](MODULAR_LAYERS)**: The 7-layer defense-in-depth model.
+*   **[Ontology & Profiles](ONTOLOGY)**: Formal mapping of security postures to hardware.
+*   **[Core Philosophy](NON_COMINGLING)**: The "Anti-Comingling" rule for task modularity.
+*   **[High-Resilience Plan](Plan_HIGH_RESILIENCE_PLAN_2026)**: The project's security roadmap and HRoT mandate.
+*   **[Volatile Design](EPHEMERAL_DESIGN)**: Zero-footprint and RAM-disk secret infrastructure.
+*   **[Layered Security](LAYERED_SECURITY)**: Coordination between firewall, MAC, and kernel hardening.
+*   **Architecture Guides**: [x86](Arch_X86) | [ARM64](Arch_ARM64) | [RISC-V](Arch_RISCV64)
 
-## 📂 Documentation Map
+---
 
-### 🏛️ Architecture
+## 🚀 2. Operations & Deployment
+How to deploy and maintain DSU environments.
 
-* **[Modular Layers](MODULAR_LAYERS)**: Understanding the split between "The Base" and "The Stack."
-* **[Ontology & Profiles](ONTOLOGY)**: The formal relationship between profiles and infrastructure.
-* **[Core Philosophy](NON_COMINGLING)**: Why we avoid comingled tasks.
-* **[Layered Security](LAYERED_SECURITY)**: How firewalls, access controls, and scanning work together.
-* **[Virtual Networking](VIRTUAL_NETWORKING)**: VLANs, VXLANs, and L2/L3 isolation.
-* **[Backup Strategy](BACKUP_STRATEGY)**: rclone, restic, and system snapshots.
-* **[GPU Slicing Architecture](GPU_SLICING)**: Architectural overview of GPU slicing implementation.
-* **[Ephemeral Design](EPHEMERAL_DESIGN)**: Logic behind zero-footprint deployments.
-* **[x86 Architecture Guide](ARCH_GUIDE_X86)**: Specific considerations for x86_64 deployments.
-* **[ARM64 Architecture Guide](ARCH_GUIDE_ARM64)**: Optimizing for ARM64 (SBCs, Cloud, etc.).
-* **[RISC-V Architecture Guide](ARCH_GUIDE_RISCV64)**: Emerging support for RISC-V platforms.
+*   **[Universal Deployment Guide](UNIVERSAL_DEPLOYMENT_GUIDE)**: The master SOP for all production runs.
+*   **[Quick Reference](QUICK_REFERENCE)**: Common commands and "cheat sheet" for operators.
+*   **[Deployment Status](DEPLOYMENT_STATUS)**: Current implementation readiness and compliance scores.
+*   **[OS Configuration](OS_CONFIGURATION)**: Fleet-wide "Single Source of Truth" settings.
+*   **[Restore Runbook](RESTORE_RUNBOOK)**: Disaster recovery and autonomic restore procedures.
+*   **[SOPS Migration Guide](SOPS_MIGRATION_GUIDE)**: Transitioning from Vault to SOPS/Age encryption.
 
-### 💻 Development
+---
 
-* **[Development Tooling](TOOLING)**: Explaining switches (`--low-risk-repair`) and enforcement.
-* **[Style Guide](STYLE_GUIDE)**: Standards for YAML, Shell, and Ansible.
-* **[Pre-commit Hooks](PRE_COMMIT)**: Installing and using local enforcement.
-* **[LLM Context Map](LLM_MAP)**: High-density context for AI assistants.
-* **[Contributing](CONTRIBUTING)**: Guidelines for contributing to the project.
-* **[Research Guidelines](RESEARCH_GUIDELINES)**: Standards for technical research and documentation.
+## 🛡️ 3. Security & Compliance
+Formal standards and hardening specifications.
 
-### 🚀 Deployment
+*   **[ISO Tagging Standard](ISO_TAGGING_STANDARD)**: Mapping tasks to ISO 27001, NIST, and CIS.
+*   **[Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)**: Current status of control remediation.
+*   **[Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)**: GPG, Checksums, and Cosign enforcement.
+*   **[Hybrid Security Setup](SECURITY_CROWDSEC_HYBRID)**: Integrating container agents with host firewalls.
+*   **[Standardized Auditing](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)**: Detailed comparison vs. industry benchmarks.
 
-* **[Universal Deployment Guide](UNIVERSAL_DEPLOYMENT_GUIDE)**: Master SOP for replicable system deployment.
-* **[Deployment Status](DEPLOYMENT_STATUS)**: Current system readiness and implementation status.
-* **[OS Configuration](OS_CONFIGURATION)**: The "Single Source of Truth" for fleet-wide OS settings.
-* **[SSH Idempotence Guardrails](SSH_IDEMPOTENCE_GUARDRAILS)**: Deterministic SSH configuration and anti-drift rules.
-* **[Hardware Compatibility Matrix](HARDWARE_COMPATIBILITY_MATRIX)**: Supported CPU/GPU combinations and platform tiers.
-* **[GPU Interaction Matrix](GPU_INTERACTION_MATRIX)**: Behavior in VM, Container, and Hybrid environments.
-* **[GPU Stack Setup](GPU_STACK_SETUP)**: Detailed guide for installing unified GPU drivers and compute stacks.
-* **[Architecture & Vendor Profiles](ARCH_VENDOR_PROFILES)**: Explicit arch/vendor selection to avoid x86-only assumptions.
-* **[Hybrid Security Setup](SECURITY_CROWDSEC_HYBRID)**: Implementation details for the Container+Host CrowdSec architecture.
-* **[Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)**: Configuration guide for strict GPG/Checksum verification.
-* **[Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE)**: Specific setup for modern Intel GPUs.
-* **[Battlemage Setup Guide](BATTLEMAGE_SETUP)**: Technical walkthrough for discovery and allocation.
-* **[Intel Video Guide](INTEL_VIDEO_GUIDE)**: Hardware acceleration guide for Intel QuickSync.
-* **[EXAMPLES](EXAMPLES)**: Solution stack examples.
+---
 
-#### 🛠 Auxiliary Playbooks
-* **`bootstrap_ssh.yml`**: Initial SSH setup for fresh hosts.
-* **`fix_ssh.yml`**: Emergency repair for broken SSH configurations.
-* **`restore_data.yml`**: Orchestrates data restoration from Restic/Rclone backups.
-* **`preflight_diagnose.yml`**: Deep diagnostic suite for system readiness issues.
+## 🔌 4. Hardware & Acceleration
+Optimizing for specific architectures and GPUs.
 
-### 🤖 CI/CD & Automation
+*   **[GPU Stack Setup](GPU_STACK_SETUP)**: Unified driver installation and compute readiness.
+*   **[Intel GPU Guide](INTEL_GPU_GUIDE)**: Detailed Intel-specific configuration and Battlemage setup.
+*   **[GPU Slicing Architecture](GPU_SLICING)**: Implementation of MIG, SR-IOV, and Time-Slicing.
+*   **[Hardware Compatibility Matrix](HARDWARE_COMPATIBILITY_MATRIX)**: Validated CPU/GPU combinations.
+*   **[Vendor Profiles](Arch_Vendor_Profiles)**: Explicit hardware selection parameters.
 
-* **[CI/CD Workflows](CI_CD_WORKFLOWS)**: Overview of GitHub Actions and automated enforcement.
-* **[Negative Testing Implementation](NEGATIVE_TESTING_IMPLEMENTATION)**: How we verify security failure modes.
+---
 
-### 📋 Planning & Improvement
+## 💻 5. Development & Quality
+Tools and standards for contributing to DSU.
 
-* **[Wiki Improvement Plan](../docs/planning/WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits, particularly overly long pages.
-* **[Community Enhancement Plan](COMMUNITY_ENHANCEMENT_PLAN)**: Plan to address community engagement deficits identified through analysis.
-* **[Compliance Framework Integration Plan](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)**: CIS/STIG/NIST compliance mapping with control coverage matrices.
-* **[Determinism Roadmap](DETERMINISM_ROADMAP)**: Roadmap for achieving full determinism in deployments.
-* **[Role Enhancement Execution Plan 2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)**: 2026 role enhancement roadmap.
-* **[Security Enhancement Plan 2026](SECURITY_ENHANCEMENT_PLAN_2026)**: 2026 security hardening roadmap.
-* **[Stability Plan](STABILITY_PLAN)**: Comprehensive stability and reliability planning.
+*   **[Development Tooling](TOOLING)**: Usage guide for style enforcement and repair tools.
+*   **[Style Guide Overview](STYLE_GUIDE)**: Standards for [YAML](Dev_Style_YAML_Style_Guide), [Ansible](Dev_Style_Ansible_Style_Guide), [Shell](Dev_Style_Shell_Style_Guide), and [Docs](Dev_Style_Documentation_Style_Guide).
+*   **[Pre-commit Hooks](PRE_COMMIT)**: Local linting and secret detection setup.
+*   **[Testing Framework](Testing_Negative_IMPLEMENTATION)**: Comprehensive guide to [Negative Testing](Testing_Negative_IMPLEMENTATION) and [Idempotency Verification](Quality_Idempotency_BLOCKERS).
+*   **[LLM Context Map](LLM_MAP)**: Technical grounding for AI-assisted engineering.
+*   **[Wiki Improvement Plan](../docs/planning/WIKI_IMPROVEMENT_PLAN.md)**: Plan to address wiki content deficits.
 
-### 🔧 Deployment Extensions
+---
 
-* **[DP Alt Mode Guide](DP_ALT_MODE)**: DisplayPort Alt Mode / USB-C eGPU setup guide.
-* **[Restore Runbook](RESTORE_RUNBOOK)**: Disaster recovery runbook for system restoration.
-* **[SOPS Key Rotation SOP](SOPS_KEY_ROTATION_SOP)**: Standard Operating Procedure for key rotation.
-* **[SOPS Migration Guide](SOPS_MIGRATION_GUIDE)**: Migration guide from Vault to SOPS.
-* **[Vulkan Examples](VULKAN_EXAMPLES)**: Running Vulkan applications in containers.
+## 📊 6. Reference Library
+Technical lookup for roles and variables.
 
-### 📐 Development Standards
+*   **[Role Reference](Role_Reference)**: Master list of all 81+ Ansible roles.
+*   **[Variable Reference](Variable_Reference)**: Global and role-specific variable definitions.
+*   **[Action Code Catalog](DSU_ACTION_CODES_COMPLETE)**: 480+ forensic audit codes mapped to ISO standards.
 
-* **[Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)**: Compliance gap analysis with remediation status.
-* **[ISO Tagging Standard](ISO_TAGGING_STANDARD)**: ISO 27001, NIST, CIS tagging standards.
-* **[Role Implementation Standards Review](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)**: Comprehensive comparison vs ansible-lockdown/dev-sec.io.
+---
 
-### 📊 Variable References
+## 📅 7. Planning & Archive
+Future directions and historical implementation phases.
 
-* **[Variable Reference Overview](Variable_Reference)**: High-level overview of project variables
-* **[Variable Reference: Containers](Variable_Reference_Containers)**: Variables for container-related roles
-* **[Variable Reference: Core](Variable_Reference_Core)**: Variables for core system roles
-* **[Variable Reference: Security](Variable_Reference_Security)**: Variables for security-related roles
-* **[Variable Reference: Networking](Variable_Reference_Networking)**: Variables for networking roles
-* **[Variable Reference: Storage](Variable_Reference_Storage)**: Variables for storage roles
+*   **[Release Cycles](RELEASE_CYCLES)**: v1.x and v2.0 roadmap.
+*   **[Stability Plan](Plan_STABILITY_PLAN)**: Focus on 100% idempotence and reliability.
+*   **Planning Archive**:
+    *   [Stability Execution 2026](Plan_STABILITY_EXECUTION_PLAN_2026)
+    *   [Security Enhancement 2026](Plan_SECURITY_ENHANCEMENT_PLAN_2026)
+    *   [Role Enhancement 2026](Plan_ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)
+    *   [Community Enhancement](Plan_COMMUNITY_ENHANCEMENT_PLAN)
+    *   [Compliance Framework Integration](Plan_COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)
+    *   [Architecture Migration Guide](Arch_Migration_Guide)
+    *   [Determinism Roadmap](Plan_DETERMINISM_ROADMAP)
 
-### 📝 Style Guides
-
-* **[Style Guide Overview](STYLE_GUIDE)**: High-level overview of project style requirements
-* **[YAML Style Guide](YAML_Style_Guide)**: Standards for YAML files
-* **[Ansible Style Guide](Ansible_Style_Guide)**: Best practices for Ansible content
-* **[Shell Style Guide](Shell_Style_Guide)**: Requirements for shell scripts
-* **[Documentation Style Guide](Documentation_Style_Guide)**: Guidelines for documentation
+---
 
 ### 📚 Documentation Integration
 

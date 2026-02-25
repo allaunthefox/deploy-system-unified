@@ -83,7 +83,6 @@
     - kvm_intel # Assumes Intel, role logic could branch for AMD
     - vhost_net
   become: true
-  failed_when: false
   when: not _kvm_is_container
   tags:
     - cis_3_9_6
@@ -91,6 +90,17 @@
     - nist_sc_39
     - virtualization
     - kvm
+
+- name: VERIFY | KVM modules are active (Zero-Tolerance)
+  ansible.builtin.shell: |
+    lsmod | grep -q "{{ item }}"
+  loop:
+    - kvm
+    - vhost_net
+  become: true
+  when: not _kvm_is_container
+  changed_when: false
+  tags: [virtualization, kvm, verification]
 
 - name: "CIS 3.9.7 | STIG V-230645 | NIST AC-6 | ISO 27001 §8.26 | Action 830200 | Enable and start libvirtd service"
   ansible.builtin.systemd:
@@ -106,6 +116,15 @@
     - iso_27001_8_26
     - virtualization
     - kvm
+
+- name: VERIFY | libvirtd is functional
+  ansible.builtin.shell: virsh uri
+  register: _virsh_uri
+  failed_when: _virsh_uri.rc != 0
+  become: true
+  when: not _kvm_is_container
+  changed_when: false
+  tags: [virtualization, kvm, verification]
 
 - name: "CIS 3.9.8 | STIG V-230646 | NIST AC-6 | ISO 27001 §8.26 | Action 830000 | Configure QEMU security settings (Restrictive)"
   ansible.builtin.lineinfile:

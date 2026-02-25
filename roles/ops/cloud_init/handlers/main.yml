@@ -24,6 +24,7 @@
   ansible.builtin.command:
     cmd: cloud-init clean --logs
   become: true
+  changed_when: true
   failed_when: false
   tags:
     - ops
@@ -34,6 +35,7 @@
   ansible.builtin.command:
     cmd: cloud-init --debug init --force
   become: true
+  changed_when: true
   failed_when: false
   tags:
     - ops

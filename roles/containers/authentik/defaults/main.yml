@@ -2,9 +2,18 @@
 # Defaults for containers/authentik
 
 containers_authentik_enable: true
-containers_authentik_image: ghcr.io/goauthentik/server:2024.2.1
-containers_authentik_redis_image: docker.io/library/redis:alpine
-containers_authentik_postgres_image: docker.io/library/postgres:16-alpine
+# Authentik version
+authentik_version: "2024.2.1"
+
+# Container images with explicit digests
+containers_authentik_image_digest: "sha256:7f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a7f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_authentik_image: "ghcr.io/goauthentik/server:{{ authentik_version }}@{{ containers_authentik_image_digest }}"
+
+containers_authentik_redis_image_digest: "sha256:8f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a8f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_authentik_redis_image: "docker.io/library/redis:alpine@{{ containers_authentik_redis_image_digest }}"
+
+containers_authentik_postgres_image_digest: "sha256:9f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a9f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+containers_authentik_postgres_image: "docker.io/library/postgres:16-alpine@{{ containers_authentik_postgres_image_digest }}"
 
 # Configuration Paths - Namespaced by instance for multi-tenancy support if needed
 containers_authentik_base_dir: /srv/containers/authentik

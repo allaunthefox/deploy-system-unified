@@ -12,7 +12,6 @@
   when:
     - ansible_os_family == 'Debian'
     - ansible_service_mgr == 'systemd'
-  failed_when: false
 
 - name: restart_dnf_automatic
   ansible.builtin.systemd:
@@ -23,4 +22,3 @@
   when:
     - ansible_os_family == 'RedHat'
     - ansible_service_mgr == 'systemd'
-  failed_when: false

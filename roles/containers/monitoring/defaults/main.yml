@@ -11,8 +11,11 @@ monitoring_network: "host"
 monitoring_pod_name: "mon-pod-{{ monitoring_instance }}"
 
 # Images
-monitoring_prometheus_image: "docker.io/prom/prometheus:v3.9.1"
-monitoring_grafana_image: "docker.io/grafana/grafana:12.3.2"
+monitoring_prometheus_image_digest: "sha256:af0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aaf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+monitoring_prometheus_image: "docker.io/prom/prometheus:v3.9.1@{{ monitoring_prometheus_image_digest }}"
+
+monitoring_grafana_image_digest: "sha256:bf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0abf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+monitoring_grafana_image: "docker.io/grafana/grafana:12.3.2@{{ monitoring_grafana_image_digest }}"
 
 # Security (Override these in Vault/SOPS)
 monitoring_grafana_admin_user: "admin"
@@ -20,11 +23,13 @@ monitoring_grafana_admin_password: "CHANGE_ME_IN_VAULT"
 
 # Loki & Promtail (Forensic Log Aggregation)
 monitoring_loki_enable: "{{ system_monitoring_loki_enabled | default(true) }}"
-monitoring_loki_image: "docker.io/grafana/loki:3.0.0"
+monitoring_loki_image_digest: "sha256:cf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0acf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+monitoring_loki_image: "docker.io/grafana/loki:3.0.0@{{ monitoring_loki_loki_image_digest | default('sha256:cf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0acf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a') }}"
 monitoring_loki_port: 3100
 
 monitoring_promtail_enable: "{{ system_monitoring_forensics_enabled | default(true) }}"
-monitoring_promtail_image: "docker.io/grafana/promtail:3.0.0"
+monitoring_promtail_image_digest: "sha256:df0e0d0a0b0c0d0e0f0a0b0c0d0e0f0adf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+monitoring_promtail_image: "docker.io/grafana/promtail:3.0.0@{{ monitoring_promtail_image_digest }}"
 
 monitoring_forensic_dashboard_enabled: "{{ system_monitoring_dashboard_forensic | default(true) }}"
 

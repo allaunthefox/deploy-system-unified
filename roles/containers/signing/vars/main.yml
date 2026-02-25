@@ -19,3 +19,9 @@ cosign_service_path: /etc/systemd/system
 
 # Log file for cosign operations
 cosign_log_file: /var/log/cosign.log
+
+# Checksums for binary installation
+cosign_checksums:
+  "2.3.0":
+    amd64: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+    arm64: "sha256:1f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a1f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example

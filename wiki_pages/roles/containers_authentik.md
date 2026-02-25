@@ -10,11 +10,23 @@ Deploys Authentik for identity management, featuring comprehensive secret valida
 <a id="containers-authentik-enable"></a>### `containers_authentik_enable`
 - `containers_authentik_enable`
 
+<a id="authentik-version"></a>### `authentik_version`
+- `authentik_version`
+
+<a id="containers-authentik-image-digest"></a>### `containers_authentik_image_digest`
+- `containers_authentik_image_digest` — Example
+
 <a id="containers-authentik-image"></a>### `containers_authentik_image`
 - `containers_authentik_image`
 
+<a id="containers-authentik-redis-image-digest"></a>### `containers_authentik_redis_image_digest`
+- `containers_authentik_redis_image_digest` — Example
+
 <a id="containers-authentik-redis-image"></a>### `containers_authentik_redis_image`
 - `containers_authentik_redis_image`
+
+<a id="containers-authentik-postgres-image-digest"></a>### `containers_authentik_postgres_image_digest`
+- `containers_authentik_postgres_image_digest` — Example
 
 <a id="containers-authentik-postgres-image"></a>### `containers_authentik_postgres_image`
 - `containers_authentik_postgres_image`

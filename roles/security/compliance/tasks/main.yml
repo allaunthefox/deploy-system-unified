@@ -39,7 +39,15 @@
     - cis
     - cis_level_2
 
-- name: "COMPLIANCE 5 | Generate compliance report"
+- name: "COMPLIANCE 5 | Run Negative Security Testing"
+  ansible.builtin.include_tasks: negative_testing.yml
+  when: "'negative_testing' in compliance_frameworks"
+  tags:
+    - compliance
+    - negative_testing
+    - security
+
+- name: "COMPLIANCE 6 | Generate compliance report"
   ansible.builtin.template:
     src: compliance_report.json.j2
     dest: "{{ compliance_report_path }}/cis_compliance_report.json"
@@ -63,3 +71,14 @@
     - compliance
     - cis
     - report
+
+- name: "COMPLIANCE 7 | Enforce 100% CIS Compliance (Zero-Tolerance)"
+  ansible.builtin.assert:
+    that:
+      - "(cis_level_1_total == 0) or (cis_level_1_score | int == cis_level_1_total | int)"
+      - "(cis_level_2_total == 0) or (cis_level_2_score | int == cis_level_2_total | int)"
+    fail_msg: |-
+      Compliance validation failed! 100% compliance is required.
+      Level 1: {{ cis_level_1_score }}/{{ cis_level_1_total }}
+      Level 2: {{ cis_level_2_score }}/{{ cis_level_2_total }}
+  tags: [compliance, cis, enforcement]

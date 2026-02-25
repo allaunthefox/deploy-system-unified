@@ -1,0 +1,9 @@
+---
+- name: Converge TPM Guard
+  hosts: all
+  vars:
+    tpm_guard_enabled: true
+  tasks:
+    - name: "Include security/tpm_guard"
+      ansible.builtin.include_role:
+        name: "security/tpm_guard"

@@ -26,6 +26,7 @@
       - core/time
       - core/entropy
       - core/secrets
+      - security/tpm_guard
       # Security Baseline (Establish Default-Deny First)
       - networking/firewall
       - security/mac_apparmor
@@ -35,6 +36,7 @@
       - security/access
       - security/sshd             # CIS Level 1 & ISO 27001 Compliant
       - security/file_integrity
+      - security/ima_enforcement   # Runtime Binary Integrity
       - storage/dedupe            # NoDupeLabs Archival Standards
       - security/sbom             # Supply Chain Integrity
       - core/grub
