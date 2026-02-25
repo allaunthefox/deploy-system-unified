@@ -15,7 +15,7 @@ We take security seriously. If you discover a security vulnerability, please fol
 2.  Email the maintainers directly (contact info in `AUTHORS` or via private repository message).
 3.  Provide a detailed description of the vulnerability and steps to reproduce.
 
-We will acknowledge your report within 48 hours and provide a timeline for a fix.
+We cannot guarantee a response in a timely manor, but we will attempt to respond when possible.
 
 ## Security Features
 
