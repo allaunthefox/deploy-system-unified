@@ -1,9 +1,9 @@
 # Development dependencies with explicit SHA256 digests
 # Standard: Mandatory Supply Chain Verification
 
-ansible-core==2.15.9 --hash=sha256:7f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a7f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a # Example
-ansible-lint==6.22.2 --hash=sha256:8f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a8f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a # Example
-yamllint==1.33.0 --hash=sha256:9f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a9f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a # Example
-molecule==6.0.3 --hash=sha256:af0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aaf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a # Example
-molecule-plugins[podman]==23.5.3 --hash=sha256:bf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0abf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a # Example
-pytest-testinfra==10.1.0 --hash=sha256:cf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0acf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a # Example
+ansible-core==2.15.9 --hash=sha256:5b6a4b12aa5358f60933e79d86763e3558862282fb1dc563a29b9999e5849fc3
+ansible-lint==6.22.2 --hash=sha256:d28a7c1ceaf043b77aebeb0a20475e647565270356c23f4790a9c01e67bf815d
+yamllint==1.33.0 --hash=sha256:2dceab9ef2d99518a2fcf4ffc964d44250ac4459be1ba3ca315118e4a1a81f7d
+molecule==6.0.3 --hash=sha256:8e5d7a7841f9ed5dd26878d24951ec030b86f780aca17ffc509db8076f42de3d
+molecule-plugins[podman]==23.5.3 --hash=sha256:87f8ac8d5e9fe1cbdfb784d92b1fd08e7cb11bf02a9391bb34dcb93fadf7a3fc
+pytest-testinfra==10.1.0 --hash=sha256:0a03b7f21c863396adba9578880e5a1a6764e9d20bb603e25317883fdeda024b
