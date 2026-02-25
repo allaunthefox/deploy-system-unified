@@ -37,7 +37,7 @@ ERROR! Host 38.242.222.130 must belong to exactly one ontological profile group
 The `contabo_cloud_vps_30_ssd` group was defined in inventory but not assigned to a production/hardened/ephemeral/dev profile.
 
 **Fix:**  
-Added production ontological profile assignment in [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/inventory/contabo_cloud_vps_30_ssd.ini`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/inventory/contabo_cloud_vps_30_ssd.ini):
+Added production ontological profile assignment in [`../inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini):
 
 ```ini
 [production:children]
@@ -65,7 +65,7 @@ Security roles in `base_hardened.yml` were being skipped because the play target
 Hardcoded host target limited deployment to localhost only.
 
 **Fix:**  
-Updated [`base_hardened.yml` line 13](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/base_hardened.yml#L13):
+Updated [`base_hardened.yml` line 13](../base_hardened.yml#L13):
 
 ```diff
  - name: Apply Secure Infrastructure Base
@@ -95,7 +95,7 @@ ERROR! Did not find any vault ID to use for encryption
 The vault encrypt command lacked the required `--encrypt-vault-id` parameter introduced in newer Ansible versions.
 
 **Fix:**  
-Updated [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/tasks/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/tasks/main.yml#L129-L137):
+Updated [`../roles/security/audit_integrity/tasks/main.yml`](../roles/security/audit_integrity/tasks/main.yml#L129-L137):
 
 **Before:**
 ```yaml
@@ -118,7 +118,7 @@ Updated [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/r
       - "{{ fss_temp_file.path }}"
 ```
 
-Also added default variable in [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/defaults/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/defaults/main.yml#L11):
+Also added default variable in [`../roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml#L11):
 ```yaml
 audit_integrity_vault_encrypt_id: "default"
 ```
@@ -141,7 +141,7 @@ Storing encrypted FSS keys in `/tmp` on the controller caused permission errors 
 Ansible controller's `/tmp` is system-managed and should not have permissions modified.
 
 **Fix:**  
-Changed output directory in [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/defaults/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/defaults/main.yml#L8):
+Changed output directory in [`../roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml#L8):
 
 ```diff
 -audit_integrity_output_dir: "/tmp"
@@ -169,7 +169,7 @@ Two issues in the sticky-bit task:
 - Missing default value handling for empty stdout
 
 **Fix:**  
-Updated [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/hardening/tasks/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/hardening/tasks/main.yml#L61-L69):
+Updated [`../roles/security/hardening/tasks/main.yml`](../roles/security/hardening/tasks/main.yml#L61-L69):
 
 **Before:**
 ```yaml
@@ -221,7 +221,7 @@ SSH service start task hung indefinitely, waiting for `systemd-time-wait-sync` s
 Systemd service start was blocking, waiting for time synchronization to complete.
 
 **Fix:**  
-Added `no_block: true` in [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/access/tasks/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/access/tasks/main.yml#L33):
+Added `no_block: true` in [`../roles/security/access/tasks/main.yml`](../roles/security/access/tasks/main.yml#L33):
 
 ```diff
  - name: Ensure SSH service is running
@@ -281,14 +281,14 @@ $ ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242
 ## Files Modified
 
 ### Inventory & Playbook Configuration
-- [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/inventory/contabo_cloud_vps_30_ssd.ini`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
-- [`base_hardened.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/base_hardened.yml) - Host targeting fix
+- [`../inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
+- [`base_hardened.yml`](../base_hardened.yml) - Host targeting fix
 
 ### Security Role Fixes
-- [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/defaults/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/defaults/main.yml) - Vault ID & output dir
-- [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/tasks/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/audit_integrity/tasks/main.yml) - Vault encrypt fix
-- [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/hardening/tasks/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/hardening/tasks/main.yml) - Pipefail & changed_when fix
-- [`https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/access/tasks/main.yml`](https://raw.githubusercontent.com/allaunthefox/deploy-system-unified/refs/heads/feat/2025-2026-standards-update/roles/security/access/tasks/main.yml) - SSH non-blocking start
+- [`../roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml) - Vault ID & output dir
+- [`../roles/security/audit_integrity/tasks/main.yml`](../roles/security/audit_integrity/tasks/main.yml) - Vault encrypt fix
+- [`../roles/security/hardening/tasks/main.yml`](../roles/security/hardening/tasks/main.yml) - Pipefail & changed_when fix
+- [`../roles/security/access/tasks/main.yml`](../roles/security/access/tasks/main.yml) - SSH non-blocking start
 
 ---
 

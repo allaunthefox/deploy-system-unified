@@ -60,6 +60,7 @@
     - vxlan
     - bridge
   become: true
+  changed_when: true
   failed_when: false
   tags:
     - networking

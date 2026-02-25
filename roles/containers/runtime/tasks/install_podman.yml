@@ -141,21 +141,14 @@
         "transports": {
           "docker": {
             "docker.io": [{
-                "type": "insecureAcceptAnything"
-              }],
-            "lscr.io": [{
-                "type": "insecureAcceptAnything"
-              }],
-            "quay.io": [{
-                "type": "insecureAcceptAnything"
+                "type": "signedBy",
+                "keyType": "GPGKeys",
+                "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Official"
               }],
             "ghcr.io": [{
-                "type": "insecureAcceptAnything"
-              }]
-          },
-          "docker-daemon": {
-            "": [{
-                "type": "insecureAcceptAnything"
+                "type": "signedBy",
+                "keyType": "GPGKeys",
+                "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Official"
               }]
           }
         }
@@ -173,7 +166,6 @@
     cmd: aa-enforce /etc/apparmor.d/containers/*
   register: apparmor_result
   changed_when: false
-  failed_when: false
   become: true
   when: ansible_facts['os_family'] == 'Debian'
   tags:
@@ -181,6 +173,13 @@
     - containers
     - apparmor
     - remediate
+
+- name: VERIFY | AppArmor enforcing for containers (Zero-Tolerance)
+  ansible.builtin.shell: aa-status | grep -q "enforce mode"
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+  changed_when: false
+  tags: [security, apparmor, verification]
 
 - name: "ISO 27001 §8.26 | Action 440001 | Enable SELinux for containers (RedHat/CentOS)"
   ansible.posix.seboolean:
@@ -197,6 +196,13 @@
     - containers
     - selinux
     - remediate
+
+- name: VERIFY | SELinux enforcing (Zero-Tolerance)
+  ansible.builtin.shell: getenforce | grep -q "Enforcing"
+  become: true
+  when: ansible_facts['os_family'] == 'RedHat'
+  changed_when: false
+  tags: [security, selinux, verification]
 
 - name: Create podman configuration directory
   ansible.builtin.file:

@@ -59,13 +59,19 @@
   ansible.builtin.command: "ethtool {{ item }}"
   register: ethtool_output
   changed_when: false
-  failed_when: false
   loop: "{{ physical_interfaces }}"
   tags:
     - cis_3_1_4
     - nist_sc_7
     - networking
     - physical
+
+- name: VERIFY | ethtool data gathered
+  ansible.builtin.assert:
+    that: 
+      - ethtool_output.results | selectattr('rc', 'equalto', 0) | list | length == physical_interfaces | length
+    fail_msg: "Failed to gather ethtool data for all physical interfaces."
+  tags: [networking, physical, verification]
 
 - name: "CIS 3.1.5 | STIG V-230350 | Parse Interface Types and Capabilities"
   vars:
@@ -131,7 +137,6 @@
   ansible.builtin.command: "ethtool -g {{ item }}"
   register: ethtool_ring_output
   changed_when: false
-  failed_when: false
   loop: "{{ physical_interfaces }}"
   when: networking_physical_ring_tuning_enabled
   tags:
@@ -160,7 +165,6 @@
   ansible.builtin.command: "ethtool -k {{ item }}"
   register: ethtool_offload_output
   changed_when: false
-  failed_when: false
   loop: "{{ physical_interfaces }}"
   when: networking_physical_offload_tuning_enabled
   tags:
@@ -208,12 +212,19 @@
 
 - name: "CIS 3.2.7 | NIST SC-7 | Load Architecture Specific Networking Tasks"
   ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
-  ignore_errors: true
   tags:
     - cis_3_2_7
     - nist_sc_7
     - networking
     - physical
+
+- name: VERIFY | Network tuning data gathered
+  ansible.builtin.assert:
+    that:
+      - (not networking_physical_ring_tuning_enabled | default(false)) or (ethtool_ring_output.results | selectattr('rc', 'equalto', 0) | list | length == physical_interfaces | length)
+      - (not networking_physical_offload_tuning_enabled | default(false)) or (ethtool_offload_output.results | selectattr('rc', 'equalto', 0) | list | length == physical_interfaces | length)
+    fail_msg: "Failed to gather mandatory tuning data for physical interfaces."
+  tags: [networking, physical, verification]
 
 # --- Per-Interface Tuning (Jumbo Frames & Ring Buffers) ---
 

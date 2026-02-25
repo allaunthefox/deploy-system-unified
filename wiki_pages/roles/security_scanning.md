@@ -2,6 +2,9 @@
 
 **role**: `security/scanning`
 
+**Vulnerability Scanning**
+Comprehensive system validation and vulnerability scanning (Lynis, Trivy, Checkov).
+
 ## Variables
 
 <a id="security-scanning-enable"></a>### `security_scanning_enable`

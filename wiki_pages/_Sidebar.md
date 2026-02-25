@@ -1,6 +1,4 @@
-#_Sidebar
-- [Role Reference](Role_Reference)
-- [Variable Reference](Variable_Reference)
+# Navigation
 ### [Documentation Index](Documentation_Index)
 
 ---
@@ -9,94 +7,49 @@
 - [Ontology & Profiles](ONTOLOGY)
 - [Modular Layers](MODULAR_LAYERS)
 - [Layered Security](LAYERED_SECURITY)
-- [Ephemeral Design](EPHEMERAL_DESIGN)
+- [High-Resilience Plan](Plan_HIGH_RESILIENCE_PLAN_2026)
 - [Core Philosophy](NON_COMINGLING)
-- [Virtual Networking](VIRTUAL_NETWORKING)
-- [Backup Strategy](BACKUP_STRATEGY)
+- [Arch: x86](Arch_X86)
+- [Arch: ARM64](Arch_ARM64)
+- [Arch: RISC-V](Arch_RISCV64)
+
+---
+
+### 🚀 Operations
+- [Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)
+- [Deployment Status](DEPLOYMENT_STATUS)
+- [Quick Reference](QUICK_REFERENCE)
+- [Restore Runbook](RESTORE_RUNBOOK)
+
+---
+
+### 🛡️ Compliance
+- [ISO Tagging Standard](ISO_TAGGING_STANDARD)
+- [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
+- [Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)
+- [Action Codes](DSU_ACTION_CODES_COMPLETE)
+
+---
+
+### 🔌 Hardware
 - [GPU Stack Setup](GPU_STACK_SETUP)
+- [Intel GPU Guide](INTEL_GPU_GUIDE)
 - [GPU Slicing](GPU_SLICING)
-- [x86 Guide](ARCH_GUIDE_X86)
-- [ARM64 Guide](ARCH_GUIDE_ARM64)
-- [RISC-V Guide](ARCH_GUIDE_RISCV64)
+- [Hardware Matrix](HARDWARE_COMPATIBILITY_MATRIX)
+- [Vendor Profiles](Arch_Vendor_Profiles)
 
 ---
 
 ### 💻 Development
-- [Contributing](CONTRIBUTING)
 - [Style Guide](STYLE_GUIDE)
-- [Pre-commit Hooks](PRE_COMMIT)
 - [Tooling](TOOLING)
+- [Testing Framework](Testing_Negative_IMPLEMENTATION)
+- [Idempotency](Quality_Idempotency_BLOCKERS)
 - [LLM Context Map](LLM_MAP)
-- [Research Guidelines](RESEARCH_GUIDELINES)
-- [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
-- [ISO Tagging Standard](ISO_TAGGING_STANDARD)
-- [Role Implementation Standards](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)
 
 ---
 
-### 🚀 Deployment
-- [Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)
-- [Quick Reference](QUICK_REFERENCE)
-- [Beginner Guide](BEGINNER_GUIDE)
-- [Deployment Metrics](DEPLOYMENT_METRICS)
-- [GPU Dashboards](GPU_DASHBOARDS)
-- [Deployment Status](DEPLOYMENT_STATUS)
-- [Examples](EXAMPLES)
-- [OS Configuration](OS_CONFIGURATION)
-- [SSH Idempotence](SSH_IDEMPOTENCE_GUARDRAILS)
-- [Security Hybrid Setup](SECURITY_CROWDSEC_HYBRID)
-- [Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)
-
----
-
-### 🤖 Automation
-- [CI/CD Workflows](CI_CD_WORKFLOWS)
-- [Negative Testing](NEGATIVE_TESTING_IMPLEMENTATION)
-
----
-
-### 📋 Troubleshooting
-- [Potential Problems](POTENTIAL_PROBLEMS)
-- [Idempotency Blockers](IDEMPOTENCY_BLOCKERS)
-- [SSH Incident Postmortem](SSH_INCIDENT_POSTMORTEM)
-- [Implementation Review](IMPLEMENTATION_REVIEW)
-
----
-
-### 📅 Planning
-- [Versioning Policy](VERSIONING_POLICY)
+### 📊 Reference
+- [Role Reference](Role_Reference)
+- [Variable Reference](Variable_Reference)
 - [Release Cycles](RELEASE_CYCLES)
-- [Stability Plan](STABILITY_PLAN)
-- [Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)
-- [Security Enhancement Plan 2026](SECURITY_ENHANCEMENT_PLAN_2026)
-- [Role Enhancement Plan 2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)
-- [Determinism Roadmap](DETERMINISM_ROADMAP)
-- [Migration Plan](MIGRATION_PLAN)
-- [Restructuring Plan](RESTRUCTURING_PLAN_2026)
-- [GPU Enhanced Plan](GPU_ENHANCED_PLAN)
-- [Community Enhancement Plan](COMMUNITY_ENHANCEMENT_PLAN)
-- [Compliance Framework Integration](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)
-- [Architecture Migration](ARCHITECTURE_MIGRATION_GUIDE)
-
----
-
-### 🔧 Deployment Extensions
-- [DP Alt Mode Guide](DP_ALT_MODE)
-- [Restore Runbook](RESTORE_RUNBOOK)
-- [SOPS Key Rotation SOP](SOPS_KEY_ROTATION_SOP)
-- [SOPS Migration Guide](SOPS_MIGRATION_GUIDE)
-- [Vulkan Examples](VULKAN_EXAMPLES)
-
----
-
-### 📐 Development Standards
-- [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
-- [ISO Tagging Standard](ISO_TAGGING_STANDARD)
-- [Role Implementation Standards](ROLE_IMPLEMENTATION_STANDARDS_REVIEW)
-
----
-
-### 📊 Implementation Status
-- [Base Layer Implementation Status](BASE_LAYER_IMPLEMENTATION_STATUS)
-- [Role Reference: Containers](Role_Reference_Containers)
-- [Role Reference: Security](Role_Reference_Security)

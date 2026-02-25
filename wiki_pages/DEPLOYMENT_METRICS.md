@@ -173,6 +173,6 @@ Add to crontab:
 
 ## Related Documentation
 
-- [Monitoring Stack](../docs/deployment/DEPLOYMENT_STATUS)
-- [Grafana Dashboards](../docs/deployment/GPU_INTERACTION_MATRIX)
-- [Alert Manager](../docs/deployment/SECURITY_BLOCKER_RESOLUTION)
+- [Deployment Status](DEPLOYMENT_STATUS)
+- [GPU Interaction Matrix](GPU_INTERACTION_MATRIX)
+- [Security Blocker Resolution](SECURITY_BLOCKER_RESOLUTION)

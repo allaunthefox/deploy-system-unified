@@ -22,6 +22,7 @@
     dest: /usr/local/bin
     remote_src: true
     creates: /usr/local/bin/cosign
+    checksum: "{{ cosign_checksums[cosign_version][cosign_arch] | default(omit) }}"
   become: true
   when: cosign_check.rc != 0
   tags:
@@ -35,6 +36,15 @@
     - security
     - supply_chain
     - remediate
+
+- name: VERIFY | Cosign binary is functional (Zero-Tolerance)
+  ansible.builtin.command:
+    cmd: /usr/local/bin/cosign version
+  register: _cosign_ver
+  failed_when: _cosign_ver.rc != 0
+  changed_when: false
+  become: true
+  tags: [cosign, security, verification]
 
 - name: "ISO 27001 §14.2 | ISO 27001 §10.1 | Action 400011 | Create cosign directories for secure key storage"
   ansible.builtin.file:
@@ -64,6 +74,7 @@
       cosign generate-key-pair
       --key /etc/cosign/keys/cosign.key
   become: true
+  changed_when: true
   when:
     - cosign_key_mode == 'keypair'
     - not cosign_skip_keygen
@@ -182,7 +193,6 @@
       {% endif %}
       {{ cosign_verify_image }}
   register: cosign_verify_result
-  failed_when: false
   changed_when: false
   when: cosign_verify_image | default('', true) != ''
   tags:

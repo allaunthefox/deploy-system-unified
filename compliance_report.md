@@ -1,6 +1,6 @@
 # Compliance Report - Deploy-System-Unified Ansible Roles
 
-**Generated:** 2026-02-23T10:35:08.478550  
+**Generated:** 2026-02-24T23:58:38.849018  
 **Roles Path:** roles
 
 ---
@@ -9,14 +9,14 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Roles Scanned | 66 |
-| Total Tasks | 553 |
-| Tagged Tasks | 1520 |
-| **Overall Coverage** | **274.9%** |
-| CIS Controls Mapped | 315 |
-| STIG Controls Mapped | 203 |
-| NIST Controls Mapped | 32 |
-| ISO 27001 Controls Mapped | 17 |
+| Total Roles Scanned | 73 |
+| Total Tasks | 638 |
+| Tagged Tasks | 1897 |
+| **Overall Coverage** | **297.3%** |
+| CIS Controls Mapped | 356 |
+| STIG Controls Mapped | 215 |
+| NIST Controls Mapped | 62 |
+| ISO 27001 Controls Mapped | 19 |
 
 ---
 
@@ -24,16 +24,16 @@
 
 | Category | Roles | Avg Coverage | Total Tasks | Tagged Tasks |
 |----------|-------|--------------|-------------|--------------|
-| Containers | 12 | 235.8% | 120 | 283 |
-| Core | 12 | 257.1% | 91 | 234 |
+| Containers | 13 | 242.8% | 138 | 335 |
+| Core | 12 | 300.0% | 91 | 273 |
 | Hardware | 5 | 313.3% | 60 | 188 |
-| Kubernetes | 2 | 328.6% | 14 | 46 |
-| Networking | 7 | 304.3% | 47 | 143 |
-| Ops | 8 | 303.7% | 82 | 249 |
+| Kubernetes | 3 | 204.2% | 24 | 49 |
+| Networking | 7 | 323.1% | 52 | 168 |
+| Ops | 8 | 292.9% | 85 | 249 |
 | Orchestration | 1 | 333.3% | 6 | 20 |
-| Security | 14 | 260.4% | 111 | 289 |
-| Storage | 3 | 233.3% | 9 | 21 |
-| Virtualization | 2 | 337.5% | 8 | 27 |
+| Security | 19 | 350.0% | 160 | 560 |
+| Storage | 3 | 192.3% | 13 | 25 |
+| Virtualization | 2 | 333.3% | 9 | 30 |
 
 ---
 
@@ -43,10 +43,18 @@
 
 | Control | Roles | Tasks |
 |---------|-------|-------|
-| CIS 1.1.1 | security/hardening | 1 |
+| CIS 1.1.1 | core/bootstrap, security/hardening | 6 |
+| CIS 1.1.2 | core/bootstrap, security/hardening | 2 |
+| CIS 1.1.3 | core/bootstrap, security/hardening | 2 |
+| CIS 1.1.4 | core/bootstrap, security/hardening | 2 |
+| CIS 1.1.5 | core/bootstrap, security/access, security/hardening, security/sshd | 7 |
+| CIS 1.1.6 | core/bootstrap, security/hardening | 2 |
+| CIS 1.1.7 | core/bootstrap, security/hardening | 2 |
+| CIS 1.1.8 | core/bootstrap, security/hardening | 3 |
+| CIS 1.1.9 | core/bootstrap | 1 |
 | CIS 1.3.1 | security/file_integrity | 4 |
-| CIS 1.3.2 | security/file_integrity | 1 |
-| CIS 1.4.1 | core/grub, security/kernel | 2 |
+| CIS 1.3.2 | security/file_integrity | 2 |
+| CIS 1.4.1 | core/bootstrap, core/grub, security/kernel | 6 |
 | CIS 1.6.1 | security/mac_apparmor | 2 |
 | CIS 1.6.2 | security/mac_apparmor | 2 |
 
@@ -55,6 +63,19 @@
 | Control | Roles | Tasks |
 |---------|-------|-------|
 | CIS 2.1 | containers/quadlets, containers/runtime | 3 |
+| CIS 2.1.1 | security/hardening | 1 |
+| CIS 2.1.10 | security/hardening | 1 |
+| CIS 2.1.11 | security/hardening | 1 |
+| CIS 2.1.12 | security/hardening | 1 |
+| CIS 2.1.13 | security/hardening | 2 |
+| CIS 2.1.2 | security/hardening | 1 |
+| CIS 2.1.3 | security/hardening | 1 |
+| CIS 2.1.4 | security/hardening | 1 |
+| CIS 2.1.5 | security/hardening | 1 |
+| CIS 2.1.6 | security/hardening | 1 |
+| CIS 2.1.7 | security/hardening | 1 |
+| CIS 2.1.8 | security/hardening | 1 |
+| CIS 2.1.9 | security/hardening | 1 |
 | CIS 2.10 | containers/quadlets, containers/runtime | 2 |
 | CIS 2.11 | containers/quadlets | 1 |
 | CIS 2.12 | containers/quadlets | 1 |
@@ -74,7 +95,7 @@
 | Control | Roles | Tasks |
 |---------|-------|-------|
 | CIS 3.1 | containers/caddy, containers/config | 2 |
-| CIS 3.1.1 | hardware/gpu, networking/physical | 2 |
+| CIS 3.1.1 | hardware/gpu, networking/physical, security/kernel | 3 |
 | CIS 3.1.10 | hardware/gpu | 1 |
 | CIS 3.1.11 | hardware/gpu | 1 |
 | CIS 3.1.12 | hardware/gpu | 1 |
@@ -85,7 +106,7 @@
 | CIS 3.1.17 | hardware/gpu | 1 |
 | CIS 3.1.18 | hardware/gpu | 1 |
 | CIS 3.1.19 | hardware/gpu | 1 |
-| CIS 3.1.2 | hardware/gpu, networking/physical | 2 |
+| CIS 3.1.2 | hardware/gpu, networking/physical, security/kernel | 3 |
 | CIS 3.1.20 | hardware/gpu | 1 |
 | CIS 3.1.21 | hardware/gpu | 1 |
 | CIS 3.1.22 | hardware/gpu | 1 |
@@ -109,21 +130,21 @@
 | CIS 3.2.1 | hardware/sas, networking/physical, security/hardware_isolation, security/kernel | 5 |
 | CIS 3.2.10 | hardware/sas, networking/physical | 2 |
 | CIS 3.2.11 | hardware/sas | 1 |
-| CIS 3.2.2 | hardware/sas, networking/physical, security/hardware_isolation | 3 |
-| CIS 3.2.3 | hardware/sas, networking/physical, security/hardware_isolation | 3 |
-| CIS 3.2.4 | hardware/sas, networking/physical | 2 |
-| CIS 3.2.5 | hardware/sas, networking/physical | 2 |
-| CIS 3.2.6 | hardware/sas, networking/physical | 2 |
-| CIS 3.2.7 | hardware/sas, networking/physical | 2 |
+| CIS 3.2.2 | hardware/sas, networking/physical, security/hardware_isolation, security/kernel | 4 |
+| CIS 3.2.3 | hardware/sas, networking/physical, security/hardware_isolation, security/kernel | 4 |
+| CIS 3.2.4 | hardware/sas, networking/physical, security/kernel | 3 |
+| CIS 3.2.5 | hardware/sas, networking/physical, security/kernel | 3 |
+| CIS 3.2.6 | hardware/sas, networking/physical, security/kernel | 3 |
+| CIS 3.2.7 | hardware/sas, networking/physical, security/kernel | 3 |
 | CIS 3.2.8 | hardware/sas, networking/physical | 2 |
 | CIS 3.2.9 | hardware/sas, networking/physical | 2 |
 | CIS 3.3 | containers/caddy, containers/config | 2 |
-| CIS 3.3.1 | core/repositories, core/updates, hardware/storage_tuning, networking/virtual, security/scanning | 17 |
-| CIS 3.3.2 | core/repositories, hardware/storage_tuning, networking/virtual, security/scanning | 10 |
-| CIS 3.3.3 | hardware/storage_tuning, networking/virtual, security/scanning | 5 |
-| CIS 3.3.4 | hardware/storage_tuning, security/scanning | 4 |
-| CIS 3.3.5 | hardware/storage_tuning, security/scanning | 5 |
-| CIS 3.3.6 | security/scanning | 2 |
+| CIS 3.3.1 | core/repositories, core/updates, hardware/storage_tuning, networking/virtual, security/kernel, security/scanning | 17 |
+| CIS 3.3.2 | core/repositories, hardware/storage_tuning, networking/virtual, security/kernel, security/scanning | 10 |
+| CIS 3.3.3 | hardware/storage_tuning, networking/virtual, security/kernel, security/scanning | 5 |
+| CIS 3.3.4 | hardware/storage_tuning, security/scanning | 3 |
+| CIS 3.3.5 | hardware/storage_tuning, security/scanning | 3 |
+| CIS 3.3.6 | security/scanning | 1 |
 | CIS 3.4 | containers/caddy, containers/config | 2 |
 | CIS 3.4.1 | core/memory, hardware/virtual_guest | 6 |
 | CIS 3.4.2 | core/memory, hardware/virtual_guest | 5 |
@@ -172,21 +193,21 @@
 | CIS 3.8.7 | storage/dedupe | 1 |
 | CIS 3.9 | containers/caddy | 1 |
 | CIS 3.9.1 | virtualization/kvm | 1 |
-| CIS 3.9.2 | virtualization/kvm | 1 |
+| CIS 3.9.2 | virtualization/kvm | 2 |
 | CIS 3.9.3 | virtualization/kvm | 1 |
-| CIS 3.9.4 | virtualization/kvm | 1 |
 | CIS 3.9.5 | virtualization/kvm | 1 |
 | CIS 3.9.6 | virtualization/kvm | 1 |
 | CIS 3.9.7 | virtualization/kvm | 1 |
+| CIS 3.9.8 | virtualization/kvm | 1 |
 
 ### Section 4
 
 | Control | Roles | Tasks |
 |---------|-------|-------|
 | CIS 4.1 | containers/authentik, containers/lxc | 2 |
-| CIS 4.1.1 | kubernetes/master | 1 |
-| CIS 4.1.2 | kubernetes/master | 1 |
-| CIS 4.1.3 | kubernetes/master | 1 |
+| CIS 4.1.1 | kubernetes/master, security/falco, security/hardening | 6 |
+| CIS 4.1.2 | kubernetes/master, security/falco, security/hardening | 3 |
+| CIS 4.1.3 | kubernetes/master, security/falco | 2 |
 | CIS 4.1.4 | kubernetes/master | 1 |
 | CIS 4.1.5 | kubernetes/master | 1 |
 | CIS 4.1.6 | kubernetes/master | 1 |
@@ -206,7 +227,7 @@
 | CIS 4.2.1.1 | security/audit_integrity | 3 |
 | CIS 4.2.1.2 | security/audit_integrity | 1 |
 | CIS 4.2.1.3 | security/audit_integrity | 11 |
-| CIS 4.2.2 | core/logging, kubernetes/node | 3 |
+| CIS 4.2.2 | core/logging, kubernetes/node | 4 |
 | CIS 4.2.3 | core/logging, kubernetes/node | 2 |
 | CIS 4.2.4 | kubernetes/node | 1 |
 | CIS 4.2.5 | kubernetes/node | 1 |
@@ -232,7 +253,7 @@
 | CIS 4.4.7 | ops/monitoring | 1 |
 | CIS 4.4.8 | ops/monitoring | 1 |
 | CIS 4.4.9 | ops/monitoring | 1 |
-| CIS 4.5 | containers/authentik | 1 |
+| CIS 4.5 | containers/authentik, containers/signing | 2 |
 | CIS 4.5.1 | ops/preflight | 1 |
 | CIS 4.5.10 | ops/preflight | 1 |
 | CIS 4.5.11 | ops/preflight | 1 |
@@ -305,9 +326,9 @@
 | Control | Roles | Tasks |
 |---------|-------|-------|
 | CIS 5.1 | containers/ops | 1 |
-| CIS 5.1.1 | core/identity, security/firejail, security/sandboxing | 5 |
-| CIS 5.1.2 | security/firejail, security/sandboxing | 4 |
-| CIS 5.1.3 | security/firejail, security/sandboxing | 3 |
+| CIS 5.1.1 | containers/common, core/identity, security/firejail, security/sandboxing | 7 |
+| CIS 5.1.2 | containers/common, security/firejail, security/sandboxing | 5 |
+| CIS 5.1.3 | containers/common, security/firejail, security/sandboxing | 4 |
 | CIS 5.10 | containers/ops | 1 |
 | CIS 5.11 | containers/ops | 1 |
 | CIS 5.12 | containers/ops | 1 |
@@ -315,20 +336,32 @@
 | CIS 5.14 | containers/ops | 1 |
 | CIS 5.15 | containers/ops | 1 |
 | CIS 5.2 | containers/ops | 1 |
-| CIS 5.2.1 | core/systemd, security/advanced | 5 |
+| CIS 5.2.1 | containers/common, core/systemd, security/advanced | 6 |
+| CIS 5.2.10 | security/sshd | 1 |
 | CIS 5.2.11 | security/sshd | 1 |
 | CIS 5.2.12 | security/sshd | 1 |
 | CIS 5.2.13 | security/sshd | 1 |
-| CIS 5.2.14 | security/sshd | 1 |
-| CIS 5.2.15 | security/sshd | 1 |
+| CIS 5.2.14 | security/sshd | 3 |
+| CIS 5.2.17 | security/sshd | 1 |
 | CIS 5.2.18 | security/sshd | 1 |
-| CIS 5.2.2 | security/sshd | 1 |
-| CIS 5.2.3 | security/sshd | 1 |
-| CIS 5.2.4 | security/advanced | 3 |
-| CIS 5.2.5 | security/sshd | 1 |
+| CIS 5.2.19 | security/sshd | 1 |
+| CIS 5.2.2 | containers/common, security/sshd | 2 |
+| CIS 5.2.20 | security/sshd | 1 |
+| CIS 5.2.21 | security/sshd | 1 |
+| CIS 5.2.22 | security/sshd | 1 |
+| CIS 5.2.3 | containers/common, security/sshd | 2 |
+| CIS 5.2.4 | containers/common, security/advanced | 4 |
+| CIS 5.2.5 | containers/common, security/sshd | 2 |
 | CIS 5.2.6 | security/sshd | 1 |
+| CIS 5.2.7 | security/sshd | 1 |
+| CIS 5.2.8 | security/sshd | 1 |
+| CIS 5.2.9 | security/sshd | 1 |
 | CIS 5.2.x | core/systemd | 1 |
 | CIS 5.3 | containers/ops | 1 |
+| CIS 5.3.1 | security/hardening | 1 |
+| CIS 5.3.2 | security/hardening | 1 |
+| CIS 5.3.3 | security/hardening | 1 |
+| CIS 5.3.6 | security/hardening | 1 |
 | CIS 5.3.x | core/systemd | 1 |
 | CIS 5.4 | containers/ops | 1 |
 | CIS 5.4.1 | core/time, security/hardening, security/resource_protection | 5 |
@@ -347,6 +380,7 @@
 | Control | Roles | Tasks |
 |---------|-------|-------|
 | CIS 6.1 | containers/monitoring | 1 |
+| CIS 6.1.1 | security/hardening | 1 |
 | CIS 6.10 | containers/monitoring | 1 |
 | CIS 6.11 | containers/monitoring | 1 |
 | CIS 6.12 | containers/monitoring | 1 |
@@ -367,7 +401,7 @@
 
 | Control | Roles | Tasks |
 |---------|-------|-------|
-| CIS 7.1 | containers/media, security/access | 2 |
+| CIS 7.1 | containers/media, security/access | 3 |
 | CIS 7.10 | containers/media | 1 |
 | CIS 7.11 | containers/media | 1 |
 | CIS 7.12 | containers/media | 1 |
@@ -389,6 +423,23 @@
 | CIS 7.8 | containers/media | 1 |
 | CIS 7.9 | containers/media | 1 |
 
+### Section 8
+
+| Control | Roles | Tasks |
+|---------|-------|-------|
+| CIS 8.1.2 | security/hardening | 1 |
+| CIS 8.2.1 | security/kernel | 1 |
+| CIS 8.2.2 | security/kernel | 1 |
+| CIS 8.2.3 | security/kernel | 1 |
+| CIS 8.2.4 | security/kernel | 1 |
+
+### Section level
+
+| Control | Roles | Tasks |
+|---------|-------|-------|
+| CIS level.1 | security/compliance | 1 |
+| CIS level.2 | security/compliance, security/hardening, security/kernel | 25 |
+
 
 ---
 
@@ -396,20 +447,32 @@
 
 | STIG ID | Roles | Tasks |
 |---------|-------|-------|
-| V-230217 | security/hardening | 1 |
-| V-230220 | security/advanced, security/firejail, security/sandboxing | 8 |
-| V-230221 | security/advanced, security/firejail, security/sandboxing | 6 |
-| V-230223 | security/file_integrity | 4 |
-| V-230224 | security/file_integrity | 1 |
+| V-230217 | security/hardening | 5 |
+| V-230218 | security/hardening | 1 |
+| V-230219 | security/hardening | 1 |
+| V-230220 | security/advanced, security/firejail, security/hardening, security/sandboxing | 9 |
+| V-230221 | security/advanced, security/firejail, security/hardening, security/sandboxing | 7 |
+| V-230222 | security/hardening | 1 |
+| V-230223 | security/file_integrity, security/hardening | 5 |
+| V-230224 | security/file_integrity | 2 |
 | V-230225 | security/resource_protection | 1 |
 | V-230226 | security/resource_protection | 2 |
-| V-230231 | security/hardware_isolation | 2 |
-| V-230232 | security/hardware_isolation | 2 |
-| V-230235 | security/access | 1 |
-| V-230236 | security/access | 1 |
-| V-230240 | security/mac_apparmor | 2 |
-| V-230241 | security/mac_apparmor | 2 |
-| V-230250 | security/audit_integrity | 4 |
+| V-230229 | security/access, security/sshd | 4 |
+| V-230230 | security/access | 1 |
+| V-230231 | security/hardware_isolation, security/kernel | 3 |
+| V-230232 | security/hardware_isolation, security/kernel | 4 |
+| V-230233 | security/kernel | 1 |
+| V-230235 | security/access | 2 |
+| V-230236 | security/access | 2 |
+| V-230237 | security/sshd | 1 |
+| V-230238 | security/sshd | 3 |
+| V-230239 | security/sshd | 1 |
+| V-230240 | core/bootstrap, security/mac_apparmor, security/sshd | 16 |
+| V-230241 | security/mac_apparmor, security/sshd | 3 |
+| V-230242 | security/sshd | 1 |
+| V-230243 | security/sshd | 1 |
+| V-230244 | security/sshd | 1 |
+| V-230250 | security/audit_integrity, security/hardening | 5 |
 | V-230251 | security/audit_integrity | 11 |
 | V-230260 | core/systemd | 2 |
 | V-230261 | core/systemd | 1 |
@@ -421,8 +484,8 @@
 | V-230310 | core/memory | 9 |
 | V-230320 | core/repositories | 14 |
 | V-230330 | core/logging | 11 |
-| V-230340 | core/identity, security/scanning | 11 |
-| V-230341 | security/scanning | 9 |
+| V-230340 | core/identity, security/scanning | 8 |
+| V-230341 | security/scanning | 5 |
 | V-230344 | security/ips | 1 |
 | V-230345 | security/ips | 1 |
 | V-230346 | security/ips | 1 |
@@ -444,7 +507,7 @@
 | V-230507 | kubernetes/master | 1 |
 | V-230508 | kubernetes/master | 1 |
 | V-230510 | hardware/gpu | 1 |
-| V-230511 | hardware/gpu, kubernetes/node | 2 |
+| V-230511 | hardware/gpu, kubernetes/node | 3 |
 | V-230512 | hardware/gpu, kubernetes/node | 2 |
 | V-230513 | hardware/gpu, kubernetes/node | 2 |
 | V-230514 | hardware/gpu, kubernetes/node | 2 |
@@ -510,7 +573,7 @@
 | V-230634 | storage/dedupe | 1 |
 | V-230635 | storage/dedupe | 1 |
 | V-230636 | storage/dedupe | 1 |
-| V-230640 | virtualization/kvm | 1 |
+| V-230640 | virtualization/kvm | 2 |
 | V-230641 | virtualization/kvm | 1 |
 | V-230642 | virtualization/kvm | 1 |
 | V-230643 | virtualization/kvm | 1 |
@@ -606,37 +669,67 @@
 
 | Control | Family | Roles | Tasks |
 |---------|--------|-------|-------|
-| NIST AC-3 | NIST AC | containers/authentik, containers/caddy, containers/media, containers/ops, kubernetes/master, kubernetes/node, orchestration/k8s_node, security/mac_apparmor | 32 |
-| NIST AC-4 | NIST AC | networking/container_networks, networking/firewall, networking/virtual | 7 |
-| NIST AC-6 | NIST AC | containers/caddy, containers/lxc, containers/quadlets, containers/runtime, hardware/gpu, hardware/virtual_guest, ops/preflight, security/firejail, security/resource_protection, virtualization/kvm | 19 |
-| NIST AU-12 | NIST AU | core/logging, core/systemd, security/audit_integrity | 14 |
-| NIST AU-2 | NIST AU | containers/monitoring, core/logging, core/systemd, ops/health_check, ops/preflight, ops/session, security/audit_integrity, security/scanning | 28 |
-| NIST AU-3 | NIST AU | core/logging, core/systemd, security/audit_integrity | 4 |
-| NIST AU-6 | NIST AU | containers/monitoring | 3 |
-| NIST AU-8 | NIST AU | core/time | 6 |
-| NIST CA-7 | NIST CA | containers/caddy, containers/monitoring, containers/quadlets, ops/health_check, ops/monitoring, ops/preflight, security/scanning | 23 |
-| NIST CM-2 | NIST CM | containers/quadlets, core/grub, core/repositories, core/updates, security/hardening | 11 |
-| NIST CM-6 | NIST CM | containers/caddy, containers/config, containers/media, containers/monitoring, containers/quadlets, containers/runtime, core/systemd, hardware/firmware, hardware/gpu, hardware/sas, kubernetes/master, kubernetes/node, networking/desktop, networking/physical, ops/cloud_init, ops/guest_management, ops/preflight, orchestration/k8s_node | 43 |
-| NIST CM-7 | NIST CM | containers/caddy, containers/monitoring, containers/quadlets, containers/runtime, security/firejail, security/sandboxing | 11 |
-| NIST CP-9 | NIST CP | hardware/storage_tuning, ops/preflight, storage/dedupe | 6 |
-| NIST IA-2 | NIST IA | containers/authentik, containers/caddy, containers/config, containers/media, containers/monitoring, containers/ops, core/identity, security/hardening, security/sshd | 22 |
-| NIST IA-3 | NIST IA | containers/authentik | 1 |
-| NIST IA-5 | NIST IA | core/secrets, security/advanced | 8 |
+| NIST AC-10 | NIST AC | security/sshd | 1 |
+| NIST AC-11 | NIST AC | security/sshd | 1 |
+| NIST AC-12 | NIST AC | security/sshd | 1 |
+| NIST AC-14 | NIST AC | networking/firewall, security/access, security/sshd | 6 |
+| NIST AC-17 | NIST AC | security/access | 2 |
+| NIST AC-18 | NIST AC | security/hardening | 1 |
+| NIST AC-2 | NIST AC | security/access, security/hardening | 6 |
+| NIST AC-3 | NIST AC | containers/authentik, containers/caddy, containers/common, containers/media, containers/ops, kubernetes/master, kubernetes/node, networking/services, orchestration/k8s_node, security/access, security/mac_apparmor, security/sshd | 37 |
+| NIST AC-4 | NIST AC | networking/container_networks, networking/firewall, networking/virtual, security/kernel | 11 |
+| NIST AC-5 | NIST AC | security/access | 3 |
+| NIST AC-6 | NIST AC | containers/caddy, containers/common, containers/lxc, containers/quadlets, containers/runtime, hardware/gpu, hardware/virtual_guest, ops/preflight, security/access, security/firejail, security/resource_protection, security/sshd, virtualization/kvm | 25 |
+| NIST AC-7 | NIST AC | security/hardening, security/ips, security/sshd | 5 |
+| NIST AC-8 | NIST AC | security/sshd | 1 |
+| NIST AU-10 | NIST AU | security/audit_integrity | 1 |
+| NIST AU-11 | NIST AU | security/audit_integrity | 1 |
+| NIST AU-12 | NIST AU | containers/common, core/logging, core/systemd, security/audit_integrity, security/falco, storage/backup | 18 |
+| NIST AU-2 | NIST AU | containers/monitoring, core/logging, core/systemd, ops/health_check, ops/preflight, ops/session, security/audit_integrity, security/hardening, security/scanning | 29 |
+| NIST AU-3 | NIST AU | core/logging, core/systemd, security/audit_integrity | 5 |
+| NIST AU-4 | NIST AU | security/audit_integrity, security/hardening | 2 |
+| NIST AU-5 | NIST AU | security/audit_integrity | 1 |
+| NIST AU-6 | NIST AU | containers/monitoring, security/audit_integrity | 4 |
+| NIST AU-8 | NIST AU | core/time, networking/services, security/scanning | 9 |
+| NIST AU-9 | NIST AU | security/audit_integrity | 1 |
+| NIST CA-7 | NIST CA | containers/caddy, containers/monitoring, containers/quadlets, ops/health_check, ops/monitoring, ops/preflight | 16 |
+| NIST CM-2 | NIST CM | containers/quadlets, core/bootstrap, core/grub, core/repositories, core/updates, security/hardening | 21 |
+| NIST CM-3 | NIST CM | security/hardening | 1 |
+| NIST CM-6 | NIST CM | containers/caddy, containers/config, containers/media, containers/monitoring, containers/quadlets, containers/runtime, core/systemd, hardware/firmware, hardware/gpu, hardware/sas, kubernetes/master, kubernetes/node, networking/desktop, networking/physical, ops/cloud_init, ops/guest_management, ops/preflight, orchestration/k8s_node, security/hardening, security/kernel | 53 |
+| NIST CM-7 | NIST CM | containers/caddy, containers/common, containers/monitoring, containers/quadlets, containers/runtime, security/firejail, security/hardening, security/sandboxing | 14 |
+| NIST CM-8 | NIST CM | security/hardening | 1 |
+| NIST CP-9 | NIST CP | hardware/storage_tuning, ops/preflight, storage/backup, storage/dedupe | 8 |
+| NIST IA-2 | NIST IA | containers/authentik, containers/caddy, containers/config, containers/media, containers/monitoring, containers/ops, core/identity, security/access, security/hardening, security/sshd | 27 |
+| NIST IA-3 | NIST IA | containers/authentik, networking/firewall, security/access | 4 |
+| NIST IA-5 | NIST IA | core/secrets, security/access, security/advanced, security/hardening | 15 |
+| NIST IA-7 | NIST IA | security/sshd | 1 |
 | NIST IR-4 | NIST IR | ops/health_check, ops/pre_connection, ops/preflight | 5 |
 | NIST RA-5 | NIST RA | security/scanning | 3 |
-| NIST SC-12 | NIST SC | core/entropy, core/secrets, core/time, hardware/storage_tuning, networking/vpn_mesh, ops/connection_info, ops/preflight, storage/dedupe | 23 |
-| NIST SC-13 | NIST SC | containers/caddy, networking/vpn_mesh | 4 |
-| NIST SC-28 | NIST SC | core/memory, core/secrets, hardware/firmware, hardware/gpu, hardware/sas, hardware/storage_tuning, storage/dedupe | 20 |
-| NIST SC-39 | NIST SC | containers/config, containers/lxc, containers/quadlets, containers/runtime, hardware/firmware, hardware/gpu, hardware/sas, hardware/virtual_guest, ops/preflight, orchestration/k8s_node, security/firejail, security/sandboxing, virtualization/kvm, virtualization/storage | 50 |
-| NIST SC-4 | NIST SC | core/memory | 7 |
+| NIST SC-10 | NIST SC | security/sshd | 1 |
+| NIST SC-12 | NIST SC | core/bootstrap, core/entropy, core/secrets, core/time, hardware/storage_tuning, networking/services, networking/vpn_mesh, ops/connection_info, ops/preflight, security/kernel, security/sshd, storage/dedupe | 32 |
+| NIST SC-13 | NIST SC | containers/caddy, containers/signing, networking/services, networking/vpn_mesh, security/kernel, security/sshd | 15 |
+| NIST SC-15 | NIST SC | security/sshd | 1 |
+| NIST SC-18 | NIST SC | security/hardening | 1 |
+| NIST SC-20 | NIST SC | security/kernel | 1 |
+| NIST SC-23 | NIST SC | security/sshd | 1 |
+| NIST SC-28 | NIST SC | core/memory, core/secrets, hardware/firmware, hardware/gpu, hardware/sas, hardware/storage_tuning, security/hardening, storage/dedupe | 22 |
+| NIST SC-3 | NIST SC | security/kernel | 2 |
+| NIST SC-39 | NIST SC | containers/common, containers/config, containers/lxc, containers/quadlets, containers/runtime, hardware/firmware, hardware/gpu, hardware/sas, hardware/virtual_guest, ops/preflight, orchestration/k8s_node, security/firejail, security/sandboxing, virtualization/kvm, virtualization/storage | 52 |
+| NIST SC-4 | NIST SC | core/memory, security/hardening, security/kernel | 9 |
 | NIST SC-43 | NIST SC | hardware/firmware, hardware/gpu, hardware/sas, security/hardware_isolation | 13 |
-| NIST SC-5 | NIST SC | security/resource_protection | 1 |
-| NIST SC-7 | NIST SC | kubernetes/master, kubernetes/node, networking/container_networks, networking/desktop, networking/firewall, networking/physical, networking/virtual, networking/vpn_mesh, ops/connection_info, ops/pre_connection, ops/preflight, orchestration/k8s_node | 50 |
-| NIST SC-8 | NIST SC | containers/authentik, containers/caddy, containers/media, containers/monitoring, containers/ops, containers/quadlets, kubernetes/master, kubernetes/node, networking/vpn_mesh, orchestration/k8s_node, security/hardware_isolation, security/kernel, security/sshd | 28 |
-| NIST SI-2 | NIST SI | core/repositories, core/updates, security/scanning | 16 |
+| NIST SC-5 | NIST SC | security/kernel, security/resource_protection | 2 |
+| NIST SC-7 | NIST SC | kubernetes/master, kubernetes/node, networking/container_networks, networking/desktop, networking/firewall, networking/physical, networking/services, networking/virtual, networking/vpn_mesh, ops/connection_info, ops/pre_connection, ops/preflight, orchestration/k8s_node, security/kernel | 55 |
+| NIST SC-8 | NIST SC | containers/authentik, containers/caddy, containers/common, containers/media, containers/monitoring, containers/ops, containers/quadlets, kubernetes/master, kubernetes/node, networking/vpn_mesh, orchestration/k8s_node, security/hardware_isolation, security/kernel, security/sshd | 30 |
+| NIST SI-10 | NIST SI | security/scanning | 1 |
+| NIST SI-16 | NIST SI | security/kernel | 2 |
+| NIST SI-2 | NIST SI | core/repositories, core/updates, security/scanning | 19 |
 | NIST SI-22 | NIST SI | security/sbom | 7 |
-| NIST SI-4 | NIST SI | hardware/firmware, ops/health_check, ops/monitoring | 14 |
-| NIST SI-7 | NIST SI | security/file_integrity | 5 |
+| NIST SI-3 | NIST SI | containers/signing, security/ips, security/scanning | 15 |
+| NIST SI-4 | NIST SI | hardware/firmware, ops/health_check, ops/monitoring, security/audit_integrity, security/falco | 27 |
+| NIST SI-5 | NIST SI | security/scanning | 1 |
+| NIST SI-6 | NIST SI | security/scanning | 4 |
+| NIST SI-7 | NIST SI | security/audit_integrity, security/file_integrity | 7 |
+| NIST SI-8 | NIST SI | security/scanning | 1 |
 | NIST SP-800-90 | NIST SP | core/entropy | 2 |
 
 ---
@@ -645,23 +738,25 @@
 
 | Control | Roles | Tasks |
 |---------|-------|-------|
-| ISO 27001 §10_1 | containers/authentik, containers/monitoring, core/entropy, core/hardware_support, ops/connection_info, security/advanced, security/sshd | 13 |
-| ISO 27001 §12_4 | containers/monitoring, core/logging, core/systemd, ops/health_check, ops/monitoring, security/audit_integrity | 25 |
-| ISO 27001 §16_1 | containers/caddy, security/ips | 4 |
+| ISO 27001 §10_1 | containers/authentik, containers/monitoring, containers/signing, core/entropy, core/hardware_support, networking/services, ops/connection_info, security/advanced, security/kernel, security/sshd | 22 |
+| ISO 27001 §12_4 | containers/common, containers/monitoring, core/logging, core/systemd, ops/health_check, ops/monitoring, security/audit_integrity, storage/backup | 27 |
+| ISO 27001 §14_2 | containers/signing | 9 |
+| ISO 27001 §16_1 | containers/caddy, security/falco, security/ips | 17 |
 | ISO 27001 §8_14 | security/sbom | 7 |
-| ISO 27001 §8_15 | security/scanning | 8 |
-| ISO 27001 §8_16 | security/file_integrity | 5 |
-| ISO 27001 §8_17 | core/hardware_support, core/time, hardware/firmware | 7 |
+| ISO 27001 §8_15 | security/scanning | 5 |
+| ISO 27001 §8_16 | security/file_integrity | 6 |
+| ISO 27001 §8_17 | core/hardware_support, core/time, hardware/firmware, networking/services | 8 |
 | ISO 27001 §8_20 | containers/authentik, containers/config, containers/lxc, containers/media, containers/monitoring, containers/ops, containers/quadlets, containers/runtime, core/memory, networking/desktop, networking/firewall, networking/physical, security/resource_protection | 30 |
 | ISO 27001 §8_21 | networking/container_networks | 2 |
 | ISO 27001 §8_23 | containers/runtime, kubernetes/master, kubernetes/node, networking/physical | 6 |
 | ISO 27001 §8_24 | containers/caddy, core/secrets, networking/vpn_mesh | 4 |
-| ISO 27001 §8_26 | containers/anubis, containers/authentik, containers/caddy, containers/config, containers/lxc, containers/media, containers/memcached, containers/monitoring, containers/ops, containers/quadlets, containers/runtime, core/systemd, hardware/gpu, hardware/virtual_guest, kubernetes/master, kubernetes/node, networking/container_networks, orchestration/k8s_node, security/firejail, security/hardware_isolation, security/kernel, security/mac_apparmor, security/sandboxing, virtualization/kvm | 57 |
+| ISO 27001 §8_26 | containers/anubis, containers/authentik, containers/caddy, containers/common, containers/config, containers/lxc, containers/media, containers/memcached, containers/monitoring, containers/ops, containers/quadlets, containers/runtime, core/systemd, hardware/gpu, hardware/virtual_guest, kubernetes/master, kubernetes/node, networking/container_networks, orchestration/k8s_node, security/firejail, security/hardware_isolation, security/kernel, security/mac_apparmor, security/sandboxing, virtualization/kvm | 66 |
 | ISO 27001 §8_28 | networking/vpn_mesh | 1 |
-| ISO 27001 §8_8 | core/updates, security/hardening, security/scanning | 12 |
+| ISO 27001 §8_8 | core/updates, security/hardening, security/scanning | 8 |
 | ISO 27001 §8_9 | core/bootstrap, core/grub, core/repositories, core/updates, hardware/firmware, hardware/gpu, hardware/sas | 23 |
-| ISO 27001 §9_2 | containers/authentik, containers/config, core/identity, security/access, security/advanced, security/hardening, security/sshd | 11 |
-| ISO 27001 §9_4 | containers/media, containers/ops, networking/desktop, networking/firewall, networking/virtual | 11 |
+| ISO 27001 §9_2 | containers/authentik, containers/common, containers/config, core/identity, security/access, security/advanced, security/hardening, security/sshd | 13 |
+| ISO 27001 §9_4 | containers/media, containers/ops, networking/desktop, networking/firewall, networking/services, networking/virtual | 12 |
+| ISO 27001 §ai | containers/anubis | 3 |
 
 ---
 
@@ -669,29 +764,36 @@
 
 | Role | Tasks | Tagged | Coverage | CIS | STIG | NIST | ISO |
 |------|-------|--------|----------|-----|------|------|-----|
+| security/hardening | 13 | 93 | 715.4% | 31 | 8 | 15 | 2 |
+| security/kernel | 8 | 47 | 587.5% | 18 | 3 | 11 | 2 |
+| security/scanning | 10 | 56 | 560.0% | 6 | 2 | 9 | 2 |
 | core/updates | 4 | 20 | 500.0% | 1 | 1 | 2 | 2 |
+| networking/firewall | 10 | 47 | 470.0% | 7 | 2 | 4 | 2 |
 | core/secrets | 3 | 14 | 466.7% | 1 | 1 | 3 | 1 |
+| security/audit_integrity | 15 | 70 | 466.7% | 3 | 2 | 11 | 1 |
+| containers/common | 6 | 27 | 450.0% | 8 | 0 | 6 | 3 |
+| security/ips | 5 | 21 | 420.0% | 1 | 5 | 2 | 1 |
 | core/entropy | 5 | 20 | 400.0% | 1 | 1 | 2 | 1 |
 | security/advanced | 5 | 20 | 400.0% | 2 | 2 | 1 | 2 |
-| security/audit_integrity | 15 | 60 | 400.0% | 3 | 2 | 3 | 1 |
+| security/file_integrity | 6 | 24 | 400.0% | 2 | 2 | 1 | 1 |
 | security/firejail | 4 | 16 | 400.0% | 3 | 2 | 3 | 1 |
 | security/hardware_isolation | 4 | 16 | 400.0% | 3 | 2 | 2 | 1 |
 | security/mac_apparmor | 4 | 16 | 400.0% | 2 | 2 | 1 | 1 |
 | security/resource_protection | 3 | 12 | 400.0% | 3 | 2 | 2 | 1 |
 | security/sandboxing | 5 | 20 | 400.0% | 3 | 2 | 2 | 1 |
-| security/scanning | 17 | 68 | 400.0% | 6 | 2 | 4 | 2 |
 | core/systemd | 4 | 15 | 375.0% | 3 | 2 | 4 | 2 |
 | core/identity | 3 | 11 | 366.7% | 1 | 1 | 1 | 1 |
 | core/time | 6 | 22 | 366.7% | 2 | 1 | 2 | 1 |
 | core/repositories | 14 | 51 | 364.3% | 2 | 1 | 2 | 1 |
 | core/logging | 11 | 40 | 363.6% | 3 | 1 | 3 | 1 |
-| networking/firewall | 10 | 35 | 350.0% | 7 | 2 | 2 | 2 |
+| security/access | 12 | 42 | 350.0% | 2 | 4 | 9 | 1 |
 | core/memory | 9 | 31 | 344.4% | 2 | 1 | 2 | 1 |
-| virtualization/kvm | 7 | 24 | 342.9% | 7 | 7 | 2 | 1 |
-| kubernetes/node | 6 | 20 | 333.3% | 6 | 6 | 4 | 2 |
+| virtualization/kvm | 8 | 27 | 337.5% | 7 | 7 | 2 | 1 |
 | networking/container_networks | 6 | 20 | 333.3% | 6 | 1 | 2 | 2 |
 | networking/virtual | 3 | 10 | 333.3% | 3 | 1 | 2 | 1 |
 | orchestration/k8s_node | 6 | 20 | 333.3% | 6 | 6 | 5 | 1 |
+| kubernetes/node | 7 | 23 | 328.6% | 6 | 6 | 4 | 2 |
+| security/sshd | 18 | 59 | 327.8% | 19 | 9 | 16 | 2 |
 | containers/authentik | 8 | 26 | 325.0% | 8 | 0 | 4 | 4 |
 | kubernetes/master | 8 | 26 | 325.0% | 8 | 8 | 4 | 2 |
 | ops/monitoring | 9 | 29 | 322.2% | 9 | 9 | 2 | 1 |
@@ -706,34 +808,34 @@
 | ops/cloud_init | 2 | 6 | 300.0% | 2 | 2 | 1 | 0 |
 | ops/guest_management | 1 | 3 | 300.0% | 1 | 1 | 1 | 0 |
 | ops/pre_connection | 8 | 24 | 300.0% | 8 | 8 | 2 | 0 |
-| ops/preflight | 28 | 84 | 300.0% | 28 | 28 | 9 | 0 |
 | ops/session | 3 | 9 | 300.0% | 3 | 3 | 1 | 0 |
 | storage/dedupe | 7 | 21 | 300.0% | 7 | 7 | 3 | 0 |
 | virtualization/storage | 1 | 3 | 300.0% | 1 | 1 | 1 | 0 |
 | ops/health_check | 18 | 53 | 294.4% | 17 | 17 | 4 | 1 |
+| core/bootstrap | 15 | 43 | 286.7% | 10 | 1 | 2 | 1 |
 | networking/physical | 16 | 44 | 275.0% | 16 | 2 | 2 | 2 |
 | containers/runtime | 11 | 30 | 272.7% | 10 | 0 | 4 | 3 |
+| ops/preflight | 31 | 84 | 271.0% | 28 | 28 | 9 | 0 |
 | containers/monitoring | 16 | 43 | 268.8% | 16 | 0 | 7 | 4 |
-| security/ips | 5 | 13 | 260.0% | 1 | 5 | 0 | 1 |
 | containers/config | 6 | 15 | 250.0% | 6 | 0 | 3 | 3 |
 | containers/lxc | 4 | 10 | 250.0% | 4 | 0 | 2 | 2 |
 | containers/quadlets | 14 | 34 | 242.9% | 14 | 0 | 7 | 2 |
 | containers/ops | 15 | 36 | 240.0% | 15 | 0 | 3 | 3 |
 | containers/caddy | 18 | 40 | 222.2% | 17 | 0 | 8 | 3 |
+| networking/services | 6 | 13 | 216.7% | 0 | 0 | 5 | 3 |
 | containers/media | 21 | 45 | 214.3% | 21 | 0 | 4 | 3 |
-| security/kernel | 3 | 6 | 200.0% | 2 | 0 | 1 | 1 |
+| security/falco | 15 | 32 | 213.3% | 3 | 0 | 2 | 1 |
 | security/sbom | 7 | 14 | 200.0% | 0 | 0 | 1 | 1 |
-| security/sshd | 19 | 15 | 78.9% | 10 | 0 | 2 | 2 |
-| security/hardening | 9 | 7 | 77.8% | 2 | 1 | 2 | 2 |
-| containers/anubis | 4 | 3 | 75.0% | 0 | 0 | 0 | 1 |
-| security/access | 11 | 6 | 54.5% | 1 | 2 | 0 | 1 |
+| containers/signing | 13 | 22 | 169.2% | 1 | 0 | 2 | 2 |
+| containers/anubis | 4 | 6 | 150.0% | 0 | 0 | 0 | 2 |
+| storage/backup | 5 | 4 | 80.0% | 0 | 0 | 2 | 1 |
 | containers/memcached | 2 | 1 | 50.0% | 0 | 0 | 0 | 1 |
 | core/grub | 8 | 3 | 37.5% | 1 | 0 | 1 | 1 |
 | core/hardware_support | 9 | 3 | 33.3% | 0 | 0 | 0 | 2 |
-| core/bootstrap | 15 | 4 | 26.7% | 0 | 0 | 0 | 1 |
-| containers/common | 1 | 0 | 0.0% | 0 | 0 | 0 | 0 |
-| networking/services | 1 | 0 | 0.0% | 0 | 0 | 0 | 0 |
-| storage/backup | 1 | 0 | 0.0% | 0 | 0 | 0 | 0 |
+| security/compliance | 6 | 2 | 33.3% | 2 | 0 | 0 | 0 |
+| kubernetes/ingress | 9 | 0 | 0.0% | 0 | 0 | 0 | 0 |
+| security/goss | 13 | 0 | 0.0% | 0 | 0 | 0 | 0 |
+| security/vault_integration | 7 | 0 | 0.0% | 0 | 0 | 0 | 0 |
 | storage/filesystems | 1 | 0 | 0.0% | 0 | 0 | 0 | 0 |
 
 ---
@@ -742,10 +844,10 @@
 
 This report demonstrates compliance mapping coverage for:
 
-- **CIS Benchmarks**: 315 controls mapped across 66 roles
-- **DISA STIG**: 203 controls mapped
-- **NIST SP 800-53**: 32 controls mapped across multiple control families
-- **ISO 27001:2022**: 17 controls mapped
+- **CIS Benchmarks**: 356 controls mapped across 73 roles
+- **DISA STIG**: 215 controls mapped
+- **NIST SP 800-53**: 62 controls mapped across multiple control families
+- **ISO 27001:2022**: 19 controls mapped
 
 **Report Generation Time**: < 1 minute
 **Audit Ready**: Yes - All tasks include compliance references in task names and tags

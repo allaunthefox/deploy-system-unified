@@ -1,0 +1,23 @@
+---
+# Defaults for security/automated_threat_analysis - Local AI SOC Analyst
+
+threat_analysis_enabled: false # Default off, only for High-Resilience nodes
+
+# Local SLM Configuration (Requires GPU acceleration for performance)
+threat_analysis_model: "qwen2.5-coder:1.5b"
+threat_analysis_backend: "ollama" # Options: ollama, llama-cpp
+
+# Monitoring Parameters
+threat_analysis_log_window: "5m"
+threat_analysis_check_interval: "10m"
+
+# Action Threshold (0.0 to 1.0)
+# If the LLM confidence of a breach exceeds this, trigger Purge
+threat_analysis_purge_threshold: 0.85
+
+# Loki Query for Logs
+threat_analysis_loki_url: "http://localhost:3100"
+threat_analysis_loki_query: '{job="systemd-journal"} |= "error" | "fail" | "unauthorized"'
+
+# Integration with TPM Purge
+threat_analysis_trigger_purge: true

@@ -1,0 +1,21 @@
+---
+- name: Verify Automated Threat Analysis
+  hosts: all
+  tasks:
+    - name: VERIFY | Threat analysis script exists
+      ansible.builtin.stat:
+        path: /usr/local/bin/dsu-threat-analyze
+      register: _analysis_script
+      failed_when: not _analysis_script.stat.exists
+
+    - name: VERIFY | Sentinel service exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/dsu-threat-analysis.service
+      register: _sentinel_svc
+      failed_when: not _sentinel_svc.stat.exists
+
+    - name: VERIFY | Sentinel timer exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/dsu-threat-analysis.timer
+      register: _sentinel_timer
+      failed_when: not _sentinel_timer.stat.exists

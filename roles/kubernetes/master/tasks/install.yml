@@ -9,18 +9,22 @@
     mode: '0755'
   become: true
 
-- name: Download K3s binary
+- name: Download K3s binary with checksum
   tags: [kubernetes, master, remediate]
+  vars:
+    _k3s_checksum: "{{ k3s_checksums[kubernetes_k3s_version][_k8s_norm_arch] }}"
   ansible.builtin.get_url:
     url: "{{ kubernetes_k3s_bin_url[_k8s_norm_arch] }}"
     dest: "/usr/local/bin/k3s"
     mode: '0755'
     owner: root
     group: root
+    checksum: "{{ _k3s_checksum }}"
   become: true
   register: _k3s_download
   retries: 3
   delay: 5
+  until: _k3s_download is success
 
 - name: Create symbolic links for kubectl/crictl
   tags: [kubernetes, master, remediate]

@@ -42,6 +42,9 @@ falco_alerts:
   webhook_url: ""
   webhook_auth: ""
 
+# Active Enforcement (High-Resilience Standard)
+falco_active_kill: "{{ true if deployment_profile | default('standard') in ['hardened', 'production'] else false }}"
+
 # Falco tags
 falco_tags:
   - security

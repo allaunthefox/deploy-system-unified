@@ -50,21 +50,34 @@
     - security
     - apparmor
 
-- name: "CIS 1.6.2 | STIG V-230241 | NIST AC-3 | ISO 27001 §8.26 | Action 450001 | Register AppArmor Security Parameters for GRUB"
-  ansible.builtin.set_fact:
-    core_grub_security_params: >-
-      {{
-        core_grub_security_params | default([]) +
-        ['apparmor=1', 'security=apparmor']
-      }}
-  tags:
-    - cis_1_6_2
-    - stig_v_230241
-    - nist_ac_3
-    - iso_27001_8_26
-    - security
-    - apparmor
-    - remediate
   when:
     - ansible_os_family in ['Debian', 'Alpine']
     - not (is_virtualized | default(false))
+
+- name: VERIFY | AppArmor is active and enforced (Zero-Tolerance)
+  ansible.builtin.shell: |
+    if [ -d /sys/kernel/security/apparmor ]; then
+      aa-status --enabled
+    else
+      echo "AppArmor not supported by kernel"
+      exit 1
+    fi
+  register: _aa_status
+  failed_when: _aa_status.rc != 0
+  when:
+    - ansible_os_family in ['Debian', 'Alpine']
+    - not (is_virtualized | default(false))
+  become: true
+  changed_when: false
+  tags: [security, apparmor, verification]
+
+- name: VERIFY | AppArmor has loaded profiles
+  ansible.builtin.shell: aa-status | grep -q "profiles are loaded"
+  register: _aa_profiles
+  failed_when: _aa_profiles.rc != 0
+  when:
+    - ansible_os_family in ['Debian', 'Alpine']
+    - not (is_virtualized | default(false))
+  become: true
+  changed_when: false
+  tags: [security, apparmor, verification]

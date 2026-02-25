@@ -3,6 +3,20 @@
 # Retry logic implemented to handle transient network issues and avoid aggressive polling
 # Safe Level: 5 retries with 30s delay prevents triggering abuse detection while handling blips.
 
+- name: "Supply Chain | Verify Ops Image Signatures"
+  ansible.builtin.include_tasks: ../../runtime/tasks/verify_image.yml
+  vars:
+    image_to_verify: "{{ item.image }}"
+  loop:
+    - { image: "{{ homarr_image }}", enable: "{{ homarr_enable }}" }
+    - { image: "{{ vaultwarden_image }}", enable: "{{ vaultwarden_enable }}" }
+    - { image: "{{ wiki_image }}", enable: "{{ wiki_enable }}" }
+    - { image: "{{ wastebin_image }}", enable: "{{ wastebin_enable }}" }
+  when: 
+    - item.enable | bool
+    - containers_cosign_enable | default(false) | bool
+  tags: [supply_chain, pull_images]
+
 - name: Pull Ops Images (Safe Retry)
   containers.podman.podman_image:
     name: "{{ item.image }}"

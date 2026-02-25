@@ -100,6 +100,30 @@
     - containers
     - caddy
 
+- name: "ISOLATION | Create Unix Socket Directory"
+  ansible.builtin.file:
+    path: "{{ containers_caddy_socket_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_caddy_use_unix_sockets | bool
+  tags: [caddy, socket_isolation, security]
+
+- name: "ISOLATION | Mount RAM-disk for Unix Sockets"
+  ansible.posix.mount:
+    path: "{{ containers_caddy_socket_dir }}"
+    src: tmpfs
+    fstype: tmpfs
+    opts: "size=16M,mode=0755,nosuid,nodev,noexec"
+    state: mounted
+  become: true
+  when: 
+    - containers_caddy_use_unix_sockets | bool
+    - not _kvm_is_container | default(false)
+  tags: [caddy, socket_isolation, security]
+
 - name: "CIS 3.7 | STIG V-230480 | NIST SC-8 | Create Caddyfile"
   ansible.builtin.copy:
     dest: /srv/containers/caddy/Caddyfile
@@ -191,6 +215,9 @@
       Volume=/srv/containers/caddy/config:/config:Z
       Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
       Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro
+      {% if containers_caddy_use_unix_sockets | bool %}
+      Volume={{ containers_caddy_socket_dir }}:{{ containers_caddy_socket_dir }}:rw
+      {% endif %}
       {% if quadlet_enable_gpu_support %}
       # GPU support configuration
       {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
@@ -468,3 +495,23 @@
     - containers
     - caddy
     - crowdsec
+
+- name: VERIFY | Caddy container is running (Zero-Tolerance)
+  ansible.builtin.shell: podman ps --filter "name=caddy" --filter "status=running" | grep -q caddy
+  become: true
+  changed_when: false
+  tags: [containers, caddy, verification]
+
+- name: VERIFY | Crowdsec agent is running
+  ansible.builtin.shell: podman ps --filter "name=crowdsec" --filter "status=running" | grep -q crowdsec
+  become: true
+  when: crowdsec_enable | default(false)
+  changed_when: false
+  tags: [containers, crowdsec, verification]
+
+- name: VERIFY | Crowdsec bouncer is functional
+  ansible.builtin.shell: systemctl is-active crowdsec-firewall-bouncer
+  become: true
+  when: crowdsec_enable | default(false)
+  changed_when: false
+  tags: [containers, crowdsec, verification]

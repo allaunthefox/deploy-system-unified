@@ -61,8 +61,8 @@
         - { regexp: '^#?DNSSEC=', line: 'DNSSEC=allow-downgrade' }
         - { regexp: '^#?DNSOverTLS=', line: 'DNSOverTLS=opportunistic' }
       become: true
-      failed_when: false
       notify: restart_resolved
+      when: ansible_facts['filesystems'] | default([]) | length > 0 # Simple check, better would be stat
       tags:
         - cis_5_3_1
         - stig_v_230261

@@ -24,7 +24,7 @@ Templates are now organized by architecture.
 
 ### 3. Documentation
 
-- Legacy `battlemage_setup.md` is deprecated. Use `docs/deployment/INTEL_BATTLEMAGE_GUIDE.md`.
+- Legacy `battlemage_setup.md` is deprecated. Use `INTEL_GPU_GUIDE`.
 - New Architecture Guides available in `docs/deployment/`.
 
 ## Migration Actions

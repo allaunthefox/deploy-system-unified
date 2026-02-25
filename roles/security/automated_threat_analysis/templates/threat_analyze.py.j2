@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+import requests
+import json
+import subprocess
+import os
+
+# Configuration from Ansible
+LOKI_URL = "{{ threat_analysis_loki_url }}"
+MODEL = "{{ threat_analysis_model }}"
+THRESHOLD = {{ threat_analysis_purge_threshold }}
+TRIGGER_PURGE = {{ threat_analysis_trigger_purge | lower }}
+
+PROMPT = """
+You are a Senior SOC Analyst for a high-security hardened Linux system.
+Analyze the following logs for signs of a breach, lateral movement, or unauthorized privilege escalation.
+Provide your response in JSON format with two keys:
+1. "probability": a float between 0.0 and 1.0.
+2. "reasoning": a short sentence explaining the score.
+
+LOGS:
+{logs}
+"""
+
+def get_logs():
+    query = '{{ threat_analysis_loki_query }}'
+    # Simplified Loki API call for script logic
+    # In production, this would use proper range/limit params
+    try:
+        r = requests.get(f"{LOKI_URL}/loki/api/v1/query_range", params={'query': query})
+        return r.text
+    except:
+        return ""
+
+def analyze_breach(logs):
+    if not logs:
+        return 0.0
+    
+    payload = {
+        "model": MODEL,
+        "prompt": PROMPT.format(logs=logs[:2000]), # Truncate for SLM window
+        "stream": False,
+        "format": "json"
+    }
+    
+    try:
+        r = requests.post("http://localhost:11434/api/generate", json=payload)
+        res = r.json()
+        data = json.loads(res['response'])
+        return data.get('probability', 0.0)
+    except:
+        return 0.0
+
+def main():
+    logs = get_logs()
+    prob = analyze_breach(logs)
+    
+    print(f"Breach Probability: {prob}")
+    
+    if prob >= THRESHOLD:
+        print("CRITICAL: BREACH DETECTED BY AUTOMATED THREAT ANALYSIS!")
+        if TRIGGER_PURGE:
+            os.system("/usr/local/bin/dsu-integrity-purge")
+
+if __name__ == "__main__":
+    main()

@@ -21,6 +21,7 @@
       # - security/audit_integrity # Skipped due to container failure
       - core/time
       - core/entropy
+      - security/tpm_guard
   tasks:
     - name: Execute Base Roles
       ansible.builtin.include_tasks: tasks/run_role.yml

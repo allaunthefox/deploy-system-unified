@@ -43,6 +43,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-jellyfin-enable"></a>### `containers_jellyfin_enable`
 - `containers_jellyfin_enable`
 
+<a id="containers-jellyfin-image-digest"></a>### `containers_jellyfin_image_digest`
+- `containers_jellyfin_image_digest` — Example
+
 <a id="containers-jellyfin-image"></a>### `containers_jellyfin_image`
 - `containers_jellyfin_image`
 
@@ -52,8 +55,17 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-jellyfin-memory-max"></a>### `containers_jellyfin_memory_max`
 - `containers_jellyfin_memory_max`
 
+<a id="containers-jellyfin-use-unix-socket"></a>### `containers_jellyfin_use_unix_socket`
+- `containers_jellyfin_use_unix_socket`
+
+<a id="containers-jellyfin-socket-path"></a>### `containers_jellyfin_socket_path`
+- `containers_jellyfin_socket_path`
+
 <a id="containers-plex-enable"></a>### `containers_plex_enable`
 - `containers_plex_enable`
+
+<a id="containers-plex-image-digest"></a>### `containers_plex_image_digest`
+- `containers_plex_image_digest` — Example
 
 <a id="containers-plex-image"></a>### `containers_plex_image`
 - `containers_plex_image`
@@ -67,6 +79,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-radarr-enable"></a>### `containers_radarr_enable`
 - `containers_radarr_enable`
 
+<a id="containers-radarr-image-digest"></a>### `containers_radarr_image_digest`
+- `containers_radarr_image_digest` — Example
+
 <a id="containers-radarr-image"></a>### `containers_radarr_image`
 - `containers_radarr_image`
 
@@ -75,6 +90,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 
 <a id="containers-sonarr-enable"></a>### `containers_sonarr_enable`
 - `containers_sonarr_enable`
+
+<a id="containers-sonarr-image-digest"></a>### `containers_sonarr_image_digest`
+- `containers_sonarr_image_digest` — Example
 
 <a id="containers-sonarr-image"></a>### `containers_sonarr_image`
 - `containers_sonarr_image`
@@ -85,6 +103,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-lidarr-enable"></a>### `containers_lidarr_enable`
 - `containers_lidarr_enable`
 
+<a id="containers-lidarr-image-digest"></a>### `containers_lidarr_image_digest`
+- `containers_lidarr_image_digest` — Example
+
 <a id="containers-lidarr-image"></a>### `containers_lidarr_image`
 - `containers_lidarr_image`
 
@@ -93,6 +114,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 
 <a id="containers-readarr-enable"></a>### `containers_readarr_enable`
 - `containers_readarr_enable`
+
+<a id="containers-readarr-image-digest"></a>### `containers_readarr_image_digest`
+- `containers_readarr_image_digest` — Example
 
 <a id="containers-readarr-image"></a>### `containers_readarr_image`
 - `containers_readarr_image`
@@ -103,6 +127,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-prowlarr-enable"></a>### `containers_prowlarr_enable`
 - `containers_prowlarr_enable`
 
+<a id="containers-prowlarr-image-digest"></a>### `containers_prowlarr_image_digest`
+- `containers_prowlarr_image_digest` — Example
+
 <a id="containers-prowlarr-image"></a>### `containers_prowlarr_image`
 - `containers_prowlarr_image`
 
@@ -111,6 +138,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 
 <a id="containers-jellyseerr-enable"></a>### `containers_jellyseerr_enable`
 - `containers_jellyseerr_enable`
+
+<a id="containers-jellyseerr-image-digest"></a>### `containers_jellyseerr_image_digest`
+- `containers_jellyseerr_image_digest` — Example
 
 <a id="containers-jellyseerr-image"></a>### `containers_jellyseerr_image`
 - `containers_jellyseerr_image`
@@ -121,6 +151,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-navidrome-enable"></a>### `containers_navidrome_enable`
 - `containers_navidrome_enable`
 
+<a id="containers-navidrome-image-digest"></a>### `containers_navidrome_image_digest`
+- `containers_navidrome_image_digest` — Example
+
 <a id="containers-navidrome-image"></a>### `containers_navidrome_image`
 - `containers_navidrome_image`
 
@@ -129,6 +162,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 
 <a id="containers-transmission-enable"></a>### `containers_transmission_enable`
 - `containers_transmission_enable`
+
+<a id="containers-transmission-image-digest"></a>### `containers_transmission_image_digest`
+- `containers_transmission_image_digest` — Example
 
 <a id="containers-transmission-image"></a>### `containers_transmission_image`
 - `containers_transmission_image`
@@ -172,6 +208,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-bazarr-enable"></a>### `containers_bazarr_enable`
 - `containers_bazarr_enable`
 
+<a id="containers-bazarr-image-digest"></a>### `containers_bazarr_image_digest`
+- `containers_bazarr_image_digest` — Example
+
 <a id="containers-bazarr-image"></a>### `containers_bazarr_image`
 - `containers_bazarr_image`
 
@@ -181,6 +220,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 <a id="containers-kavita-enable"></a>### `containers_kavita_enable`
 - `containers_kavita_enable`
 
+<a id="containers-kavita-image-digest"></a>### `containers_kavita_image_digest`
+- `containers_kavita_image_digest` — Example
+
 <a id="containers-kavita-image"></a>### `containers_kavita_image`
 - `containers_kavita_image`
 
@@ -189,6 +231,9 @@ This role deploys a comprehensive media stack using Podman Quadlets with multi-t
 
 <a id="containers-audiobookshelf-enable"></a>### `containers_audiobookshelf_enable`
 - `containers_audiobookshelf_enable`
+
+<a id="containers-audiobookshelf-image-digest"></a>### `containers_audiobookshelf_image_digest`
+- `containers_audiobookshelf_image_digest` — Example
 
 <a id="containers-audiobookshelf-image"></a>### `containers_audiobookshelf_image`
 - `containers_audiobookshelf_image`

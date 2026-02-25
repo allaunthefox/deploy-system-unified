@@ -51,6 +51,20 @@ buffered_outputs: false
 syscall_event_sources:
   - syscall
 
+# Modern eBPF Driver (High-Resilience Standard)
+engine:
+  kind: ebpf
+  conf:
+    ebpf_probe: /usr/bin/falco-ebpf.o
+
+# Active Enforcement (Runtime Monitoring Mode)
+# Transition from "Monitor" to "Active Kill"
+actions:
+  - name: kill_process
+    enabled: {{ falco_active_kill | default(false) | bool }}
+  - name: terminate_container
+    enabled: {{ falco_active_kill | default(false) | bool }}
+
 # Syscall drop failed exit code
 syscall_drop_failed_exit_code: 0
 

@@ -117,13 +117,24 @@
   become: true
   when:
     - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
-  failed_when: false
   tags:
     - cis_4_2_1
     - stig_v_230330
     - nist_au_2
     - logging
     - remediate
+
+- name: VERIFY | Rsyslog service active (Zero-Tolerance)
+  ansible.builtin.shell: |
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl is-active rsyslog
+    else
+      pgrep rsyslogd
+    fi
+  become: true
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
+  changed_when: false
+  tags: [logging, verification]
 
 - name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Determine log reload command"
   ansible.builtin.set_fact:

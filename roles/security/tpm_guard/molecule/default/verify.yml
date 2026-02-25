@@ -1,0 +1,15 @@
+---
+- name: Verify TPM Guard
+  hosts: all
+  tasks:
+    - name: VERIFY | Integrity Purge script exists
+      ansible.builtin.stat:
+        path: /usr/local/bin/dsu-integrity-purge
+      register: _purge_script
+      failed_when: not _purge_script.stat.exists
+
+    - name: VERIFY | Watchdog timer service exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/dsu-tpm-watchdog.timer
+      register: _watchdog_timer
+      failed_when: not _watchdog_timer.stat.exists

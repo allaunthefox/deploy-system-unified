@@ -26,8 +26,14 @@ This role uses Podman Quadlets to deploy a monitoring stack consisting of Promet
 <a id="monitoring-pod-name"></a>### `monitoring_pod_name`
 - `monitoring_pod_name`
 
+<a id="monitoring-prometheus-image-digest"></a>### `monitoring_prometheus_image_digest`
+- `monitoring_prometheus_image_digest` — Example
+
 <a id="monitoring-prometheus-image"></a>### `monitoring_prometheus_image`
 - `monitoring_prometheus_image`
+
+<a id="monitoring-grafana-image-digest"></a>### `monitoring_grafana_image_digest`
+- `monitoring_grafana_image_digest` — Example
 
 <a id="monitoring-grafana-image"></a>### `monitoring_grafana_image`
 - `monitoring_grafana_image`
@@ -41,6 +47,9 @@ This role uses Podman Quadlets to deploy a monitoring stack consisting of Promet
 <a id="monitoring-loki-enable"></a>### `monitoring_loki_enable`
 - `monitoring_loki_enable`
 
+<a id="monitoring-loki-image-digest"></a>### `monitoring_loki_image_digest`
+- `monitoring_loki_image_digest` — Example
+
 <a id="monitoring-loki-image"></a>### `monitoring_loki_image`
 - `monitoring_loki_image`
 
@@ -49,6 +58,9 @@ This role uses Podman Quadlets to deploy a monitoring stack consisting of Promet
 
 <a id="monitoring-promtail-enable"></a>### `monitoring_promtail_enable`
 - `monitoring_promtail_enable`
+
+<a id="monitoring-promtail-image-digest"></a>### `monitoring_promtail_image_digest`
+- `monitoring_promtail_image_digest` — Example
 
 <a id="monitoring-promtail-image"></a>### `monitoring_promtail_image`
 - `monitoring_promtail_image`

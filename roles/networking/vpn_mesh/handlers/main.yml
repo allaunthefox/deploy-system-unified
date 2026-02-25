@@ -64,6 +64,7 @@
   ansible.builtin.command:
     cmd: ipsec reload
   become: true
+  changed_when: true
   failed_when: false
   tags:
     - networking
@@ -78,6 +79,7 @@
     - af_key
     - xfrm_user
   become: true
+  changed_when: true
   failed_when: false
   tags:
     - networking

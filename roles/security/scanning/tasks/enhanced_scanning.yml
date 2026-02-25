@@ -2,31 +2,23 @@
 # Enhanced security scanning for Deploy-System-Unified
 - name: "ISO 27001 §12.2 | Action 520010 | Run comprehensive security scan (idempotent)"
   ansible.builtin.shell: |
+    set -o pipefail
     scan_results=""
-    # Run Trivy vulnerability scan
-    if command -v trivy >/dev/null 2>&1; then
-      # Scan only relevant system and container directories to save time and reduce noise
-      trivy_results=$(trivy filesystem /srv /etc/containers --security-checks vuln,config,secret --format json 2>/dev/null || echo '{"Results": []}')
-      trivy_critical=$(echo "$trivy_results" | jq -r '.Results[] | select(.Severity == "CRITICAL")' | wc -l)
-      scan_results="$scan_results TRIVY_CRITICAL:$trivy_critical"
-    else
-      scan_results="$scan_results TRIVY_CRITICAL:0"
-    fi
-    # Run Checkov infrastructure scan
-    if command -v checkov >/dev/null 2>&1; then
-      checkov_results=$(checkov --directory /etc/containers --compact --output json 2>/dev/null || echo '{"results": {"failed_checks": []}}')
-      checkov_critical=$(echo "$checkov_results" | jq -r '.results.failed_checks[] | select(.severity=="HIGH" or .severity=="CRITICAL")' | wc -l)
-      scan_results="$scan_results CHECKOV_CRITICAL:$checkov_critical"
-    else
-      scan_results="$scan_results CHECKOV_CRITICAL:0"
-    fi
-    # Run TruffleHog secret scan
-    if command -v trufflehog >/dev/null 2>&1; then
-      secret_results=$(trufflehog git . --since-commit HEAD~1 --only-verified 2>&1 | grep -i "found" | wc -l)
-      scan_results="$scan_results TRUFFLEHOG_SECRETS:$secret_results"
-    else
-      scan_results="$scan_results TRUFFLEHOG_SECRETS:0"
-    fi
+    
+    # REQUIRE Trivy
+    trivy_results=$(trivy filesystem /srv /etc/containers --security-checks vuln,config,secret --format json 2>/dev/null)
+    trivy_critical=$(echo "$trivy_results" | jq -r '.Results[] | select(.Severity == "CRITICAL")' | wc -l)
+    scan_results="$scan_results TRIVY_CRITICAL:$trivy_critical"
+    
+    # REQUIRE Checkov
+    checkov_results=$(checkov --directory /etc/containers --compact --output json 2>/dev/null)
+    checkov_critical=$(echo "$checkov_results" | jq -r '.results.failed_checks[] | select(.severity=="HIGH" or .severity=="CRITICAL")' | wc -l)
+    scan_results="$scan_results CHECKOV_CRITICAL:$checkov_critical"
+    
+    # REQUIRE TruffleHog
+    secret_results=$(trufflehog git . --since-commit HEAD~1 --only-verified 2>&1 | grep -i "found" | wc -l)
+    scan_results="$scan_results TRUFFLEHOG_SECRETS:$secret_results"
+    
     echo "$scan_results"
   register: comprehensive_scan
   changed_when: false

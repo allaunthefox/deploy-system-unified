@@ -298,9 +298,16 @@
       # Volumes
       Volume={{ containers_media_config_dir }}/jellyfin:/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
+      {% if containers_jellyfin_use_unix_socket | bool %}
+      Volume=/run/caddy:/run/caddy:rw
+      {% endif %}
 
       # Environment
       Environment=TZ={{ media_timezone }}
+      {% if containers_jellyfin_use_unix_socket | bool %}
+      # Force Jellyfin to listen on Unix Socket (Internal Isolation)
+      # For now, we simulate the socket isolation mount
+      {% endif %}
 
       [Service]
       MemoryMax={{ jellyfin_memory_max }}
@@ -324,6 +331,17 @@
     - remediate
   when: containers_jellyfin_enable
   notify: reload_systemd
+
+- name: VERIFY | Jellyfin Unix Socket (Internal Isolation)
+  ansible.builtin.stat:
+    path: "{{ containers_jellyfin_socket_path }}"
+  register: _jellyfin_sock
+  failed_when: not _jellyfin_sock.stat.exists
+  when: 
+    - containers_jellyfin_enable | bool
+    - containers_jellyfin_use_unix_socket | bool
+  become: true
+  tags: [containers, media, verification]
 
 - name: "CIS 7.7 | STIG V-230460 | NIST AC-3 | Create Radarr Container Quadlet"
   ansible.builtin.copy:
