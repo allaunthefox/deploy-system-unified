@@ -32,9 +32,9 @@ file:
   # CIS 5.1.1 - Ensure permissions on /etc/shadow are configured
   /etc/shadow:
     exists: true
-    mode: "0640"
+    mode: "0600"
     owner: root
-    group: shadow
+    group: root
 
   # CIS 5.1.2 - Ensure permissions on /etc/passwd are configured
   /etc/passwd:
@@ -53,9 +53,9 @@ file:
   # CIS 5.1.4 - Ensure permissions on /etc/gshadow are configured
   /etc/gshadow:
     exists: true
-    mode: "0640"
+    mode: "0600"
     owner: root
-    group: shadow
+    group: root
 
   # CIS 5.3.x - Password aging configuration
   /etc/login.defs:

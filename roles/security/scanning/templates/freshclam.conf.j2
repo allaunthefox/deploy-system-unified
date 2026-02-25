@@ -1,0 +1,42 @@
+# freshclam.conf.j2 - ClamAV Freshclam Configuration
+# Managed by Ansible - roles/security/scanning
+
+# Check for new database 24 times a day
+Checks 24
+
+# Path to the database directory
+DatabaseDirectory /var/lib/clamav
+
+# Path to the log file
+UpdateLogFile /var/log/clamav/freshclam.log
+LogFileMaxSize 1M
+LogTimeFormat yes
+LogSyslog yes
+LogRotate yes
+
+# Pid file
+PidFile /run/clamav/freshclam.pid
+
+# Database owner
+DatabaseOwner clamav
+
+# Proxy settings (if needed)
+# HTTPProxy server.url:port
+# HTTPProxyUser username
+# HTTPProxyPassword password
+
+# DNS and connection options
+# DNSDatabaseInfo current.cvd.clamav.net
+# MaxAttempts 3
+# ScriptedUpdates yes
+# CompressLocalDatabase no
+
+# Desktop notifications
+# OnUpdateExecute somecommand
+# OnErrorExecute somecommand
+
+# Interval to check for updates (in Checks)
+# Default is 24, which means once per hour if Checks is 24.
+# This should match the 'Checks' option above.
+# Self-correction: Actually, the `Checks` option already defines the frequency.
+# No need for another interval option unless explicitly stated in requirements.

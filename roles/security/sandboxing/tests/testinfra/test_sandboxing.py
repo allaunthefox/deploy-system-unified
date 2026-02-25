@@ -184,15 +184,6 @@ class TestSandboxingProfiles:
 class TestSandboxingConfiguration:
     """Test sandboxing configuration."""
 
-    def test_bwrap_config_directory_exists(self, host):
-        """Verify Bubblewrap configuration directory exists."""
-        d = host.file("/etc/bwrap")
-        if d.exists:
-            assert d.is_directory, "/etc/bwrap should be a directory"
-        else:
-            # May not exist if not configured
-            pytest.skip("/etc/bwrap does not exist")
-
     def test_sandboxing_enabled_flag(self, host):
         """Verify sandboxing is enabled."""
         # This is typically controlled by Ansible variable

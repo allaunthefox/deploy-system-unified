@@ -16,6 +16,11 @@ sandboxing_use_seccomp: true
 # Verify and utilize Landlock security module
 sandboxing_use_landlock: true
 
+# Restrict unprivileged user namespace creation (CIS hardening)
+# Note: This may require bwrap to be setuid or run as root
+sandboxing_restrict_unprivileged_userns: true
+sandboxing_max_user_namespaces: 0
+
 # Collection of sandbox profiles to deploy
 # Example:
 # sandboxing_profiles:

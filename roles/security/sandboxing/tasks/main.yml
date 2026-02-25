@@ -75,6 +75,24 @@
     - sandboxing
   when: sandboxing_enabled
 
+- name: "CIS 5.x | Action 410008 | Configure user namespace limits"
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-user-namespace.conf
+    reload: true
+  loop:
+    - { name: 'kernel.unprivileged_userns_clone', value: "{{ 0 if sandboxing_restrict_unprivileged_userns else 1 }}" }
+    - { name: 'user.max_user_namespaces', value: "{{ sandboxing_max_user_namespaces }}" }
+  become: true
+  when: sandboxing_enabled
+  tags:
+    - cis_5_x
+    - security
+    - sandboxing
+    - remediate
+
 - name: "CIS 5.1.3 | STIG V-230221 | NIST CM-7 | ISO 27001 §8.26 | Action 410002 | Deploy Sandbox Profiles"
   ansible.builtin.template:
     src: "{{ item.config_template }}"

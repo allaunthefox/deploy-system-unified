@@ -18,7 +18,11 @@
     # REQUIRE TruffleHog
     secret_results=$(trufflehog git . --since-commit HEAD~1 --only-verified 2>&1 | grep -i "found" | wc -l)
     scan_results="$scan_results TRUFFLEHOG_SECRETS:$secret_results"
-    
+
+    # REQUIRE ClamAV
+    clamav_output=$(clamscan -r --no-summary /srv /etc/containers 2>/dev/null | grep -c "FOUND")
+    scan_results="$scan_results CLAMAV_VIRUSES:$clamav_output"
+
     echo "$scan_results"
   register: comprehensive_scan
   changed_when: false
@@ -44,6 +48,9 @@
     trufflehog_secrets_found: >-
       {{ comprehensive_scan.stdout | regex_search('TRUFFLEHOG_SECRETS:([0-9]+)', '\1') | first | default('0') | int
          if 'TRUFFLEHOG_SECRETS:' in (comprehensive_scan.stdout | default('')) else 0 }}
+    clamav_viruses_found: >-
+      {{ comprehensive_scan.stdout | regex_search('CLAMAV_VIRUSES:([0-9]+)', '\1') | first | default('0') | int
+         if 'CLAMAV_VIRUSES:' in (comprehensive_scan.stdout | default('')) else 0 }}
   tags:
     - security
     - scanning
@@ -54,17 +61,7 @@
       - trivy_critical_vulns == 0
       - checkov_critical_issues == 0
       - trufflehog_secrets_found == 0
-    fail_msg: |
-      Security scan detected critical issues:
-      - Trivy critical vulnerabilities: {{ trivy_critical_vulns }}
-      - Checkov critical issues: {{ checkov_critical_issues }}
-      - TruffleHog secrets found: {{ trufflehog_secrets_found }}
-      - Deployment halted for security review
-  tags:
-    - iso_27001_12_2
-    - security
-    - scanning
-    - audit
+      - clamav_viruses_found == 0
 
 - name: "ISO 27001 §5.37 | Action 520046 | Check for SBOM-driven Vulnerabilities"
   ansible.builtin.shell: |
