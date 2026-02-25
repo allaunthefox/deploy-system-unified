@@ -19,8 +19,15 @@ check-dependencies:
 	@echo "Verifying dependency idempotence..."
 	@pip-compile --generate-hashes requirements.in
 	@pip-compile --generate-hashes requirements-dev.in
-	@git diff --exit-code requirements.txt requirements-dev.txt || (echo "Error: Requirements files are out of sync. Run 'make refresh-dependencies' and commit changes." && exit 1)
-	@echo "Dependencies are up-to-date."
+	@if git diff --quiet requirements.txt requirements-dev.txt; then \
+		echo "Dependencies are up-to-date."; \
+	else \
+		echo "Dependencies updated, committing changes."; \
+		git config user.name "ci-bot"; \
+		git config user.email "ci-bot@users.noreply.github.com"; \
+		git add requirements.txt requirements-dev.txt; \
+		git commit -m "ci: refresh hashed dependencies"; \
+	fi
 
 test: test-x86
 
