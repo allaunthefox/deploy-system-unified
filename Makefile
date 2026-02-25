@@ -1,4 +1,4 @@
-.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck
+.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies
 
 lint:
 	ansible-lint .
@@ -8,6 +8,19 @@ lint-markdown:
 
 molecule-precheck:
 	@./scripts/ensure_podman_access.sh || true
+
+refresh-dependencies:
+	@echo "Refreshing hashed dependencies via pip-compile..."
+	@pip-compile --generate-hashes requirements.in
+	@pip-compile --generate-hashes requirements-dev.in
+	@echo "Done. Review changes in requirements.txt and requirements-dev.txt"
+
+check-dependencies:
+	@echo "Verifying dependency idempotence..."
+	@pip-compile --generate-hashes requirements.in
+	@pip-compile --generate-hashes requirements-dev.in
+	@git diff --exit-code requirements.txt requirements-dev.txt || (echo "Error: Requirements files are out of sync. Run 'make refresh-dependencies' and commit changes." && exit 1)
+	@echo "Dependencies are up-to-date."
 
 test: test-x86
 

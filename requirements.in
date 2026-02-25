@@ -1,0 +1,2 @@
+# Runtime dependencies for Deploy-System-Unified
+requests>=2.31.0

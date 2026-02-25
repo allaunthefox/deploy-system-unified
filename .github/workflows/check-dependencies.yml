@@ -1,0 +1,40 @@
+---
+name: Dependency Integrity Check
+
+on:
+  push:
+    paths:
+      - 'requirements.in'
+      - 'requirements.txt'
+      - 'requirements-dev.in'
+      - 'requirements-dev.txt'
+      - '.github/workflows/check-dependencies.yml'
+      - 'Makefile'
+  pull_request:
+    paths:
+      - 'requirements.in'
+      - 'requirements.txt'
+      - 'requirements-dev.in'
+      - 'requirements-dev.txt'
+      - '.github/workflows/check-dependencies.yml'
+      - 'Makefile'
+  workflow_dispatch:
+
+jobs:
+  verify-dependencies:
+    name: Verify Dependency Idempotence
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pip-tools
+        run: pip install pip-tools
+
+      - name: Check dependency sync
+        run: make check-dependencies
