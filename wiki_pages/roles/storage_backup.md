@@ -2,6 +2,9 @@
 
 **role**: `storage/backup`
 
+**System Backup (restic/rclone)**
+Comprehensive system backup strategy using restic for encrypted snapshots and rclone for cloud synchronization.
+
 ## Variables
 
 <a id="backup-security-enabled"></a>### `backup_security_enabled`

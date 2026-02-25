@@ -17,9 +17,11 @@ def slugify(s):
 
 
 def process_file(filepath):
-    """Process a variable reference file to update anchors to match linter's slugify."""
+    """Process a variable reference file to update anchors to match linter's slugify.
+    Returns (exists, modified) tuple.
+    """
     if not filepath.exists():
-        return False
+        return False, False
     
     text = filepath.read_text()
     lines = text.splitlines()
@@ -55,29 +57,36 @@ def process_file(filepath):
 
     if modified:
         filepath.write_text('\n'.join(new_lines) + '\n')
-        return True
-    return False
+        return True, True
+    return True, False
 
 
 # Handle the main Variable_Reference.md file
 VR = ROOT / 'wiki_pages' / 'Variable_Reference.md'
-if process_file(VR):
+exists, modified = process_file(VR)
+if not exists:
+    print("Variable_Reference.md not found; skipping.")
+elif modified:
     print("Linked Variable_Reference.md to role pages.")
 else:
     print("Variable_Reference.md already up to date.")
 
-# Handle the split variable reference files
+# Handle the split variable reference files (Ref_Vars_ prefix)
 split_files = [
-    'Variable_Reference_Containers.md',
-    'Variable_Reference_Core.md', 
-    'Variable_Reference_Security.md',
-    'Variable_Reference_Networking.md',
-    'Variable_Reference_Storage.md'
+    'Ref_Vars_Containers.md',
+    'Ref_Vars_Core.md', 
+    'Ref_Vars_Security.md',
+    'Ref_Vars_Networking.md',
+    'Ref_Vars_Storage.md',
+    'Ref_Vars_Ingress.md'
 ]
 
 for filename in split_files:
     vr_split = ROOT / 'wiki_pages' / filename
-    if process_file(vr_split):
+    exists, modified = process_file(vr_split)
+    if not exists:
+        print(f"{filename} not found; skipping.")
+    elif modified:
         print(f"Linked {filename} to role pages.")
     else:
         print(f"{filename} already up to date.")

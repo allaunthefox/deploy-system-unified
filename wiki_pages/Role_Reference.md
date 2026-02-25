@@ -261,12 +261,12 @@ Enhanced SSH daemon configuration focusing on strong ciphers, key exchange, and 
 ## Storage Roles
 
 ### `storage/backup` — [Read details](roles/storage_backup.md)
+**System Backup (restic/rclone)**
+Comprehensive system backup strategy using restic for encrypted snapshots and rclone for cloud synchronization.
 
 ### `storage/dedupe` — [Read details](roles/storage_dedupe.md)
 **Archival Deduplication**
 Implements NoDupeLabs standards for offline Btrfs deduplication and archival optimization.
-**System Backup (restic/rclone)**
-Comprehensive system backup strategy using restic for encrypted snapshots and rclone for cloud synchronization.
 
 ### `storage/filesystems` — [Read details](roles/storage_filesystems.md)
 **Filesystem Management**
