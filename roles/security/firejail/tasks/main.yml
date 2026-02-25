@@ -15,7 +15,21 @@
 
 - name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410006 | Ensure Firejail profile directory exists"
   ansible.builtin.file:
-    path: /etc/firejail
+    path: "{{ security_firejail_config_path }}"
+    state: directory
+    mode: '0755'
+  become: true
+  tags:
+    - cis_5_1_2
+    - stig_v_230220
+    - nist_sc_39
+    - iso_27001_8_26
+    - security
+    - sandboxing
+
+- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410008 | Ensure Firejail profiles.d directory exists"
+  ansible.builtin.file:
+    path: "{{ security_firejail_profiles_path }}"
     state: directory
     mode: '0755'
   become: true
@@ -48,7 +62,7 @@
       noblacklist /dev/dri
       noblacklist /dev/nvidia*
       noblacklist /dev/kfd
-    dest: /etc/firejail/globals.local
+    dest: "{{ security_firejail_config_path }}/globals.local"
     mode: '0644'
   become: true
   tags:

@@ -13,6 +13,7 @@
 - Safe rollback and verified recovery procedures.
 - Continuous validation of core roles and production templates.
 - Clear operational visibility and health checks.
+- **Explicit configuration** - All implicit settings documented and enforced (see `Plan_IMPLICIT_SETTINGS_REMEDIATION.md`)
 
 ## Current Baseline (Reference Points)
 
@@ -38,6 +39,8 @@
 - Add `requirements.yml` for external roles and vendor content.
 - Document OS package baselines and repository pinning strategy.
 - Track container image tags used by production templates.
+- **NEW: Variable Precedence Documentation** - Map all implicit variable dependencies (see `Plan_IMPLICIT_SETTINGS_REMEDIATION.md` Phase 1)
+- **NEW: Checksum Verification** - Populate all empty GPG checksums in `hardened_supply_chain.yml` (CRITICAL security gap)
 
 ### 3. Testing and CI Coverage
 
@@ -86,6 +89,7 @@
 - Vault password handling for automated CI runs.
 - SOPS migration dependencies (real Age keys and updated `.sops.yaml`).
 - GPU vendor variability in test coverage and runtime behavior.
+- **Implicit configuration complexity** - Addressed by `Plan_IMPLICIT_SETTINGS_REMEDIATION.md` (Q2-Q4 2026)
 
 ## Historical Immediate Actions (Phase 1 Snapshot)
 

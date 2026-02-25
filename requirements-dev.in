@@ -4,3 +4,8 @@ yamllint==1.33.0
 molecule==6.0.3
 molecule-plugins[podman]==23.5.3
 pytest-testinfra==10.1.0
+
+# typing-extensions is pulled in by referencing, pin explicitly to
+# satisfy --require-hashes installs; keeping it in .in ensures it
+# is always present in the compiled lock file.
+typing-extensions==4.15.0

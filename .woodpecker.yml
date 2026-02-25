@@ -5,8 +5,8 @@ pipeline:
     commands:
       - apt-get update && apt-get install -y git python3 python3-pip
       - pip3 install ansible-lint detect-secrets
-      - chmod +x deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
-      - ./deploy-system-unified/dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report
+      - chmod +x dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+      - ./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh --report
 
   detect-secrets:
     image: ubuntu:latest
@@ -21,6 +21,6 @@ pipeline:
     commands:
       - apt-get update && apt-get install -y git python3 python3-pip
       - pip3 install ansible-lint
-      - cd deploy-system-unified && ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules site.yml
+      - ansible-lint -v -c .ansible-lint.yml site.yml
 
 branches: [main, 'ci/**']

@@ -1,7 +1,9 @@
 ---
-# Handlers for security_framework role
-- name: restart_sshd
+# Handlers for security/scanning - System Validation and Scanning
+
+- name: restart_clamav_freshclam
   ansible.builtin.systemd:
-    name: "{{ ssh_service_name }}"
+    name: clamav-freshclam
     state: restarted
+    daemon_reload: true
   become: true
