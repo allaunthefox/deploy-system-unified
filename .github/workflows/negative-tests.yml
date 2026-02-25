@@ -20,6 +20,7 @@ env:
 
 jobs:
   negative-tests:
+    if: ${{ github.event_name == 'push' }}
     name: Negative Testing for Permissive Roles
     runs-on: ubuntu-latest
     strategy:
