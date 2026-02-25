@@ -150,7 +150,7 @@ This document is the execution board for completed work. It defines what was in 
 
 ## 🔗 Related Documentation
 
-- [Base Layer Implementation Status](docs/development/BASE_LAYER_IMPLEMENTATION_STATUS.md)
+- [Base Layer Implementation Status](https://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS)
 - [ROADMAP](ROADMAP.md)
 - [Security Enhancement Plan](SECURITY_ENHANCEMENT_PLAN_2026.md)
 - [Role Enhancement Execution Plan](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md)

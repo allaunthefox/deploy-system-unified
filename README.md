@@ -27,14 +27,23 @@ The core infrastructure and security hardening layers are fully implemented, ver
 - **Validation:** Tested on Contabo VPS (Feb 2026)
 - **Compliance:** 100/100 (ISO 27001, ISO 27040, NIST SP 800-193, CIS)
 
-👉 **[View Detailed Implementation Status](./docs/development/BASE_LAYER_IMPLEMENTATION_STATUS.md)**
+👉 **[View Detailed Implementation Status](https://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS)**
 
 ---
 
 ## 🚀 Quick Start
 
-### Production Deployment
+### 🗺️ Deployment Pathfinder
+Choose the path that matches your goal:
 
+| I want to... | Use this Playbook | Recommended Profile |
+|:---|:---|:---|
+| **Harden a new server** | `base_hardened.yml` | `hardened` |
+| **Deploy a Media Stack** | `production_deploy.yml` | `production` (Contabo) |
+| **Test in a sandbox** | `site.yml` | `development` |
+| **Run a one-off task** | `site.yml --tags <tag>` | `ephemeral` |
+
+### Standard Execution
 Use the canonical entrypoint for production deployments:
 
 ```bash

@@ -2,6 +2,25 @@
 
 Deploy-System-Unified utilizes a 7-layer architecture to ensure absolute isolation and "Strict Enforcement" security standards.
 
+```mermaid
+graph TD
+    L7[<b>Layer 7: Automated Threat Analysis</b><br/>Cognitive Sentinel, SBOM, Forensics] --> L6
+    L6[<b>Layer 6: Internal Socket Isolation</b><br/>Unix Socket Migration, Caddy, Media] --> L5
+    L5[<b>Layer 5: Runtime Execution Monitoring</b><br/>Audit Integrity, Falco, Logging] --> L4
+    L4[<b>Layer 4: Mandatory Access Control</b><br/>AppArmor, Firejail, Sandboxing] --> L3
+    L3[<b>Layer 3: OS Hardening</b><br/>Kernel Sysctl, SSHD, Firewall] --> L2
+    L2[<b>Layer 2: Hardware Root of Trust</b><br/>TPM Guard, Volatile Secrets] --> L1
+    L1[<b>Layer 1: Infrastructure Foundation</b><br/>Bootstrap, Repositories, Updates]
+    
+    style L1 fill:#f9f,stroke:#333,stroke-width:2px
+    style L2 fill:#bbf,stroke:#333,stroke-width:2px
+    style L3 fill:#bfb,stroke:#333,stroke-width:2px
+    style L4 fill:#fdb,stroke:#333,stroke-width:2px
+    style L5 fill:#fbb,stroke:#333,stroke-width:2px
+    style L6 fill:#bff,stroke:#333,stroke-width:2px
+    style L7 fill:#dfd,stroke:#333,stroke-width:2px
+```
+
 ---
 
 ## 🏗️ Layer 1: Infrastructure Foundation

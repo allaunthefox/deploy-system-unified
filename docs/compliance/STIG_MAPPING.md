@@ -1468,7 +1468,7 @@ This document maps Deploy-System-Unified security roles to DISA STIG (Defense In
 - [CIS_MAPPING.md](CIS_MAPPING.md) - CIS Benchmark control mapping
 - [NIST_MAPPING.md](NIST_MAPPING.md) - NIST 800-53 control mapping (planned)
 - [SECURITY_ENHANCEMENT_PLAN_2026.md](../planning/SECURITY_ENHANCEMENT_PLAN_2026.md) - Security roadmap
-- [BASE_LAYER_IMPLEMENTATION_STATUS.md](../development/BASE_LAYER_IMPLEMENTATION_STATUS.md) - Implementation status
+- [BASE_LAYER_IMPLEMENTATION_STATUS.md](https://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS) - Implementation status
 - [LAYERED_SECURITY.md](../architecture/LAYERED_SECURITY.md) - Defense-in-depth architecture
 
 ---
