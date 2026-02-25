@@ -116,7 +116,8 @@ _caddy_description: Caddy Reverse Proxy
 _caddy_image_registry: docker.io
 _caddy_image_repository: serfriz/caddy-porkbun-dockerproxy
 _caddy_image_tag: 2.10.2
-_caddy_image: docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2
+_caddy_image_digest: "sha256:ef0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aef0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+_caddy_image: "docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2@{{ _caddy_image_digest }}"
 
 # Alternative Caddy images
 _caddy_image_official: docker.io/library/caddy:2

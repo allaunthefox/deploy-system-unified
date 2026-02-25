@@ -28,8 +28,6 @@
     database: group
     key: systemd-journal
   register: security_audit_integrity_journal_group
-  failed_when: false
-  changed_when: false
   when: _security_audit_integrity_is_systemd
   tags:
     - cis_4_2_1_1
@@ -38,6 +36,13 @@
     - iso_27001_12_4
     - security
     - audit
+
+- name: VERIFY | systemd-journal group exists
+  ansible.builtin.assert:
+    that: "'systemd-journal' in getent_group"
+    fail_msg: "Critical group 'systemd-journal' missing on systemd-managed host."
+  when: _security_audit_integrity_is_systemd
+  tags: [security, audit, verification]
 
 - name: "CIS 4.2.1.1 | STIG V-230250 | NIST AU-2 | ISO 27001 §12.4 | Action 520022 | Select journald group"
   ansible.builtin.set_fact:
@@ -81,10 +86,9 @@
     paths: /var/log/journal
     patterns: fss.pub
     file_type: file
-  register: security_audit_integrity_security_audit_integrity_journal_fss_stat
+    recurse: true
+  register: security_audit_integrity_journal_fss_stat
   become: true
-  failed_when: false
-  changed_when: false
   when:
     - _security_audit_integrity_is_systemd
     - not _security_audit_integrity_is_container
@@ -96,13 +100,23 @@
     - security
     - audit
 
+- name: VERIFY | FSS Keys present if enabled
+  ansible.builtin.assert:
+    that: 
+      - (security_audit_integrity_journal_fss_stat.matched | int) > 0 or not security_audit_integrity_store_keys | bool
+    fail_msg: "Journal FSS keys missing but required for audit integrity."
+  when:
+    - _security_audit_integrity_is_systemd
+    - not _security_audit_integrity_is_container
+  tags: [security, audit, verification]
+
 - name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520030 | Initialize Forward Secure Sealing (FSS) keys"
   ansible.builtin.shell: |
     set -o pipefail
     journalctl --setup-keys --force 2>&1 | grep -E "[0-9a-f]{6}-[0-9a-f]{6}" | tail -n 1
   args:
     executable: /bin/bash
-  register: security_audit_integrity_security_audit_integrity_fss_verification_key_output
+  register: security_audit_integrity_fss_verification_key_output
   become: true
   changed_when: security_audit_integrity_fss_verification_key_output.rc == 0
   tags:

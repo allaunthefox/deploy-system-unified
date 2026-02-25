@@ -13,7 +13,6 @@
   register: image_signature_result
   changed_when: false
   become: true
-  failed_when: false
   when: containers_cosign_enable | bool
 
 - name: "Action 700015 | Enforce Trusted Supply Chain"

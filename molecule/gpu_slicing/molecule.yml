@@ -33,7 +33,7 @@ ansible:
     defaults:
       deprecation_warnings: false
       interpreter_python: auto_silent
-      host_key_checking: false
+      host_key_checking: true
       allow_broken_conditionals: true
 
   playbooks:

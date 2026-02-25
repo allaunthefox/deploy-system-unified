@@ -60,3 +60,19 @@
     - sandboxing
     - remediate
   when: firejail_enable_gpu | default(false)
+
+- name: VERIFY | Firejail is functional (Zero-Tolerance)
+  ansible.builtin.shell: firejail --version
+  register: _firejail_ver
+  failed_when: _firejail_ver.rc != 0
+  changed_when: false
+  become: true
+  tags: [security, sandboxing, verification]
+
+- name: VERIFY | Firejail sandbox execution
+  ansible.builtin.shell: firejail --noprofile --quiet --exit-if-exists ls /tmp
+  register: _firejail_test
+  failed_when: _firejail_test.rc != 0
+  changed_when: false
+  become: true
+  tags: [security, sandboxing, verification]

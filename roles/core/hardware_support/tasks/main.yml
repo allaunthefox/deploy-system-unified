@@ -3,11 +3,16 @@
 
 - name: "ISO 9001 | Action 800000 | Load Architecture Specific Hardware Tasks"
   ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
-  ignore_errors: true
   tags:
     - iso_9001
     - hardware
     - discovery
+
+- name: VERIFY | Architecture tasks loaded
+  ansible.builtin.assert:
+    that: ansible_architecture in ['x86_64', 'aarch64', 'riscv64']
+    fail_msg: "Unsupported architecture: {{ ansible_architecture }}"
+  tags: [hardware, discovery, verification]
 
 - name: Report Hardware Capabilities
   ansible.builtin.debug:
@@ -43,7 +48,6 @@
   register: timedatectl_show
   changed_when: false
   check_mode: false
-  failed_when: false
   when: ansible_service_mgr == 'systemd'
   tags:
     - hardware
@@ -52,7 +56,6 @@
 - name: "ISO 27001 §8.17 | Action 300007 | Configure Hardware Clock (RTC) to UTC"
   ansible.builtin.command: timedatectl set-local-rtc 0
   become: true
-  failed_when: false
   tags:
     - iso_27001_8_17
     - hardware
@@ -64,7 +67,6 @@
 - name: "ISO 27001 §8.17 | Action 300007 | Enable NTP-based RTC synchronization"
   ansible.builtin.command: timedatectl set-ntp true
   become: true
-  failed_when: false
   tags:
     - iso_27001_8_17
     - hardware
@@ -72,6 +74,15 @@
   when:
     - ansible_service_mgr == 'systemd'
     - "'NTP=no' in timedatectl_show.stdout_lines"
+
+- name: VERIFY | RTC and NTP status (Zero-Tolerance)
+  ansible.builtin.shell: |
+    timedatectl show | grep -q "RTCInLocalTime=no" && \
+    timedatectl show | grep -q "NTP=yes"
+  become: true
+  when: ansible_service_mgr == 'systemd'
+  changed_when: false
+  tags: [hardware, time, verification]
 
 - name: "ISO 27001 §10.1 | Action 800001 | Validate Crypto Acceleration (Secure Nodes)"
   ansible.builtin.fail:

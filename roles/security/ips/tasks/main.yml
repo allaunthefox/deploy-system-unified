@@ -93,3 +93,19 @@
     - nist_si_3
     - security
     - ips
+
+- name: VERIFY | Fail2Ban is functional (Zero-Tolerance)
+  ansible.builtin.shell: fail2ban-client ping
+  register: _f2b_ping
+  failed_when: "'Server replied: pong' not in _f2b_ping.stdout"
+  changed_when: false
+  become: true
+  tags: [security, ips, verification]
+
+- name: VERIFY | Fail2Ban jails are active
+  ansible.builtin.shell: fail2ban-client status sshd
+  register: _f2b_status
+  failed_when: "'Status for the jail: sshd' not in _f2b_status.stdout"
+  changed_when: false
+  become: true
+  tags: [security, ips, verification]

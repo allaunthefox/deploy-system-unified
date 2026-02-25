@@ -30,9 +30,11 @@ All actions in the framework are classified into one of the following suites for
 | :--- | :--- | :--- | :--- |
 | **PQC Suite** | `400100 - 400110` | ISO 27001 §10.1 | Quantum-resistant crypto |
 | **Forensic Suite** | `840030 - 840041` | ISO 27001 §12.4 | Loki/Grafana observability |
+| **Threat Analysis Suite** | `480000 - 480010` | ISO 27001 Amd 1 | AI-Driven Log Auditing |
 | **Autonomic Suite** | `900000 - 900031` | ISO 27040 | Verified recovery |
 | **SBOM Suite** | `520040 - 520047` | ISO 27001 §14.2 | Supply chain verified |
 | **Guard Suite** | `600030 - 600032` | ISO 9001 | Profile-based safety |
+| **Integrity Response Suite** | `800510 - 800515` | NIST SI-7 | Hardware-Bound State Purge |
 
 ---
 

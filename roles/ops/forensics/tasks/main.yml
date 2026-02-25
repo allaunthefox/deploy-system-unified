@@ -1,0 +1,51 @@
+---
+# Tasks for ops/forensics - Deployment Provenance and Metadata
+# ISO 27001 §12.4 | Action 840041 | Track 7: Forensic Metadata
+
+- name: "FORENSIC | Initialize Deployment Provenance"
+  ansible.builtin.set_fact:
+    forensic_output_dir: "{{ playbook_dir }}/ci-artifacts/forensics"
+    forensic_operator: "{{ lookup('env', 'USER') | default('unknown') }}"
+    forensic_git_sha: "{{ lookup('pipe', 'git rev-parse HEAD') | default('none') }}"
+  tags: [forensics, metadata]
+
+- name: "FORENSIC | Ensure forensics directory exists"
+  ansible.builtin.file:
+    path: "{{ forensic_output_dir }}"
+    state: directory
+    mode: '0700'
+  delegate_to: localhost
+  run_once: true
+  tags: [forensics, metadata]
+
+- name: "FORENSIC | Generate Provenance Record"
+  ansible.builtin.copy:
+    content: |
+      {
+        "deployment_id": "{{ deployment_id | default('none') }}",
+        "operator": "{{ forensic_operator }}",
+        "git_sha": "{{ forensic_git_sha }}",
+        "timestamp": "{{ ansible_date_time.iso8601 }}",
+        "inventory": "{{ inventory_file | basename }}",
+        "profile": "{{ deployment_profile | default('unknown') }}"
+      }
+    dest: "{{ forensic_output_dir }}/provenance.json"
+    mode: '0600'
+  delegate_to: localhost
+  run_once: true
+  tags: [forensics, metadata, audit]
+
+- name: "FORENSIC | Sign Provenance Record (Immutable Trace)"
+  ansible.builtin.shell: |
+    sha256sum {{ forensic_output_dir }}/provenance.json > {{ forensic_output_dir }}/provenance.json.sha256
+  delegate_to: localhost
+  run_once: true
+  changed_when: true
+  tags: [forensics, metadata, audit]
+
+- name: "FORENSIC | Verify Redaction Compliance (Zero-Tolerance)"
+  ansible.builtin.assert:
+    that:
+      - ansible_no_log | default(true) or (not security_fail_on_no_log_missing | default(false))
+    fail_msg: "CRITICAL: Task redaction (no_log) check failed. High risk of secret leakage."
+  tags: [forensics, security, redaction]

@@ -96,7 +96,22 @@
         - { path: '/etc/ssh', mode: '0755' }
         - { path: '/etc/ssh/sshd_config', mode: '0644' }
       become: true
-      failed_when: false
+
+    - name: VERIFY | Sensitive file permissions (Zero-Tolerance)
+      ansible.builtin.stat:
+        path: "{{ item.path }}"
+      register: _file_stat
+      loop:
+        - { path: '/etc/shadow', mode: '0600' }
+        - { path: '/etc/passwd', mode: '0644' }
+        - { path: '/etc/group', mode: '0644' }
+        - { path: '/etc/sudoers', mode: '0440' }
+        - { path: '/etc/ssh', mode: '0755' }
+        - { path: '/etc/ssh/sshd_config', mode: '0644' }
+      failed_when: 
+        - "_file_stat.stat.mode != item.mode"
+        - "_file_stat.stat.pw_name != 'root'"
+
     - name: Set sticky bit on world-writable directories
       ansible.builtin.shell: |
         set -o pipefail
@@ -106,7 +121,16 @@
       become: true
       register: sticky_result
       changed_when: (sticky_result.stdout | default('0') | trim | int) > 0
-      failed_when: false
+
+    - name: VERIFY | World-writable sticky bit (Zero-Tolerance)
+      ansible.builtin.shell: |
+        set -o pipefail
+        find / -type d -perm -0002 ! -perm -1000 ! -path '/proc*' ! -path '/sys*' ! -path '/dev*' ! -path '/run*' | wc -l
+      args:
+        executable: /bin/bash
+      become: true
+      register: _sticky_check
+      failed_when: (_sticky_check.stdout | trim | int) > 0
   tags:
     - cis_1_1_1
     - stig_v_230217
@@ -184,7 +208,13 @@
         insertafter: '^auth'
       become: true
       when: ansible_facts['os_family'] == 'Debian'
-      failed_when: false
+
+    - name: VERIFY | pam_faillock is configured (Debian/Ubuntu)
+      ansible.builtin.shell: grep -q "pam_faillock.so deny=3 unlock_time=600 fail_interval=900" /etc/pam.d/common-auth
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      changed_when: false
+
     - name: Configure pam_faillock for RHEL/CentOS
       ansible.builtin.lineinfile:
         path: /etc/pam.d/password-auth
@@ -193,7 +223,7 @@
         insertafter: '^auth'
       become: true
       when: ansible_facts['os_family'] == 'RedHat'
-      failed_when: false
+
     - name: Configure pam_faillock for RHEL/CentOS system-auth
       ansible.builtin.lineinfile:
         path: /etc/pam.d/system-auth
@@ -202,7 +232,14 @@
         insertafter: '^auth'
       become: true
       when: ansible_facts['os_family'] == 'RedHat'
-      failed_when: false
+
+    - name: VERIFY | pam_faillock is configured (RHEL/CentOS)
+      ansible.builtin.shell: |
+        grep -q "pam_faillock.so deny=3 unlock_time=600 fail_interval=900" /etc/pam.d/password-auth && \
+        grep -q "pam_faillock.so deny=3 unlock_time=600 fail_interval=900" /etc/pam.d/system-auth
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      changed_when: false
   tags:
     - cis_level_2
     - cis_5_3_6
@@ -243,7 +280,17 @@
           blacklist squashfs
         mode: '0644'
       become: true
-      failed_when: false
+
+    - name: VERIFY | Unused filesystems are blacklisted
+      ansible.builtin.shell: |
+        for fs in udf cramfs freevxfs jffs2 hfs hfsplus squashfs; do
+          if lsmod | grep -q "^$fs"; then
+            echo "$fs is still loaded"
+            exit 1
+          fi
+        done
+      become: true
+      changed_when: false
   tags:
     - cis_1_1_2
     - cis_1_1_3
@@ -281,8 +328,8 @@
         state: absent
         purge: true
       become: true
-      failed_when: false
       when: ansible_facts['os_family'] == 'Debian'
+
     - name: Remove unnecessary packages (RedHat/CentOS)
       ansible.builtin.dnf:
         name:
@@ -303,8 +350,22 @@
           - nis
         state: absent
       become: true
-      failed_when: false
       when: ansible_facts['os_family'] == 'RedHat'
+
+    - name: VERIFY | Unnecessary packages are removed (Zero-Tolerance)
+      ansible.builtin.shell: |
+        set -o pipefail
+        if command -v dpkg >/dev/null 2>&1; then
+          dpkg -l xorg avahi-daemon isc-dhcp-server bind9 vsftpd samba squid dovecot-imapd dovecot-pop3d nfs-kernel-server rpcbind tftp-hpa telnetd snmpd nis 2>&1 | grep -E "^ii" | wc -l
+        elif command -v rpm >/dev/null 2>&1; then
+          rpm -q xorg-x11-server-Xorg avahi dhcp-server bind vsftpd samba squid dovecot nfs-utils rpcbind tftp telnet-server snmp ypbind nis 2>&1 | grep -v "not installed" | wc -l
+        else
+          echo "0"
+        fi
+      register: _pkg_check
+      failed_when: (_pkg_check.stdout | trim | int) > 0
+      become: true
+      changed_when: false
   tags:
     - cis_level_2
     - cis_2_1_1
@@ -339,15 +400,25 @@
     - remediate
 
 - name: "CIS 6.1.1 | NIST CM-3 | NIST CM-8 | NIST SC-4 | NIST IA-5 | Harden PAM configuration (Debian)"
-  ansible.builtin.lineinfile:
-    path: "{{ item.path }}"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-  loop:
-    - { path: '/etc/pam.d/common-password', regexp: '^password.*pam_unix.so', line: 'password        [success=1 default=ignore]      pam_unix.so obscure sha512 rounds=65536' }
-    - { path: '/etc/pam.d/common-session', regexp: '^session.*pam_tmpdir.so', line: 'session optional        pam_tmpdir.so' }
-  when: ansible_facts['os_family'] == 'Debian'
-  become: true
+  block:
+    - name: Configure PAM hardening parameters (Debian)
+      ansible.builtin.lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { path: '/etc/pam.d/common-password', regexp: '^password.*pam_unix.so', line: 'password        [success=1 default=ignore]      pam_unix.so obscure sha512 rounds=65536' }
+        - { path: '/etc/pam.d/common-session', regexp: '^session.*pam_tmpdir.so', line: 'session optional        pam_tmpdir.so' }
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: VERIFY | PAM hardening parameters (Debian)
+      ansible.builtin.shell: |
+        grep -q "pam_unix.so obscure sha512 rounds=65536" /etc/pam.d/common-password && \
+        grep -q "pam_tmpdir.so" /etc/pam.d/common-session
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      changed_when: false
   tags:
     - cis_level_2
     - cis_6_1_1
@@ -359,16 +430,33 @@
     - hardening
 
 - name: "CIS 8.1.2 | NIST AC-18 | NIST SC-18 | Disable wireless interfaces"
-  ansible.builtin.shell: |
-    set -o pipefail
-    for iface in $(iw dev 2>/dev/null | grep -i interface | awk '{print $2}'); do
-      ip link set "$iface" down 2>/dev/null || true
-    done
-  args:
-    executable: /bin/bash
-  become: true
-  changed_when: false
-  failed_when: false
+  block:
+    - name: Down all wireless interfaces
+      ansible.builtin.shell: |
+        set -o pipefail
+        for iface in $(iw dev 2>/dev/null | grep -i interface | awk '{print $2}'); do
+          ip link set "$iface" down 2>/dev/null || true
+        done
+      args:
+        executable: /bin/bash
+      become: true
+      changed_when: false
+
+    - name: VERIFY | Wireless interfaces are down (Zero-Tolerance)
+      ansible.builtin.shell: |
+        set -o pipefail
+        if command -v iw >/dev/null 2>&1; then
+          iw dev 2>/dev/null | grep -i interface | awk '{print $2}' | while read iface; do
+            if ip link show "$iface" | grep -q "UP"; then
+              echo "$iface is still UP"
+              exit 1
+            fi
+          done
+        fi
+      args:
+        executable: /bin/bash
+      become: true
+      changed_when: false
   tags:
     - cis_level_2
     - cis_8_1_2

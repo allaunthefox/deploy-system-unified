@@ -2,7 +2,12 @@
 # Defaults for containers/memcached
 
 memcached_enable: true
-memcached_image: docker.io/library/memcached:alpine
+# Memcached version
+memcached_version: alpine
+
+# Container image with explicit digest
+memcached_image_digest: "sha256:6f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a6f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+memcached_image: "docker.io/library/memcached:{{ memcached_version }}@{{ memcached_image_digest }}"
 memcached_port: 11211
 
 # Internal Memory Limit (The -m flag passed to memcached)

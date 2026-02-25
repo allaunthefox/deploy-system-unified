@@ -4,9 +4,9 @@
 **Last Updated:** February 24, 2026
 **Completion:** ~85% (Many features already implemented)
 
-### **Battlemage Definition**
+### **Intel GPU (Battlemage) Definition**
 
-Battlemage in this repository refers specifically to Intel GPU driver enablement and acceleration settings (VAAPI/Quick Sync). The term is reserved for Intel GPU drivers to avoid ambiguity.
+Battlemage in this repository refers specifically to Intel GPU driver enablement and acceleration settings (VAAPI/Quick Sync). This entry is part of the broader Intel GPU support to ensure consistent driver management.
 
 ---
 
@@ -114,9 +114,9 @@ Battlemage in this repository refers specifically to Intel GPU driver enablement
 
 ---
 
-## Phase 6: Battlemage Intel GPU Drivers (Weeks 11-12)
+## Phase 6: Intel GPU Enhancements (Battlemage) (Weeks 11-12)
 
-**Focus**: Advanced Battlemage Intel GPU driver tuning (Role structure is complete)
+**Focus**: Advanced Intel GPU driver tuning and Battlemage support (Role structure is complete)
 
 **Completion Metric**: Battlemage Intel GPU driver support is installed and validated
 

@@ -1,12 +1,27 @@
 ---
-- name: Verify
+- name: Verify Access Hardening
   hosts: all
   gather_facts: true
   tasks:
-    - name: Check identity role executed
-      ansible.builtin.debug:
-        msg: "Core/identity role executed successfully"
+    - name: VERIFY | OpenSSH is installed
+      ansible.builtin.package:
+        name: "{{ 'openssh' if ansible_os_family == 'Archlinux' else 'openssh-server' }}"
+        state: present
+      check_mode: true
+      register: _ssh_pkg
+      failed_when: _ssh_pkg.changed
 
-    - name: Check UUID was generated
-      ansible.builtin.debug:
-        msg: "Object identity assigned"
+    - name: VERIFY | wheel group exists
+      ansible.builtin.getent:
+        database: group
+        key: wheel
+
+    - name: VERIFY | Sudoers configuration
+      ansible.builtin.command: visudo -cf /etc/sudoers.d/wheel
+      changed_when: false
+
+    - name: VERIFY | System-wide umask (Zero-Tolerance)
+      ansible.builtin.shell: |
+        grep -q "UMASK           027" /etc/login.defs && \
+        grep -q "umask 027" /etc/profile
+      changed_when: false

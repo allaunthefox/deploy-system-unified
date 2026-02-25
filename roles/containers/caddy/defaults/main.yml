@@ -24,6 +24,10 @@ containers_porkbun_secret_api_key: "{{ porkbun_secret_api_key | default(vault_po
 containers_caddy_network: "{{ caddy_network | default('proxy_net') }}"
 containers_caddy_extra_networks: "{{ caddy_extra_networks | default(['media_net', 'ops_net', 'monitoring_net', 'anubis_net']) }}"
 
+# Unix Socket Migration (Internal Socket Isolation)
+containers_caddy_use_unix_sockets: "{{ true if deployment_profile | default('standard') in ['hardened', 'production'] else false }}"
+containers_caddy_socket_dir: "/run/caddy"
+
 # Crowdsec (Security Automation)
 containers_crowdsec_enable: "{{ crowdsec_enable | default(true) }}"
 containers_crowdsec_image: "{{ crowdsec_image | default('docker.io/crowdsecurity/crowdsec:latest') }}"

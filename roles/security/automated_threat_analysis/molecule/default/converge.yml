@@ -1,0 +1,9 @@
+---
+- name: Converge Automated Threat Analysis
+  hosts: all
+  vars:
+    threat_analysis_enabled: true
+  tasks:
+    - name: "Include security/automated_threat_analysis"
+      ansible.builtin.include_role:
+        name: "security/automated_threat_analysis"

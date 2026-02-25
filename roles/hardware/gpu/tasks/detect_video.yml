@@ -3,29 +3,23 @@
 # Detects Installed GPU Vendors to override generic defaults
 
 - name: Ensure Discovery Dependencies are Present (pciutils)
-  tags: [hardware, gpu, audit]
   ansible.builtin.package:
     name: pciutils
-  tags: [hardware, gpu, audit]
     state: present
   register: _pciutils_install
   until: _pciutils_install is success
   retries: 3
   delay: 5
-  ignore_errors: true
   when: not _gpu_is_container | default(false)
-
-- name: Handle Dependency Installation Failure
   tags: [hardware, gpu, audit]
-  ansible.builtin.fail:
-    msg: >-
-      CRITICAL: Failed to install 'pciutils' on the target host. 
-      This package is required for GPU hardware discovery.
-      Please ensure the package manager is configured correctly and the host has internet access.
-      Error details: {{ _pciutils_install.msg | default('Unknown error') }}
-  when: 
-    - not _gpu_is_container | default(false)
-    - _pciutils_install is failed
+
+- name: VERIFY | pciutils is functional
+  ansible.builtin.command: lspci --version
+  register: _lspci_ver
+  failed_when: _lspci_ver.rc != 0
+  when: not _gpu_is_container | default(false)
+  changed_when: false
+  tags: [hardware, gpu, verification]
 
 - name: Run Advanced GPU Discovery Script
   tags: [hardware, gpu, audit]

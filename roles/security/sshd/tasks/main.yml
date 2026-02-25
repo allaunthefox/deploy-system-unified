@@ -1,6 +1,19 @@
 ---
 # SSHD configuration role - Enhanced SSH daemon configuration
 
+- name: VALIDATE | SSHD configuration path
+  ansible.builtin.assert:
+    that:
+      - security_sshd_config_path is defined
+      - security_sshd_config_path | length > 0
+      - security_sshd_config_path.startswith('/')
+      - '".." not in security_sshd_config_path'
+    fail_msg: "Invalid security_sshd_config_path: {{ security_sshd_config_path }}. Path must be absolute and cannot contain '..'."
+  tags:
+    - security
+    - sshd
+    - validation
+
 - name: Check if security_sshd_config backup exists
   ansible.builtin.stat:
     path: "{{ security_sshd_config_path }}.backup"
@@ -20,7 +33,7 @@
     force: false
   become: true
   when:
-    - security_sshd_backup_config.stat.exists is not defined or not security_sshd_config_backup.stat.exists
+    - security_sshd_config_backup.stat is not defined or not security_sshd_config_backup.stat.exists
     - security_sshd_backup_config | default(true)
   tags:
     - security
@@ -40,7 +53,6 @@
   register: security_sshd_version_raw
   changed_when: false
   become: true
-  ignore_errors: true
   tags:
     - security
     - sshd
@@ -49,6 +61,25 @@
 - name: Set OpenSSH version fact
   ansible.builtin.set_fact:
     security_sshd_version: "{{ security_sshd_version_raw.stdout | default('0.0') }}"
+  tags:
+    - security
+    - sshd
+    - internal
+
+- name: Define supported PQC KEX algorithms
+  ansible.builtin.set_fact:
+    security_sshd_kex_algorithms_pqc: >-
+      {% set kex = [] %}
+      {% if security_sshd_pqc_enabled | bool %}
+      {%   if security_sshd_version is version('9.9', '>=') %}
+      {%     set _ = kex.append('mlkem768x25519-sha256') %}
+      {%   endif %}
+      {%   if security_sshd_version is version('9.8', '>=') %}
+      {%     set _ = kex.append('sntrup761x25519-sha512@openssh.com') %}
+      {%   endif %}
+      {% endif %}
+      {{ kex }}
+  changed_when: false
   tags:
     - security
     - sshd
@@ -105,6 +136,7 @@
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
   tags:
+    - cis_level_2
     - cis_5_2_11
     - cis_5_2_12
     - cis_5_2_13
@@ -122,6 +154,17 @@
     - ssh
     - high_severity
   notify: 'restart_sshd'
+
+- name: VERIFY | SSH Security Algorithms (Zero-Tolerance)
+  ansible.builtin.shell: |
+    sshd -T | grep -Ei "ciphers|macs|kexalgorithms"
+  register: _sshd_algos
+  failed_when: 
+    - "'chacha20-poly1305@openssh.com' not in _sshd_algos.stdout"
+    - "'hmac-sha2-512-etm@openssh.com' not in _sshd_algos.stdout"
+  become: true
+  changed_when: false
+  tags: [security, sshd, verification]
 
 - name: "CIS 5.2.14 | STIG V-230238 | NIST SC-12 | NIST SC-23 | Disable weak SSH host keys"
   ansible.builtin.file:
@@ -142,6 +185,18 @@
     - security
     - sshd
     - remediate
+
+- name: VERIFY | Weak SSH host keys are absent (Zero-Tolerance)
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: _weak_keys
+  loop:
+    - /etc/ssh/ssh_host_dsa_key
+    - /etc/ssh/ssh_host_ecdsa_key
+  failed_when: _weak_keys.stat.exists
+  when: security_sshd_disable_weak_keys | default(false)
+  become: true
+  tags: [security, sshd, verification]
 
 - name: Generate strong Ed25519 host key if missing
   ansible.builtin.command:
@@ -216,19 +271,19 @@
     path: "{{ security_sshd_config_path }}"
     marker: "# {mark} ANSIBLE MANAGED - ENHANCED SECURITY SETTINGS"
     block: |
-      # Enhanced security settings
+      # Enhanced security settings (CIS Level 2 / NIST High)
       LogLevel VERBOSE
       X11Forwarding {{ 'yes' if security_sshd_allow_x11_forwarding | bool else 'no' }}
       AllowTcpForwarding {{ 'yes' if security_sshd_allow_tcp_forwarding | bool else 'no' }}
       AllowAgentForwarding {{ 'yes' if security_sshd_allow_agent_forwarding | bool else 'no' }}
       AllowStreamLocalForwarding no
       PermitTunnel no
-      Compression delayed
+      Compression no
       ClientAliveInterval 300
-      ClientAliveCountMax 2
+      ClientAliveCountMax 0
       LoginGraceTime 60
-      MaxAuthTries 3
-      MaxSessions 10
+      MaxAuthTries 2
+      MaxSessions 2
       PermitEmptyPasswords no
       PermitRootLogin {{ security_sshd_permit_root_login }}
       PubkeyAuthentication yes
@@ -239,6 +294,7 @@
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
   tags:
+    - cis_level_2
     - cis_5_2_5
     - cis_5_2_6
     - cis_5_2_7
@@ -269,6 +325,18 @@
     - ssh
     - high_severity
   notify: 'restart_sshd'
+
+- name: VERIFY | SSH Security Settings (Zero-Tolerance)
+  ansible.builtin.shell: |
+    sshd -T | grep -Ei "maxauthtries|clientalivecountmax|permitemptypasswords|maxsessions|compression"
+  register: _sshd_settings
+  failed_when: 
+    - "'maxauthtries 2' not in _sshd_settings.stdout"
+    - "'clientalivecountmax 0' not in _sshd_settings.stdout"
+    - "'permitemptypasswords no' not in _sshd_settings.stdout"
+  become: true
+  changed_when: false
+  tags: [security, sshd, verification]
 
 - name: "CIS 5.2.22 | STIG V-230243 | Verify security_sshd_config has single-instance directives"
   ansible.builtin.shell: |

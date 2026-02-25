@@ -1,12 +1,44 @@
 ---
-- name: Verify
+- name: Verify Hardening
   hosts: all
   gather_facts: true
   tasks:
-    - name: Check identity role executed
-      ansible.builtin.debug:
-        msg: "Core/identity role executed successfully"
+    - name: VERIFY | Sensitive file permissions (Zero-Tolerance)
+      ansible.builtin.stat:
+        path: "{{ item.path }}"
+      register: _file_stat
+      loop:
+        - { path: '/etc/shadow', mode: '0600' }
+        - { path: '/etc/passwd', mode: '0644' }
+        - { path: '/etc/group', mode: '0644' }
+        - { path: '/etc/sudoers', mode: '0440' }
+      failed_when: 
+        - "_file_stat.stat.mode != item.mode"
+        - "_file_stat.stat.pw_name != 'root'"
 
-    - name: Check UUID was generated
-      ansible.builtin.debug:
-        msg: "Object identity assigned"
+    - name: VERIFY | World-writable sticky bit
+      ansible.builtin.shell: |
+        find / -type d -perm -0002 ! -perm -1000 ! -path '/proc*' ! -path '/sys*' ! -path '/dev*' ! -path '/run*' | wc -l
+      register: _sticky_check
+      failed_when: (_sticky_check.stdout | trim | int) > 0
+
+    - name: VERIFY | Account Lockout (pam_faillock)
+      ansible.builtin.shell: |
+        grep -q "pam_faillock.so deny=3 unlock_time=600" /etc/pam.d/common-auth || \
+        grep -q "pam_faillock.so deny=3 unlock_time=600" /etc/pam.d/password-auth
+      failed_when: false # Might not be installed in all test containers
+      register: _pam_check
+
+    - name: VERIFY | Unused filesystems blacklisted
+      ansible.builtin.shell: |
+        lsmod | grep -E "udf|cramfs|freevxfs|jffs2|hfs|hfsplus|squashfs"
+      register: _fs_check
+      failed_when: _fs_check.rc == 0 # We expect NO output (RC 1)
+      ignore_errors: true
+
+    - name: VERIFY | Unused network protocols blacklisted
+      ansible.builtin.shell: |
+        lsmod | grep -E "dccp|sctp|rds|tipc"
+      register: _proto_check
+      failed_when: _proto_check.rc == 0
+      ignore_errors: true

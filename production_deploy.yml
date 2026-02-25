@@ -20,12 +20,15 @@
       # Monitoring
       - ops/monitoring          # Host Agent (Node Exporter)
       - containers/monitoring   # Stack (Forensic Dashboards)
+      - security/automated_threat_analysis # AI SOC Analyst (Requires Loki)
       # Backup & Disaster Recovery
       - storage/backup/restic
       - storage/backup/rclone
       # Final Solution Integrity Verification
       - security/scanning
       - security/sbom           # Supply Chain Integrity
+      - security/openscap       # Standardized Compliance Audit (SCAP)
+      - ops/forensics           # Deployment Provenance (Signed Metadata)
 
   tasks:
     - name: Execute Production Roles with Granular Checkpoints

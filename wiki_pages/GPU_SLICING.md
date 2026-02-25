@@ -61,7 +61,7 @@ The implementation supports the following GPU vendors and frameworks:
 - **OneAPI**: Intel's oneAPI toolkit
 - **Passthrough**: Direct GPU access
     - Supported Intel families include Arc A-series (Alchemist, Battlemage), Arc Pro, Data Center GPU Flex/Max, and Xe iGPUs.
-    - See [Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE) for specific setup details.
+    - See [Intel GPU Guide](INTEL_GPU_GUIDE) for specific setup details.
 
 ## Usage
 

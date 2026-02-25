@@ -1,0 +1,78 @@
+---
+# Tasks for security/ima_enforcement - Runtime Binary Integrity
+# NIST SI-7 | ISO 27001 §8.15 | Action 450001
+
+- name: "INTEGRITY | Detect Virtualization Environment"
+  ansible.builtin.set_fact:
+    _ima_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+  tags: [security, ima, internal]
+
+- name: "INTEGRITY | Register IMA Kernel Parameters for GRUB"
+  ansible.builtin.set_fact:
+    core_grub_security_params: >-
+      {{
+        core_grub_security_params | default([]) +
+        [
+          'ima_policy=' ~ ima_policy,
+          'ima_appraise=' ~ ima_appraise_mode,
+          'ima_template=' ~ ima_template
+        ]
+      }}
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima, kernel]
+
+- name: "INTEGRITY | Install IMA/EVM utilities"
+  ansible.builtin.package:
+    name: ima-evm-utils
+    state: present
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima, packages]
+
+- name: "INTEGRITY | Ensure IMA policy directory exists"
+  ansible.builtin.file:
+    path: /etc/ima
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima]
+
+- name: "INTEGRITY | Deploy IMA appraisal policy"
+  ansible.builtin.copy:
+    dest: /etc/ima/ima-policy
+    content: |
+      # IMA Appraisal Policy - Strict Enforcement
+      # Appraise all executables
+      appraise func=BPRM_CHECK appraise_type=imasig
+      # Appraise all mmap'd files
+      appraise func=MMAP_CHECK appraise_type=imasig
+    mode: '0644'
+    owner: root
+    group: root
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima, policy]
+
+- name: VERIFY | IMA is active in kernel (Zero-Tolerance)
+  ansible.builtin.shell: |
+    grep -q "ima" /proc/cmdline
+  register: _ima_cmdline
+  failed_when: _ima_cmdline.rc != 0
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+    - not ansible_check_mode
+  changed_when: false
+  tags: [security, ima, verification]

@@ -1,0 +1,60 @@
+---
+# Tasks for security/openscap - Standardized Compliance Auditing
+# NIST AU-2 | ISO 27001 §12.4 | Action 520010
+
+- name: "AUDIT | Install OpenSCAP scanner and security guides"
+  ansible.builtin.package:
+    name:
+      - openscap-scanner
+      - scap-security-guide
+    state: present
+  become: true
+  when: openscap_enabled | bool
+  tags: [security, audit, openscap]
+
+- name: "AUDIT | Ensure report directory exists"
+  ansible.builtin.file:
+    path: "{{ openscap_report_dir }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  when: openscap_enabled | bool
+  tags: [security, audit, openscap]
+
+- name: "AUDIT | Execute formal OpenSCAP compliance scan"
+  ansible.builtin.shell: |
+    oscap xccdf eval 
+      --profile {{ openscap_profile }} 
+      --report {{ openscap_report_dir }}/{{ openscap_report_file }} 
+      {{ openscap_ssg_datastream }}
+  register: _openscap_scan
+  become: true
+  failed_when: 
+    - _openscap_scan.rc != 0
+    - _openscap_scan.rc != 2 # 2 means "compliance failed", which we handle in verification
+  when: 
+    - openscap_enabled | bool
+    - openscap_ssg_datastream | length > 0
+  changed_when: false
+  tags: [security, audit, openscap]
+
+- name: VERIFY | OpenSCAP compliance status (Strict Enforcement)
+  ansible.builtin.assert:
+    that: 
+      - _openscap_scan.rc == 0
+    fail_msg: |-
+      CRITICAL: OpenSCAP Compliance Audit FAILED for profile {{ openscap_profile }}.
+      Report generated at: {{ openscap_report_dir }}/{{ openscap_report_file }}
+      Deployment halted for remediation.
+  when: 
+    - openscap_enabled | bool
+    - openscap_enforce_compliance | bool
+    - openscap_ssg_datastream | length > 0
+  tags: [security, audit, verification, openscap]
+
+- name: Set OpenSCAP audit complete flag
+  ansible.builtin.set_fact:
+    security_openscap_complete: true
+  tags: [security, audit, openscap]

@@ -37,7 +37,7 @@
   register: _dsu_checkpoint_file
   when: lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''  # skip checkpoint write during molecule tests
 
-- name: Encrypt Checkpoint (Optional - Secure Mode)
+- name: Encrypt Checkpoint (Mandatory - Secure Mode)
   ansible.builtin.command:
     argv:
       - ansible-vault
@@ -47,8 +47,19 @@
       - /var/lib/deploy-system/checkpoints/session.json
   become: true
   when: 
-    - dsu_encrypt_checkpoints | default(false) | bool
+    - (dsu_encrypt_checkpoints | default(false) | bool) or (deployment_profile in ['hardened', 'production'])
     - not _gpu_is_container | default(false)
+    - lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''
   changed_when: false
   no_log: true
+
+- name: VERIFY | Checkpoint is encrypted
+  ansible.builtin.shell: grep -q "\$ANSIBLE_VAULT;" /var/lib/deploy-system/checkpoints/session.json
+  become: true
+  when: 
+    - (dsu_encrypt_checkpoints | default(false) | bool) or (deployment_profile in ['hardened', 'production'])
+    - not _gpu_is_container | default(false)
+    - lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''
+  changed_when: false
+  tags: [checkpoint, verification]
 

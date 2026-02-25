@@ -34,7 +34,7 @@ ansible:
     defaults:
       deprecation_warnings: false
       interpreter_python: auto_silent
-      host_key_checking: false
+      host_key_checking: true
       # Network modules need longer timeout
       timeout: 60
 

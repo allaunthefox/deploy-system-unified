@@ -4,3 +4,4 @@ deployment_profile: "hardened"
 core_security_fail_secure: true
 firewall_enabled: true
 ssh_randomize_port: true
+tpm_guard_enabled: true

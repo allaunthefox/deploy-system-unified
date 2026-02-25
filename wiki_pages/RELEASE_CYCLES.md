@@ -43,27 +43,30 @@ We follow Semantic Versioning (SemVer):
 
 ## Roadmap
 
-### 2026 Q1 (v1.2.0) - Current
-- [x] GPU orchestration enhancements
+### 2026 Q1 (v1.2.0) - COMPLETE ✅
+- [x] GPU orchestration enhancements (MIG/SR-IOV)
 - [x] Multi-node K3s support
 - [x] GRUB validation improvements
-- [ ] Performance metrics collection
-- [ ] Enhanced monitoring dashboards
+- [x] Forensic Action Code expansion (480+ entries)
 
-### 2026 Q2 (v1.3.0)
-- [ ] Container security hardening
-- [ ] SOPS secrets integration
-- [ ] Enhanced CI/CD pipelines
+### 2026 Q2 (v1.3.0) - CURRENT 🚀
+- [x] **Hardware Root of Trust**: TPM 2.0 Integrity Monitoring
+- [x] **Volatile Secret Infrastructure**: RAM-disk backed SOPS integration
+- [x] **IPC Isolation**: Unix Socket migration for Arr stack
+- [x] **Mandatory Verification**: Removal of all permissive failure flags
+- [ ] Automated performance metrics collection
+- [ ] Enhanced Monitoring Dashboards
 
-### 2026 Q3 (v1.4.0)
-- [ ] Multi-architecture support (ARM64, RISC-V)
-- [ ] Advanced GPU slicing
-- [ ] RDMA support
+### 2026 Q3 (v1.4.0) - High-Resilience Standard
+- [ ] **Runtime Monitoring**: eBPF-based syscall tracing and enforcement
+- [ ] **Automated Threat Analysis**: Local LLM SOC integration
+- [ ] **Deployment Provenance**: Signed metadata records
+- [ ] Multi-architecture security parity (ARM64, RISC-V)
 
-### 2026 Q4 (v2.0.0)
-- [ ] Major architecture update
-- [ ] New deployment patterns
-- [ ] Community features
+### 2026 Q4 (v2.0.0) - Enterprise Maturity
+- [ ] Third-party security audit certification
+- [ ] Automated chaos-security remediation
+- [ ] Enterprise-grade profile templates
 
 ## Contributing to Roadmap
 

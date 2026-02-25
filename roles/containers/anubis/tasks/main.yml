@@ -15,6 +15,9 @@
   become: true
   tags:
     - iso_27001_8_26
+    - iso_27001_ai
+    - ai_security
+    - ai_firewall
     - containers
     - anubis
     - remediate
@@ -78,6 +81,9 @@
   become: true
   tags:
     - iso_27001_8_26
+    - iso_27001_ai
+    - ai_security
+    - ai_firewall
     - containers
     - anubis
     - remediate
@@ -97,7 +103,22 @@
   become_user: "{{ containers_systemd_owner }}"
   tags:
     - iso_27001_8_26
+    - iso_27001_ai
+    - ai_security
+    - ai_firewall
     - containers
     - anubis
   when: anubis_enabled | bool and ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
+
+- name: VERIFY | Anubis functional health probe (Zero-Tolerance)
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:31338/health"
+    return_content: yes
+  register: _anubis_health
+  until: _anubis_health.status == 200
+  retries: 10
+  delay: 5
+  when: anubis_enabled | bool
+  become: true
+  tags: [containers, anubis, verification]
   failed_when: false  # Ignore failures if systemd isn't available

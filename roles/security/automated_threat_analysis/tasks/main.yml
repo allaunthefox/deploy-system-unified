@@ -1,0 +1,85 @@
+---
+# Tasks for security/automated_threat_analysis - AI SOC Analyst
+# ISO 27001 Amd 1 | Action 480010
+
+- name: "AI | Install Ollama backend"
+  ansible.builtin.shell: |
+    curl -fsSL https://ollama.com/install.sh | sh
+  become: true
+  when: 
+    - threat_analysis_enabled | bool
+    - threat_analysis_backend == "ollama"
+  tags: [security, ai, threat_analysis]
+
+- name: "AI | Pull local Small Language Model"
+  ansible.builtin.command:
+    cmd: "ollama pull {{ threat_analysis_model }}"
+  become: true
+  when: 
+    - threat_analysis_enabled | bool
+    - threat_analysis_backend == "ollama"
+  async: 600
+  poll: 15
+  tags: [security, ai, threat_analysis]
+
+- name: "AI | Deploy Threat Analysis Script"
+  ansible.builtin.template:
+    src: threat_analyze.py.j2
+    dest: /usr/local/bin/dsu-threat-analyze
+    mode: '0700'
+    owner: root
+    group: root
+  become: true
+  when: threat_analysis_enabled | bool
+  tags: [security, ai, threat_analysis]
+
+- name: "AI | Create Threat Analysis Service"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dsu-threat-analysis.service
+    content: |
+      [Unit]
+      Description=DSU Automated Threat Analysis SOC
+      After=ollama.service
+      
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/python3 /usr/local/bin/dsu-threat-analyze
+  become: true
+  when: threat_analysis_enabled | bool
+  tags: [security, ai, threat_analysis]
+
+- name: "AI | Create Threat Analysis Timer"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dsu-threat-analysis.timer
+    content: |
+      [Unit]
+      Description=Run DSU Automated Threat Analysis periodically
+      
+      [Timer]
+      OnBootSec=5min
+      OnUnitActiveSec={{ threat_analysis_check_interval }}
+      
+      [Install]
+      WantedBy=timers.target
+  become: true
+  when: threat_analysis_enabled | bool
+  tags: [security, ai, threat_analysis]
+
+- name: "AI | Enable Automated Threat Analysis"
+  ansible.builtin.systemd:
+    name: dsu-threat-analysis.timer
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  when: threat_analysis_enabled | bool
+  tags: [security, ai, threat_analysis]
+
+- name: VERIFY | Threat Analysis Active
+  ansible.builtin.shell: systemctl is-active dsu-threat-analysis.timer
+  register: _threat_status
+  failed_when: _threat_status.rc != 0
+  become: true
+  when: threat_analysis_enabled | bool
+  changed_when: false
+  tags: [security, ai, verification]

@@ -4,8 +4,7 @@
 - name: Check if security tools are installed
   ansible.builtin.shell: "command -v {{ item }}"
   register: security_framework_tool_check
-  loop: ["trivy", "bwrap", "firejail", "endlessh", "chronyd"]
-  failed_when: false
+  loop: ["trivy", "bwrap", "firejail", "endlessh", "chronyd", "checkov", "trufflehog", "chkrootkit", "rkhunter", "aide", "lynis"]
   changed_when: false
   tags: [security, scanning]
 
@@ -28,11 +27,11 @@
       echo "FOUND:{{ item }}"
     else
       echo "MISSING:{{ item }}"
+      exit 1
     fi
   register: security_framework_tool_verification
-  loop: ["trivy", "bwrap", "firejail", "endlessh"]
+  loop: ["trivy", "bwrap", "firejail", "endlessh", "checkov", "trufflehog", "chkrootkit", "rkhunter", "aide", "lynis"]
   changed_when: false
-  failed_when: false
   tags: [security, scanning]
 
 - name: Enforce security tool presence (idempotent)
