@@ -8,7 +8,7 @@ Our detailed planning and execution documents are maintained in the `docs/planni
 
 This roadmap provides a high-level view of project direction. For detailed execution plans, see the linked documents.
 
-> **Current Status:** [Base Layer Implementation Status (100% Complete)](../development/BASE_LAYER_IMPLEMENTATION_STATUS.md)
+> **Current Status:** [Base Layer Implementation Status (100% Complete)](https://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS)
 
 ### Planning Horizons
 
@@ -163,7 +163,7 @@ This roadmap provides a high-level view of project direction. For detailed execu
 |----------|---------|
 | [Stability Execution Plan](STABILITY_EXECUTION_PLAN_2026.md) | Completed execution board |
 | [Security Enhancement Plan](SECURITY_ENHANCEMENT_PLAN_2026.md) | Completed security roadmap |
-| [Base Layer Implementation Status](docs/development/BASE_LAYER_IMPLEMENTATION_STATUS.md) | Implementation details |
+| [Base Layer Implementation Status](https://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS) | Implementation details |
 | [Role Enhancement Execution Plan](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md) | Completed role enhancements |
 
 ---

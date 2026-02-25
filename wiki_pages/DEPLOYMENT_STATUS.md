@@ -38,6 +38,15 @@ The system is now fully aligned with:
 ### Core Infrastructure (12/12 Complete) ✅
 - `core/bootstrap`, `core/entropy`, `core/grub`, `core/hardware_support`, `core/identity`, `core/logging`, `core/memory`, `core/repositories`, `core/secrets`, `core/systemd`, `core/time`, `core/updates`.
 
+#### Key Core Features
+- **Bootstrap**: Multi-distro package management (Ubuntu, Arch, Alpine, RHEL).
+- **Time/Entropy**: Idempotent synchronization via Chrony and hardware-backed entropy.
+- **Security Baseline**: auditd, system account locking, and PAM hardening.
+- **Networking**: Unified firewall abstraction (UFW, Firewalld, nftables) with default-deny.
+
+#### Idempotency Verification
+- **Core Roles**: 100% pass rate. All 12 core roles pass idempotence benchmarks with 0 changes on second run.
+
 ### Security Hardening (18/18 Complete) ✅
 - **Perimeter**: `networking/firewall` (Default-deny)
 - **Access**: `security/access` (SSH Match blocks), `security/sshd` (Strong ciphers)
