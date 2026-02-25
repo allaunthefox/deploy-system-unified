@@ -5,7 +5,6 @@
 # by the following command:
 #
 #    pip-compile --generate-hashes requirements-dev.in
-#    pip-compile --generate-hashes --output-file=/home/prod/Workspaces/repos/github/requirements-dev.txt /home/prod/Workspaces/repos/github/requirements-dev.in
 #
 ansible-compat==24.10.0 \
     --hash=sha256:0415bcd82f7d84e5b344c03439154c1f16576809dc3a523b81178354c86ae5a1 \
