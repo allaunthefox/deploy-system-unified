@@ -163,7 +163,7 @@ This roadmap provides a high-level view of project direction. For detailed execu
 |----------|---------|
 | [Stability Execution Plan](STABILITY_EXECUTION_PLAN_2026.md) | Completed execution board |
 | [Security Enhancement Plan](SECURITY_ENHANCEMENT_PLAN_2026.md) | Completed security roadmap |
-| [Base Layer Implementation Status](dohttps://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS) | Implementation details |
+| [Base Layer Implementation Status](https://github.com/allaunthefox/deploy-system-unified/wiki/DEPLOYMENT_STATUS) | Implementation details |
 | [Role Enhancement Execution Plan](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md) | Completed role enhancements |
 
 ---
