@@ -66,25 +66,6 @@
     - sshd
     - internal
 
-- name: Define supported PQC KEX algorithms
-  ansible.builtin.set_fact:
-    security_sshd_kex_algorithms_pqc: >-
-      {% set kex = [] %}
-      {% if security_sshd_pqc_enabled | bool %}
-      {%   if security_sshd_version is version('9.9', '>=') %}
-      {%     set _ = kex.append('mlkem768x25519-sha256') %}
-      {%   endif %}
-      {%   if security_sshd_version is version('9.8', '>=') %}
-      {%     set _ = kex.append('sntrup761x25519-sha512@openssh.com') %}
-      {%   endif %}
-      {% endif %}
-      {{ kex }}
-  changed_when: false
-  tags:
-    - security
-    - sshd
-    - internal
-
 - name: Define final KEX algorithms list
   ansible.builtin.set_fact:
     security_sshd_kex_algorithms_final: "{{ (security_sshd_kex_algorithms_pqc + ['curve25519-sha256', 'curve25519-sha256@libssh.org', 'diffie-hellman-group16-sha512']) | join(',') }}"

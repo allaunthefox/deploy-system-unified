@@ -7,28 +7,28 @@ Deploys the Anubis Web AI Firewall to protect ingress traffic.
 
 ## Variables
 
-### `anubis_enabled`
+<a id="anubis-enabled"></a>### `anubis_enabled`
 - `anubis_enabled`
 
-### `anubis_port`
+<a id="anubis-port"></a>### `anubis_port`
 - `anubis_port`
 
-### `anubis_difficulty`
+<a id="anubis-difficulty"></a>### `anubis_difficulty`
 - `anubis_difficulty`
 
-### `anubis_target_url`
+<a id="anubis-target-url"></a>### `anubis_target_url`
 - `anubis_target_url` — The application to protect
 
-### `anubis_image`
+<a id="anubis-image"></a>### `anubis_image`
 - `anubis_image`
 
-### `anubis_container_name`
+<a id="anubis-container-name"></a>### `anubis_container_name`
 - `anubis_container_name`
 
-### `quadlet_enable_gpu_support`
+<a id="quadlet-enable-gpu-support"></a>### `quadlet_enable_gpu_support`
 - `quadlet_enable_gpu_support`
 
-### `quadlet_gpu_capabilities`
+<a id="quadlet-gpu-capabilities"></a>### `quadlet_gpu_capabilities`
 - `quadlet_gpu_capabilities` — Linux capabilities only (CAP_*). Leave empty unless required.
 
 

@@ -44,6 +44,7 @@ Formal standards and hardening specifications.
 Optimizing for specific architectures and GPUs.
 
 *   **[GPU Stack Setup](GPU_STACK_SETUP)**: Unified driver installation and compute readiness.
+*   **[Intel GPU Guide](INTEL_GPU_GUIDE)**: Detailed Intel-specific configuration and Battlemage setup.
 *   **[GPU Slicing Architecture](GPU_SLICING)**: Implementation of MIG, SR-IOV, and Time-Slicing.
 *   **[Hardware Compatibility Matrix](HARDWARE_COMPATIBILITY_MATRIX)**: Validated CPU/GPU combinations.
 *   **[Vendor Profiles](Arch_Vendor_Profiles)**: Explicit hardware selection parameters.
@@ -58,6 +59,7 @@ Tools and standards for contributing to DSU.
 *   **[Pre-commit Hooks](PRE_COMMIT)**: Local linting and secret detection setup.
 *   **[Testing Framework](Testing_Negative_IMPLEMENTATION)**: Comprehensive guide to [Negative Testing](Testing_Negative_IMPLEMENTATION) and [Idempotency Verification](Quality_Idempotency_BLOCKERS).
 *   **[LLM Context Map](LLM_MAP)**: Technical grounding for AI-assisted engineering.
+*   **[Wiki Improvement Plan](../docs/planning/WIKI_IMPROVEMENT_PLAN.md)**: Plan to address wiki content deficits.
 
 ---
 
@@ -82,3 +84,10 @@ Future directions and historical implementation phases.
     *   [Community Enhancement](Plan_COMMUNITY_ENHANCEMENT_PLAN)
     *   [Compliance Framework Integration](Plan_COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)
     *   [Architecture Migration Guide](Arch_Migration_Guide)
+    *   [Determinism Roadmap](Plan_DETERMINISM_ROADMAP)
+
+---
+
+### 📚 Documentation Integration
+
+For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](../docs/DOCUMENTATION_BRIDGE.md)**.

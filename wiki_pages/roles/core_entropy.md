@@ -7,7 +7,7 @@ Ensures high-quality random number generation by installing and configuring entr
 
 ## Variables
 
-### `entropy_service_mapping`
+<a id="entropy-service-mapping"></a>### `entropy_service_mapping`
 - `entropy_service_mapping`
 
 

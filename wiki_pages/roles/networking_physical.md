@@ -7,46 +7,46 @@ This role manages physical network interface optimizations, specifically identif
 
 ## Variables
 
-### `interface_capabilities`
+<a id="interface-capabilities"></a>### `interface_capabilities`
 - `interface_capabilities`
 
-### `networking_physical_install_tools`
+<a id="networking-physical-install-tools"></a>### `networking_physical_install_tools`
 - `networking_physical_install_tools`
 
-### `networking_physical_manage_mtu`
+<a id="networking-physical-manage-mtu"></a>### `networking_physical_manage_mtu`
 - `networking_physical_manage_mtu`
 
-### `networking_physical_jumbo_frames_enabled`
+<a id="networking-physical-jumbo-frames-enabled"></a>### `networking_physical_jumbo_frames_enabled`
 - `networking_physical_jumbo_frames_enabled`
 
-### `networking_physical_jumbo_mtu`
+<a id="networking-physical-jumbo-mtu"></a>### `networking_physical_jumbo_mtu`
 - `networking_physical_jumbo_mtu`
 
-### `networking_physical_ring_tuning_enabled`
+<a id="networking-physical-ring-tuning-enabled"></a>### `networking_physical_ring_tuning_enabled`
 - `networking_physical_ring_tuning_enabled`
 
-### `networking_physical_rx_ring_size`
+<a id="networking-physical-rx-ring-size"></a>### `networking_physical_rx_ring_size`
 - `networking_physical_rx_ring_size`
 
-### `networking_physical_tx_ring_size`
+<a id="networking-physical-tx-ring-size"></a>### `networking_physical_tx_ring_size`
 - `networking_physical_tx_ring_size`
 
-### `networking_physical_offload_tuning_enabled`
+<a id="networking-physical-offload-tuning-enabled"></a>### `networking_physical_offload_tuning_enabled`
 - `networking_physical_offload_tuning_enabled`
 
-### `networking_physical_enable_tso`
+<a id="networking-physical-enable-tso"></a>### `networking_physical_enable_tso`
 - `networking_physical_enable_tso` — TCP Segmentation Offload
 
-### `networking_physical_enable_gso`
+<a id="networking-physical-enable-gso"></a>### `networking_physical_enable_gso`
 - `networking_physical_enable_gso` — Generic Segmentation Offload
 
-### `networking_physical_enable_lro`
+<a id="networking-physical-enable-lro"></a>### `networking_physical_enable_lro`
 - `networking_physical_enable_lro` — Large Receive Offload (often problematic with forwarding)
 
-### `networking_physical_profiles`
+<a id="networking-physical-profiles"></a>### `networking_physical_profiles`
 - `networking_physical_profiles`
 
-### `networking_physical_default_profile`
+<a id="networking-physical-default-profile"></a>### `networking_physical_default_profile`
 - `networking_physical_default_profile`
 
 

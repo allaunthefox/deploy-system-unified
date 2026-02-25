@@ -9,10 +9,10 @@ Ensures deployments run within persistent sessions (Tmux) to prevent interruptio
 
 ## Variables
 
-### `tmux_session_for_deployment`
+<a id="tmux-session-for-deployment"></a>### `tmux_session_for_deployment`
 - `tmux_session_for_deployment`
 
-### `tmux_session_name`
+<a id="tmux-session-name"></a>### `tmux_session_name`
 - `tmux_session_name`
 
 
