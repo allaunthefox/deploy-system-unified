@@ -98,8 +98,14 @@ jobs:
       - name: Install dependencies (ansible, molecule + podman plugin)
         run: |
           python -m pip install --upgrade pip
+<<<<<<< HEAD
             # require hashes to enforce supply-chain verification (locked by pip-compile)
             pip install --require-hashes -r requirements-dev.txt
+=======
+          # require hashes to enforce supply-chain verification (locked by pip-compile)
+          pip install --require-hashes -r requirements-dev.txt
+
+>>>>>>> fix/ultimate-ci-fix
       - name: Cache Ansible Galaxy collections
         uses: actions/cache@v4
         with:
@@ -148,6 +154,9 @@ jobs:
         run: |
           echo "Validating .github/workflows/negative-tests.yml"
           python -c "import yaml; yaml.safe_load(open('.github/workflows/negative-tests.yml')); print('✅ Workflow syntax is valid')"
+<<<<<<< HEAD
 # force trigger 3
 # force trigger 4
 # force trigger 5
+=======
+>>>>>>> fix/ultimate-ci-fix
