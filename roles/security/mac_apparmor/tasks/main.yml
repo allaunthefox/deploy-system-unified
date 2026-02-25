@@ -50,9 +50,23 @@
     - security
     - apparmor
 
-  when:
-    - ansible_os_family in ['Debian', 'Alpine']
-    - not (is_virtualized | default(false))
+- name: "CIS 1.6.3 | Action 440003 | Ensure AppArmor configuration directories exist"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - /etc/apparmor.d
+    - /etc/apparmor.d/disable
+    - /etc/apparmor.d/force-complain
+    - /etc/apparmor.d/local
+    - /etc/apparmor.d/abstractions
+  become: true
+  tags:
+    - security
+    - apparmor
 
 - name: VERIFY | AppArmor is active and enforced (Zero-Tolerance)
   ansible.builtin.shell: |

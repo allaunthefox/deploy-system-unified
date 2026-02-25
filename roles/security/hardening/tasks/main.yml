@@ -175,7 +175,13 @@
       loop:
         - { regex: 'PASS_MIN_DAYS', line: 'PASS_MIN_DAYS   7' }
         - { regex: 'PASS_MAX_DAYS', line: 'PASS_MAX_DAYS   90' }
-        - { regex: 'PASS_WARN_AGE', line: 'PASS_WARN_AGE   14' }
+        - { regex: 'PASS_WARN_AGE', line: 'PASS_WARN_AGE   7' }
+    - name: Set inactive password lock (CIS 5.3.4)
+      ansible.builtin.lineinfile:
+        path: /etc/default/useradd
+        regexp: '^INACTIVE='
+        line: 'INACTIVE=30'
+      become: true
   tags:
     - cis_1_1_8
     - cis_level_2
@@ -462,6 +468,85 @@
     - cis_8_1_2
     - nist_ac_18
     - nist_sc_18
+    - security
+    - hardening
+
+- name: "CIS Level 2 | Action 600117 | Apply sysctl hardening parameters"
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value | string }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-hardened.conf
+    reload: true
+  loop: "{{ hardening_sysctl_params | dict2items }}"
+  become: true
+  tags:
+    - cis_level_2
+    - security
+    - hardening
+
+- name: "CIS 1.7.1 | CIS 1.7.2 | Action 600114 | Configure login banners"
+  ansible.builtin.copy:
+    dest: "{{ item }}"
+    content: |
+      ******************************************************************************
+      *                                                                            *
+      *                       Authorized Use Only                                  *
+      *                                                                            *
+      *  This system is for the use of authorized users only. Individuals using    *
+      *  this computer system without authority, or in excess of their             *
+      *  authority, are subject to having all of their activities on this system   *
+      *  monitored and recorded by system personnel.                               *
+      *                                                                            *
+      ******************************************************************************
+    mode: '0644'
+    owner: root
+    group: root
+  loop:
+    - /etc/issue
+    - /etc/issue.net
+  become: true
+  tags:
+    - cis_1_7_1
+    - cis_1_7_2
+    - security
+    - hardening
+
+- name: "CIS 5.1.8 | CIS 5.1.9 | Action 600115 | Configure cron and at allow files"
+  block:
+    - name: Ensure cron.allow and at.allow exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: touch
+        mode: '0640'
+        owner: root
+        group: root
+      loop:
+        - /etc/cron.allow
+        - /etc/at.allow
+      become: true
+
+    - name: Ensure cron.deny and at.deny are absent
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/cron.deny
+        - /etc/at.deny
+      become: true
+  tags:
+    - cis_5_1_8
+    - cis_5_1_9
+    - security
+    - hardening
+
+- name: "CIS 5.5 | Action 600116 | Ensure root account is locked"
+  ansible.builtin.user:
+    name: root
+    password_lock: true
+  become: true
+  tags:
+    - cis_5_5
     - security
     - hardening
 

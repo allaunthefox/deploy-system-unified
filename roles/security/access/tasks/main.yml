@@ -15,6 +15,22 @@
     - security
     - access
 
+- name: "CIS 1.1.5 | STIG V-230229 | ISO 27001 §9.2 | NIST IA-2 | NIST AC-2 | Action 510001 | Install PAM password quality modules"
+  ansible.builtin.package:
+    name:
+      - libpam-pwquality
+      - libpam-cracklib
+    state: present
+  become: true
+  when: ansible_os_family in ['Debian', 'RedHat'] # Assuming these packages are common for password quality
+  tags:
+    - cis_1_1_5
+    - stig_v_230229
+    - nist_ia_2
+    - nist_ac_2
+    - security
+    - access
+
 - name: Determine SSH service name
   ansible.builtin.set_fact:
     ssh_service_name: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"

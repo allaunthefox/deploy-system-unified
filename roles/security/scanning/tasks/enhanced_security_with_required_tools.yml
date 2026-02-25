@@ -1,6 +1,50 @@
 ---
 # Enhanced security with required tools and proper validation for Deploy-System-Unified
 
+- name: "ISO 27001 §12.2 | Action 530002 | Install Trivy (vulnerability scanner)"
+  ansible.builtin.shell: |
+    if ! command -v trivy >/dev/null 2>&1; then
+      set -eux
+      TRIVY_VERSION="0.51.1" # Use a specific version for reproducibility
+      curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${TRIVY_VERSION}
+    fi
+  args:
+    executable: /bin/bash
+  changed_when: false
+  become: true
+  when: security_scanning_install_tools | bool
+  tags: [security, scanning, install]
+
+- name: "ISO 27001 §12.2 | Action 530003 | Install Checkov (IaC scanner)"
+  ansible.builtin.pip:
+    name: checkov==2.4.29 # Use a specific version for reproducibility
+    state: present
+    executable: pip3
+  become: true
+  when: security_scanning_install_tools | bool
+  tags: [security, scanning, install]
+
+- name: "ISO 27001 §12.2 | Action 530004 | Install TruffleHog (secret scanner)"
+  ansible.builtin.pip:
+    name: trufflehog==3.93.3 # Use a specific version for reproducibility
+    state: present
+    executable: pip3
+  become: true
+  when: security_scanning_install_tools | bool
+  tags: [security, scanning, install]
+
+- name: "ISO 27001 §12.2 | Action 530005 | Configure Freshclam (ClamAV updater)"
+  ansible.builtin.template:
+    src: freshclam.conf.j2
+    dest: /etc/clamav/freshclam.conf
+    owner: clamav
+    group: clamav
+    mode: '0644'
+  become: true
+  when: security_scanning_install_tools | bool
+  notify: restart_clamav_freshclam
+  tags: [security, scanning, config]
+
 - name: Check if security tools are installed
   ansible.builtin.shell: "command -v {{ item }}"
   register: security_framework_tool_check

@@ -4,9 +4,9 @@
 file:
   /etc/shadow:
     exists: true
-    mode: "0640"
+    mode: "0600"
     owner: root
-    group: shadow
+    group: root
 
   /etc/passwd:
     exists: true
@@ -22,9 +22,9 @@ file:
 
   /etc/gshadow:
     exists: true
-    mode: "0640"
+    mode: "0600"
     owner: root
-    group: shadow
+    group: root
 
   /etc/issue:
     exists: true

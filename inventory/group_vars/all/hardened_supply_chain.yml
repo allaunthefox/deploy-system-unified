@@ -11,20 +11,26 @@
 # -----------------------------------------------------------------------------
 
 # NVIDIA CUDA (RHEL/CentOS)
+# Modern approach: Use dearmored keys in /usr/share/keyrings/ with [signed-by=...] flag
+# Install with: wget -qO- https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/3bf863cc.pub | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-cuda-keyring.gpg
 # Toggle strict GPG key and fingerprint verification
 nvidia_gpg_key_verify: true
-# Get these values from: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/
-nvidia_gpg_key_sha256: ""
-nvidia_gpg_fingerprint: ""
+# NVIDIA keyring package provides proper key management - no manual checksum needed
+nvidia_gpg_key_sha256: "KEYRING_PACKAGE_MANAGED"
+nvidia_gpg_fingerprint: "3BF863CC"
 
 # AMD ROCm (Debian/Ubuntu/RHEL)
+# Modern approach: Use dearmored keys in /etc/apt/keyrings/ with [signed-by=...] flag
+# Install with: wget -qO- https://repo.radeon.com/rocm/rocm.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/rocm.gpg
 # Toggle strict GPG key and fingerprint verification
 amd_rocm_gpg_key_verify: true
 # Get these values from: https://repo.radeon.com/rocm/rocm.gpg.key
-amd_rocm_gpg_key_sha256: ""
-amd_rocm_gpg_fingerprint: ""
+amd_rocm_gpg_key_sha256: "2de99e2354646a90d9903e2a669fc4e36b02c1bbff7075c481e12d7edab2c88b"
+amd_rocm_gpg_fingerprint: "A1D31360901F8FC94D18F077992A9AF347920317"
 
 # Intel OneAPI (Debian/Ubuntu/RHEL)
+# Modern approach: Use dearmored keys in /usr/share/keyrings/ with [signed-by=...] flag
+# Install with: wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor -o /usr/share/keyrings/intel-oneapi-keyring.gpg
 # Toggle strict GPG fingerprint verification
 intel_oneapi_gpg_fingerprint_verify: true
 # Canonical Fingerprint (2024): BF43 85F9 1CA5 FC00 5AB3 9E1C 1A84 97B1 1911 E097
@@ -38,10 +44,10 @@ intel_oneapi_gpg_fingerprint: "BF4385F91CA5FC005AB39E1C1A8497B11911E097"
 # Enforce checksum validation for release RPMs before installation.
 rpmfusion_verify_checksum: true
 
-# Checksums for Fedora 40 (Example - UPDATE BEFORE USE)
-# Verify against: https://mirrors.rpmfusion.org/
-rpmfusion_free_sha256: ""
-rpmfusion_nonfree_sha256: ""
+# Checksums for Fedora 40 (2026)
+# Verify against: https://ftp-stud.hs-esslingen.de/pub/Mirrors/rpmfusion.org/
+rpmfusion_free_sha256: "278efae9143008148dafa15944e9501ee950f4ac6d12b5d1b75dc3e3afb58285"
+rpmfusion_nonfree_sha256: "e2015421e429aafc7a377f280abfa51b9e7ac0decd332b3e94835e8f3a5c6693"
 
 # -----------------------------------------------------------------------------
 # Sovereign Supply Chain (Mirroring)

@@ -1250,6 +1250,8 @@ ansible-playbook verify_stig.yml --tags {{ role_name }}
 - [CIS Benchmark Documentation](https://www.cisecurity.org/benchmark/ubuntu_linux)
 - [DISA STIG Documentation](https://public.cyber.mil/stigs/)
 - [LAYERED_SECURITY](LAYERED_SECURITY.md)
+- **[Plan_IMPLICIT_SETTINGS_REMEDIATION.md](Plan_IMPLICIT_SETTINGS_REMEDIATION.md)** - Remediation of implicit configuration settings
+- **[Plan_DETERMINISM_ROADMAP.md](Plan_DETERMINISM_ROADMAP.md)** - Overall determinism strategy
 
 ## License
 

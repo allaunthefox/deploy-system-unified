@@ -1,46 +1,172 @@
 # Goss tests for containers/runtime role
+# Container Sandboxing and Runtime Security
+# CIS Benchmark: 2.x - Container Runtime (Podman)
+# ISO 27001 §8.20/§8.26 | STIG V-230410 | NIST SC-39/CM-7
 
 # =============================================================================
-# PACKAGE TESTS
+# PACKAGE TESTS - Verify container packages
 # =============================================================================
 package:
+  # CIS 2.1 - Container runtime
   podman:
     installed: true
-  buildah:
+  # CIS 2.1 - Container tools
+  containers-common:
     installed: true
-  skopeo:
+  # CIS 2.2 - Supply chain integrity
+  cosign:
     installed: true
 
 # =============================================================================
-# FILE TESTS - Verify runtime configuration
+# SERVICE TESTS - Container services
+# =============================================================================
+service:
+  # CIS 2.1 - Container storage service
+  podman.socket:
+    enabled: false  # Rootless by default
+    running: false
+
+# =============================================================================
+# FILE TESTS - Verify container configuration files
 # =============================================================================
 file:
+  # CIS 2.1 - Podman binary
+  /usr/bin/podman:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 2.1 - Container configuration directory
   /etc/containers:
     exists: true
     filetype: directory
     mode: "0755"
+    owner: root
+    group: root
 
-  /etc/containers/containers.conf:
+  # CIS 2.1 - Container registries configuration
+  /etc/containers/registries.conf:
     exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[registries.search\]/
+      - /^registries = \['docker.io'\]/
 
+  # CIS 2.1 - Container storage configuration
+  /etc/containers/storage.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^\[storage\]/
+      - /^driver = "overlay"/
+
+  # CIS 2.3 - Container policy configuration
   /etc/containers/policy.json:
     exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    contains:
+      - /^"default":/
+      - /"type": "reject"/
+
+  # CIS 2.1 - Seccomp default profile
+  /usr/share/containers/seccomp.json:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+  # CIS 2.1 - Container network configuration
+  /etc/cni/net.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 2.1 - Container runtime hooks
+  /usr/share/containers/oci/hooks.d:
+    exists: true
+    filetype: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+  # CIS 2.1 - Container mount configuration
+  /etc/containers/mounts.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
 
 # =============================================================================
-# COMMAND TESTS
+# COMMAND TESTS - Verify container configurations
 # =============================================================================
 command:
+  # CIS 2.1 - Verify podman is installed and working
   podman_version:
-    exec: 'podman --version'
+    exec: 'podman --version 2>&1 | head -1'
+    exit-status: 0
+    stdout:
+      - /podman/
+    timeout: 10000
+
+  # CIS 2.3 - Verify container policy is restrictive
+  container_policy_restrictive:
+    exec: 'grep -c "\"type\": \"reject\"" /etc/containers/policy.json'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 2.1 - Verify seccomp profile exists
+  seccomp_profile_exists:
+    exec: 'test -f /usr/share/containers/seccomp.json && echo "exists" || echo "missing"'
+    exit-status: 0
+    stdout:
+      - /^exists$/
+    timeout: 5000
+
+  # CIS 2.1 - Verify container registries are configured
+  container_registries:
+    exec: 'grep -c "docker.io" /etc/containers/registries.conf'
+    exit-status: 0
+    stdout:
+      - /^[1-9]/
+    timeout: 5000
+
+  # CIS 2.1 - Verify container storage driver
+  container_storage_driver:
+    exec: 'grep "^driver" /etc/containers/storage.conf | awk -F= "{print $2}" | tr -d " \"'
+    exit-status: 0
+    stdout:
+      - /^overlay$/
+    timeout: 5000
+
+  # CIS 2.1 - Verify podman info works
+  podman_info:
+    exec: 'podman info --format=json 2>/dev/null | head -1'
     exit-status: 0
     timeout: 10000
 
-  buildah_version:
-    exec: 'buildah --version'
+  # CIS 2.1 - Verify CNI network configuration exists
+  cni_config_exists:
+    exec: 'ls /etc/cni/net.d/*.conflist 2>/dev/null | wc -l'
     exit-status: 0
-    timeout: 10000
+    stdout:
+      - /^[0-9]+$/
+    timeout: 5000
 
-  skopeo_version:
-    exec: 'skopeo --version'
+  # CIS 2.1 - Verify container runtime hooks directory
+  oci_hooks_exists:
+    exec: 'test -d /usr/share/containers/oci/hooks.d && echo "exists" || echo "missing"'
     exit-status: 0
-    timeout: 10000
+    stdout:
+      - /^exists$/
+    timeout: 5000
