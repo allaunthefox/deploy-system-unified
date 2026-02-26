@@ -29,7 +29,7 @@ See [NON_COMINGLING](NON_COMINGLING) for the foundational rule (Separation of Co
 
 Do not use relative file paths (`../NON_COMINGLING.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
 
-**Terminology:** Use "Separation of Concerns (SoC)" as the primary term. The DSU shorthand "non-comingling" may appear in parentheses on first use only.
+**Terminology:** Use "Separation of Concerns (SoC)" as the primary term.
 
 ---
 
@@ -112,14 +112,13 @@ for implementation; the wiki page is the operator's reference.
 
 The canonical definition of every term in this project — with its governing ISO or NIST citation
 — is in [TERMINOLOGY](TERMINOLOGY). That document is the authoritative reference. Do not
-invent new terms or use DSU shorthands as primary labels in documentation.
+invent new terms or use informal terminology as primary labels in documentation.
 
-Use the **Formal Term** as the primary label in all documentation. DSU Shorthand may appear in
-parentheses on first use only.
+Use the **Formal Term** as the primary label in all documentation.
 
-| Formal Term (Primary) | DSU Shorthand | Do Not Use |
-|---|---|---|
-| Separation of Concerns (SoC) | — | "non-comingling", "anti-comingling", "task isolation" |
+| Formal Term (Primary) | Do Not Use |
+|---|---|
+| Separation of Concerns (SoC) | "non-comingling", "anti-comingling", "task isolation" |
 | Audit Event Identifier | Action Code | "action code", "audit code", "event ID" |
 | Audit Log Retention Class | Forensic Grade | "forensic grade", "log level" |
 | Security Observability | Forensic Intelligence | "forensic intelligence", "forensic stack" |

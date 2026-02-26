@@ -2,11 +2,10 @@
 
 This document is the canonical reference for terminology used across Deploy-System-Unified.
 Every term has a formal definition grounded in an ISO, IEC, NIST, or established industry
-standard. Where DSU uses a project-specific shorthand, the governing standard is cited and the
+standard. Where DSU uses alternative terminology, the governing standard is cited and the
 mapping is explicit.
 
-All other documentation in this project must use the **Formal Term** as the primary label.
-DSU shorthand may appear in parentheses on first use only.
+All documentation in this project must use the **Formal Term** as the primary label.
 
 ---
 
@@ -135,8 +134,7 @@ affecting other components.
 
 **Origin:** Formally stated by Edsger W. Dijkstra in *On the Role of Scientific Thought* (1974).
 
-**In DSU:** Separation of Concerns is the primary term used throughout documentation. The
-project-specific shorthand "non-comingling" appears only for historical reference. SoC is
+**In DSU:** Separation of Concerns is the primary term used throughout documentation. SoC is
 enforced at three levels: task (one module call, one action), role (one role, one technology
 concern), and playbook (one playbook, one infrastructure concern). See
 [NON_COMINGLING](NON_COMINGLING).
