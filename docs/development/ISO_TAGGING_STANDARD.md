@@ -87,8 +87,8 @@ As organizations transition to quantum-resistant infrastructure (CNSA 2.0), use 
 
 These tags mark tasks that implement self-healing and integrity verification for storage systems.
 
-| Tag | Standard | Description | Action Code |
-|-----|----------|-------------|-------------|
+| Tag | Standard | Description | Audit Event Identifier |
+|-----|----------|-------------|-----------|
 | `restore_test` | **ISO 27040** | Automated sample restore verification. | 900003 |
 | `integrity_verify` | **ISO 27040** | Cryptographic hash verification. | 900004 |
 | `dedupe` | **ISO 27040** | Offline storage deduplication (NoDupeLabs). | 500060 |
@@ -107,10 +107,10 @@ These tags mark tasks that implement self-healing and integrity verification for
 
 These tags mark the enhanced observability stack that enables real-time forensic auditing.
 
-| Tag | Component | Description | Action Code |
-|-----|-----------|-------------|-------------|
+| Tag | Component | Description | Audit Event Identifier |
+|-----|-----------|-------------|-----------|
 | `loki` | **Aggregator** | Centralized log aggregation engine. | 840040 |
-| `promtail` | **Collector** | Action-Code aware log collector. | 840031 |
+| `promtail` | **Collector** | Audit Event Identifier aware log collector. | 840031 |
 | `forensic` | **Visualization** | DSU Security Observability Dashboard. | 840041 |
 
 ---
