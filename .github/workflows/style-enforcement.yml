@@ -15,6 +15,10 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  # CI vault password for decrypting test fixtures
+  ANSIBLE_VAULT_PASSWORD_FILE: /tmp/ci_vault_pass
+
 jobs:
   style-enforcement:
     name: Run style guide enforcement
@@ -29,6 +33,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Create CI vault password file
+        run: |
+          echo "ci_test_password" > /tmp/ci_vault_pass
+          chmod 600 /tmp/ci_vault_pass
 
       # yamllint disable rule:line-length
       - name: Make script executable
