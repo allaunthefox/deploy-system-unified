@@ -36,7 +36,7 @@
 - [Intel GPU Guide](INTEL_GPU_GUIDE)
 - [GPU Slicing](GPU_SLICING)
 - [Hardware Matrix](HARDWARE_COMPATIBILITY_MATRIX)
-- [Vendor Profiles](ARCH_Vendor_Profiles)
+- [Vendor Profiles](ARCH_VENDOR_PROFILES)
 
 ---
 

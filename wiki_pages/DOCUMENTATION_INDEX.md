@@ -48,7 +48,7 @@ Optimizing for specific architectures and GPUs.
 *   **[Intel GPU Guide](INTEL_GPU_GUIDE)**: Detailed Intel-specific configuration and Battlemage setup.
 *   **[GPU Slicing Architecture](GPU_SLICING)**: Implementation of MIG, SR-IOV, and Time-Slicing.
 *   **[Hardware Compatibility Matrix](HARDWARE_COMPATIBILITY_MATRIX)**: Validated CPU/GPU combinations.
-*   **[Vendor Profiles](ARCH_Vendor_Profiles)**: Explicit hardware selection parameters.
+*   **[Vendor Profiles](ARCH_VENDOR_PROFILES)**: Explicit hardware selection parameters.
 
 ---
 
@@ -58,7 +58,7 @@ Tools and standards for contributing to DSU.
 *   **[Documentation Style Guide](DOCUMENTATION_STYLE_GUIDE)**: Standards for all project documentation.
 *   **[Naming Convention Standard](NAMING_CONVENTION_STANDARD)**: SCREAMING_SNAKE_CASE file naming standard.
 *   **[Ansible Style Guide](ANSIBLE_STYLE_GUIDE)**: Task naming, lint rules, and role structure.
-*   **[Style Guide Overview](STYLE_GUIDE)**: Standards for [YAML](DEV_STYLE_YAML_Style_Guide), [Ansible](DEV_STYLE_Ansible_Style_Guide), [Shell](DEV_STYLE_Shell_Style_Guide), and [Docs](DEV_STYLE_Documentation_Style_Guide).
+*   **[Style Guide Overview](STYLE_GUIDE)**: Standards for [YAML](DEV_STYLE_YAML_STYLE_GUIDE), [Ansible](DEV_STYLE_ANSIBLE_STYLE_GUIDE), [Shell](DEV_STYLE_SHELL_STYLE_GUIDE), and [Docs](DEV_STYLE_DOCUMENTATION_STYLE_GUIDE).
 *   **[Development Tooling](TOOLING)**: Usage guide for style enforcement and repair tools.
 *   **[Pre-commit Hooks](PRE_COMMIT)**: Local linting and secret detection setup.
 *   **[Testing Framework](TESTING_NEGATIVE_IMPLEMENTATION)**: Comprehensive guide to [Negative Testing](TESTING_NEGATIVE_IMPLEMENTATION) and [Idempotency Verification](QUALITY_IDEMPOTENCY_BLOCKERS).
@@ -87,7 +87,7 @@ Future directions and historical implementation phases.
     *   [Role Enhancement 2026](PLAN_ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)
     *   [Community Enhancement](PLAN_COMMUNITY_ENHANCEMENT_PLAN)
     *   [Compliance Framework Integration](PLAN_COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN)
-    *   [Architecture Migration Guide](ARCH_Migration_Guide)
+    *   [Architecture Migration Guide](ARCH_MIGRATION_GUIDE)
     *   [Determinism Roadmap](PLAN_DETERMINISM_ROADMAP)
 
 ---
