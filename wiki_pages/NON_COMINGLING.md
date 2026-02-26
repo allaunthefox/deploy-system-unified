@@ -4,8 +4,9 @@
 > of Concerns (SoC)** principle, as defined in ISO/IEC 25010:2011 §4.2.7 (Modularity) and
 > required by NIST SP 800-53 Rev 5 SA-8 (Security and Privacy Engineering Principles).
 >
-> The project-specific term "non-comingling" is a shorthand for SoC. Both terms refer to the
-> same principle. See [TERMINOLOGY](TERMINOLOGY) for the full formal definition.
+> **Note:** "Non-comingling" is the DSU shorthand for Separation of Concerns. This document uses
+> SoC as the primary term; the shorthand appears only for historical reference. See
+> [TERMINOLOGY](TERMINOLOGY) for the formal definition.
 
 The foundational rule of this project is:
 

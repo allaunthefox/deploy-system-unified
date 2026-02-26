@@ -24,11 +24,12 @@ auto-synced from this directory by the CI wiki-lint workflow. Do not edit the Gi
 Where `PAGE_NAME` matches the filename without the `.md` extension. Example:
 
 ```markdown
-See [NON_COMINGLING](wiki/NON_COMINGLING) for the foundational rule.
+See [NON_COMINGLING](NON_COMINGLING) for the foundational rule (Separation of Concerns).
 ```
 
-Do not use relative file paths (`../NON_COMINGLING.md`) or bare page names — only the
-`wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
+Do not use relative file paths (`../NON_COMINGLING.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
+
+**Terminology:** Use "Separation of Concerns (SoC)" as the primary term. The DSU shorthand "non-comingling" may appear in parentheses on first use only.
 
 ---
 
@@ -118,7 +119,7 @@ parentheses on first use only.
 
 | Formal Term (Primary) | DSU Shorthand | Do Not Use |
 |---|---|---|
-| Separation of Concerns (SoC) | Non-Comingling | "anti-comingling", "task isolation" |
+| Separation of Concerns (SoC) | — | "non-comingling", "anti-comingling", "task isolation" |
 | Audit Event Identifier | Action Code | "action code", "audit code", "event ID" |
 | Audit Log Retention Class | Forensic Grade | "forensic grade", "log level" |
 | Security Observability | Forensic Intelligence | "forensic intelligence", "forensic stack" |

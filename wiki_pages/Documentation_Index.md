@@ -10,7 +10,7 @@ The core logic and design patterns governing the project.
 *   **[Terminology](TERMINOLOGY)**: Formal definitions with ISO/NIST citations for every term.
 *   **[Ontology & Profiles](ONTOLOGY)**: Formal mapping of security postures to hardware.
 *   **[Modular Layers](MODULAR_LAYERS)**: The 7-layer defense-in-depth model.
-*   **[Core Philosophy](NON_COMINGLING)**: Separation of Concerns (SoC) for task modularity.
+*   **[Core Philosophy](NON_COMINGLING)**: Separation of Concerns (SoC) — the foundational rule for task modularity.
 *   **[High-Resilience Plan](Plan_HIGH_RESILIENCE_PLAN_2026)**: The project's security roadmap and HRoT mandate.
 *   **[Volatile Design](EPHEMERAL_DESIGN)**: Zero-footprint and RAM-disk secret infrastructure (Ephemeral Credentials).
 *   **[Layered Security](LAYERED_SECURITY)**: Coordination between firewall, MAC, and kernel hardening.

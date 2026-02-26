@@ -11,8 +11,7 @@ For formal definitions of every term used here, including governing ISO and NIST
 
 ## Core Principle
 
-Separation of Concerns (SoC) — referred to in this project as "non-comingling" — governs all
-classification decisions in this system. See [NON_COMINGLING](NON_COMINGLING).
+**Separation of Concerns (SoC)** governs all classification decisions in this system. See [NON_COMINGLING](NON_COMINGLING) for the project's implementation of this principle.
 
 The taxonomy below gives SoC operational structure: each axis answers a different question and
 no axis bleeds into another.
@@ -179,7 +178,7 @@ Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [D
 ## Related Documents
 
 - [TERMINOLOGY](TERMINOLOGY) — Formal definitions with ISO/NIST citations for every term
-- [NON_COMINGLING](NON_COMINGLING) — Separation of Concerns implementation
+- [NON_COMINGLING](NON_COMINGLING) — SoC implementation
 - [MODULAR_LAYERS](MODULAR_LAYERS) — The 7-layer defense-in-depth architecture
 - [ISO_TAGGING_STANDARD](ISO_TAGGING_STANDARD) — Tag naming and compliance mapping
 - [Quality_Idempotency_BLOCKERS](Quality_Idempotency_BLOCKERS) — Idempotency contract
