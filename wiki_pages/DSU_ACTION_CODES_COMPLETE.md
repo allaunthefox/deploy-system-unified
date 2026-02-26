@@ -10,28 +10,12 @@
 ## Table of Contents
 
 1. [System Lifecycle](#1-system-lifecycle)
-2. [Security Operations](#2-security-operations)
-3. [Container Operations](#3-container-operations)
-4. [Network Operations](#4-network-operations)
-5. [Storage Operations](#5-storage-operations)
-6. [Hardware Operations](#6-hardware-operations)
-7. [Identity & Access](#7-identity--access)
-8. [Backup & Recovery](#8-backup--recovery)
-9. [Monitoring & Logging](#9-monitoring--logging)
-10. [Compliance & Audit](#10-compliance--audit)
-11. [Deployment & Configuration](#11-deployment--configuration)
-12. [Idempotency & Drift](#12-idempotency--drift)
-13. [AI Infrastructure](#13-ai-infrastructure)
-14. [Life Management Ops](#14-life-management-ops)
-15. [Secure Communication](#15-secure-communication)
-16. [Home Automation & IoT](#16-home-automation--iot)
-17. [Data Synchronization](#17-data-synchronization)
-18. [Personal Cloud Services](#18-personal-cloud-services)
-19. [Digital Preservation](#19-digital-preservation)
-20. [Educational Infrastructure](#20-educational-infrastructure)
-21. [GIS & Navigation](#21-gis--navigation)
-22. [Business Continuity](#22-business-continuity)
-23. [High-Integrity Archival](#23-high-integrity-archival)
+2. [AI Infrastructure](#13-ai-infrastructure)
+3. [Life Management Ops](#14-life-management-ops)
+4. [Digital Preservation](#19-digital-preservation)
+5. [Business Continuity](#22-business-continuity)
+6. [High-Integrity Archival](#23-high-integrity-archival)
+7. [ISO Standard Reference](#appendix-a-iso-standard-reference)
 
 ---
 
@@ -47,7 +31,7 @@
 
 ---
 
-## 13. AI Infrastructure
+## 13. AI Infrastructure {#13-ai-infrastructure}
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -58,7 +42,7 @@
 
 ---
 
-## 14. Life Management Ops
+## 14. Life Management Ops {#14-life-management-ops}
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -68,7 +52,7 @@
 
 ---
 
-## 19. Digital Preservation
+## 19. Digital Preservation {#19-digital-preservation}
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -78,7 +62,7 @@
 
 ---
 
-## 22. Business Continuity
+## 22. Business Continuity {#22-business-continuity}
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -87,7 +71,7 @@
 
 ---
 
-## 23. High-Integrity Archival
+## 23. High-Integrity Archival {#23-high-integrity-archival}
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -97,7 +81,7 @@
 
 ---
 
-## Appendix A: ISO Standard Reference
+## Appendix A: ISO Standard Reference {#appendix-a-iso-standard-reference}
 
 | ISO Standard | Sections | Action Codes |
 |--------------|----------|--------------|
