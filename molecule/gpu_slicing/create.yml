@@ -35,7 +35,7 @@
         state: started
         command: sleep infinity
         tmpfs:
-          /tmp: rw
+          "/tmp:rw,mode=1777"
         # Add necessary systemd support if needed for specific images
       loop: "{{ platforms }}"
       register: server
