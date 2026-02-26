@@ -34,7 +34,7 @@ Best for CI/CD runners or temporary testing environments. Secrets vanish on rebo
 
 ### Key Features
 
-- **Volatile Secrets**: Stored in a 64MB RAM-disk.
+- **Ephemeral Credentials**: Stored in a 64MB RAM-disk.
 - **Audit Trail**: Every deployment creates a hashed `DEPLOY_ID` in system logs.
 - **Zero Footprint**: Controller shreds connection artifacts after the run.
 

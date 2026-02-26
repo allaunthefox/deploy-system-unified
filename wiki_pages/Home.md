@@ -6,8 +6,8 @@ Deploy-System-Unified (DSU) is an industry-leading, audit-ready infrastructure-a
 
 ## 🚀 Key Capabilities (Feb 2026)
 
-- **Autonomic Recovery**: ISO 27040 periodic verified restores into isolated namespaces.
-- **Forensic Intelligence**: Real-time Loki/Grafana audit streams mapped to 350+ Action Codes.
+- **Automated Recovery Verification**: ISO 27040 periodic verified restores into isolated namespaces.
+- **Security Observability**: Real-time Loki/Grafana audit streams mapped to 350+ Audit Event Identifiers.
 - **Post-Quantum Cryptography**: Hybrid ML-KEM and sntrup761 support for SSH and secret archival.
 - **Supply Chain Hardening**: Signed CycloneDX SBOM generation and Cosign image verification.
 - **Multi-Architecture**: Native support for x86_64, aarch64, and riscv64.
