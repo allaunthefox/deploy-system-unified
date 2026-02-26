@@ -20,8 +20,8 @@
     force: false
   become: true
   when:
-    - security_sshd_config_backup.stat.exists is not defined or not security_sshd_config_backup.stat.exists
-    - security_sshd_config_backup | default(true)
+    - security_sshd_backup_config.stat.exists is not defined or not security_sshd_config_backup.stat.exists
+    - security_sshd_backup_config | default(true)
   tags:
     - security
     - sshd
@@ -301,10 +301,10 @@
       PermitTunnel no
       Compression delayed
       ClientAliveInterval 300
-      ClientAliveCountMax 0
+      ClientAliveCountMax 2
       LoginGraceTime 60
-      MaxAuthTries 2
-      MaxSessions 2
+      MaxAuthTries 3
+      MaxSessions 10
       PermitEmptyPasswords no
       PermitRootLogin {{ security_sshd_permit_root_login }}
       PubkeyAuthentication yes
