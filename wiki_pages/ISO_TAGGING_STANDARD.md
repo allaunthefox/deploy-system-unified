@@ -2,7 +2,7 @@
 
 **Purpose:** This document defines the standardized Ansible tags for implementing ISO, NIST, and CIS compliance controls across the Deploy-System-Unified project.
 
-**Reference:** `DSU_ACTION_CODES_COMPLETE.md`, NIST SP 800-53 Rev 5, ISO/IEC 27002:2022.
+**Reference:** `DSU_AUDIT_EVENT_IDENTIFIERS.md`, NIST SP 800-53 Rev 5, ISO/IEC 27002:2022.
 
 ---
 
@@ -73,7 +73,7 @@ Use these tags to control *how* playbooks execute in compliance contexts.
 
 As organizations transition to quantum-resistant infrastructure (CNSA 2.0), use these tags to mark PQC-capable or enforced tasks.
 
-| Tag | Standard | Description | Action Code |
+| Tag | Standard | Description | Audit Event Identifier |
 |-----|----------|-------------|-------------|
 | `pqc` | **NIST PQC** | General Post-Quantum capability. | 400100 |
 | `pqc_hybrid` | **Hybrid Mode** | Classical + Quantum-Resistant. | 400101 |
@@ -119,7 +119,7 @@ These tags mark the enhanced observability stack that enables real-time forensic
 
 These tags map to the newest ISO amendment for AI Security (ISO/IEC 27001:2022/Amd 1:2024).
 
-| Tag | Standard | Description | Action Code |
+| Tag | Standard | Description | Audit Event Identifier |
 |-----|----------|-------------|-------------|
 | `iso_27001_ai` | **ISO 27001 Amd 1** | General AI Security control compliance. | 480001 |
 | `ai_security` | **AI Security** | Specific hardening for AI/LLM workloads. | 480101 |

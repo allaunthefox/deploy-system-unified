@@ -23,7 +23,7 @@ This document identifies potential issues that may arise when deploying combinat
 
 **Example**:
 
-- `base_hardened.yml` and `base_ephemeral.yml` both import many core roles
+- `BASE_HARDENED.yml` and `BASE_EPHEMERAL.yml` both import many core roles
 - GPU-related roles may be included in multiple GPU profiles
 
 **Solution**:
@@ -100,7 +100,7 @@ This document identifies potential issues that may arise when deploying combinat
 
 **Example**:
 
-- `base_ephemeral.yml` creates RAM-backed secrets storage that conflicts with persistent storage profiles
+- `BASE_EPHEMERAL.yml` creates RAM-backed secrets storage that conflicts with persistent storage profiles
 - Secrets stored in RAM-disk will be lost on reboot
 
 **Solution**:
@@ -157,7 +157,7 @@ This document identifies potential issues that may arise when deploying combinat
 
 ## Best Practices for Profile Combinations
 
-1. **Start with base profiles**: Always deploy `base_hardened.yml` or `base_ephemeral.yml` first
+1. **Start with base profiles**: Always deploy `BASE_HARDENED.yml` or `BASE_EPHEMERAL.yml` first
 2. **Use specific profiles**: Choose the most specific profile for your use case
 3. **Test in isolation**: Deploy profiles one at a time in a test environment
 4. **Verify compatibility**: Check that selected profiles are compatible with each other
@@ -167,10 +167,10 @@ This document identifies potential issues that may arise when deploying combinat
 
 ## Recommended Profile Combinations
 
-1. **Production Container Host**: `base_hardened.yml` + `production_deploy.yml`
-2. **Development Environment**: `base_hardened.yml` + `development_servers.yml`
-3. **GPU Workstation**: `base_hardened.yml` + `gpu_workstations.yml`
-4. **Kubernetes GPU Node**: `base_hardened.yml` + `k8s_secure_node.yml` + `k8s_gpu_node.yml`
-5. **Ephemeral Sandbox**: `base_ephemeral.yml` + `ephemeral_containers.yml`
+1. **Production Container Host**: `BASE_HARDENED.yml` + `PRODUCTION_DEPLOY.yml`
+2. **Development Environment**: `BASE_HARDENED.yml` + `development_servers.yml`
+3. **GPU Workstation**: `BASE_HARDENED.yml` + `gpu_workstations.yml`
+4. **Kubernetes GPU Node**: `BASE_HARDENED.yml` + `k8s_secure_node.yml` + `k8s_gpu_node.yml`
+5. **Ephemeral Sandbox**: `BASE_EPHEMERAL.yml` + `ephemeral_containers.yml`
 
 Always test profile combinations in a controlled environment before deploying to production.

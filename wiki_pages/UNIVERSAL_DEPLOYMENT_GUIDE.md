@@ -24,7 +24,7 @@ The system uses a "Template" architecture. Do not edit `site.yml` directly. Inst
 
 **Available Templates (`branch_templates/`)**:
 
-- `base_hardened.yml`: Minimal security baseline.
+- `BASE_HARDENED.yml`: Minimal security baseline.
 - `contabo_cloud_vps_30_ssd.yml`: Contabo VPS optimized (Media Stack).
 - `bare_metal_hardened.yml`: Physical server defaults.
 - `gpu_slicing_*.yml`: Specialized GPU profiles.
@@ -54,7 +54,7 @@ Edit your local `my_deployment.yml` to define environment-specific variables.
 
 ## 4. Deployment Execution
 
-Run the playbook against your inventory.
+Run the playbook against the inventory.
 
 ```bash
 # Validate Syntax
@@ -100,7 +100,7 @@ ops_rsync_allowlist:
 
 ### Ephemeral Profiles (Extra Guard)
 
-For `deployment_profile: "ephemeral"`, you must explicitly opt in:
+For `deployment_profile: "ephemeral"`, explicit opt-in is required:
 
 ```yaml
 storage_nfs_ephemeral_allow: true

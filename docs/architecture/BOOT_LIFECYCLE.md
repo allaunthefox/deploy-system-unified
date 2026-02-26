@@ -19,7 +19,7 @@ graph TD
 
     subgraph "Phase 2: Security Sentinel (Layer 2)"
         B3 -->|Enforce| MAC[AppArmor / SELinux]
-        MAC -->|Action Code 440001| AUDIT[auditd Service]
+        MAC -->|Audit Event Identifier 440001| AUDIT[auditd Service]
     end
 
     subgraph "Phase 3: Network Gate (Layer 1)"
@@ -32,9 +32,9 @@ graph TD
         NET -->|Systemd System| L[LXC / LXD]
         NET -->|K3s Master| K[Kubernetes]
         
-        P -->|Action Code 400020| ID[UUID Assigned]
-        L -->|Action Code 400020| ID
-        K -->|Action Code 400020| ID
+        P -->|Audit Event Identifier 400020| ID[UUID Assigned]
+        L -->|Audit Event Identifier 400020| ID
+        K -->|Audit Event Identifier 400020| ID
     end
 
     subgraph "Phase 5: Forensic Aggregation"

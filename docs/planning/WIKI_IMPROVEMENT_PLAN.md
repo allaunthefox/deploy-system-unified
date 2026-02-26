@@ -15,8 +15,8 @@ Based on analysis using the Qwen agent system:
    - IDEMPOTENCY_BLOCKERS.md
    - NEGATIVE_TESTING_IMPLEMENTATION.md
    - STYLE_GUIDE.md
-   - Role_Reference.md
-   - Variable_Reference.md
+   - ROLE_REFERENCE.md
+   - VARIABLE_REFERENCE.md
 
 2. **Potential Structure Issues**: Large monolithic documents may not be optimally organized for user navigation.
 
@@ -32,19 +32,19 @@ Based on analysis using the Qwen agent system:
   - Shell_Style_Guide.md
   - Documentation_Style_Guide.md
 
-#### 1.2 Analyze Role_Reference.md
+#### 1.2 Analyze ROLE_REFERENCE.md
 - Current size: 1,263 words but contains 61 roles
 - Ensure each role has its own dedicated page (appears to be done already)
 - Consider grouping roles by category (core, security, containers, etc.)
 
-#### 1.3 Analyze Variable_Reference.md
+#### 1.3 Analyze VARIABLE_REFERENCE.md
 - Current size: 963 words but contains extensive variable listings
 - Split by role categories:
-  - Variable_Reference_Core.md
-  - Variable_Reference_Containers.md
-  - Variable_Reference_Security.md
-  - Variable_Reference_Networking.md
-  - Variable_Reference_Storage.md
+  - VARIABLE_REFERENCE_Core.md
+  - VARIABLE_REFERENCE_Containers.md
+  - VARIABLE_REFERENCE_Security.md
+  - VARIABLE_REFERENCE_Networking.md
+  - VARIABLE_REFERENCE_Storage.md
 
 #### 1.4 Analyze IDEMPOTENCY_BLOCKERS.md
 - Break down by category of blocker
@@ -62,8 +62,8 @@ Based on analysis using the Qwen agent system:
 - Maintain cross-links between related pages
 
 #### 2.2 Update Navigation
-- Update Documentation_Index.md to reflect new structure
-- Update Home.md if necessary
+- Update DOCUMENTATION_INDEX.md to reflect new structure
+- Update HOME.md if necessary
 - Ensure all cross-references are updated
 
 #### 2.3 Redirect/Update Links
@@ -91,7 +91,7 @@ Based on analysis using the Qwen agent system:
    - Create outline for split content
    - Assign content to new specific guides
 
-2. **Day 3-4**: Detailed analysis of Variable_Reference.md
+2. **Day 3-4**: Detailed analysis of VARIABLE_REFERENCE.md
    - Group variables by role category
    - Create outlines for category-specific reference pages
 
@@ -118,8 +118,8 @@ Based on analysis using the Qwen agent system:
 ### Week 3: Quality Assurance and Integration
 
 1. **Day 1-2**: Update navigation and cross-links
-   - Update Documentation_Index.md
-   - Update Home.md if needed
+   - Update DOCUMENTATION_INDEX.md
+   - Update HOME.md if needed
    - Verify all internal links
 
 2. **Day 3-4**: Update automation scripts
@@ -170,10 +170,10 @@ Based on analysis using the Qwen agent system:
 **COMPLETED**: The wiki improvement plan has been successfully implemented with the following achievements:
 
 - Split the overly long STYLE_GUIDE.md into focused style guides (YAML, Ansible, Shell, Documentation) - COMPLETED
-- Split the Variable_Reference.md into category-specific references (Containers, Core, Security, Networking, Storage) - COMPLETED
+- Split the VARIABLE_REFERENCE.md into category-specific references (Containers, Core, Security, Networking, Storage) - COMPLETED
 - Created placeholder files for all referenced but missing pages
 - Fixed all broken internal links (now 0 broken links)
-- Improved navigation structure in Documentation_Index.md
+- Improved navigation structure in DOCUMENTATION_INDEX.md
 - Maintained all cross-references between documents
 - Achieved significant reduction in page lengths for most documents
 

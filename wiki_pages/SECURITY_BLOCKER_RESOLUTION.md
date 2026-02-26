@@ -37,7 +37,7 @@ ERROR! Host 38.242.222.130 must belong to exactly one ontological profile group
 The `contabo_cloud_vps_30_ssd` group was defined in inventory but not assigned to a production/hardened/ephemeral/dev profile.
 
 **Fix:**  
-Added production ontological profile assignment in [`../inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini):
+Added production ontological profile assignment in [`../../inventory/contabo_cloud_vps_30_ssd.ini`](../../inventory/contabo_cloud_vps_30_ssd.ini):
 
 ```ini
 [production:children]
@@ -59,13 +59,13 @@ ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242.2
 **Status:** ✅ Resolved
 
 **Problem:**  
-Security roles in `base_hardened.yml` were being skipped because the play targeted `hosts: local` instead of `hosts: all`, causing the entire "Apply Secure Infrastructure Base" play to skip when deploying to non-local hosts.
+Security roles in `BASE_HARDENED.yml` were being skipped because the play targeted `hosts: local` instead of `hosts: all`, causing the entire "Apply Secure Infrastructure Base" play to skip when deploying to non-local hosts.
 
 **Root Cause:**  
 Hardcoded host target limited deployment to localhost only.
 
 **Fix:**  
-Updated [`base_hardened.yml` line 13](../base_hardened.yml#L13):
+Updated [`BASE_HARDENED.yml` line 13](../BASE_HARDENED.yml#L13):
 
 ```diff
  - name: Apply Secure Infrastructure Base
@@ -281,8 +281,8 @@ $ ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242
 ## Files Modified
 
 ### Inventory & Playbook Configuration
-- [`../inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
-- [`base_hardened.yml`](../base_hardened.yml) - Host targeting fix
+- [`../../inventory/contabo_cloud_vps_30_ssd.ini`](../../inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
+- [`BASE_HARDENED.yml`](../BASE_HARDENED.yml) - Host targeting fix
 
 ### Security Role Fixes
 - [`../roles/security/audit_integrity/defaults/main.yml`](../roles/security/audit_integrity/defaults/main.yml) - Vault ID & output dir

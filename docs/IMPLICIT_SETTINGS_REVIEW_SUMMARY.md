@@ -242,7 +242,7 @@ containers_caddy_extra_networks: ['media_net', 'ops_net', 'monitoring_net', 'anu
 
 A comprehensive **3-phase remediation plan** has been created:
 
-📄 **See**: [`Plan_IMPLICIT_SETTINGS_REMEDIATION.md`](Plan_IMPLICIT_SETTINGS_REMEDIATION.md)
+📄 **See**: [`../wiki_pages/PLAN_IMPLICIT_SETTINGS_REMEDIATION.md`](../wiki_pages/PLAN_IMPLICIT_SETTINGS_REMEDIATION.md)
 
 ### Phase 1: Audit & Document (Q2 2026)
 - Create variable precedence diagram
@@ -267,9 +267,9 @@ A comprehensive **3-phase remediation plan** has been created:
 
 This review integrates with:
 
-1. **[Plan_DETERMINISM_ROADMAP.md](Plan_DETERMINISM_ROADMAP.md)** - Updated with implicit settings section
-2. **[Plan_ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md](Plan_ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md)** - Cross-referenced
-3. **[Plan_STABILITY_PLAN.md](Plan_STABILITY_PLAN.md)** - Added explicit configuration goal
+1. **[../wiki_pages/PLAN_DETERMINISM_ROADMAP.md](../wiki_pages/PLAN_DETERMINISM_ROADMAP.md)** - Updated with implicit settings section
+2. **[../wiki_pages/PLAN_ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md](../wiki_pages/PLAN_ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md)** - Cross-referenced
+3. **[../wiki_pages/PLAN_STABILITY_PLAN.md](../wiki_pages/PLAN_STABILITY_PLAN.md)** - Added explicit configuration goal
 
 ---
 

@@ -107,7 +107,7 @@ ops_rsync_ephemeral_allow: false
 # Observability & Forensic Intelligence
 # -----------------------------------------------------------------------------
 # Enables centralized log aggregation and forensic dashboards.
-# Uses Loki/Promtail for Action Code traceability.
+# Uses Loki/Promtail for Audit Event Identifier traceability.
 system_monitoring_forensics_enabled: true
 system_monitoring_loki_enabled: true
 system_monitoring_dashboard_forensic: true

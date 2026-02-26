@@ -50,7 +50,7 @@ This document is the execution board for completed work. It defines what was in 
 - ✅ PR consolidation and repository cleanup completed.
 - ✅ Stability gates added (`verify_idempotence.sh`, `smoke_test_production.sh`, `preflight_assertions.yml`).
 - ✅ CI status checks hardened for `main`.
-- ✅ Deployment entrypoint hygiene enforced (`production_deploy.yml` as canonical deploy path).
+- ✅ Deployment entrypoint hygiene enforced (`PRODUCTION_DEPLOY.yml` as canonical deploy path).
 - ✅ **Security Blockers Resolved:** 6/6 blockers fixed and verified on production Contabo target (Run 20260212T224246Z).
 - ✅ **Secrets Migration Logic Verified:** Data restoration and rotation orchestration validated (Run 20260213).
 - ✅ **Core Logic Hardened:** Fixed SSHD configuration duplicates and missing container directories in `ops` role.
