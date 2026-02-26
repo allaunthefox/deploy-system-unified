@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Script to link Variable_Reference.md and its split counterparts to role pages."""
+"""Script to link VARIABLE_REFERENCE.md and its split counterparts to role pages."""
 
 import re
 from pathlib import Path
@@ -61,24 +61,24 @@ def process_file(filepath):
     return True, False
 
 
-# Handle the main Variable_Reference.md file
-VR = ROOT / 'wiki_pages' / 'Variable_Reference.md'
+# Handle the main VARIABLE_REFERENCE.md file
+VR = ROOT / 'wiki_pages' / 'VARIABLE_REFERENCE.md'
 exists, modified = process_file(VR)
 if not exists:
-    print("Variable_Reference.md not found; skipping.")
+    print("VARIABLE_REFERENCE.md not found; skipping.")
 elif modified:
-    print("Linked Variable_Reference.md to role pages.")
+    print("Linked VARIABLE_REFERENCE.md to role pages.")
 else:
-    print("Variable_Reference.md already up to date.")
+    print("VARIABLE_REFERENCE.md already up to date.")
 
-# Handle the split variable reference files (Ref_Vars_ prefix)
+# Handle the split variable reference files (REF_Vars_ prefix)
 split_files = [
-    'Ref_Vars_Containers.md',
-    'Ref_Vars_Core.md', 
-    'Ref_Vars_Security.md',
-    'Ref_Vars_Networking.md',
-    'Ref_Vars_Storage.md',
-    'Ref_Vars_Ingress.md'
+    'REF_Vars_Containers.md',
+    'REF_Vars_Core.md',
+    'REF_Vars_Security.md',
+    'REF_Vars_Networking.md',
+    'REF_Vars_Storage.md',
+    'REF_Vars_Ingress.md'
 ]
 
 for filename in split_files:

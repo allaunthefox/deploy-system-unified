@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path('.').resolve()
 WIKI_DIR = ROOT / 'wiki_pages'
 PROJECT_ROLES = ROOT / 'deploy-system-unified' / 'roles'
-ROLE_REF = WIKI_DIR / 'Role_Reference.md'
+ROLE_REF = WIKI_DIR / 'ROLE_REFERENCE.md'
 
 def slugify(s):
     # Using the same slugify as the linter
@@ -31,7 +31,7 @@ def extract_variables(role_path):
     return vars_found
 
 def get_roles_by_category():
-    """Build a map of category => [roles] from Role_Reference.md."""
+    """Build a map of category => [roles] from ROLE_REFERENCE.md."""
     if not ROLE_REF.exists():
         return {}
     
@@ -58,11 +58,11 @@ def process_categories():
     roles_map = get_roles_by_category()
     
     categories_to_files = {
-        'Containers': 'Variable_Reference_Containers.md',
-        'Core': 'Variable_Reference_Core.md',
-        'Security': 'Variable_Reference_Security.md',
-        'Networking': 'Variable_Reference_Networking.md',
-        'Storage': 'Variable_Reference_Storage.md'
+        'Containers': 'REF_Vars_Containers.md',
+        'Core': 'REF_Vars_Core.md',
+        'Security': 'REF_Vars_Security.md',
+        'Networking': 'REF_Vars_Networking.md',
+        'Storage': 'REF_Vars_Storage.md'
     }
     
     for cat_name, filename in categories_to_files.items():

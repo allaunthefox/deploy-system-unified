@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Script to generate role pages from Role_Reference.md."""
+"""Script to generate role pages from ROLE_REFERENCE.md."""
 
 import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RR = ROOT / 'wiki_pages' / 'Role_Reference.md'
+RR = ROOT / 'wiki_pages' / 'ROLE_REFERENCE.md'
 OUT_DIR = ROOT / 'wiki_pages' / 'roles'
 PROJECT_ROLES = ROOT / 'roles'
 
@@ -114,4 +114,4 @@ for line in lines:
         new_lines.append(line)
 
 RR.write_text('\n'.join(new_lines) + '\n')
-print('Generated', len(role_blocks), 'role pages with variables and updated Role_Reference.md')
+print('Generated', len(role_blocks), 'role pages with variables and updated ROLE_REFERENCE.md')
