@@ -1,0 +1,79 @@
+# YAML Lint Configuration
+# Relaxed for Ansible playbooks while maintaining readability
+
+extends: relaxed
+
+rules:
+  # Allow longer lines for Ansible tasks, URLs, and comments
+  line-length:
+    max: 160
+    level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+
+  # Allow both true/false and yes/no for Ansible compatibility
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+      - 'yes'
+      - 'no'
+      - 'on'
+      - 'off'
+    level: warning
+
+  # Document start marker is optional
+  document-start:
+    present: false
+    level: warning
+
+  # Comments need 2 spaces before #
+  comments:
+    min-spaces-from-content: 1
+    level: warning
+
+  # Allow trailing spaces in some cases (warnings only)
+  trailing-spaces:
+    level: warning
+
+  # Braces spacing - be lenient
+  braces:
+    level: warning
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Bracket spacing - be lenient
+  brackets:
+    level: warning
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Commas - be lenient
+  commas:
+    level: warning
+
+  # Colons - be lenient
+  colons:
+    level: warning
+
+  # Hyphens in lists - be lenient
+  hyphens:
+    level: warning
+
+  # Indentation - use project standard (2 spaces)
+  indentation:
+    spaces: 2
+    level: warning
+    indent-sequences: consistent
+
+  # Key ordering - not enforced
+  key-duplicates:
+    level: error
+
+  # Quoted strings - be lenient
+  quoted-strings:
+    level: ignore
+
+  # Octal values - warning only
+  octal-values:
+    level: warning
