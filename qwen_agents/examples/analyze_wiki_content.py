@@ -49,8 +49,8 @@ def analyze_wiki_content():
     
     # Check for completeness of key documentation
     key_docs = [
-        "Home.md", "Documentation_Index.md", "Role_Reference.md", 
-        "Variable_Reference.md", "ONTOLOGY.md", "STYLE_GUIDE.md"
+        "HOME.md", "DOCUMENTATION_INDEX.md", "ROLE_REFERENCE.md", 
+        "VARIABLE_REFERENCE.md", "ONTOLOGY.md", "STYLE_GUIDE.md"
     ]
     
     print("Checking for key documentation completeness:")
