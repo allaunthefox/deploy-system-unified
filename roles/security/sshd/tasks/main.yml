@@ -20,8 +20,8 @@
     force: false
   become: true
   when:
-    - security_sshd_backup_config.stat.exists is not defined or not security_sshd_config_backup.stat.exists
-    - security_sshd_backup_config | default(true)
+    - security_sshd_config_backup.stat.exists is not defined or not security_sshd_config_backup.stat.exists
+    - security_sshd_config_backup | default(true)
   tags:
     - security
     - sshd
@@ -119,7 +119,7 @@
 
 - name: "ISO 27001 §10.1 | 400101 | Configure SSH protocol and algorithms"
   ansible.builtin.blockinfile:
-    path: /etc/ssh/security_sshd_config
+    path: "{{ security_sshd_config_path }}"
     marker: "# {mark} ANSIBLE MANAGED - SECURITY ALGORITHMS"
     block: |
       # Use only strong ciphers (FIPS 140-2 compliant)
@@ -259,10 +259,10 @@
       PermitTunnel no
       Compression delayed
       ClientAliveInterval 300
-      ClientAliveCountMax 2
+      ClientAliveCountMax 0
       LoginGraceTime 60
-      MaxAuthTries 3
-      MaxSessions 10
+      MaxAuthTries 2
+      MaxSessions 2
       PermitEmptyPasswords no
       PermitRootLogin {{ security_sshd_permit_root_login }}
       PubkeyAuthentication yes
