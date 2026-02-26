@@ -91,7 +91,7 @@ environments.
 
 **In DSU:** Configuration drift is prevented through the Idempotency Contract — every playbook
 run produces `changed=0` on a converged host — and through profile-locked security variables
-that cannot be overridden at runtime. See [Quality_Idempotency_BLOCKERS](Quality_Idempotency_BLOCKERS).
+that cannot be overridden at runtime. See [../wiki_pages/Quality_Idempotency_BLOCKERS](../wiki_pages/Quality_Idempotency_BLOCKERS).
 
 ---
 
@@ -174,7 +174,7 @@ violations, or system compromise.
 
 **In DSU:** Planned capability mapped to Audit Event Identifier Suite 480000–480010 (Threat
 Analysis Suite). Implementation target is `security/automated_threat_analysis`. Currently in
-development; see [Plan_SECURITY_ENHANCEMENT_PLAN_2026](Plan_SECURITY_ENHANCEMENT_PLAN_2026).
+development; see [../wiki_pages/Plan_SECURITY_ENHANCEMENT_PLAN_2026](../wiki_pages/Plan_SECURITY_ENHANCEMENT_PLAN_2026).
 
 ---
 

@@ -37,7 +37,7 @@ ERROR! Host 38.242.222.130 must belong to exactly one ontological profile group
 The `contabo_cloud_vps_30_ssd` group was defined in inventory but not assigned to a production/hardened/ephemeral/dev profile.
 
 **Fix:**  
-Added production ontological profile assignment in [`../inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini):
+Added production ontological profile assignment in [`../../inventory/contabo_cloud_vps_30_ssd.ini`](../../inventory/contabo_cloud_vps_30_ssd.ini):
 
 ```ini
 [production:children]
@@ -281,7 +281,7 @@ $ ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242
 ## Files Modified
 
 ### Inventory & Playbook Configuration
-- [`../inventory/contabo_cloud_vps_30_ssd.ini`](../inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
+- [`../../inventory/contabo_cloud_vps_30_ssd.ini`](../../inventory/contabo_cloud_vps_30_ssd.ini) - Production profile assignment
 - [`base_hardened.yml`](../base_hardened.yml) - Host targeting fix
 
 ### Security Role Fixes

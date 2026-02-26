@@ -1445,7 +1445,7 @@ molecule test --idempotence
 
 ## 🔗 Related Documentation
 
-- [SECURITY_ENHANCEMENT_PLAN_2026](SECURITY_ENHANCEMENT_PLAN_2026.md) - Overall security roadmap
+- [Plan_SECURITY_ENHANCEMENT_PLAN_2026](Plan_SECURITY_ENHANCEMENT_PLAN_2026.md) - Overall security roadmap
 - [ROLE_IMPLEMENTATION_STANDARDS_REVIEW](ROLE_IMPLEMENTATION_STANDARDS_REVIEW.md) - Current state analysis
 - [ROADMAP](../docs/planning/ROADMAP.md) - Project direction
 - [STYLE_GUIDE](STYLE_GUIDE.md) - Implementation standards

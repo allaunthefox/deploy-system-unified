@@ -24,7 +24,7 @@ Versions listed above are not static. To ensure maximum security, performance, a
 Security patches for core components (Ansible, Python, Kernel) are prioritized. When a dependency reaches end-of-life (EOL) or a critical vulnerability is identified, the project will mandate a minimum version increase across the fleet.
 
 ### 3. Stability Gates
-While we move upward, we do so through the stability gates defined in the **[Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)**. Every version increase must pass:
+While we move upward, we do so through the stability gates defined in the **[Stability Plan 2026](Plan_STABILITY_EXECUTION_PLAN_2026)**. Every version increase must pass:
 - FQCN linting.
 - Idempotence verification via Molecule.
 - Style guide enforcement.

@@ -1726,7 +1726,7 @@ ufw status numbered
 
 - [CIS_MAPPING.md](CIS_MAPPING.md) - CIS Benchmark control mapping
 - [STIG_MAPPING.md](STIG_MAPPING.md) - DISA STIG control mapping
-- [SECURITY_ENHANCEMENT_PLAN_2026.md](../../wiki_pages/SECURITY_ENHANCEMENT_PLAN_2026.md) - Security roadmap
+- [Plan_SECURITY_ENHANCEMENT_PLAN_2026.md](../../wiki_pages/Plan_SECURITY_ENHANCEMENT_PLAN_2026.md) - Security roadmap
 
 ---
 

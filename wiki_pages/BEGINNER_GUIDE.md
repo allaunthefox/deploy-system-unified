@@ -146,5 +146,5 @@ ansible-playbook -i inventory/production production_deploy.yml --skip-tags=firew
 ## Getting Help
 
 - Check [Troubleshooting](POTENTIAL_PROBLEMS)
-- Review [Idempotency Blockers](IDEMPOTENCY_BLOCKERS)
+- Review [Idempotency Blockers](Quality_Idempotency_BLOCKERS)
 - Ask in community channels
