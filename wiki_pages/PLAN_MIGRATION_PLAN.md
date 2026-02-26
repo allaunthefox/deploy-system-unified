@@ -65,7 +65,7 @@ Populate `inventory/group_vars/all/secrets.generated.yml` with new keys for all 
 
 ### Phase 2: Deploy Infrastructure
 
-Run `production_deploy.yml` from the repo root to create the structure, users, and networks. (Services will start empty). Use `branch_templates/` only as reference.
+Run `PRODUCTION_DEPLOY.yml` from the repo root to create the structure, users, and networks. (Services will start empty). Use `branch_templates/` only as reference.
 
 ### Phase 3: Dry-Run Migration
 

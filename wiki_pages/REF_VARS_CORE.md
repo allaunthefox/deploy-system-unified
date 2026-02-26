@@ -1,4 +1,4 @@
-# Variable_Reference_Core
+# VARIABLE_REFERENCE_Core
 
 ## Core Variables
 

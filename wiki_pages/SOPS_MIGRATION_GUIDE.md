@@ -110,7 +110,7 @@ Until cutover is approved:
 Example:
 ```bash
 ansible-playbook projects/deploy-system-unified/playbooks/preflight_assertions.yml -i projects/deploy-system-unified/inventory/local.ini
-ansible-playbook projects/deploy-system-unified/production_deploy.yml -i projects/deploy-system-unified/inventory/local.ini --check
+ansible-playbook projects/deploy-system-unified/PRODUCTION_DEPLOY.yml -i projects/deploy-system-unified/inventory/local.ini --check
 ```
 
 ### Phase 5: Cutover Gating Update

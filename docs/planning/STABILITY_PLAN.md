@@ -16,9 +16,9 @@
 
 ## Current Baseline (Reference Points)
 
-- Production template: `production_deploy.yml`.
+- Production template: `PRODUCTION_DEPLOY.yml`.
 - Reference templates: `branch_templates/` (do not deploy directly).
-- Hardened base: `base_hardened.yml`.
+- Hardened base: `BASE_HARDENED.yml`.
 - SSH idempotence guardrails: `docs/deployment/SSH_IDEMPOTENCE_GUARDRAILS.md`.
 - Deployment readiness snapshot: `docs/deployment/DEPLOYMENT_STATUS.md`.
 

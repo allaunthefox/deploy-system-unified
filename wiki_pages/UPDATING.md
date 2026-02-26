@@ -14,7 +14,7 @@ This document explains how to update the GitHub Wiki content and keep it consist
 3. Status: Draft | Stable | Deprecated
 4. Canonical location: path to repository file (if applicable)
 5. Examples & Usage
-6. See also: `Role_Reference`, `Variable_Reference`, or specific variable references (`Variable_Reference_Containers`, `Variable_Reference_Core`, `Variable_Reference_Security`, `Variable_Reference_Networking`, `Variable_Reference_Storage`)
+6. See also: `ROLE_REFERENCE`, `VARIABLE_REFERENCE`, or specific variable references (`VARIABLE_REFERENCE_Containers`, `VARIABLE_REFERENCE_Core`, `VARIABLE_REFERENCE_Security`, `VARIABLE_REFERENCE_Networking`, `VARIABLE_REFERENCE_Storage`)
 
 ## How to add a placeholder
 - Create `wiki_pages/NAME.md` and set a short note pointing to the canonical YAML or repo file.

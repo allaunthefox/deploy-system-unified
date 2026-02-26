@@ -49,8 +49,8 @@ def analyze_wiki_content():
     
     # Check for completeness of key documentation
     key_docs = [
-        "Home.md", "Documentation_Index.md", "Role_Reference.md", 
-        "Variable_Reference.md", "ONTOLOGY.md", "STYLE_GUIDE.md"
+        "HOME.md", "DOCUMENTATION_INDEX.md", "ROLE_REFERENCE.md", 
+        "VARIABLE_REFERENCE.md", "ONTOLOGY.md", "STYLE_GUIDE.md"
     ]
     
     print("Checking for key documentation completeness:")
@@ -85,8 +85,8 @@ def analyze_wiki_content():
     # Analyze the role documentation completeness
     print("Analyzing role documentation completeness:")
     
-    # Get all documented roles from Role_Reference.md
-    role_ref_path = wiki_dir / "Role_Reference.md"
+    # Get all documented roles from ROLE_REFERENCE.md
+    role_ref_path = wiki_dir / "ROLE_REFERENCE.md"
     if role_ref_path.exists():
         role_ref_content = role_ref_path.read_text()
         

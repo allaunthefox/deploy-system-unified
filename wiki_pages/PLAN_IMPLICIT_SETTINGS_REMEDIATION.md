@@ -318,7 +318,7 @@ Container Runtime:
 
 ## Related Documents
 
-- [`Plan_DETERMINISM_ROADMAP.md`](Plan_DETERMINISM_ROADMAP.md) - Overall determinism strategy
+- [`PLAN_DETERMINISM_ROADMAP.md`](PLAN_DETERMINISM_ROADMAP.md) - Overall determinism strategy
 - [`inventory/group_vars/all/hardened_supply_chain.yml`](inventory/group_vars/all/hardened_supply_chain.yml) - Checksum configuration
 - [`inventory/group_vars/all/os_settings.yml`](inventory/group_vars/all/os_settings.yml) - Profile definitions
 - [`playbooks/preflight_validate.yml`](playbooks/preflight_validate.yml) - Validation logic

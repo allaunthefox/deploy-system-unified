@@ -13,7 +13,7 @@ This runbook details the procedures for recovering the system from various failu
 
 ```bash
 # From Controller
-ansible-playbook -i inventory/production.ini production_deploy.yml
+ansible-playbook -i inventory/production.ini PRODUCTION_DEPLOY.yml
 ```
 
 ### 2. Data Loss (Volume Restoration)
@@ -49,7 +49,7 @@ ansible-playbook -i inventory/production.ini production_deploy.yml
 **Procedure:**
 1. **Provision:** Install base OS (Debian/Ubuntu) on new hardware.
 2. **Bootstrap:** Configure SSH access.
-3. **Deploy Config:** Run Ansible `production_deploy.yml` (This installs Docker, Restic, etc.).
+3. **Deploy Config:** Run Ansible `PRODUCTION_DEPLOY.yml` (This installs Docker, Restic, etc.).
 4. **Restore Data:**
    - Stop Docker: `systemctl stop docker`
    - Run Restore Script: `/usr/local/bin/restore_data.sh` (or manual restic restore)

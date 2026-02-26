@@ -1,4 +1,4 @@
-# Role_Reference_Security
+# ROLE_REFERENCE_Security
 
 This document provides detailed information about security-related roles in Deploy-System-Unified.
 
@@ -43,6 +43,6 @@ Security roles map to major compliance frameworks:
 
 ## See Also
 
-- [Variable Reference: Security](Variable_Reference_Security)
+- [Variable Reference: Security](REF_VARS_SECURITY)
 - [Security Audit Report](SECURITY_AUDIT_REPORT)
 - [Layered Security](LAYERED_SECURITY)

@@ -4,8 +4,8 @@ This diagram visualizes how the **Deploy-System-Unified** project enforces foren
 
 ```mermaid
 graph TD
-    A[User / CI] -->|Executes| B[production_deploy.yml]
-    B -->|Imports| C[base_hardened.yml]
+    A[User / CI] -->|Executes| B[PRODUCTION_DEPLOY.yml]
+    B -->|Imports| C[BASE_HARDENED.yml]
     
     subgraph "Forensic Enforcement Layer"
         C -->|Runs Wrapper| D{tasks/run_role.yml}
@@ -35,7 +35,7 @@ graph TD
 
 ## 🧩 Components
 
-1.  **Entrypoint**: `production_deploy.yml` serves as the compliant launchpad.
+1.  **Entrypoint**: `PRODUCTION_DEPLOY.yml` serves as the compliant launchpad.
 2.  **Wrapper**: `run_role.yml` ensures that even role switches are forensically logged.
 3.  **Audit Event Identifiers**: Unique 6-digit codes map actions to ISO standards.
 4.  **Loki/Grafana**: The destination for all forensic telemetry.

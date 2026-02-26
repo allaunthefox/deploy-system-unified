@@ -1,4 +1,4 @@
-# Variable_Reference_Networking
+# VARIABLE_REFERENCE_Networking
 
 ## Networking Variables
 

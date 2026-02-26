@@ -15,9 +15,9 @@ Deploy-System-Unified (DSU) is an industry-leading, audit-ready infrastructure-a
 
 ## 📖 Navigation
 
-- **[Documentation Index](Documentation_Index)**: The master map of all available guides.
-- **[Role Reference](Role_Reference)**: Systematic breakdown of every Ansible role.
-- **[Variable Reference](Variable_Reference)**: Definitive dictionary of all configuration variables.
+- **[Documentation Index](DOCUMENTATION_INDEX)**: The master map of all available guides.
+- **[Role Reference](ROLE_REFERENCE)**: Systematic breakdown of every Ansible role.
+- **[Variable Reference](VARIABLE_REFERENCE)**: Definitive dictionary of all configuration variables.
 - **[Ontology & Profiles](ONTOLOGY)**: Understanding the security and infrastructure framework.
 - **[Deployment Status](DEPLOYMENT_STATUS)**: Current system readiness and compliance certification.
 
@@ -25,7 +25,7 @@ Deploy-System-Unified (DSU) is an industry-leading, audit-ready infrastructure-a
 
 To deploy the canonical production solution:
 ```bash
-ansible-playbook production_deploy.yml -i inventory/your_inventory.ini
+ansible-playbook PRODUCTION_DEPLOY.yml -i inventory/your_inventory.ini
 ```
 
 See the **[Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)** for step-by-step instructions.
@@ -34,5 +34,5 @@ See the **[Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)** for step-by-step instruc
 
 **Audit Mode:** To run a compliance-only check without changes:
 ```bash
-ansible-playbook production_deploy.yml --tags audit
+ansible-playbook PRODUCTION_DEPLOY.yml --tags audit
 ```

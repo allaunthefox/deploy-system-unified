@@ -24,7 +24,7 @@ The system uses a "Template" architecture. Do not edit `site.yml` directly. Inst
 
 **Available Templates (`branch_templates/`)**:
 
-- `base_hardened.yml`: Minimal security baseline.
+- `BASE_HARDENED.yml`: Minimal security baseline.
 - `contabo_cloud_vps_30_ssd.yml`: Contabo VPS optimized (Media Stack).
 - `bare_metal_hardened.yml`: Physical server defaults.
 - `gpu_slicing_*.yml`: Specialized GPU profiles.

@@ -6,13 +6,13 @@ Deploy-System-Unified utilizes a layered architecture to maintain a clear separa
 
 "The Base" defines the system's security personality and foundational environment. It is intended to be workload-agnostic.
 
-### [Base Hardened](../../wiki_pages/base_hardened.md)
+### [Base Hardened](../../wiki_pages/BASE_HARDENED.md)
 The standard foundation for persistent systems (Bare Metal, VPS, VMs).
 - **Security**: Firewall (L3/L4), SSH hardening (L7), Kernel hardening.
 - **Consistency**: Time synchronization (Chrony), Repository initialization.
 - **Audit**: Log integrity and system auditing (auditd).
 
-### [Base Ephemeral](../../wiki_pages/base_ephemeral.md)
+### [Base Ephemeral](../../wiki_pages/BASE_EPHEMERAL.md)
 A specialized foundation for high-security, zero-footprint environments.
 - **Volatility**: RAM-disk backed structures.
 - **Security**: Aggressive shredding on cleanup, immutable audit trails.
@@ -23,9 +23,9 @@ A specialized foundation for high-security, zero-footprint environments.
 
 "The Stack" is the application layer that sits on top of a Base. Stacks are typically represented by branch templates or specific solution playbooks.
 
-### [Production Deploy](../../wiki_pages/production_deploy.md)
+### [Production Deploy](../../wiki_pages/PRODUCTION_DEPLOY.md)
 The canonical production stack.
-- **Foundation**: Imports `base_hardened.yml`.
+- **Foundation**: Imports `BASE_HARDENED.yml`.
 - **Workload**: Container runtimes (Podman), Orchestration (Quadlets), Reverse Proxy (Caddy).
 - **Integrity**: Integrated security scanning.
 
