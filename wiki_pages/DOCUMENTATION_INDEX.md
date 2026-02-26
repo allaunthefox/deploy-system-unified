@@ -11,7 +11,11 @@ The core logic and design patterns governing the project.
 *   **[Ontology & Profiles](ONTOLOGY)**: Formal mapping of security postures to hardware.
 *   **[Modular Layers](MODULAR_LAYERS)**: The 7-layer defense-in-depth model.
 *   **[Core Philosophy](NON_COMINGLING)**: Separation of Concerns (SoC) — the foundational rule for task modularity.
+<<<<<<<< HEAD:wiki_pages/DOCUMENTATION_INDEX.md
 *   **[High-Resilience Plan](PLAN_HIGH_RESILIENCE_PLAN_2026)**: The project's security roadmap and HRoT mandate.
+========
+*   **[High-Resilience Plan](Plan_HIGH_RESILIENCE_PLAN_2026)**: The project's security roadmap and HRoT mandate.
+>>>>>>>> main:wiki_pages/Documentation_Index.md
 *   **[Volatile Design](EPHEMERAL_DESIGN)**: Zero-footprint and RAM-disk secret infrastructure (Ephemeral Credentials).
 *   **[Layered Security](LAYERED_SECURITY)**: Coordination between firewall, MAC, and kernel hardening.
 *   **Architecture Guides**: [x86](ARCH_X86) | [ARM64](ARCH_ARM64) | [RISC-V](ARCH_RISCV64)
@@ -56,9 +60,14 @@ Optimizing for specific architectures and GPUs.
 Tools and standards for contributing to DSU.
 
 *   **[Documentation Style Guide](DOCUMENTATION_STYLE_GUIDE)**: Standards for all project documentation.
+<<<<<<<< HEAD:wiki_pages/DOCUMENTATION_INDEX.md
 *   **[Naming Convention Standard](NAMING_CONVENTION_STANDARD)**: SCREAMING_SNAKE_CASE file naming standard.
 *   **[Ansible Style Guide](ANSIBLE_STYLE_GUIDE)**: Task naming, lint rules, and role structure.
 *   **[Style Guide Overview](STYLE_GUIDE)**: Standards for [YAML](DEV_STYLE_YAML_STYLE_GUIDE), [Ansible](DEV_STYLE_ANSIBLE_STYLE_GUIDE), [Shell](DEV_STYLE_SHELL_STYLE_GUIDE), and [Docs](DEV_STYLE_DOCUMENTATION_STYLE_GUIDE).
+========
+*   **[Ansible Style Guide](ANSIBLE_STYLE_GUIDE)**: Task naming, lint rules, and role structure.
+*   **[Style Guide Overview](STYLE_GUIDE)**: Standards for [YAML](Dev_Style_YAML_Style_Guide), [Ansible](Dev_Style_Ansible_Style_Guide), [Shell](Dev_Style_Shell_Style_Guide), and [Docs](Dev_Style_Documentation_Style_Guide).
+>>>>>>>> main:wiki_pages/Documentation_Index.md
 *   **[Development Tooling](TOOLING)**: Usage guide for style enforcement and repair tools.
 *   **[Pre-commit Hooks](PRE_COMMIT)**: Local linting and secret detection setup.
 *   **[Testing Framework](TESTING_NEGATIVE_IMPLEMENTATION)**: Comprehensive guide to [Negative Testing](TESTING_NEGATIVE_IMPLEMENTATION) and [Idempotency Verification](QUALITY_IDEMPOTENCY_BLOCKERS).
@@ -70,9 +79,15 @@ Tools and standards for contributing to DSU.
 ## 📊 6. Reference Library
 Technical lookup for roles and variables.
 
+<<<<<<<< HEAD:wiki_pages/DOCUMENTATION_INDEX.md
 *   **[Role Reference](ROLE_REFERENCE)**: Master list of all 81+ Ansible roles.
 *   **[Variable Reference](VARIABLE_REFERENCE)**: Global and role-specific variable definitions.
 *   **[Audit Event Identifier Catalog](DSU_AUDIT_EVENT_IDENTIFIERS)**: 480+ forensic audit codes mapped to ISO standards.
+========
+*   **[Role Reference](Role_Reference)**: Master list of all 81+ Ansible roles.
+*   **[Variable Reference](Variable_Reference)**: Global and role-specific variable definitions.
+*   **[Audit Event Identifier Catalog](DSU_ACTION_CODES_COMPLETE)**: 480+ forensic audit codes mapped to ISO standards.
+>>>>>>>> main:wiki_pages/Documentation_Index.md
 
 ---
 
