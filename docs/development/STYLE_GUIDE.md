@@ -152,7 +152,7 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 * **Compliance Tagging**:
     * **CIS Benchmarks**: Use `cis_<id>` (e.g., `cis_5_2_1`).
     * **ISO 27001**: Use `iso_27001_<section>` (e.g., `iso_27001_10_1`).
-    * **Forensic Alignment**: Tags must align with the `DSU_ACTION_CODES_COMPLETE.md` catalog.
+    * **Forensic Alignment**: Tags must align with the `DSU_AUDIT_EVENT_IDENTIFIERS.md` catalog.
     * See [ISO Tagging Standard](ISO_TAGGING_STANDARD.md) for the full ontology.
 * **Dependencies Section**: Include an empty `dependencies: []` section even if no dependencies exist.
 * **Runtime Requirements**: For collections (which this project emulates with roles), add `meta/runtime.yml` to specify ansible-core version requirements:

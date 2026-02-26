@@ -83,7 +83,7 @@ Standard prefixes help organize files by category:
 | `REF_` | Reference Documents | `REF_VARS_*.md`, `REF_ROLES_*.md` |
 | `QUALITY_` | Quality Standards | `QUALITY_IDEMPOTENCY_BLOCKERS.md` |
 | `TESTING_` | Testing Documentation | `TESTING_NEGATIVE_IMPLEMENTATION.md` |
-| `DSU_` | DSU Standards | `DSU_ACTION_CODES_COMPLETE.md`, `DSU_6767_REGISTRY.md` |
+| `DSU_` | DSU Standards | `DSU_AUDIT_EVENT_IDENTIFIERS.md`, `DSU_6767_REGISTRY.md` |
 
 ---
 

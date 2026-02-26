@@ -72,7 +72,7 @@ Technical lookup for roles and variables.
 
 *   **[Role Reference](ROLE_REFERENCE)**: Master list of all 81+ Ansible roles.
 *   **[Variable Reference](VARIABLE_REFERENCE)**: Global and role-specific variable definitions.
-*   **[Audit Event Identifier Catalog](DSU_ACTION_CODES_COMPLETE)**: 480+ forensic audit codes mapped to ISO standards.
+*   **[Audit Event Identifier Catalog](DSU_AUDIT_EVENT_IDENTIFIERS)**: 480+ forensic audit codes mapped to ISO standards.
 
 ---
 

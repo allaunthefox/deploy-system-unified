@@ -94,7 +94,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Security Audit Report](./security/SECURITY_AUDIT_REPORT.md)**: Comprehensive security assessment and role analysis.
 * **[Threat Model](./security/THREAT_MODEL.md)**: STRIDE analysis and residual risk assessment.
 * **[Forensic Standards](./security/FORENSIC_STANDARDS.md)**: Mandatory task naming and Audit Event Identifier convention.
-* **[Audit Event Identifier Catalog](../DSU_ACTION_CODES_COMPLETE.md)**: 480+ forensic audit codes mapped to ISO standards.
+* **[Audit Event Identifier Catalog](../DSU_AUDIT_EVENT_IDENTIFIERS.md)**: 480+ forensic audit codes mapped to ISO standards.
 * **[Forensic Restoration Runbook](./RESTORE_RUNBOOK.md)**: Step-by-step guide for ISO 27040 data restoration.
 
 ### [6. Planning](./planning/SUMMARY.md)

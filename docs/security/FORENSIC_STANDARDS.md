@@ -23,7 +23,7 @@ The compliance control that justifies the action.
 - Examples: `ISO 27001 §10.1`, `NIST IA-2`, `CIS 1.1.1`
 
 ### 2. Audit Event Identifier (The What)
-A unique 6-digit code from the `DSU_ACTION_CODES_COMPLETE.md` catalog.
+A unique 6-digit code from the `DSU_AUDIT_EVENT_IDENTIFIERS.md` catalog.
 - `3xxxxx`: System Lifecycle
 - `4xxxxx`: Security Operations
 - `5xxxxx`: IDENTITY / App Ops
@@ -60,7 +60,7 @@ A concise, human-readable description of the action.
 The **Forensic Naming Enforcer** (GitHub Action) automatically scans all PRs for this pattern. Tasks that lack a valid code or standard will fail the build.
 
 ### How to choose a code:
-1. Open `DSU_ACTION_CODES_COMPLETE.md`.
+1. Open `DSU_AUDIT_EVENT_IDENTIFIERS.md`.
 2. Search for your task's intent (e.g., "firewall", "user create").
 3. Copy the corresponding code and ISO section.
 

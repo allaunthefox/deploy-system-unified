@@ -132,10 +132,10 @@ This project implements a rigorous **forensic traceability** framework linking c
 
 Every critical task in this repository follows a strict forensic naming convention:
 
-`[Standard] | [Action Code] | [Name]`
+`[Standard] | [Audit Event Identifier] | [Name]`
 
 - **Standard**: The compliance control (e.g., `ISO 27001 §12.4`)
-- **Action Code**: A unique 6-digit code mapped to the **DSU Action Code Catalog**.
+- **Audit Event Identifier**: A unique 6-digit code mapped to the **DSU Audit Event Identifier Catalog**.
 - **Name**: A clear description of the task.
 
 This ensures every action performed by Ansible leaves a high-fidelity auditable trace in our **Loki/Grafana** dashboards.
@@ -149,7 +149,7 @@ This ensures every action performed by Ansible leaves a high-fidelity auditable 
 | **ISO/IEC 27040:2024** | Storage Security | Automated `restore_test` enabled |
 | **NIST SP 800-193** | Platform Firmware | Full compliance |
 | **Autonomic Recovery**| **ISO 27040** (Storage) | Automated restore verification |
-| **Forensic Intelligence**| **ISO 27001** (§12.4) | Loki-backed `Action Code` dashboards |
+| **Forensic Intelligence**| **ISO 27001** (§12.4) | Loki-backed `Audit Event Identifier` dashboards |
 
 ---
 

@@ -135,7 +135,7 @@ compliance control. Identifiers are grouped into suites by concern domain.
 
 Governing standard: ISO/IEC 27001:2022 §8.15; NIST SP 800-53 Rev 5 AU-3.
 
-The full registry is in [DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE).
+The full registry is in [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS).
 
 Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [Description]`
 
@@ -182,5 +182,5 @@ Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [D
 - [MODULAR_LAYERS](MODULAR_LAYERS) — The 7-layer defense-in-depth architecture
 - [ISO_TAGGING_STANDARD](ISO_TAGGING_STANDARD) — Tag naming and compliance mapping
 - [QUALITY_IDEMPOTENCY_BLOCKERS](QUALITY_IDEMPOTENCY_BLOCKERS) — Idempotency contract
-- [DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE) — Full Audit Event Identifier registry
+- [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS) — Full Audit Event Identifier registry
 - [LLM_MAP](LLM_MAP) — AI agent usage guide

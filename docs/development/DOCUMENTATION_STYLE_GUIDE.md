@@ -121,7 +121,7 @@ Use the **Formal Term** as the primary label in all documentation.
 | Formal Term (Primary) | Do Not Use |
 |---|---|
 | Separation of Concerns (SoC) | "non-comingling", "anti-comingling", "task isolation" |
-| Audit Event Identifier | Action Code | "action code", "audit code", "event ID" |
+| Audit Event Identifier | Audit Event Identifier | "audit event identifier", "audit code", "event ID" |
 | Audit Log Retention Class | Forensic Grade | "forensic grade", "log level" |
 | Security Observability | Forensic Intelligence | "forensic intelligence", "forensic stack" |
 | Automated Recovery Verification | Autonomic Recovery | "autonomic recovery", "auto-restore" |

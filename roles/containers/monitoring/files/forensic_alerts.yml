@@ -9,7 +9,7 @@ groups:
           standard: ISO27001_8_26
         annotations:
           summary: "Forensic Alert: Container Breakout Attempt Detected"
-          description: "Action Code 410101 (Unauthorized breakout) detected in system logs on {{ $labels.instance }}."
+          description: "Audit Event Identifier 410101 (Unauthorized breakout) detected in system logs on {{ $labels.instance }}."
 
       - alert: UnauthorizedAuditClear
         expr: count_over_time({job="varlogs"} |= "Action 520003" [5m]) > 0
@@ -19,7 +19,7 @@ groups:
           standard: ISO27037
         annotations:
           summary: "Forensic Alert: Audit Log Cleared"
-          description: "Action Code 520003 (LOG CLEARED) detected. Potential anti-forensic activity."
+          description: "Audit Event Identifier 520003 (LOG CLEARED) detected. Potential anti-forensic activity."
 
       - alert: SupplyChainViolation
         expr: count_over_time({job="varlogs"} |= "Action 700015" [5m]) > 0
@@ -29,4 +29,4 @@ groups:
           standard: ISO27001_14_2
         annotations:
           summary: "Forensic Alert: Untrusted Image Deployment"
-          description: "Action Code 700015 (UNTRUSTED IMAGE) detected. Signature verification failed."
+          description: "Audit Event Identifier 700015 (UNTRUSTED IMAGE) detected. Signature verification failed."

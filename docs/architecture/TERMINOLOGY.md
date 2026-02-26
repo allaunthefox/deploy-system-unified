@@ -14,7 +14,7 @@ All documentation in this project must use the **Formal Term** as the primary la
 ---
 
 ### Audit Event Identifier
-**DSU Shorthand:** Action Code
+**DSU Shorthand:** Audit Event Identifier
 
 **Definition:** A unique numeric identifier assigned to each auditable system event, enabling
 bidirectional tracing between a task execution and the compliance control it satisfies.
@@ -28,7 +28,7 @@ bidirectional tracing between a task execution and the compliance control it sat
 **In DSU:** Audit Event Identifiers are 6-digit integers (e.g., `300001`) grouped into suites
 by concern domain. They appear in every task name following the pattern
 `[Standard] | [Identifier] | [Description]`. The full catalog is in
-[DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE).
+[DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS).
 
 ---
 
