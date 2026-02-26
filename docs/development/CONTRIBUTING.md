@@ -4,7 +4,7 @@ We welcome contributions to Deploy-System-Unified! This document outlines the pr
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our Code of Conduct.
+By participating in this project, contributors agree to abide by the Code of Conduct.
 
 ## How Can I Contribute?
 
@@ -55,7 +55,7 @@ python3 .scripts/wiki_wiki_lint.py --json
 python3 .scripts/wiki_wiki_lint.py --fix-h1 --create-placeholders
 ```
 
-- Open a PR with your changes and include the linter output (JSON or summary) in the PR description. The repository has a GitHub Action (`.github/workflows/wiki-lint.yml`) that enforces wiki hygiene on PRs and pushes.
+- Open a PR with changes and include the linter output (JSON or summary) in the PR description. The repository has a GitHub Action (`.github/workflows/wiki-lint.yml`) that enforces wiki hygiene on PRs and pushes.
 
 Guidelines:
 - Don't change H1s without reviewer consent if it's a content/title-sensitive page.
@@ -75,5 +75,5 @@ To master the orchestration patterns used in this project, we recommend completi
 
 1. Fork the repository
 2. Create a feature branch from `main`
-3. Make your changes
+3. Make changes
 4. Submit a pull request

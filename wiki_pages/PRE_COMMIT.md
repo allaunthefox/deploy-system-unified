@@ -51,4 +51,4 @@ To run all configured pre-commit hooks on all files (useful before pushing):
 
 ## Notes
 - The pre-commit hook is intentionally conservative and uses the same enforcement script that CI runs, keeping local and CI behavior aligned.
-- If you need to skip the hook for a quick commit, use: `git commit --no-verify` (but avoid doing so routinely).
+- To skip the hook for a quick commit, use: `git commit --no-verify` (but avoid doing so routinely).

@@ -25,7 +25,7 @@ This document explains how to update the GitHub Wiki content and keep it consist
 
 ## Troubleshooting
 - If the linter reports a missing page used by a sidebar, add a small placeholder page and link from the sidebar to that page.
-- If you need to change existing H1s organization-wide, raise a PR explaining the reason and perform the change in a single commit with a migration note.
+- To change existing H1s organization-wide, raise a PR explaining the reason and perform the change in a single commit with a migration note.
 Auto-publish test: 2026-02-10
 
 Auto-publish test 2: 2026-02-10

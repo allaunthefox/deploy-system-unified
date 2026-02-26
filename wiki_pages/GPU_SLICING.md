@@ -65,7 +65,7 @@ The implementation supports the following GPU vendors and frameworks:
 
 ## Usage
 
-To use GPU slicing, you need to configure variables for both the **Driver Stack** and the **Container Runtime**.
+To use GPU slicing, variables must be configured for both the **Driver Stack** and the **Container Runtime**.
 
 ### Driver Stack (`hardware/gpu`)
 

@@ -34,7 +34,7 @@ The system now features an **Advanced Discovery Engine** (`gpu_discovery.py`):
 
 ### Precision Resource Allocation (Pinning)
 
-For multi-GPU systems, you can pin specific containers to specific hardware using stable PCI paths.
+For multi-GPU systems, specific containers can be pinned to specific hardware using stable PCI paths.
 
 ```yaml
 containers_gpu_allocation_map:
@@ -67,7 +67,7 @@ gpu_stack_enable_oneapi: true  # Intel OneAPI Base Toolkit
 
 ### RHEL-Compatible (AlmaLinux/Rocky/CentOS Stream) GPG Key Verification (Optional)
 
-For hardened environments, you can enable repository key verification for NVIDIA CUDA and AMD ROCm on RHEL-compatible distributions (AlmaLinux/Rocky/CentOS Stream). Verification is **opt-in** to avoid breaking when vendors rotate keys.
+For hardened environments, repository key verification can be enabled for NVIDIA CUDA and AMD ROCm on RHEL-compatible distributions (AlmaLinux/Rocky/CentOS Stream). Verification is **opt-in** to avoid breaking when vendors rotate keys.
 
 ```yaml
 # NVIDIA (RHEL-compatible)
