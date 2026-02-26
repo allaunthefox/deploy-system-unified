@@ -4,10 +4,10 @@
 ---
 
 ### 🏛️ Architecture
+- [Terminology](TERMINOLOGY)
 - [Ontology & Profiles](ONTOLOGY)
 - [Modular Layers](MODULAR_LAYERS)
 - [Layered Security](LAYERED_SECURITY)
-- [High-Resilience Plan](Plan_HIGH_RESILIENCE_PLAN_2026)
 - [Core Philosophy](NON_COMINGLING)
 - [Arch: x86](Arch_X86)
 - [Arch: ARM64](Arch_ARM64)
@@ -41,6 +41,8 @@
 ---
 
 ### 💻 Development
+- [Documentation Style Guide](DOCUMENTATION_STYLE_GUIDE)
+- [Ansible Style Guide](ANSIBLE_STYLE_GUIDE)
 - [Style Guide](STYLE_GUIDE)
 - [Tooling](TOOLING)
 - [Testing Framework](Testing_Negative_IMPLEMENTATION)
