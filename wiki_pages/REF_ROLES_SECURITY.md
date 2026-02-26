@@ -43,6 +43,10 @@ Security roles map to major compliance frameworks:
 
 ## See Also
 
+<<<<<<<< HEAD:wiki_pages/REF_ROLES_SECURITY.md
 - [Variable Reference: Security](REF_VARS_SECURITY)
+========
+- [Variable Reference: Security](REF_Vars_Security)
+>>>>>>>> c42ffcf4 (Rename wiki pages to SCREAMING_SNAKE_CASE convention):wiki_pages/REF_Roles_Security.md
 - [Security Audit Report](SECURITY_AUDIT_REPORT)
 - [Layered Security](LAYERED_SECURITY)
