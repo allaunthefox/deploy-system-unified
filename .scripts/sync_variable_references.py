@@ -58,11 +58,11 @@ def process_categories():
     roles_map = get_roles_by_category()
     
     categories_to_files = {
-        'Containers': 'REF_Vars_Containers.md',
-        'Core': 'REF_Vars_Core.md',
-        'Security': 'REF_Vars_Security.md',
-        'Networking': 'REF_Vars_Networking.md',
-        'Storage': 'REF_Vars_Storage.md'
+        'Containers': 'REF_VARS_CONTAINERS.md',
+        'Core': 'REF_VARS_CORE.md',
+        'Security': 'REF_VARS_SECURITY.md',
+        'Networking': 'REF_VARS_NETWORKING.md',
+        'Storage': 'REF_VARS_STORAGE.md'
     }
     
     for cat_name, filename in categories_to_files.items():

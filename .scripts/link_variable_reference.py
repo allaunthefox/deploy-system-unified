@@ -71,14 +71,14 @@ elif modified:
 else:
     print("VARIABLE_REFERENCE.md already up to date.")
 
-# Handle the split variable reference files (REF_Vars_ prefix)
+# Handle the split variable reference files (REF_VARS_ prefix)
 split_files = [
-    'REF_Vars_Containers.md',
-    'REF_Vars_Core.md',
-    'REF_Vars_Security.md',
-    'REF_Vars_Networking.md',
-    'REF_Vars_Storage.md',
-    'REF_Vars_Ingress.md'
+    'REF_VARS_CONTAINERS.md',
+    'REF_VARS_CORE.md',
+    'REF_VARS_SECURITY.md',
+    'REF_VARS_NETWORKING.md',
+    'REF_VARS_STORAGE.md',
+    'REF_VARS_INGRESS.md'
 ]
 
 for filename in split_files:

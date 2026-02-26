@@ -37,6 +37,6 @@ Container roles support multi-tenant deployments:
 
 ## See Also
 
-- [Variable Reference: Containers](REF_Vars_Containers)
+- [Variable Reference: Containers](REF_VARS_CONTAINERS)
 - [Container Runtime](CONTAINER_RUNTIME)
 - [Media Stack](MEDIA_STACK_V2)
