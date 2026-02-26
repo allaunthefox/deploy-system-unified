@@ -18,7 +18,7 @@ This project implements a 5-layer Defense-in-Depth model. This threat model anal
 |--------|-------------|------------|--------|
 | **Spoofing** | Unauthorized user or host impersonation. | `security/sshd` (PQC/Keys), `core/identity` (Unique UUIDs). | ✅ Hardened |
 | **Tampering**| Malicious modification of roles or container images. | `security/sbom`, `security/file_integrity`, `cosign` verification. | ✅ Hardened |
-| **Repudiation**| Actions taken without an auditable trail. | Mandatory **Forensic Action Codes** (Loki/Grafana). | ✅ Hardened |
+| **Repudiation**| Actions taken without an auditable trail. | Mandatory **Audit Event Identifiers** (Loki/Grafana). | ✅ Hardened |
 | **Information Disclosure** | Leakage of secrets or sensitive logs. | **SOPS/Age** encryption, `detect-secrets` CI scan. | ✅ Hardened |
 | **Denial of Service** | Resource exhaustion attacking host or services. | `security/resource_protection` (ulimits), `security/ips`. | ✅ Hardened |
 | **Elevation of Privilege** | Container breakout or sudo escalation. | **Rootless Podman**, `security/sandboxing` (Firejail/Bubblewrap). | ✅ Hardened |

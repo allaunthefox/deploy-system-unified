@@ -45,3 +45,18 @@ containers_crowdsec_collections: "{{ crowdsec_collections | default(['crowdsecur
 
 # GPU Support (Inherited logic from Quadlets)
 containers_quadlet_enable_gpu_support: "{{ quadlet_enable_gpu_support | default(false) }}"
+
+# Timeout configuration (prevent startup failures on slow networks)
+containers_caddy_timeout_start: "{{ caddy_timeout_start | default(900) }}"
+containers_caddy_timeout_stop: "{{ caddy_timeout_stop | default(70) }}"
+
+# Image pull backoff (prevent registry rate-limit bans)
+containers_caddy_pull_policy: "{{ caddy_pull_policy | default('newer') }}"
+containers_caddy_pull_retry: "{{ caddy_pull_retry | default(5) }}"
+containers_caddy_pull_retry_delay: "{{ caddy_pull_retry_delay | default('30s') }}"
+containers_caddy_image_digest: "{{ caddy_image_digest | default('') }}"
+
+# Crowdsec pull backoff
+containers_crowdsec_pull_policy: "{{ crowdsec_pull_policy | default('newer') }}"
+containers_crowdsec_pull_retry: "{{ crowdsec_pull_retry | default(5) }}"
+containers_crowdsec_pull_retry_delay: "{{ crowdsec_pull_retry_delay | default('30s') }}"

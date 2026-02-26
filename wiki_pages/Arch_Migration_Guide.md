@@ -35,7 +35,7 @@ Templates are now organized by architecture.
 
 ### For ARM64 (Jetson/Server) Deployments
 
-1. Ensure your inventory sets `ansible_host` to the correct IP.
+1. Ensure the inventory sets `ansible_host` to the correct IP.
 2. If using templates, switch to using the files in `branch_templates/aarch64/`.
 3. Set `containers_gpu_vendor: nvidia` (default) for both Jetson (Tegra) and Grace Hopper. The role now auto-detects the specific driver needs (skipping kernel drivers on Jetson L4T).
 
@@ -46,4 +46,4 @@ If you maintain custom roles that interact with GPU hardware, verify they respec
 ## Troubleshooting
 
 - **Error**: "No GPU support found for Arch: ..."
-    - **Fix**: Ensure your `ansible_architecture` fact is correct. If running on a new architecture, you may need to add a generic fallback in the role structure.
+    - **Fix**: Ensure the `ansible_architecture` fact is correct. If running on a new architecture, a generic fallback may need to be added in the role structure.

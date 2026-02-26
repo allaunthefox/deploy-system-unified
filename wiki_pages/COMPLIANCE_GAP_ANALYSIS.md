@@ -24,7 +24,7 @@ The **Base Layer** and **compliance metadata** layers are now **100% complete**.
 
 ### Phase 2: Tagging Expansion (Weeks 5-8) - CLOSED ✅
 - [x] Backport `cis_`, `iso_27001_`, and `nist_` tags to all security and networking roles.
-- [x] Align all task names with the Action Code Catalog.
+- [x] Align all task names with the Audit Event Identifier Catalog.
 
 ### Phase 3: Validation (Weeks 9-12) - CLOSED ✅
 - [x] Implement automated compliance reporting playbooks.

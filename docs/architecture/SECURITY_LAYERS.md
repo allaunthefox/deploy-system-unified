@@ -35,7 +35,7 @@ graph BT
 
 ## 🛡️ The 5-Layer Model
 
-| Layer | Roles Involved | Action Code Range | Purpose |
+| Layer | Roles Involved | Audit Event Identifier Range | Purpose |
 |-------|----------------|-------------------|---------|
 | **1. Kernel** | `security/kernel`, `core/grub` | `45xxxx` | Establish root of trust and memory protection. |
 | **2. OS** | `security/hardening`, `security/sshd` | `40xxxx`, `51xxxx` | Attack surface reduction and forensic logging. |

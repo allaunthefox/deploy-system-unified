@@ -26,7 +26,7 @@ In complex stacks where **LXC (LXD)** and **Kubernetes (K3s)** coexist on the sa
 - **Verification**: `ops/preflight` now checks for CIDR conflicts.
 
 ### 2. Forensic Tagging
-- **Rule**: Every interaction between runtimes must be tagged with **Action Code 820205** (K8s Service Created) or **700030** (Network Create).
+- **Rule**: Every interaction between runtimes must be tagged with **Audit Event Identifier 820205** (K8s Service Created) or **700030** (Network Create).
 
 ### 3. Ingress-Only Communication
 - **Rule**: All traffic between an LXC application and a Kubernetes service MUST pass through the **Caddy Reverse Proxy**.

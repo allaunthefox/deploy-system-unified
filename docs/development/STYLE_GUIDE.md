@@ -414,7 +414,7 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
     - **Least-privilege at import time**: the shim must not perform network calls, spawn subprocesses, or write files during import.
     - **Explicit exports**: `__all__` must enumerate safe public symbols (no wildcard or internal markers).
 
-    If you must change the shim, follow these steps:
+    If the shim must be changed, follow these steps:
     1. Add/modify the shim in `ansiblelint/__init__.py`.
     2. Ensure `DSU-SHIM` audit logging is present and non-sensitive.
     3. Run `pytest` and `ansible-lint` to validate `DSU004` before pushing.
@@ -568,7 +568,7 @@ Before submitting any changes, always run the full linting suite from the projec
 make lint
 ```
 
-If your changes involve documentation only, you can run:
+If changes involve documentation only, the following can be run:
 
 ```bash
 make lint-markdown
@@ -1469,9 +1469,9 @@ All configurations must default to the most secure settings:
 This section is for AI assistants helping with this repository.
 
 1. **Read First**: Before modifying any file, read its existing content and this style guide. Adhere strictly to the established patterns.
-2. **Linting is Mandatory**: After any modification, you MUST run `make lint` (or the specific sub-linter) to verify your changes. Do not consider a task complete until linters pass.
+2. **Linting is Mandatory**: After any modification, `make lint` (or the specific sub-linter) MUST be run to verify changes. Do not consider a task complete until linters pass.
 3. **Atomic Changes**: Prefer multiple small `replace` calls over one massive change. This makes validation easier and reduces the risk of breakage.
-4. **No Explanatory Comments**: Do not add comments describing *what* your code does. Only add comments explaining *why* a specific complex logic was chosen if it's not obvious.
+4. **No Explanatory Comments**: Do not add comments describing *what* the code does. Only add comments explaining *why* a specific complex logic was chosen if it is not obvious.
 5. **Security Guardrails**:
     * Never remove `no_log: true` from tasks that have it.
     * Never introduce hardcoded credentials.

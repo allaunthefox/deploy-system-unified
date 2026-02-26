@@ -1,0 +1,107 @@
+# Ansible Lint Configuration
+# Compliance: CIS, STIG, ISO 27001
+
+# Exclude vendor dependencies and generated files
+exclude_paths:
+  - .ansible/collections/
+  - venv/
+  - .venv/
+  - ci-artifacts/
+  - tests/integration/targets/
+  - Offline_Research/
+  - docs/research/molecule_documentation/
+
+# Skip non-critical rules to focus on security and correctness
+skip_list:
+  - yaml[line-length]      # Allow long URLs and comments
+  - yaml[truthy]           # Allow yes/no for now (legacy compatibility)
+  - yaml[brackets]         # Spacing in brackets
+  - yaml[new-line-at-end-of-file]  # Minor formatting
+  - yaml[commas]           # Comma spacing
+  - name[casing]           # Task name casing
+  - name[missing]          # Not all tasks need names
+  - command-instead-of-shell  # Allow shell when needed
+  - command-instead-of-module # Allow command when needed
+  - no-handler             # Handler patterns vary
+  - no-changed-when        # Some commands always report changed
+  - no-relative-paths      # Relative paths are fine in roles
+  - package-latest         # Pinning to latest is intentional
+  - risky-file-permissions # Permissions handled by variables
+  - risky-octal            # Octal permissions are correct
+  - var-naming[no-role-prefix] # Role prefix not required
+  - fqcn[action]           # FQCN not required for builtins
+  - fqcn[redirect]         # Redirects are fine
+  - internal-error         # Skip internal errors (protomatter, etc.)
+
+# Warn for these but don't fail
+warn_list:
+  - experimental           # Experimental rules
+  - jinja[spacing]         # Jinja spacing (minor)
+  - syntax-check[specific] # Specific syntax checks
+
+# Configure rule-specific options
+options:
+  # Profile for production readiness
+  profile: production
+  
+  # Parseable output for CI
+  parseable: true
+  
+  # Show rule IDs
+  show_relpath: true
+  
+  # Verbose output
+  verbosity: 1
+  
+  # Number of warnings to show
+  display-warnings: true
+
+# Custom rules configuration
+rules:
+  # Allow longer lines for documentation
+  line-length:
+    max: 200
+    level: warning
+    
+  # Truthy values - allow both styles
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+      - 'yes'
+      - 'no'
+    level: warning
+
+  # Name patterns - be lenient
+  name:
+    format: '.*'
+    level: warning
+
+# Tags to include (security focused)
+tags:
+  - security
+  - idempotency
+  - syntax
+  - risk
+
+# Mock modules for testing
+mock_modules:
+  - community.general.sops_encrypt
+  - community.crypto.x509_certificate
+
+# Mock roles for dependency resolution
+mock_roles:
+  - geerlingguy.docker
+  - geerlingguy.pip
+
+# Extra vars for template validation
+extra_vars:
+  ansible_user: "prod"
+  ansible_host: "localhost"
+  deployment_profile: "dev"
+  podman_rootless_enabled: false
+  containers_systemd_dir: "/etc/containers/systemd"
+  containers_secrets_dir: "/etc/containers/secrets"
+  monitoring_instance: "test"
+  monitoring_root_dir: "/srv/monitoring/test"
+  monitoring_config_dir: "/srv/containers/monitoring_config/test"

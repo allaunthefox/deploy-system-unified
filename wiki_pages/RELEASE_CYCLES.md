@@ -47,7 +47,7 @@ We follow Semantic Versioning (SemVer):
 - [x] GPU orchestration enhancements (MIG/SR-IOV)
 - [x] Multi-node K3s support
 - [x] GRUB validation improvements
-- [x] Forensic Action Code expansion (480+ entries)
+- [x] Audit Event Identifier expansion (480+ entries)
 
 ### 2026 Q2 (v1.3.0) - CURRENT 🚀
 - [x] **Hardware Root of Trust**: TPM 2.0 Integrity Monitoring

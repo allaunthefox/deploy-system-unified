@@ -16,13 +16,13 @@ This document defines the mandatory forensic metadata required for every critica
 
 All critical tasks MUST follow this exact string format:
 
-`[Standard] | [Action Code] | [Task Name]`
+`[Standard] | [Audit Event Identifier] | [Task Name]`
 
 ### 1. Standard (The Why)
 The compliance control that justifies the action.
 - Examples: `ISO 27001 §10.1`, `NIST IA-2`, `CIS 1.1.1`
 
-### 2. Action Code (The What)
+### 2. Audit Event Identifier (The What)
 A unique 6-digit code from the `DSU_ACTION_CODES_COMPLETE.md` catalog.
 - `3xxxxx`: System Lifecycle
 - `4xxxxx`: Security Operations

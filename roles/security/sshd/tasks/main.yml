@@ -226,6 +226,48 @@
     - medium_severity
     - 600113
 
+- name: "ISO 27001 §9.2 | 510002 | Gather system users for SSH validation"
+  ansible.builtin.getent:
+    database: passwd
+  register: sshd_system_users
+  become: true
+  tags:
+    - security
+    - sshd
+    - validation
+    - 510002
+
+- name: "ISO 27001 §9.2 | 510002 | Validate SSH trusted groups exist before restricting"
+  ansible.builtin.assert:
+    that:
+      - item in sshd_system_users.ansible_facts.getent_passwd.keys()
+    fail_msg: >-
+      SSH trusted group '{{ item }}' does not exist in /etc/passwd.
+      This would lock out legitimate users. Create the group or remove from
+      security_sshd_trusted_groups.
+  loop: "{{ security_sshd_trusted_groups | default([]) }}"
+  when: security_sshd_trusted_groups | length > 0
+  tags:
+    - security
+    - sshd
+    - validation
+    - 510002
+
+- name: "ISO 27001 §9.2 | 510002 | Validate ansible_user is in allowed list"
+  ansible.builtin.assert:
+    that:
+      - ansible_user in security_sshd_allowed_users | default([ansible_user])
+    fail_msg: >-
+      CRITICAL: Current ansible_user '{{ ansible_user }}' is not in
+      security_sshd_allowed_users. This will lock you out after SSH restart!
+      Add '{{ ansible_user }}' to security_sshd_allowed_users before proceeding.
+  when: security_sshd_allowed_users is defined and security_sshd_allowed_users | length > 0
+  tags:
+    - security
+    - sshd
+    - validation
+    - 510002
+
 - name: "ISO 27001 §8.8 | 600142 | Comment out unmanaged SSH authentication settings"
   ansible.builtin.replace:
     path: "{{ security_sshd_config_path }}"
