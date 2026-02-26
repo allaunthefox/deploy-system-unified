@@ -154,4 +154,4 @@ Run `make molecule-precheck` before `molecule test` to preflight Podman access.
 
 - **[TERMINOLOGY](TERMINOLOGY)** — Formal definitions including "Configuration Drift"
 - **[Quality_Idempotency_BLOCKERS](Quality_Idempotency_BLOCKERS)** — Idempotency contract
-- **[DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE)** — Action Code 600151 (Idempotency check)
+- **[DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE)** — Audit Event Identifier 600151 (Idempotency check)

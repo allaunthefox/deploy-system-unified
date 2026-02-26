@@ -63,7 +63,7 @@ comingled system, the same change requires auditing every role the time concern 
 
 ---
 
-## Configuration Baseline Inheritance (The Base Import Rule)
+## Configuration Baseline Inheritance
 
 Separation of Concerns applies at the playbook level as well as the role level:
 

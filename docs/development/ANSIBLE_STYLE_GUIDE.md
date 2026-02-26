@@ -58,7 +58,7 @@ belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `produ
 - ansible.builtin.import_playbook: playbooks/preflight_assertions.yml
 ```
 
-This enforces the Base Import Rule: `main.yml` stays a pristine orchestration surface.
+This enforces Configuration Baseline Inheritance: `main.yml` stays a pristine orchestration surface.
 
 ### DSU002 — No Invalid Capabilities
 

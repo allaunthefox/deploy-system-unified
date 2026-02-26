@@ -62,7 +62,7 @@ graph TD
 
 ## 📊 Compatibility & Support Matrix
 
-| Dimension | Option | Forensic Grade | Status |
+| Dimension | Option | Audit Log Retention Class | Status |
 | :--- | :--- | :--- | :--- |
 | **Posture** | `ephemeral` | Minimal Footprint | Stable |
 | | `hardened` | High Integrity | Stable |

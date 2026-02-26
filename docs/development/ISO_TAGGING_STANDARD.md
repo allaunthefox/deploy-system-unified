@@ -83,7 +83,7 @@ As organizations transition to quantum-resistant infrastructure (CNSA 2.0), use 
 
 ---
 
-## 🏷️ Autonomic Recovery & Storage Security (ISO 27040)
+## Automated Recovery Verification & Storage Security (ISO 27040)
 
 These tags mark tasks that implement self-healing and integrity verification for storage systems.
 
@@ -103,7 +103,7 @@ These tags mark tasks that implement self-healing and integrity verification for
 
 ---
 
-## 🏷️ Forensic Intelligence (ISO 27001 §12.4)
+## Security Observability (ISO 27001 §8.15/§8.16)
 
 These tags mark the enhanced observability stack that enables real-time forensic auditing.
 
@@ -111,7 +111,7 @@ These tags mark the enhanced observability stack that enables real-time forensic
 |-----|-----------|-------------|-------------|
 | `loki` | **Aggregator** | Centralized log aggregation engine. | 840040 |
 | `promtail` | **Collector** | Action-Code aware log collector. | 840031 |
-| `forensic` | **Visualization** | DSU Forensic Intelligence Dashboard. | 840041 |
+| `forensic` | **Visualization** | DSU Security Observability Dashboard. | 840041 |
 
 ---
 
@@ -121,7 +121,7 @@ These tags mark the enhanced observability stack that enables real-time forensic
 |------|--------|----------------|
 | `security/sshd` | ✅ Active | Hybrid ML-KEM / sntrup761 support. |
 | `storage/backup/restic` | ✅ Active | ISO 27040 Automated Restore Testing. |
-| `containers/monitoring` | ✅ Active | Forensic Intelligence Dashboards (Loki). |
+| `containers/monitoring` | ✅ Active | Security Observability Dashboards (Loki). |
 | `networking/vpn_mesh` | ⏳ Roadmap | Waiting for WireGuard PQC standardization. |
 | `core/secrets` | ⏳ Roadmap | Future integration with PQC-ready Age/SOPS. |
 
