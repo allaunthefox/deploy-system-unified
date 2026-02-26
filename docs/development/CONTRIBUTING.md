@@ -62,6 +62,15 @@ Guidelines:
 - Use placeholder pages under `wiki_pages/` when linking to repo YAMLs or non-wiki resources.
 - Use `wiki_pages/UPDATING.md` for detailed wiki-specific guidance.
 
+## 🎓 Training & Learning
+
+To master the orchestration patterns used in this project, we recommend completing the **Interactive Learning Lab** tutorials. These Jupyter notebooks provide hands-on experience with:
+- **Test Harness Pattern**: Building verifiable AI agents.
+- **Action Code System**: Forensic naming and traceability.
+- **Multi-Agent Workflows**: Orchestrating complex deployments.
+
+👉 **[Launch Interactive Lab (14 Tutorials)](https://github.com/jeremylongshore/claude-code-plugins-plus-skills/blob/main/tutorials/README.md)**
+
 ## Development Setup
 
 1. Fork the repository

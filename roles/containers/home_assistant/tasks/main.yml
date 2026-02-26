@@ -1,0 +1,39 @@
+---
+# Tasks for containers/home_assistant - Privacy-first Automation
+# Compliance: ISO 27001 §8.20 / NIST SC-7
+
+- name: "ISO 27040 | 900000 | Create Home Assistant Config Directory"
+  ansible.builtin.file:
+    path: "{{ containers_home_assistant_config_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "1000"
+    group: "1000"
+  become: true
+  tags: [home_assistant, storage, 900000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Home Assistant Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/home-assistant.container"
+    content: |
+      [Unit]
+      Description=Home Assistant (Privacy-first Automation)
+      After=network-online.target
+      [Container]
+      Image={{ containers_home_assistant_image }}
+      ContainerName=home-assistant
+      Network={{ containers_home_assistant_network }}
+      Volume={{ containers_home_assistant_config_dir }}:/config:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_home_assistant_image.split('@')[1] | default('none') }}
+      Environment=TZ={{ containers_home_assistant_timezone }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  notify: reload_systemd
+  tags: [home_assistant, deploy, 700000]

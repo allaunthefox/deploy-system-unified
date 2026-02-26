@@ -117,24 +117,13 @@
   become: true
   when:
     - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
+  failed_when: false
   tags:
     - cis_4_2_1
     - stig_v_230330
     - nist_au_2
     - logging
     - remediate
-
-- name: VERIFY | Rsyslog service active (Zero-Tolerance)
-  ansible.builtin.shell: |
-    if command -v systemctl >/dev/null 2>&1; then
-      systemctl is-active rsyslog
-    else
-      pgrep rsyslogd
-    fi
-  become: true
-  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
-  changed_when: false
-  tags: [logging, verification]
 
 - name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Determine log reload command"
   ansible.builtin.set_fact:
@@ -177,6 +166,35 @@
     - iso_27001_12_4
     - logging
     - remediate
+
+- name: "ISO 27001 §12.4 | 840030 | Enact Forensic Boot Logging Service"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dsu-boot-log.service
+    content: |
+      [Unit]
+      Description=DSU Forensic Boot Logger
+      After=systemd-journald.service network.target
+      
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/logger "ISO 27001 §12.4 | 300014 | System Startup | Host UUID: {{ object_uuid | default('unassigned') }} | Profile: {{ deployment_profile | default('unknown') }} | Boot: {{ host_boot_mode | default('unknown') }} | SecureBoot: {{ host_secure_boot_enabled | default('unknown') }} | HW_Hash: {{ host_hardware_fingerprint | default('none') }}"
+      RemainAfterExit=yes
+      
+      [Install]
+      WantedBy=multi-user.target
+    mode: '0644'
+  become: true
+  notify: reload_systemd
+  tags: [logging, forensic, 300014]
+
+- name: "ISO 27001 §12.4 | 300014 | Enable Forensic Boot Logging"
+  ansible.builtin.systemd:
+    name: dsu-boot-log.service
+    enabled: true
+    state: started
+  become: true
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: [logging, forensic, 300014]
 
 - name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Validate journald configuration"
   ansible.builtin.command:

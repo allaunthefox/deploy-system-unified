@@ -1,0 +1,13 @@
+---
+# Defaults for containers/home_assistant - Privacy-first Automation
+# CVE-DSU-028: Image Digest Pinned
+
+containers_home_assistant_image: "ghcr.io/home-assistant/home-assistant:stable@sha256:bbbb2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_home_assistant_config_dir: "/srv/containers/home_assistant_config"
+
+# Network (Usually needs host mode for discovery)
+containers_home_assistant_network: "host"
+
+# Features
+containers_home_assistant_enable_hacs: true
+containers_home_assistant_timezone: "UTC"

@@ -11,7 +11,7 @@
     - networking
     - vpn
 
-- name: "CIS 3.5.2 | NIST SC-12 | Read kernel module lockdown state"
+- name: "ISO 27001 §8.26 | 450001 | Read kernel module lockdown state"
   ansible.builtin.command:
     cmd: cat /proc/sys/kernel/modules_disabled
   register: _vpn_kernel_modules_disabled
@@ -24,8 +24,9 @@
     - nist_sc_12
     - networking
     - vpn
+    - 450001
 
-- name: "CIS 3.5.3 | STIG V-230360 | ISO 27001 §8.24 | Action 540100 | Ensure Wireguard kernel module is available"
+- name: "ISO 27001 §8.24 | 540100 | Ensure Wireguard kernel module is available"
   community.general.modprobe:
     name: wireguard
     state: present
@@ -40,12 +41,13 @@
     - networking
     - vpn
     - remediate
+    - 540100
   when:
     - not _sec_is_container
     - not ansible_check_mode
     - _vpn_kernel_modules_disabled.stdout | default('0') | trim != '1'
 
-- name: "CIS 3.5.4 | STIG V-230361 | ISO 27001 §8.28 | Action 540100 | Verify IPsec/ESP kernel modules for inter-node security"
+- name: "ISO 27001 §8.28 | 540100 | Verify IPsec/ESP kernel modules for inter-node security"
   community.general.modprobe:
     name: "{{ item }}"
     state: present
@@ -63,6 +65,7 @@
     - networking
     - vpn
     - remediate
+    - 540100
   when:
     - not _sec_is_container
     - not ansible_check_mode

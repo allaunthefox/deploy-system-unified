@@ -10,7 +10,7 @@ repos:
     rev: 7.0.0
     hooks:
       - id: flake8
-        args: [--max-line-length=120, --ignore=E501,W503]
+        args: [--max-line-length=120, --ignore=E501, W503]
 
   # ===== PYTHON FORMATTING (matches MegaLinter) =====
   - repo: https://github.com/psf/black
@@ -21,7 +21,7 @@ repos:
 
   # ===== IMPORT SORTING (matches MegaLinter) =====
   - repo: https://github.com/pycqa/isort
-    rev: 5.14.0
+    rev: 5.13.2
     hooks:
       - id: isort
         args: [--profile=black, --line-length=120]
@@ -45,7 +45,7 @@ repos:
     hooks:
       - id: trufflehog
         args: [--only-verified]
-        stages: [commit]
+        stages: [pre-commit]
 
   # ===== SECRET DETECTION (matches CI) =====
   - repo: https://github.com/pre-commit/pre-commit-hooks

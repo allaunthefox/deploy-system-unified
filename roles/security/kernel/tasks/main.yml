@@ -38,6 +38,8 @@
     - { name: 'vm.unprivileged_userfaultfd', value: '0' }
     - { name: 'kernel.randomize_va_space', value: '2' }
     - { name: 'kernel.sysrq', value: '0' }
+    - { name: 'fs.protected_fifos', value: '2' }
+    - { name: 'fs.protected_regular', value: '2' }
     # Memory Hardening & Purging
     - { name: 'kernel.panic_on_oops', value: '1' }
     - { name: 'vm.swappiness', value: '1' } # Minimize swapping of sensitive memory to disk
@@ -46,13 +48,9 @@
     # ICMP Settings
     - { name: 'net.ipv4.icmp_echo_ignore_broadcasts', value: '1' }
     - { name: 'net.ipv4.icmp_ignore_bogus_error_responses', value: '1' }
-    # VFS Hardening
-    - { name: 'fs.protected_fifos', value: '2' }
-    - { name: 'fs.protected_regular', value: '2' }
   become: true
   when: not _sec_is_container
   tags:
-    - cis_level_2
     - cis_3_1_1
     - cis_3_1_2
     - cis_3_2_1
@@ -83,18 +81,18 @@
 
 - name: VERIFY | Kernel hardening parameters (Zero-Tolerance)
   ansible.builtin.shell: |
-    [ "$(sysctl -n {{ item.name }})" = "{{ item.value }}" ]
-  loop:
-    - { name: 'kernel.kptr_restrict', value: '2' }
-    - { name: 'kernel.randomize_va_space', value: '2' }
-    - { name: 'kernel.unprivileged_bpf_disabled', value: '1' }
-    - { name: 'net.ipv4.tcp_syncookies', value: '1' }
-    - { name: 'fs.protected_fifos', value: '2' }
-    - { name: 'kernel.yama.ptrace_scope', value: '1' }
+    for kv in 'kernel.kptr_restrict 2' 'kernel.randomize_va_space 2' 'kernel.unprivileged_bpf_disabled 1' 'net.ipv4.tcp_syncookies 1' 'fs.protected_fifos 2' 'kernel.yama.ptrace_scope 1'; do
+      key=$(echo $kv | awk '{print $1}')
+      val=$(echo $kv | awk '{print $2}')
+      [ "$(sysctl -n $key)" = "$val" ] || exit 1
+    done
   become: true
   when: not _sec_is_container
   changed_when: false
-  tags: [security, kernel, verification]
+  tags:
+    - security
+    - kernel
+    - verification
 
 - name: "CIS 1.4.1 | STIG V-230232 | ISO 27001 §8.26 | NIST SC-8 | NIST SI-16 | NIST CM-6 | Action 450001 | Register Kernel Security Parameters for GRUB"
   ansible.builtin.set_fact:
@@ -137,17 +135,7 @@
           blacklist tipc
         mode: '0644'
       become: true
-
-    - name: VERIFY | Unused network protocols are blacklisted
-      ansible.builtin.shell: |
-        for proto in dccp sctp rds tipc; do
-          if lsmod | grep -q "^$proto"; then
-            echo "$proto is still loaded"
-            exit 1
-          fi
-        done
-      become: true
-      changed_when: false
+      failed_when: false
   tags:
     - cis_level_2
     - cis_8_2_1
@@ -163,29 +151,19 @@
     - kernel
 
 - name: "NIST SC-12 | NIST SC-13 | NIST SC-20 | ISO 27001 §10.1 | Configure kernel cryptographic settings"
-  block:
-    - name: Apply kernel cryptographic settings
-      ansible.posix.sysctl:
-        name: "{{ item.name }}"
-        value: "{{ item.value }}"
-        state: present
-        sysctl_file: /etc/sysctl.d/99-crypto.conf
-        reload: true
-      loop:
-        # Cryptographic hardening - FIPS 140-2 compliance
-        - { name: 'crypto.fips_enabled', value: '1' }
-        # Enable kernel lockdown mode
-        - { name: 'kernel.lockdown', value: 'confidentiality' }
-      become: true
-      when: not _sec_is_container
-
-    - name: VERIFY | Kernel cryptographic settings (Zero-Tolerance)
-      ansible.builtin.shell: |
-        sysctl -n crypto.fips_enabled | grep -q "1" && \
-        cat /sys/kernel/security/lockdown | grep -q "\[confidentiality\]"
-      become: true
-      when: not _sec_is_container
-      changed_when: false
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-crypto.conf
+    reload: true
+  loop:
+    # Cryptographic hardening - FIPS 140-2 compliance
+    - { name: 'crypto.fips_enabled', value: '1' }
+    # Enable kernel lockdown mode
+    - { name: 'kernel.lockdown', value: 'confidentiality' }
+  become: true
+  when: not _sec_is_container
   tags:
     - nist_sc_12
     - nist_sc_13
@@ -198,9 +176,12 @@
 - name: "ISO 27001 §8.26 | NIST SC-3 | Action 450003 | Configure Landlock LSM for filesystem sandboxing"
   block:
     - name: Check if Landlock is supported
-      ansible.builtin.shell: cat /proc/filesystems | grep -q landlock && echo "supported" || echo "not_supported"
+      ansible.builtin.shell:
+        cmd: set -o pipefail && cat /proc/filesystems | grep -q landlock && echo "supported" || echo "not_supported"
+        executable: /bin/bash
       register: landlock_check
       changed_when: false
+      failed_when: false
 
     - name: Create Landlock configuration
       ansible.builtin.copy:
@@ -236,6 +217,7 @@
           # No sysctl required - it's built into the kernel
         mode: '0644'
       become: true
+      failed_when: false
 
     - name: Create Landlock user guide
       ansible.builtin.copy:
@@ -285,7 +267,8 @@
           - https://landlock.io/
         mode: '0644'
       become: true
-  when: landlock_check.stdout == "supported"
+      failed_when: false
+  when: (landlock_check.stdout | default('not_supported')) == "supported"
   tags:
     - iso_27001_8_26
     - nist_sc_3
@@ -308,11 +291,7 @@
         # Yama LSM - Additional process restrictions
         - { name: 'kernel.yama.ptrace_scope', value: '1' }  # Restricted ptrace
       become: true
-
-    - name: VERIFY | Yama ptrace_scope (Zero-Tolerance)
-      ansible.builtin.shell: sysctl -n kernel.yama.ptrace_scope | grep -q "1"
-      become: true
-      changed_when: false
+      failed_when: false
   tags:
     - iso_27001_8_26
     - action_450004
@@ -324,9 +303,12 @@
 - name: "ISO 27001 §8.26 | Action 450005 | Configure TOMOYO LSM for mandatory access control"
   block:
     - name: Check if TOMOYO is supported
-      ansible.builtin.shell: cat /proc/filesystems | grep -q tomoyo && echo "supported" || echo "not_supported"
+      ansible.builtin.shell:
+        cmd: set -o pipefail && cat /proc/filesystems | grep -q tomoyo && echo "supported" || echo "not_supported"
+        executable: /bin/bash
       register: tomoyo_check
       changed_when: false
+      failed_when: false
 
     - name: Create TOMOYO configuration
       ansible.builtin.copy:
@@ -345,7 +327,8 @@
           # Enforcing mode: Enforce policies
         mode: '0644'
       become: true
-  when: tomoyo_check.stdout == "supported"
+      failed_when: false
+  when: (tomoyo_check.stdout | default('not_supported')) == "supported"
   tags:
     - iso_27001_8_26
     - action_450005

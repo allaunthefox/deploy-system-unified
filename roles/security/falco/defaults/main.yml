@@ -16,6 +16,9 @@ falco_rpm_repo_suffix: "x86_64"
 falco_gpg_check: true
 falco_gpg_key: "https://download.falco.org/packages/pubkey.gpg"
 
+# Binary checksum for manual installation (SHA256)
+falco_binary_checksum: ""
+
 # Configuration
 falco_config:
   log_level: "info"

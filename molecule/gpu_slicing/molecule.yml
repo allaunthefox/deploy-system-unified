@@ -28,6 +28,7 @@ ansible:
   env:
     ANSIBLE_FORCE_COLOR: true
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+    ANSIBLE_REMOTE_TEMP: /tmp/ansible
     
   cfg:
     defaults:

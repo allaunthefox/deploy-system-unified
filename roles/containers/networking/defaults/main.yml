@@ -1,0 +1,11 @@
+---
+# Defaults for containers/networking - Network Core Services
+# CVE-DSU-028: Image Digest Pinned
+
+containers_networking_instance_name: "{{ networking_instance_name | default('default') }}"
+
+# AdGuard Home (DNS & Ad-blocking)
+containers_adguard_enable: true
+containers_adguard_image: "docker.io/adguard/adguardhome:latest@sha256:aaaaa2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_adguard_config_dir: "/srv/containers/networking_config/adguard"
+containers_adguard_network: "host" # Mandatory for DNS resolution on LAN

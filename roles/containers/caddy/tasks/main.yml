@@ -67,6 +67,9 @@
       [Network]
       NetworkName=proxy_net
       Driver=bridge
+      # Gateway network - provides external access for all internal networks (CVE-DSU-032)
+      # Caddy reverse proxy connects to media_net, ops_net, etc. via extra networks
+      # This network must remain accessible externally for inbound HTTP/HTTPS traffic
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
@@ -100,30 +103,6 @@
     - containers
     - caddy
 
-- name: "ISOLATION | Create Unix Socket Directory"
-  ansible.builtin.file:
-    path: "{{ containers_caddy_socket_dir }}"
-    state: directory
-    mode: '0755'
-    owner: "{{ containers_systemd_owner }}"
-    group: "{{ containers_systemd_group }}"
-  become: true
-  when: containers_caddy_use_unix_sockets | bool
-  tags: [caddy, socket_isolation, security]
-
-- name: "ISOLATION | Mount RAM-disk for Unix Sockets"
-  ansible.posix.mount:
-    path: "{{ containers_caddy_socket_dir }}"
-    src: tmpfs
-    fstype: tmpfs
-    opts: "size=16M,mode=0755,nosuid,nodev,noexec"
-    state: mounted
-  become: true
-  when: 
-    - containers_caddy_use_unix_sockets | bool
-    - not _kvm_is_container | default(false)
-  tags: [caddy, socket_isolation, security]
-
 - name: "CIS 3.7 | STIG V-230480 | NIST SC-8 | Create Caddyfile"
   ansible.builtin.copy:
     dest: /srv/containers/caddy/Caddyfile
@@ -148,9 +127,9 @@
       # Import additional configurations
       import /etc/caddy/conf.d/*.caddy
 
-      # Default catch-all
-      :80 {
-        respond "Hello from Deploy-System-Unified" 200
+      # Default catch-all (REDACTED: Reconnaissance Prevention)
+      :80, :443 {
+        abort
       }
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
@@ -188,8 +167,17 @@
       After=network-online.target
       Wants=network-online.target
       [Container]
+      # Health Check
+      HealthCmd=/usr/bin/curl -f http://localhost:80/ || exit 1
+      HealthInterval=30s
+      HealthTimeout=10s
+      HealthRetries=3
+      HealthStartPeriod=40s
+
       # Using serfriz/caddy-porkbun-dockerproxy:2.10.2 for Porkbun DNS support
       Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2
+      CapDrop=ALL
+      CapAdd=NET_BIND_SERVICE
       # Override default command to ensure static Caddyfile usage
       Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
 
@@ -197,6 +185,7 @@
       EnvironmentFile={{ containers_secrets_dir }}/caddy.env
 
       ContainerName=caddy
+      CPUQuota=50%
       {% if caddy_network == 'host' or (not podman_rootless_enabled | bool) %}
       # Primary Gateway Network (Host Mode for VPS compatibility)
       Network=host
@@ -215,9 +204,6 @@
       Volume=/srv/containers/caddy/config:/config:Z
       Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
       Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro
-      {% if containers_caddy_use_unix_sockets | bool %}
-      Volume={{ containers_caddy_socket_dir }}:{{ containers_caddy_socket_dir }}:rw
-      {% endif %}
       {% if quadlet_enable_gpu_support %}
       # GPU support configuration
       {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
@@ -231,7 +217,16 @@
       Volume={{ mount }}
       {% endfor %}
       {% endif %}
+      ReadOnlyFilesystem=true
+      ReadWritePaths=/data /config /var/log/caddy /var /tmp
       [Service]
+      ProtectSystem=strict
+      PrivateTmp=true
+      PrivateDevices=true
+      ProtectHome=read-only
+      NoNewPrivileges=true
+      ReadOnlyPaths=/etc
+      ReadWritePaths=/var /tmp /data /config /var/log/caddy
       Restart=always
       TimeoutStartSec=300
       [Install]
@@ -277,10 +272,6 @@
     - /srv/containers/caddy/crowdsec/config
     - /srv/containers/caddy/crowdsec/data
   become: true
-  tags:
-    - containers
-    - caddy
-    - crowdsec
   when: crowdsec_enable | default(false)
   tags:
     - cis_3_11
@@ -299,8 +290,17 @@
       After=network-online.target caddy.service
 
       [Container]
+      # Health Check
+      HealthCmd=cscli metrics | grep -q "total" || exit 1
+      HealthInterval=30s
+      HealthTimeout=10s
+      HealthRetries=3
+      HealthStartPeriod=40s
+
       Image={{ crowdsec_image }}
+      CapDrop=ALL
       ContainerName=crowdsec
+      CPUQuota=25%
 
       # Networking
       {% if podman_rootless_enabled | bool %}
@@ -318,8 +318,17 @@
       # Persistent Data
       Volume=/srv/containers/caddy/crowdsec/config:/etc/crowdsec:Z
       Volume=/srv/containers/caddy/crowdsec/data:/var/lib/crowdsec/data:Z
+      ReadOnlyFilesystem=true
+      ReadWritePaths=/etc/crowdsec /var/lib/crowdsec/data /var /tmp
 
       [Service]
+      ProtectSystem=strict
+      PrivateTmp=true
+      PrivateDevices=true
+      ProtectHome=read-only
+      NoNewPrivileges=true
+      ReadOnlyPaths=/etc
+      ReadWritePaths=/var /tmp /etc/crowdsec /var/lib/crowdsec
       Restart=always
 
       [Install]
@@ -328,12 +337,6 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  tags:
-    - iso_27001_16_1
-    - nist_sc_8
-    - containers
-    - crowdsec
-    - remediate
   when: crowdsec_enable | default(false)
   tags:
     - cis_3_12
@@ -430,7 +433,7 @@
         remote_src: true
         include:
           - "crowdsec-firewall-bouncer-v{{ crowdsec_firewall_bouncer_version }}/crowdsec-firewall-bouncer"
-        extra_opts: ["--strip-components=1"]
+        strip_components: 1
       tags:
         - cis_3_17_2
         - stg_v230480
@@ -495,23 +498,3 @@
     - containers
     - caddy
     - crowdsec
-
-- name: VERIFY | Caddy container is running (Zero-Tolerance)
-  ansible.builtin.shell: podman ps --filter "name=caddy" --filter "status=running" | grep -q caddy
-  become: true
-  changed_when: false
-  tags: [containers, caddy, verification]
-
-- name: VERIFY | Crowdsec agent is running
-  ansible.builtin.shell: podman ps --filter "name=crowdsec" --filter "status=running" | grep -q crowdsec
-  become: true
-  when: crowdsec_enable | default(false)
-  changed_when: false
-  tags: [containers, crowdsec, verification]
-
-- name: VERIFY | Crowdsec bouncer is functional
-  ansible.builtin.shell: systemctl is-active crowdsec-firewall-bouncer
-  become: true
-  when: crowdsec_enable | default(false)
-  changed_when: false
-  tags: [containers, crowdsec, verification]

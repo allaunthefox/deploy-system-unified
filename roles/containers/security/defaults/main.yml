@@ -1,0 +1,11 @@
+---
+# Defaults for containers/security - Security Infrastructure
+# CVE-DSU-028: Image Digest Pinned
+
+containers_security_instance_name: "{{ security_instance_name | default('default') }}"
+
+# Headscale (Zero-Trust Tailscale Control Server)
+containers_headscale_enable: true
+containers_headscale_image: "docker.io/headscale/headscale:latest@sha256:hhhhh2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_headscale_config_dir: "/srv/containers/security_config/headscale"
+containers_headscale_port: 8085

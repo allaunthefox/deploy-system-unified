@@ -60,3 +60,19 @@
           Host {{ inventory_hostname }} declares profile 'dev' but violates its contract.
           Expects: fail_secure=false, firewall=true.
       when: deployment_profile == 'dev'
+
+    - name: "ISO 27001 §8.20 | 800000 | Verify shared media drive availability"
+      ansible.builtin.stat:
+        path: "{{ media_root_dir }}"
+      register: media_root_check
+      when: media_root_dir is defined
+      tags: [preflight, storage, 800000]
+
+    - name: "ISO 27001 §8.20 | 800000 | Assert shared media drive is accessible"
+      ansible.builtin.assert:
+        that:
+          - media_root_check.stat.exists
+          - media_root_check.stat.isdir
+        fail_msg: "CRITICAL: Shared media drive at {{ media_root_dir }} is not mounted or accessible."
+      when: media_root_dir is defined
+      tags: [preflight, storage, 800000]

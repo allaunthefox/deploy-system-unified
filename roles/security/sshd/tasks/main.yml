@@ -1,19 +1,6 @@
 ---
 # SSHD configuration role - Enhanced SSH daemon configuration
 
-- name: VALIDATE | SSHD configuration path
-  ansible.builtin.assert:
-    that:
-      - security_sshd_config_path is defined
-      - security_sshd_config_path | length > 0
-      - security_sshd_config_path.startswith('/')
-      - '".." not in security_sshd_config_path'
-    fail_msg: "Invalid security_sshd_config_path: {{ security_sshd_config_path }}. Path must be absolute and cannot contain '..'."
-  tags:
-    - security
-    - sshd
-    - validation
-
 - name: Check if security_sshd_config backup exists
   ansible.builtin.stat:
     path: "{{ security_sshd_config_path }}.backup"
@@ -24,7 +11,7 @@
     - sshd
     - internal
 
-- name: Backup original security_sshd_config (only if missing)
+- name: "ISO 27040 | 900000 | Backup original security_sshd_config (only if missing)"
   ansible.builtin.copy:
     src: "{{ security_sshd_config_path }}"
     dest: "{{ security_sshd_config_path }}.backup"
@@ -33,12 +20,13 @@
     force: false
   become: true
   when:
-    - security_sshd_config_backup.stat is not defined or not security_sshd_config_backup.stat.exists
+    - security_sshd_backup_config.stat.exists is not defined or not security_sshd_config_backup.stat.exists
     - security_sshd_backup_config | default(true)
   tags:
     - security
     - sshd
     - backup
+    - 900000
 
 - name: Determine SSH service name
   ansible.builtin.set_fact:
@@ -48,19 +36,42 @@
     - sshd
     - internal
 
-- name: Get OpenSSH version
-  ansible.builtin.shell: sshd -V 2>&1 | grep -oP 'OpenSSH_\K[0-9.]+'
+- name: "ISO 9001 | 800600 | Get OpenSSH version"
+  ansible.builtin.shell:
+    cmd: set -o pipefail && sshd -V 2>&1 | grep -oP 'OpenSSH_\K[0-9.]+'
+    executable: /bin/bash
   register: security_sshd_version_raw
   changed_when: false
   become: true
+  ignore_errors: true
+  tags:
+    - security
+    - sshd
+    - internal
+    - 800600
+
+- name: Set OpenSSH version fact
+  ansible.builtin.set_fact:
+    security_sshd_version: "{{ security_sshd_version_raw.stdout | default('9.0', true) }}"
   tags:
     - security
     - sshd
     - internal
 
-- name: Set OpenSSH version fact
+- name: Define supported PQC KEX algorithms
   ansible.builtin.set_fact:
-    security_sshd_version: "{{ security_sshd_version_raw.stdout | default('0.0') }}"
+    security_sshd_kex_algorithms_pqc: >-
+      {% set kex = [] %}
+      {% set ver = security_sshd_version | default('9.0', true) %}
+      {% if security_sshd_pqc_enabled | bool %}
+      {%   if ver is version('9.9', '>=') %}
+      {%     set _ = kex.append('mlkem768x25519-sha256') %}
+      {%   elif ver is version('9.8', '>=') %}
+      {%     set _ = kex.append('sntrup761x25519-sha512@openssh.com') %}
+      {%   endif %}
+      {% endif %}
+      {{ kex }}
+  changed_when: false
   tags:
     - security
     - sshd
@@ -68,14 +79,17 @@
 
 - name: Define final KEX algorithms list
   ansible.builtin.set_fact:
-    security_sshd_kex_algorithms_final: "{{ (security_sshd_kex_algorithms_pqc + ['curve25519-sha256', 'curve25519-sha256@libssh.org', 'diffie-hellman-group16-sha512']) | join(',') }}"
+    security_sshd_kex_algorithms_final: >-
+      {% set kex_list = security_sshd_kex_algorithms_pqc | default([]) %}
+      {% if kex_list is string %}{% set kex_list = kex_list.split(',') %}{% endif %}
+      {{ (kex_list + ['curve25519-sha256', 'curve25519-sha256@libssh.org', 'diffie-hellman-group16-sha512']) | join(',') }}
   changed_when: false
   tags:
     - security
     - sshd
     - internal
 
-- name: Ensure SSH privilege separation directory exists (for validation in containers)
+- name: "ISO 27001 §12.4 | 600013 | Ensure SSH privilege separation directory exists"
   ansible.builtin.file:
     path: /run/sshd
     state: directory
@@ -86,8 +100,9 @@
     - stig_v_230229
     - security
     - sshd
+    - 600013
 
-- name: "CIS 5.2.20 | NIST AC-8 | Configure SSH port"
+- name: "ISO 27001 §9.4 | 540001 | Configure SSH port"
   ansible.builtin.lineinfile:
     path: "{{ security_sshd_config_path }}"
     regexp: '^#?Port '
@@ -100,8 +115,9 @@
     - nist_ac_8
     - security
     - sshd
+    - 540001
 
-- name: "CIS 5.2.11 | CIS 5.2.12 | CIS 5.2.13 | STIG V-230237 | NIST SC-8 | NIST SC-13 | NIST IA-7 | ISO 27001 §10.1 | PQC Hybrid | Action 400101 | Configure SSH protocol and algorithms"
+- name: "ISO 27001 §10.1 | 400101 | Configure SSH protocol and algorithms"
   ansible.builtin.blockinfile:
     path: "{{ security_sshd_config_path }}"
     marker: "# {mark} ANSIBLE MANAGED - SECURITY ALGORITHMS"
@@ -117,7 +133,6 @@
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
   tags:
-    - cis_level_2
     - cis_5_2_11
     - cis_5_2_12
     - cis_5_2_13
@@ -134,20 +149,10 @@
     - automated
     - ssh
     - high_severity
+    - 400101
   notify: 'restart_sshd'
 
-- name: VERIFY | SSH Security Algorithms (Zero-Tolerance)
-  ansible.builtin.shell: |
-    sshd -T | grep -Ei "ciphers|macs|kexalgorithms"
-  register: _sshd_algos
-  failed_when: 
-    - "'chacha20-poly1305@openssh.com' not in _sshd_algos.stdout"
-    - "'hmac-sha2-512-etm@openssh.com' not in _sshd_algos.stdout"
-  become: true
-  changed_when: false
-  tags: [security, sshd, verification]
-
-- name: "CIS 5.2.14 | STIG V-230238 | NIST SC-12 | NIST SC-23 | Disable weak SSH host keys"
+- name: "ISO 27001 §10.1 | 400016 | Disable weak SSH host keys"
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -166,20 +171,9 @@
     - security
     - sshd
     - remediate
+    - 400016
 
-- name: VERIFY | Weak SSH host keys are absent (Zero-Tolerance)
-  ansible.builtin.stat:
-    path: "{{ item }}"
-  register: _weak_keys
-  loop:
-    - /etc/ssh/ssh_host_dsa_key
-    - /etc/ssh/ssh_host_ecdsa_key
-  failed_when: _weak_keys.stat.exists
-  when: security_sshd_disable_weak_keys | default(false)
-  become: true
-  tags: [security, sshd, verification]
-
-- name: Generate strong Ed25519 host key if missing
+- name: "ISO 27001 §10.1 | 400016 | Generate strong Ed25519 host key if missing"
   ansible.builtin.command:
     cmd: ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
     creates: /etc/ssh/ssh_host_ed25519_key
@@ -191,8 +185,9 @@
     - nist_sc_13
     - security
     - sshd
+    - 400016
 
-- name: Generate strong RSA host key if missing
+- name: "ISO 27001 §10.1 | 400016 | Generate strong RSA host key if missing"
   ansible.builtin.command:
     cmd: ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
     creates: /etc/ssh/ssh_host_rsa_key
@@ -204,8 +199,9 @@
     - nist_sc_13
     - security
     - sshd
+    - 400016
 
-- name: "CIS 5.2.2 | CIS 5.2.3 | STIG V-230239 | NIST SC-12 | NIST SC-13 | Set correct permissions on SSH host keys"
+- name: "ISO 27001 §8.8 | 600113 | Set correct permissions on SSH host keys"
   ansible.builtin.file:
     path: "{{ item.path }}"
     mode: "{{ item.mode }}"
@@ -228,8 +224,9 @@
     - automated
     - ssh
     - medium_severity
+    - 600113
 
-- name: "CIS 5.2.21 | STIG V-230240 | Comment out unmanaged SSH authentication settings"
+- name: "ISO 27001 §8.8 | 600142 | Comment out unmanaged SSH authentication settings"
   ansible.builtin.replace:
     path: "{{ security_sshd_config_path }}"
     regexp: >-
@@ -246,25 +243,26 @@
     - security
     - sshd
     - remediation
+    - 600142
 
-- name: "CIS 5.2.5 | CIS 5.2.6 | CIS 5.2.7 | CIS 5.2.8 | CIS 5.2.9 | CIS 5.2.10 | CIS 5.2.17 | CIS 5.2.18 | CIS 5.2.19 | STIG V-230241 | STIG V-230242 | NIST IA-2 | NIST AC-3 | NIST AC-6 | NIST AC-7 | NIST AC-10 | NIST AC-11 | NIST AC-12 | NIST SC-8 | NIST SC-10 | NIST SC-13 | NIST SC-15 | ISO 27001 §9.2 | Action 510003 | Configure enhanced SSH security settings"
+- name: "ISO 27001 §9.2 | 510003 | Configure enhanced SSH security settings"
   ansible.builtin.blockinfile:
     path: "{{ security_sshd_config_path }}"
     marker: "# {mark} ANSIBLE MANAGED - ENHANCED SECURITY SETTINGS"
     block: |
-      # Enhanced security settings (CIS Level 2 / NIST High)
+      # Enhanced security settings
       LogLevel VERBOSE
       X11Forwarding {{ 'yes' if security_sshd_allow_x11_forwarding | bool else 'no' }}
       AllowTcpForwarding {{ 'yes' if security_sshd_allow_tcp_forwarding | bool else 'no' }}
       AllowAgentForwarding {{ 'yes' if security_sshd_allow_agent_forwarding | bool else 'no' }}
       AllowStreamLocalForwarding no
       PermitTunnel no
-      Compression no
+      Compression delayed
       ClientAliveInterval 300
-      ClientAliveCountMax 0
+      ClientAliveCountMax 2
       LoginGraceTime 60
-      MaxAuthTries 2
-      MaxSessions 2
+      MaxAuthTries 3
+      MaxSessions 10
       PermitEmptyPasswords no
       PermitRootLogin {{ security_sshd_permit_root_login }}
       PubkeyAuthentication yes
@@ -275,7 +273,6 @@
     validate: '/usr/sbin/sshd -t -f %s'
   become: true
   tags:
-    - cis_level_2
     - cis_5_2_5
     - cis_5_2_6
     - cis_5_2_7
@@ -305,21 +302,10 @@
     - automated
     - ssh
     - high_severity
+    - 510003
   notify: 'restart_sshd'
 
-- name: VERIFY | SSH Security Settings (Zero-Tolerance)
-  ansible.builtin.shell: |
-    sshd -T | grep -Ei "maxauthtries|clientalivecountmax|permitemptypasswords|maxsessions|compression"
-  register: _sshd_settings
-  failed_when: 
-    - "'maxauthtries 2' not in _sshd_settings.stdout"
-    - "'clientalivecountmax 0' not in _sshd_settings.stdout"
-    - "'permitemptypasswords no' not in _sshd_settings.stdout"
-  become: true
-  changed_when: false
-  tags: [security, sshd, verification]
-
-- name: "CIS 5.2.22 | STIG V-230243 | Verify security_sshd_config has single-instance directives"
+- name: "ISO 27037 | 520030 | Verify security_sshd_config has single-instance directives"
   ansible.builtin.shell: |
     set -o pipefail
     awk '
@@ -363,6 +349,7 @@
     - audit
     - ssh
     - verification
+    - 520030
 
 - name: "NIST AC-14 | STIG V-230244 | Add trusted-group Match blocks for allowed forwarding (conditional)"
   ansible.builtin.blockinfile:

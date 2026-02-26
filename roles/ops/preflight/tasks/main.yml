@@ -212,7 +212,23 @@
     - nist_sc_39
     - preflight
 
-- name: "CIS 4.5.15 | STIG V-230684 | NIST CM-6 | Set preflight completion facts"
+- name: "ISO 27001 §10.1 | 400012 | Verify /srv partition encryption state"
+  ansible.builtin.shell:
+    cmd: lsblk -no TYPE,MOUNTPOINT | grep -E "crypt.*/srv|crypt.*/$"
+  register: srv_encryption_check
+  changed_when: false
+  failed_when: false
+  tags: [preflight, security, 400012]
+
+- name: "ISO 27001 §10.1 | 400012 | Warn if /srv is not encrypted"
+  ansible.builtin.debug:
+    msg: "WARNING: /srv or / partition does not appear to be LUKS/dm-crypt encrypted. Forensic data-at-rest compliance is missing."
+  when: 
+    - srv_encryption_check.rc != 0
+    - deployment_profile in ['hardened', 'production']
+  tags: [preflight, security, 400012]
+
+- name: "ISO 9001 | 600013 | Set preflight completion facts"
   ansible.builtin.set_fact:
     preflight_complete: true
     preflight_distribution: "{{ ansible_facts['distribution'] }}"
@@ -223,6 +239,20 @@
     - stig_v_230684
     - nist_cm_6
     - preflight
+
+- name: "ISO 9001 | 600030 | Warn on architecture-specific security limitations (RISC-V/ARM)"
+  ansible.builtin.debug:
+    msg: >-
+      WARNING: EXPERIMENTAL Deployment on {{ ansible_architecture }} detected. 
+      This architecture support is UNVERIFIED on physical hardware.
+      Advanced kernel hardening (AppArmor/Seccomp) profiles may have limited support or different enforcement paths 
+      compared to x86_64. Review 'SECURITY_LAYERS.md' for architecture-specific gaps.
+  when: ansible_architecture in ['riscv64', 'aarch64']
+  tags:
+    - preflight
+    - security
+    - experimental
+    - 600030
 
 - name: "CIS 4.5.16 | STIG V-230685 | NIST SC-12 | Define default secret guards"
   ansible.builtin.set_fact:

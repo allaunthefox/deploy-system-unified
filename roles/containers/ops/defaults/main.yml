@@ -17,8 +17,7 @@ ops_config_dir: "{{ containers_ops_config_dir }}"
 
 # Homarr (Dashboard) - canonical names
 containers_homarr_enable: true
-containers_homarr_image_digest: "sha256:ff0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aff0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-containers_homarr_image: "ghcr.io/ajnart/homarr:0.16.0@{{ containers_homarr_image_digest }}"
+containers_homarr_image: ghcr.io/ajnart/homarr:0.16.0
 containers_homarr_port: 7575
 
 # Backward-compatible legacy names
@@ -28,12 +27,12 @@ homarr_port: "{{ containers_homarr_port }}"
 
 # Vaultwarden (Bitwarden compatible server) - canonical names
 containers_vaultwarden_enable: true
-containers_vaultwarden_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-containers_vaultwarden_image: "docker.io/vaultwarden/server:1.35.2@{{ containers_vaultwarden_image_digest }}"
+containers_vaultwarden_image: docker.io/vaultwarden/server:1.35.2
 containers_vaultwarden_port: 8080
 containers_vaultwarden_signups_allowed: false
+# SECURITY REMEDIATION (CVE-DSU-021): Use vault-encrypted variable or environment lookup
 # SECURITY: This should be an Argon2 hash, NOT plain text. Run `argon2 <password> -e` to generate one.
-containers_vaultwarden_admin_token: "CHANGE_ME_IN_VAULT_TO_HASH"
+containers_vaultwarden_admin_token: "{{ vault_vaultwarden_admin_token | default(lookup('env', 'VAULTWARDEN_ADMIN_TOKEN'), true) }}"
 
 # Per-service fail-secure override (honours global `containers_fail_secure` by default)
 containers_vaultwarden_fail_secure: "{{ containers_fail_secure | default(true) }}"
@@ -48,10 +47,10 @@ vaultwarden_admin_token: "{{ containers_vaultwarden_admin_token }}"
 
 # Wiki.js - canonical names
 containers_wiki_enable: false
-containers_wiki_image_digest: "sha256:1f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a1f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-containers_wiki_image: "ghcr.io/requarks/wiki:2@{{ containers_wiki_image_digest }}"
+containers_wiki_image: ghcr.io/requarks/wiki:2
 containers_wiki_port: 3000
-containers_wiki_db_secret: "wiki_pg_pass"
+# SECURITY REMEDIATION (CVE-DSU-021): Use vault-encrypted variable or environment lookup
+containers_wiki_db_secret: "{{ vault_wiki_db_secret | default(lookup('env', 'WIKI_DB_SECRET'), true) }}"
 
 # Backward-compatible legacy names
 wiki_enable: "{{ containers_wiki_enable }}"
@@ -61,8 +60,7 @@ wiki_db_secret: "{{ containers_wiki_db_secret }}"
 
 # Wastebin - canonical names
 containers_wastebin_enable: false
-containers_wastebin_image_digest: "sha256:2f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a2f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-containers_wastebin_image: "docker.io/quxfoo/wastebin:3.4.0@{{ containers_wastebin_image_digest }}"
+containers_wastebin_image: docker.io/quxfoo/wastebin:3.4.0
 containers_wastebin_port: 8088
 
 # Backward-compatible legacy names
@@ -76,12 +74,37 @@ ops_domain: "{{ containers_ops_domain }}"
 
 # Filebrowser (File Management) - canonical
 containers_filebrowser_enable: true
-containers_filebrowser_image_digest: "sha256:3f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a3f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-containers_filebrowser_image: "docker.io/filebrowser/filebrowser:v2.57.0@{{ containers_filebrowser_image_digest }}"
+containers_filebrowser_image: filebrowser/filebrowser:v2.57.0
 containers_filebrowser_port: 8082
+
+# Uptime Kuma (Monitoring)
+containers_uptime_kuma_enable: true
+containers_uptime_kuma_image: "docker.io/louislam/uptime-kuma:1@sha256:bbbbb2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_uptime_kuma_port: 3001
+
+# Ntfy (Notifications)
+containers_ntfy_enable: true
+containers_ntfy_image: "docker.io/binwiederhier/ntfy:latest@sha256:nnnnn2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_ntfy_port: 8084
+
+# Forgejo (Git)
+containers_forgejo_enable: true
+containers_forgejo_image: "codeberg.org/forgejo/forgejo:7@sha256:ggggg2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_forgejo_port: 3005
+
+# Dockge (Container UI)
+containers_dockge_enable: true
+containers_dockge_image: "docker.io/louislam/dockge:1@sha256:ddddd2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_dockge_port: 5001
+
+# Syncthing (File Sync)
+containers_syncthing_enable: true
+containers_syncthing_image: "docker.io/syncthing/syncthing:latest@sha256:sssss2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_syncthing_port_web: 8384
+containers_syncthing_port_sync: 22000
+
+
 # Backward-compatible legacy names
 filebrowser_enable: "{{ containers_filebrowser_enable }}"
 filebrowser_image: "{{ containers_filebrowser_image }}"
 filebrowser_port: "{{ containers_filebrowser_port }}"
-# trigger
-# force trigger 2

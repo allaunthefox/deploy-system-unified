@@ -92,8 +92,10 @@
     - "{{ monitoring_root_dir }}"
     - "{{ monitoring_root_dir }}/prometheus"
     - "{{ monitoring_root_dir }}/grafana"
+    - "{{ monitoring_root_dir }}/gatus"
     - "{{ monitoring_config_dir }}"
     - "{{ monitoring_config_dir }}/prometheus"
+    - "{{ monitoring_config_dir }}/gatus"
   become: true
   tags:
     - cis_6_6
@@ -102,6 +104,53 @@
     - containers
     - monitoring
   when: monitoring_enable | bool
+
+- name: "ISO 27001 §12.4 | 840000 | Deploy Gatus Config"
+  ansible.builtin.copy:
+    dest: "{{ monitoring_config_dir }}/gatus/config.yaml"
+    content: |
+      storage:
+        type: sqlite
+        path: /data/data.db
+      endpoints:
+        - name: grafana
+          url: "http://localhost:3000/api/health"
+          interval: 30s
+          conditions:
+            - "[STATUS] == 200"
+    mode: '0644'
+  become: true
+  when: monitoring_gatus_enable
+  tags: [monitoring, gatus, 840000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Gatus Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/gatus-{{ monitoring_instance }}.container"
+    content: |
+      [Unit]
+      Description=Gatus Health Dashboard
+      After=network-online.target {{ monitoring_pod_name }}.pod
+      Requires={{ monitoring_pod_name }}.pod
+      [Container]
+      Pod={{ monitoring_pod_name }}.pod
+      Image={{ monitoring_gatus_image }}
+      ContainerName=gatus-{{ monitoring_instance }}
+      Volume={{ monitoring_config_dir }}/gatus/config.yaml:/config/config.yaml:ro
+      Volume={{ monitoring_root_dir }}/gatus:/data:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ monitoring_gatus_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: monitoring_gatus_enable
+  notify: reload_systemd
+  tags: [monitoring, gatus, 700000]
 
 - name: "CIS 6.7 | STIG V-230450 | NIST IA-2 | ISO 27001 §10.1 | Action 400011 | Create Grafana secrets file"
   ansible.builtin.template:

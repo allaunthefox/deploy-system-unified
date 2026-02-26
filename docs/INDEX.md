@@ -20,12 +20,21 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Backup Strategy](./architecture/BACKUP_STRATEGY.md)**: rclone, restic, and system snapshots.
 * **[GPU Slicing Architecture](./architecture/GPU_SLICING.md)**: Architectural overview of GPU slicing implementation.
 * **[Modular Layers](./architecture/MODULAR_LAYERS.md)**: Understanding the split between "The Base" and "The Stack."
+* **[Security Layers](./architecture/SECURITY_LAYERS.md)**: 5-layer Defense-in-Depth visual architecture.
+* **[Boot Lifecycle](./architecture/BOOT_LIFECYCLE.md)**: Explicit boot sequence and forensic chain of trust.
+* **[Network Topology](./architecture/NETWORK_TOPOLOGY.md)**: Data flow and network isolation map.
+* **[Cross-Runtime Isolation](./architecture/CROSS_RUNTIME_ISOLATION.md)**: Securing stacks spanning LXC and Kubernetes.
+* **[Combination Matrix](./architecture/DEPLOYMENT_COMBINATIONS.md)**: Visual guide to all supported and experimental deployment paths.
+* **[Interaction Matrix](./architecture/CROSS_RUNTIME_MATRIX.md)**: Network interactions between Podman, K3s, LXC, and QEMU.
+* **[Storage Interaction](./architecture/STORAGE_INTERACTION_MATRIX.md)**: Filesystem and directory access map for all runtimes.
+* **[Forensic Flow](./architecture/FORENSIC_FLOW.md)**: Mermaid diagram of the auditable deployment pipeline.
 * **[Layered Security](./architecture/LAYERED_SECURITY.md)**: How firewalls, access controls, and scanning work together.
 * **[Ephemeral Design](./architecture/EPHEMERAL_DESIGN.md)**: Logic behind zero-footprint deployments.
 
 ### [2. Development](./development/CONTRIBUTING.md)
 
 * **[Development Tooling](./development/TOOLING.md)**: Explaining switches (`--low-risk-repair`) and enforcement.
+* **[Digest Maintenance](./development/DIGEST_MAINTENANCE.md)**: Automated image update and system support verification.
 * **[Style Guide](./development/STYLE_GUIDE.md)**: Standards for YAML, Shell, and Ansible.
 * **Testing**: Using Molecule for multi-platform idempotency verification.
 * **CI**: Verify RHEL-compatible GPG keys (AlmaLinux) using `verify-rhel-compat-keys.yml`.
@@ -80,9 +89,13 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **Container Integration**: Kubernetes, LXC, and Podman with GPU acceleration
 * **Branch Templates**: GPU-specific deployment configurations
 
-### [5. Security](./security/SECURITY_AUDIT_REPORT.md)
+### [5. Security & Forensics](./security/SECURITY_AUDIT_REPORT.md)
 
 * **[Security Audit Report](./security/SECURITY_AUDIT_REPORT.md)**: Comprehensive security assessment and role analysis.
+* **[Threat Model](./security/THREAT_MODEL.md)**: STRIDE analysis and residual risk assessment.
+* **[Forensic Standards](./security/FORENSIC_STANDARDS.md)**: Mandatory task naming and Action Code convention.
+* **[Action Code Catalog](../DSU_ACTION_CODES_COMPLETE.md)**: 480+ forensic audit codes mapped to ISO standards.
+* **[Forensic Restoration Runbook](./RESTORE_RUNBOOK.md)**: Step-by-step guide for ISO 27040 data restoration.
 
 ### [6. Planning](./planning/SUMMARY.md)
 
