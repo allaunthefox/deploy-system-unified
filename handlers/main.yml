@@ -1,0 +1,19 @@
+---
+# Global Shared Handlers for Deploy-System-Unified
+
+- name: reload_systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: "reload_systemd"
+
+- name: restart_journald
+  ansible.builtin.service:
+    name: systemd-journald
+    state: restarted
+  listen: "restart_journald"
+
+- name: update-grub
+  ansible.builtin.command: /usr/bin/update-grub
+  become: true
+  failed_when: false
+  listen: "update-grub"

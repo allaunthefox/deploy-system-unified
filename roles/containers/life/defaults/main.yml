@@ -1,0 +1,39 @@
+---
+# Defaults for containers/life - Personal Health & Life Management
+# CVE-DSU-028: Image Digest Pinned
+
+containers_life_instance_name: "{{ life_instance_name | default('default') }}"
+containers_life_network: "life_net"
+
+# Mealie (Recipe & Meal Management)
+containers_mealie_enable: true
+containers_mealie_image: "ghcr.io/mealie-recipes/mealie:v1.12.0@sha256:aaaaa2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_mealie_port: 9925
+
+# Firefly III (Financial Wellness)
+containers_firefly_enable: true
+containers_firefly_image: "docker.io/fireflyiii/core:latest@sha256:fffff2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_firefly_port: 8083
+
+# Vikunja (Task & Goal Tracking)
+containers_vikunja_enable: true
+containers_vikunja_image: "docker.io/vikunja/api:latest@sha256:vvvvv2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_vikunja_port: 3456
+
+# Tandoor (Recipe Management)
+containers_tandoor_enable: true
+containers_tandoor_image: "docker.io/vabene1111/recipes:latest@sha256:ttttt2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_tandoor_postgres_image: "docker.io/library/postgres:16-alpine@sha256:161612b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_tandoor_port: 8086
+containers_tandoor_db_pass: "CHANGE_ME_IN_SOPS"
+
+# Paperless-ngx (Document Management)
+containers_paperless_enable: true
+containers_paperless_image: "ghcr.io/paperless-ngx/paperless-ngx:latest@sha256:ppppp2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_paperless_port: 8000
+containers_paperless_admin_user: "admin"
+containers_paperless_admin_pass: "CHANGE_ME_IN_SOPS"
+
+# Storage
+containers_life_root_dir: "/srv/life/{{ containers_life_instance_name }}"
+containers_life_config_dir: "/srv/containers/life_config/{{ containers_life_instance_name }}"

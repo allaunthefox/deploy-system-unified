@@ -1,0 +1,186 @@
+---
+# Tasks for containers/life - Life Management Stack
+# Compliance: ISO 27001 §8.20 / ISO 27040
+
+- name: "ISO 27001 §8.20 | 700030 | Create Life Management Network Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/life_net.network"
+    content: |
+      [Network]
+      NetworkName={{ containers_life_network }}
+      Driver=bridge
+      Internal=true
+    mode: '0644'
+  become: true
+  notify: reload_systemd
+  tags: [life, networking, 700030]
+
+- name: "ISO 27040 | 900000 | Create Life Stack Data Directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "1000"
+    group: "1000"
+    modification_time: preserve
+    access_time: preserve
+  loop:
+    - "{{ containers_life_root_dir }}"
+    - "{{ containers_life_config_dir }}/mealie"
+    - "{{ containers_life_config_dir }}/firefly"
+    - "{{ containers_life_config_dir }}/vikunja"
+    - "{{ containers_life_config_dir }}/tandoor"
+    - "{{ containers_life_config_dir }}/tandoor-db"
+    - "{{ containers_life_config_dir }}/paperless"
+    - "{{ containers_life_config_dir }}/paperless/data"
+    - "{{ containers_life_config_dir }}/paperless/media"
+    - "{{ containers_life_config_dir }}/paperless/consume"
+  become: true
+  tags: [life, storage, 900000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Paperless-ngx Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/paperless.container"
+    content: |
+      [Unit]
+      Description=Paperless-ngx Document Manager
+      After=network-online.target
+      [Container]
+      Image={{ containers_paperless_image }}
+      ContainerName=paperless
+      Network={{ containers_life_network }}.network
+      Volume={{ containers_life_config_dir }}/paperless/data:/usr/src/paperless/data:Z
+      Volume={{ containers_life_config_dir }}/paperless/media:/usr/src/paperless/media:Z
+      Volume={{ containers_life_config_dir }}/paperless/consume:/usr/src/paperless/consume:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_paperless_image.split('@')[1] | default('none') }}
+      Environment=PAPERLESS_ADMIN_USER={{ containers_paperless_admin_user }}
+      Environment=PAPERLESS_ADMIN_PASSWORD={{ containers_paperless_admin_pass }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_paperless_enable
+  notify: reload_systemd
+  tags: [life, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Tandoor DB Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/tandoor-db.container"
+    content: |
+      [Unit]
+      Description=Tandoor Recipe DB
+      After=network-online.target
+      [Container]
+      Image={{ containers_tandoor_postgres_image }}
+      ContainerName=tandoor-db
+      Network={{ containers_life_network }}.network
+      Volume={{ containers_life_config_dir }}/tandoor-db:/var/lib/postgresql/data:Z
+      Environment=POSTGRES_DB=recipes
+      Environment=POSTGRES_USER=tandoor
+      Environment=POSTGRES_PASSWORD={{ containers_tandoor_db_pass }}
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_tandoor_postgres_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_tandoor_enable
+  notify: reload_systemd
+  tags: [life, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Tandoor Web Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/tandoor.container"
+    content: |
+      [Unit]
+      Description=Tandoor Recipe Manager
+      After=tandoor-db.service
+      [Container]
+      Image={{ containers_tandoor_image }}
+      ContainerName=tandoor
+      Network={{ containers_life_network }}.network
+      Volume={{ containers_life_config_dir }}/tandoor:/opt/recipes/media:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_tandoor_image.split('@')[1] | default('none') }}
+      Environment=DB_ENGINE=django.db.backends.postgresql
+      Environment=POSTGRES_HOST=tandoor-db
+      Environment=POSTGRES_PORT=5432
+      Environment=POSTGRES_USER=tandoor
+      Environment=POSTGRES_PASSWORD={{ containers_tandoor_db_pass }}
+      Environment=POSTGRES_DB=recipes
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_tandoor_enable
+  notify: reload_systemd
+  tags: [life, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Mealie Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/mealie.container"
+    content: |
+      [Unit]
+      Description=Mealie Recipe Manager
+      After=network-online.target
+      [Container]
+      Image={{ containers_mealie_image }}
+      ContainerName=mealie
+      Network={{ containers_life_network }}.network
+      Volume={{ containers_life_config_dir }}/mealie:/app/data:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_mealie_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_mealie_enable
+  notify: reload_systemd
+  tags: [life, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Firefly III Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/firefly.container"
+    content: |
+      [Unit]
+      Description=Firefly III Financial Wellness
+      After=network-online.target
+      [Container]
+      Image={{ containers_firefly_image }}
+      ContainerName=firefly
+      Network={{ containers_life_network }}.network
+      Volume={{ containers_life_config_dir }}/firefly:/var/www/html/storage/upload:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_firefly_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_firefly_enable
+  notify: reload_systemd
+  tags: [life, deploy, 700000]

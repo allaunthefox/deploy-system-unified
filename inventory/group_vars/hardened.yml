@@ -4,4 +4,8 @@ deployment_profile: "hardened"
 core_security_fail_secure: true
 firewall_enabled: true
 ssh_randomize_port: true
-tpm_guard_enabled: true
+
+# Mandatory Forensic Grade (ISO 27001 §12.4)
+system_monitoring_forensics_enabled: true
+system_monitoring_loki_enabled: true
+system_monitoring_dashboard_forensic: true

@@ -1,0 +1,75 @@
+---
+# Tasks for containers/ai - Local AI Infrastructure
+# Compliance: ISO 27001 §8.20 / ISO 27040
+
+- name: "ISO 27040 | 900000 | Create AI Stack Config Directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "1000"
+    group: "1000"
+  loop:
+    - "{{ containers_ollama_config_dir }}"
+    - "{{ containers_open_webui_config_dir }}"
+  become: true
+  tags: [ai, storage, 900000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Ollama Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/ollama.container"
+    content: |
+      [Unit]
+      Description=Ollama Local LLM Engine
+      After=network-online.target
+      [Container]
+      Image={{ containers_ollama_image }}
+      ContainerName=ollama
+      Volume={{ containers_ollama_config_dir }}:/root/.ollama:Z
+      # Hardware Acceleration (Optional)
+      {% if containers_media_hw_accel | default(false) %}
+      Device=/dev/dri
+      {% endif %}
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_ollama_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_ollama_enable
+  notify: reload_systemd
+  tags: [ai, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Open WebUI Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/open-webui.container"
+    content: |
+      [Unit]
+      Description=Open WebUI Interface
+      After=network-online.target ollama.service
+      [Container]
+      Image={{ containers_open_webui_image }}
+      ContainerName=open-webui
+      Volume={{ containers_open_webui_config_dir }}/data:/app/backend/data:Z
+      Environment=OLLAMA_BASE_URL=http://localhost:11434
+      # WebUI uses host mode to reach Ollama on localhost or bridge
+      Network=host
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_open_webui_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_open_webui_enable
+  notify: reload_systemd
+  tags: [ai, deploy, 700000]

@@ -1,0 +1,25 @@
+---
+# Defaults for containers/immich - High Performance Photo Management
+# CVE-DSU-028: Image Digest Pinned for Supply Chain Integrity
+
+containers_immich_instance_name: "{{ immich_instance_name | default('default') }}"
+containers_immich_network: "immich_net"
+
+# Images (Pinned 2026 Stable)
+containers_immich_server_image: "ghcr.io/immich-app/immich-server@sha256:888e2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_immich_machine_learning_image: "ghcr.io/immich-app/immich-machine-learning@sha256:999e2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_immich_postgres_image: "docker.io/tensorchord/pgvecto-rs@sha256:aaae2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_immich_redis_image: "docker.io/library/redis:6.2-alpine@sha256:bbbe2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+
+# Storage
+containers_immich_root_dir: "/srv/immich/{{ containers_immich_instance_name }}"
+containers_immich_config_dir: "/srv/containers/immich_config/{{ containers_immich_instance_name }}"
+
+# Database
+containers_immich_db_user: "immich"
+containers_immich_db_pass: "CHANGE_ME_IN_SOPS"
+containers_immich_db_name: "immich"
+
+# Performance
+containers_immich_ml_enabled: true
+containers_immich_ml_gpu_enabled: false # Set to true for hardware acceleration

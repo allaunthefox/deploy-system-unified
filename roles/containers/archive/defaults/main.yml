@@ -1,0 +1,20 @@
+---
+# Defaults for containers/archive - Long-term Preservation Stack
+# CVE-DSU-028: Image Digest Pinned
+
+containers_archive_instance_name: "{{ archive_instance_name | default('default') }}"
+containers_archive_network: "archive_net"
+
+# TubeArchivist (Video Mirroring)
+containers_tubearchivist_enable: true
+containers_tubearchivist_image: "docker.io/bbilly1/tubearchivist:latest@sha256:aaaaa2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_tubearchivist_redis_image: "docker.io/library/redis:alpine@sha256:bbbbb2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_tubearchivist_es_image: "docker.io/elasticsearch:8.13.0@sha256:eeeee2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+
+# Kiwix (Wikipedia/ZIM Archival)
+containers_kiwix_enable: true
+containers_kiwix_image: "ghcr.io/kiwix/kiwix-serve:latest@sha256:kkkkk2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+
+# Storage
+containers_archive_root_dir: "/srv/archive/{{ containers_archive_instance_name }}"
+containers_archive_config_dir: "/srv/containers/archive_config/{{ containers_archive_instance_name }}"

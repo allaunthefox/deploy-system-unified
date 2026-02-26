@@ -138,7 +138,3 @@ system_storage_dedupe_btrfs: >-
 # Enables Restic archival grade compression (max)
 system_storage_restic_archival: >-
   {{ true if (deployment_profile | default('hardened') in ['hardened', 'production']) else false }}
-
-
-
-

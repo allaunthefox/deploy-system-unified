@@ -1,7 +1,7 @@
 ---
 # Tasks for security/sandboxing - User-space Isolation
 
-- name: "CIS 5.1.1 | STIG V-230220 | NIST CM-7 | ISO 27001 §8.26 | Action 410001 | Install Bubblewrap"
+- name: "ISO 27001 §8.26 | 410001 | Install Bubblewrap"
   ansible.builtin.package:
     name: bubblewrap
     state: present
@@ -11,13 +11,14 @@
     - stig_v_230220
     - nist_cm_7
     - iso_27001_8_26
+    - 410001
     - security
     - sandboxing
   when:
     - sandboxing_enabled
     - sandboxing_install_bubblewrap
 
-- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410003 | Verify Landlock support in Kernel"
+- name: "ISO 27001 §8.26 | 410003 | Verify Landlock support in Kernel"
   ansible.builtin.shell: |
     set -o pipefail
     # Check if landlock is enabled in the kernel
@@ -37,13 +38,14 @@
     - stig_v_230220
     - nist_sc_39
     - iso_27001_8_26
+    - 410003
     - security
     - sandboxing
   when:
     - sandboxing_enabled
     - sandboxing_use_landlock
 
-- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410004 | Report Landlock status"
+- name: "ISO 27001 §8.26 | 410004 | Report Landlock status"
   ansible.builtin.debug:
     msg: "Landlock Kernel support detected and available for application sandboxing"
   tags:
@@ -51,6 +53,7 @@
     - stig_v_230220
     - nist_sc_39
     - iso_27001_8_26
+    - 410004
     - security
     - sandboxing
   when:
@@ -58,7 +61,7 @@
     - sandboxing_use_landlock
     - landlock_check.rc == 0
 
-- name: "CIS 5.1.3 | STIG V-230221 | NIST CM-7 | ISO 27001 §8.26 | Action 410005 | Create standard Landlock/Bwrap policy directory"
+- name: "ISO 27001 §8.26 | 410005 | Create standard Landlock/Bwrap policy directory"
   ansible.builtin.file:
     path: "{{ sandboxing_policy_dir }}"
     state: directory
@@ -71,29 +74,12 @@
     - stig_v_230221
     - nist_cm_7
     - iso_27001_8_26
+    - 410005
     - security
     - sandboxing
   when: sandboxing_enabled
 
-- name: "CIS 5.x | Action 410008 | Configure user namespace limits"
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-    sysctl_file: /etc/sysctl.d/99-user-namespace.conf
-    reload: true
-  loop:
-    - { name: 'kernel.unprivileged_userns_clone', value: "{{ 0 if sandboxing_restrict_unprivileged_userns else 1 }}" }
-    - { name: 'user.max_user_namespaces', value: "{{ sandboxing_max_user_namespaces }}" }
-  become: true
-  when: sandboxing_enabled
-  tags:
-    - cis_5_x
-    - security
-    - sandboxing
-    - remediate
-
-- name: "CIS 5.1.3 | STIG V-230221 | NIST CM-7 | ISO 27001 §8.26 | Action 410002 | Deploy Sandbox Profiles"
+- name: "ISO 27001 §8.26 | 410002 | Deploy Sandbox Profiles"
   ansible.builtin.template:
     src: "{{ item.config_template }}"
     dest: "{{ sandboxing_policy_dir }}/{{ item.name }}.conf"
@@ -107,6 +93,7 @@
     - stig_v_230221
     - nist_cm_7
     - iso_27001_8_26
+    - 410002
     - security
     - sandboxing
     - remediate

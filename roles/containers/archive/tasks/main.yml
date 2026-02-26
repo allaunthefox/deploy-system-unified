@@ -1,0 +1,86 @@
+---
+# Tasks for containers/archive - Long-term Preservation Stack
+# Compliance: ISO 27001 §17.1 / ISO 27040
+
+- name: "ISO 27001 §8.20 | 700030 | Create Archive Network Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/archive_net.network"
+    content: |
+      [Network]
+      NetworkName={{ containers_archive_network }}
+      Driver=bridge
+      Internal=true
+    mode: '0644'
+  become: true
+  notify: reload_systemd
+  tags: [archive, networking, 700030]
+
+- name: "ISO 27040 | 900000 | Create Archive Data Directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "1000"
+    group: "1000"
+  loop:
+    - "{{ containers_archive_root_dir }}"
+    - "{{ containers_archive_root_dir }}/video"
+    - "{{ containers_archive_root_dir }}/zim"
+    - "{{ containers_archive_config_dir }}/tubearchivist"
+  become: true
+  tags: [archive, storage, 900000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create TubeArchivist Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/tubearchivist.container"
+    content: |
+      [Unit]
+      Description=TubeArchivist Video Mirror
+      After=network-online.target
+      [Container]
+      Image={{ containers_tubearchivist_image }}
+      ContainerName=tubearchivist
+      Network={{ containers_archive_network }}.network
+      Volume={{ containers_archive_root_dir }}/video:/youtube:Z
+      Volume={{ containers_archive_config_dir }}/tubearchivist:/cache:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-17-1
+      Label=DSU_ACTION_CODE=970003
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_tubearchivist_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_tubearchivist_enable
+  notify: reload_systemd
+  tags: [archive, youtube, 970003]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Kiwix Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/kiwix.container"
+    content: |
+      [Unit]
+      Description=Kiwix Wikipedia Mirror
+      After=network-online.target
+      [Container]
+      Image={{ containers_kiwix_image }}
+      ContainerName=kiwix
+      Network={{ containers_archive_network }}.network
+      Volume={{ containers_archive_root_dir }}/zim:/data:Z
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-17-1
+      Label=DSU_ACTION_CODE=960000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ containers_kiwix_image.split('@')[1] | default('none') }}
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+  become: true
+  when: containers_kiwix_enable
+  notify: reload_systemd
+  tags: [archive, kiwix, 960000]

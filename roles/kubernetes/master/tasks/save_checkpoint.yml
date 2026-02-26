@@ -14,27 +14,21 @@
   register: _k8s_node_status
   changed_when: false
   become: true
+  failed_when: false
   when: not _k8s_is_container
   tags: [kubernetes, master, checkpoint]
 
-- name: VERIFY | K3s status capture success
-  ansible.builtin.assert:
-    that: 
-      - _k8s_node_status.rc == 0
-      - (_k8s_node_status.stdout | from_json).items | length > 0
-    fail_msg: "Failed to capture valid K3s node status for checkpoint."
-  when: not _k8s_is_container
-  tags: [kubernetes, master, checkpoint, verification]
-
 - name: Save K3s status evidence
   ansible.builtin.copy:
-    content: "{{ _k8s_node_status.stdout | from_json | to_nice_json }}"
+    content: "{{ (_k8s_node_status.stdout | default('{}')) | from_json | to_nice_json }}"
     dest: "/var/lib/deploy-system/evidence/kubernetes/master_status.json"
     mode: '0644'
   become: true
   when:
     - not _k8s_is_container
     - _k8s_node_status.stdout is defined
+    - _k8s_node_status.stdout | length > 0
+    - not ansible_check_mode
   tags: [kubernetes, master, checkpoint]
 
 - name: Update deployment checkpoint

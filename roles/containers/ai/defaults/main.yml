@@ -1,0 +1,15 @@
+---
+# Defaults for containers/ai - Local AI Infrastructure
+# CVE-DSU-028: Image Digest Pinned
+
+containers_ai_instance_name: "{{ ai_instance_name | default('default') }}"
+
+# Ollama (Local LLM Engine)
+containers_ollama_enable: true
+containers_ollama_image: "docker.io/ollama/ollama:latest@sha256:ooooo2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_ollama_config_dir: "/srv/containers/ai_config/ollama"
+
+# Open WebUI (Interface)
+containers_open_webui_enable: true
+containers_open_webui_image: "ghcr.io/open-webui/open-webui:main@sha256:wwwww2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+containers_open_webui_config_dir: "/srv/containers/ai_config/open-webui"

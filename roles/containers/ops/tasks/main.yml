@@ -46,6 +46,9 @@
       [Network]
       NetworkName=ops_net
       Driver=bridge
+      # Internal network - no external access by default (CVE-DSU-032)
+      # Traffic must go through the reverse proxy (Caddy) for external access
+      Internal=true
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
@@ -218,6 +221,11 @@
       Pod={{ ops_pod_name }}.pod
       Image={{ homarr_image }}
       ContainerName=homarr
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ homarr_image.split(':')[1] | default('none') }}
 
       Volume={{ ops_config_dir }}/homarr/configs:/app/data/configs:Z
       Volume={{ ops_config_dir }}/homarr/icons:/app/public/icons:Z
@@ -280,6 +288,11 @@
       Pod={{ ops_pod_name }}.pod
       Image={{ vaultwarden_image }}
       ContainerName=vaultwarden
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-9-2
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ vaultwarden_image.split(':')[1] | default('none') }}
 
       Volume={{ ops_config_dir }}/vaultwarden:/data:Z
 
@@ -324,6 +337,11 @@
       Pod={{ ops_pod_name }}.pod
       Image={{ wiki_image }}
       ContainerName=wiki
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ wiki_image.split(':')[1] | default('none') }}
 
       Volume={{ ops_config_dir }}/wiki/data:/data:Z
 
@@ -365,6 +383,11 @@
       [Container]
       Image=docker.io/library/postgres:16-alpine
       ContainerName=wikijs-db
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST=16-alpine
 
       {% if ops_pod_network == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
       Network=host
@@ -414,6 +437,11 @@
       Pod={{ ops_pod_name }}.pod
       Image={{ wastebin_image }}
       ContainerName=wastebin
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ wastebin_image.split(':')[1] | default('none') }}
 
       Volume={{ ops_config_dir }}/wastebin:/data:Z
 
@@ -451,6 +479,11 @@
       Pod={{ ops_pod_name }}.pod
       Image={{ filebrowser_image }}
       ContainerName=filebrowser
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ filebrowser_image.split(':')[1] | default('none') }}
 
       # Override default port 80 to avoid conflict with Vaultwarden in the same Pod
       Exec=/filebrowser --port 8082 --root /data --database /config/filebrowser.db
@@ -466,12 +499,167 @@
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
-  become: true
-  when: filebrowser_enable | default(false)
-  notify: reload_systemd
-  tags:
-    - cis_5_15
-    - stg_v230440
-    - nist_ac_3
-    - containers
-    - ops
+        become: true
+    when: filebrowser_enable | default(false)
+    notify: reload_systemd
+    tags:
+      - cis_5_15
+      - stg_v230440
+      - nist_ac_3
+      - containers
+      - ops
+  
+  - name: "ISO 27001 §8.20 | 700000 | Create Uptime Kuma Container Quadlet"
+    ansible.builtin.copy:
+      dest: "{{ containers_systemd_dir }}/uptime-kuma.container"
+      content: |
+        [Unit]
+        Description=Uptime Kuma Monitoring
+        After=network-online.target {{ ops_pod_name }}.pod
+        Requires={{ ops_pod_name }}.pod
+        [Container]
+        Pod={{ ops_pod_name }}.pod
+        Image={{ containers_uptime_kuma_image }}
+        ContainerName=uptime-kuma
+        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+        Label=DSU_ISO_CODE=ISO-27001-8-20
+        Label=DSU_ACTION_CODE=700000
+        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+        Label=DSU_IMAGE_DIGEST={{ containers_uptime_kuma_image.split('@')[1] | default('none') }}
+        Volume={{ ops_config_dir }}/uptime-kuma:/app/data:Z
+        [Service]
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target default.target
+      mode: '0644'
+    become: true
+    when: containers_uptime_kuma_enable
+    notify: reload_systemd
+    tags: [ops, monitor, 700000]
+  
+  - name: "ISO 27001 §8.20 | 700000 | Create Ntfy Container Quadlet"
+    ansible.builtin.copy:
+      dest: "{{ containers_systemd_dir }}/ntfy.container"
+      content: |
+        [Unit]
+        Description=Ntfy Notification Bus
+        After=network-online.target {{ ops_pod_name }}.pod
+        Requires={{ ops_pod_name }}.pod
+        [Container]
+        Pod={{ ops_pod_name }}.pod
+        Image={{ containers_ntfy_image }}
+        ContainerName=ntfy
+        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+        Label=DSU_ISO_CODE=ISO-27001-8-20
+        Label=DSU_ACTION_CODE=700000
+        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+        Label=DSU_IMAGE_DIGEST={{ containers_ntfy_image.split('@')[1] | default('none') }}
+        Volume={{ ops_config_dir }}/ntfy:/etc/ntfy:Z
+        Exec=serve
+        [Service]
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target default.target
+      mode: '0644'
+    become: true
+    when: containers_ntfy_enable
+    notify: reload_systemd
+    tags: [ops, notify, 700000]
+  
+  - name: "ISO 27001 §8.20 | 700000 | Create Forgejo Container Quadlet"
+    ansible.builtin.copy:
+      dest: "{{ containers_systemd_dir }}/forgejo.container"
+      content: |
+        [Unit]
+        Description=Forgejo Git Service
+        After=network-online.target {{ ops_pod_name }}.pod
+        Requires={{ ops_pod_name }}.pod
+        [Container]
+        Pod={{ ops_pod_name }}.pod
+        Image={{ containers_forgejo_image }}
+        ContainerName=forgejo
+        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+        Label=DSU_ISO_CODE=ISO-27001-8-20
+        Label=DSU_ACTION_CODE=700000
+        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+        Label=DSU_IMAGE_DIGEST={{ containers_forgejo_image.split('@')[1] | default('none') }}
+        Volume={{ ops_config_dir }}/forgejo:/data:Z
+        Environment=USER_UID=1000
+        Environment=USER_GID=1000
+        [Service]
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target default.target
+      mode: '0644'
+    become: true
+    when: containers_forgejo_enable
+    notify: reload_systemd
+    tags: [ops, git, 700000]
+  
+  - name: "ISO 27001 §8.20 | 700000 | Create Dockge Container Quadlet"
+    ansible.builtin.copy:
+      dest: "{{ containers_systemd_dir }}/dockge.container"
+      content: |
+        [Unit]
+        Description=Dockge Container Manager
+        After=network-online.target {{ ops_pod_name }}.pod
+        Requires={{ ops_pod_name }}.pod
+        [Container]
+        Pod={{ ops_pod_name }}.pod
+        Image={{ containers_dockge_image }}
+        ContainerName=dockge
+        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+        Label=DSU_ISO_CODE=ISO-27001-8-20
+        Label=DSU_ACTION_CODE=700000
+        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+        Label=DSU_IMAGE_DIGEST={{ containers_dockge_image.split('@')[1] | default('none') }}
+        Volume={{ ops_config_dir }}/dockge:/app/data:Z
+        Volume=/var/run/podman/podman.sock:/var/run/docker.sock:Z
+        [Service]
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target default.target
+      mode: '0644'
+    become: true
+    when: containers_dockge_enable
+    notify: reload_systemd
+    tags: [ops, deploy, 700000]
+  
+  - name: "ISO 27040 | 900000 | Create Syncthing Config Directory"
+    ansible.builtin.file:
+      path: "{{ ops_config_dir }}/syncthing"
+      state: directory
+      mode: '0755'
+      owner: "1000"
+      group: "1000"
+    become: true
+    tags: [ops, storage, 900000]
+  
+  - name: "ISO 27001 §8.20 | 700000 | Create Syncthing Container Quadlet"
+    ansible.builtin.copy:
+      dest: "{{ containers_systemd_dir }}/syncthing.container"
+      content: |
+        [Unit]
+        Description=Syncthing File Synchronization
+        After=network-online.target {{ ops_pod_name }}.pod
+        Requires={{ ops_pod_name }}.pod
+        [Container]
+        Pod={{ ops_pod_name }}.pod
+        Image={{ containers_syncthing_image }}
+        ContainerName=syncthing
+        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+        Label=DSU_ISO_CODE=ISO-27001-8-20
+        Label=DSU_ACTION_CODE=700000
+        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+        Label=DSU_IMAGE_DIGEST={{ containers_syncthing_image.split('@')[1] | default('none') }}
+        Volume={{ ops_config_dir }}/syncthing:/var/syncthing:Z
+        Volume={{ ops_root_dir }}:/var/syncthing/data:Z
+        [Service]
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target default.target
+      mode: '0644'
+    become: true
+    when: containers_syncthing_enable
+    notify: reload_systemd
+    tags: [ops, deploy, 700000]

@@ -50,6 +50,10 @@
 - name: Check for duplicate parameters (last one wins)
   ansible.builtin.set_fact:
     _param_names: "{{ _core_grub_all_params | map('regex_replace', '=.*', '') | list }}"
+  tags: [core, grub, audit]
+
+- name: Identify unique parameter names
+  ansible.builtin.set_fact:
     _unique_params: "{{ _param_names | unique | list }}"
   tags: [core, grub, audit]
 

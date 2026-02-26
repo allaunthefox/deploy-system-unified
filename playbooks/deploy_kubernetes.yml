@@ -14,36 +14,57 @@
     k3s_agent_mode: false
 
   tasks:
-    - name: Check if K3s is already installed
+    - name: "ISO 9001 | 600013 | Check if K3s is already installed"
       ansible.builtin.stat:
         path: "{{ k3s_install_dir }}/bin/k3s"
       register: k3s_binary
+      tags: [kubernetes, internal, 600013]
 
-    - name: Install K3s Master
+    - name: "ISO 27001 §8.20 | 820000 | Install K3s Master"
       when: not k3s_binary.stat.exists
       block:
-        - name: Download and install K3s
-          ansible.builtin.shell:
-            cmd: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -
-            creates: "{{ k3s_install_dir }}/bin/k3s"
+        - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
+          ansible.builtin.get_url:
+            url: https://get.k3s.io
+            dest: /tmp/k3s-install.sh
+            mode: '0700'
+            owner: root
+            group: root
+          register: _k3s_script
+          become: true
+          tags: [kubernetes, security, 530000]
 
-        - name: Wait for K3s to be ready
+        - name: "ISO 27001 §8.20 | 820000 | Execute K3s installer"
+          ansible.builtin.command:
+            cmd: /bin/bash /tmp/k3s-install.sh
+            creates: "{{ k3s_install_dir }}/bin/k3s"
+          become: true
+          environment:
+            INSTALL_K3S_VERSION: "{{ k3s_version }}"
+          vars:
+            ansible_no_log: true
+          tags: [kubernetes, deploy, 820000]
+
+        - name: "ISO 9001 | 600013 | Wait for K3s to be ready"
           ansible.builtin.wait_for:
             port: 6443
             timeout: 120
+          tags: [kubernetes, internal, 600013]
 
-    - name: Get K3s node token
+    - name: "ISO 9001 | 600013 | Get K3s node token"
       ansible.builtin.slurp:
         src: "{{ k3s_token_file }}"
       register: k3s_token
       when: k3s_token_file is exists
+      tags: [kubernetes, internal, 600013]
 
-    - name: Setup kubeconfig for root user
+    - name: "ISO 27001 §9.2 | 400010 | Setup kubeconfig for root user"
       ansible.builtin.copy:
         src: /etc/rancher/k3s/k3s.yaml
         dest: /root/.kube/config
         mode: '0600'
       become: true
+      tags: [kubernetes, security, 400010]
 
 - name: Join Kubernetes Nodes
   hosts: k8s_nodes
@@ -55,23 +76,40 @@
     k3s_node_token: ""
 
   tasks:
-    - name: Check if K3s agent is running
+    - name: "ISO 9001 | 600013 | Check if K3s agent is running"
       ansible.builtin.systemd:
         name: k3s-agent
         state: started
       register: k3s_agent
       ignore_errors: true
+      tags: [kubernetes, internal, 600013]
 
-    - name: Join node to cluster
+    - name: "ISO 27001 §8.20 | 820000 | Join node to cluster"
       when: k3s_server_url and k3s_node_token and not k3s_agent.failed
-      ansible.builtin.shell:
-        cmd: |
-          curl -sfL https://get.k3s.io | \
-            K3S_URL={{ k3s_server_url }} \
-            K3S_TOKEN={{ k3s_node_token }} \
-            INSTALL_K3S_VERSION={{ k3s_version }} \
-            sh -
-        creates: /var/lib/rancher/k3s/agent/etc/k3s-agent.yaml
+      block:
+        - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
+          ansible.builtin.get_url:
+            url: https://get.k3s.io
+            dest: /tmp/k3s-install.sh
+            mode: '0700'
+            owner: root
+            group: root
+          register: _k3s_script
+          become: true
+          tags: [kubernetes, security, 530000]
+
+        - name: "ISO 27001 §8.20 | 820000 | Execute K3s installer for node join"
+          ansible.builtin.command:
+            cmd: /bin/bash /tmp/k3s-install.sh
+            creates: /var/lib/rancher/k3s/agent/etc/k3s-agent.yaml
+          become: true
+          environment:
+            K3S_URL: "{{ k3s_server_url }}"
+            K3S_TOKEN: "{{ k3s_node_token }}"
+            INSTALL_K3S_VERSION: "{{ k3s_version }}"
+          vars:
+            ansible_no_log: true
+          tags: [kubernetes, deploy, 820000]
 
 - name: Deploy Helm Charts
   hosts: k8s_master
@@ -116,20 +154,47 @@
         state: present
 
   tasks:
-    - name: Install Helm if not present
-      ansible.builtin.shell:
-        cmd: command -v helm || (curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash)
-        creates: /usr/local/bin/helm
+    - name: "ISO 27001 §8.19 | 530000 | Install Helm if not present"
+      block:
+        - name: "ISO 9001 | 600013 | Check if Helm is installed"
+          ansible.builtin.command:
+            cmd: which helm
+          register: helm_check
+          failed_when: false
+          changed_when: false
+          tags: [helm, internal, 600013]
 
-    - name: Create Kubernetes namespaces
+        - name: "ISO 27001 §8.19 | 530000 | Download Helm install script"
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            dest: /tmp/get-helm-3.sh
+            mode: '0700'
+            owner: root
+            group: root
+          when: helm_check.rc != 0
+          become: true
+          tags: [helm, security, 530000]
+
+        - name: "ISO 27001 §8.19 | 530000 | Execute Helm installer"
+          ansible.builtin.command:
+            cmd: /bin/bash /tmp/get-helm-3.sh
+            creates: /usr/local/bin/helm
+          when: helm_check.rc != 0
+          become: true
+          vars:
+            ansible_no_log: true
+          tags: [helm, deploy, 530000]
+
+    - name: "ISO 27001 §8.22 | 700030 | Create Kubernetes namespaces"
       kubernetes.core.k8s:
         name: "{{ item.namespace }}"
         kind: Namespace
         state: present
       loop: "{{ helm_charts }}"
       ignore_errors: true
+      tags: [kubernetes, deploy, 700030]
 
-    - name: Deploy Helm charts
+    - name: "ISO 27001 §8.20 | 700000 | Deploy Helm charts"
       kubernetes.core.helm:
         name: "{{ item.name }}"
         chart_ref: "{{ item.chart }}"
@@ -137,13 +202,15 @@
         state: "{{ item.state }}"
       loop: "{{ helm_charts }}"
       when: item.state == 'present'
+      tags: [helm, deploy, 700000]
 
-    - name: List deployed releases
+    - name: "ISO 9001 | 600013 | List deployed releases"
       kubernetes.core.helm_info:
         namespace: "{{ item.namespace }}"
       loop: "{{ helm_charts }}"
       register: helm_releases
       ignore_errors: true
+      tags: [helm, internal, 600013]
 
 - name: Validate Helm Deployments
   hosts: k8s_master
@@ -152,7 +219,7 @@
     validation_timeout: 300
 
   tasks:
-    - name: Wait for all deployments to be ready
+    - name: "ISO 9001 | 600013 | Wait for all deployments to be ready"
       kubernetes.core.k8s_info:
         kind: Deployment
         namespace: "{{ item }}"
@@ -173,8 +240,9 @@
         - proxy
         - security
       ignore_errors: true
+      tags: [kubernetes, audit, 600013]
 
-    - name: Get pod status
+    - name: "ISO 9001 | 600013 | Get pod status"
       kubernetes.core.k8s_info:
         kind: Pod
         namespace: "{{ item }}"
@@ -191,10 +259,12 @@
         - proxy
         - security
       ignore_errors: true
+      tags: [kubernetes, audit, 600013]
 
-    - name: Display validation results
+    - name: "ISO 9001 | 600013 | Display validation results"
       ansible.builtin.debug:
         msg: "Helm deployment validation complete. All charts deployed and pods running."
+      tags: [kubernetes, audit, 600013]
 
 # High Availability Configuration (Multi-Master)
 - name: Configure High Availability
@@ -207,34 +277,37 @@
     k3s_ha_server_port: 6444
 
   tasks:
-    - name: Configure HA settings (when enabled)
+    - name: "ISO 27001 §12.1 | 600111 | Configure HA settings (when enabled)"
       when: ha_enabled | bool
       block:
-        - name: Enable etcd snapshots
+        - name: "ISO 27001 §12.1 | 600111 | Enable etcd snapshots"
           ansible.builtin.lineinfile:
             path: /etc/rancher/k3s/k3s.yaml
             regexp: '^    etcd-snapshot-'
             line: "    etcd-snapshot-retention: {{ etcd_snapshot_retention }}"
             mode: '0600'
           ignore_errors: true
+          tags: [kubernetes, high_availability, 600111]
 
-        - name: Enable automatic etcd snapshots
+        - name: "ISO 27001 §12.1 | 600111 | Enable automatic etcd snapshots"
           ansible.builtin.lineinfile:
             path: /etc/rancher/k3s/k3s.yaml
             regexp: '^    etcd-snapshot-'
             line: "    etcd-snapshot-interval: {{ etcd_snapshot_interval }}"
             mode: '0600'
           ignore_errors: true
+          tags: [kubernetes, high_availability, 600111]
 
-        - name: Configure HA embedded etcd
+        - name: "ISO 27001 §12.1 | 600111 | Configure HA embedded etcd"
           ansible.builtin.lineinfile:
             path: /etc/rancher/k3s/k3s.yaml
             regexp: '^    disable'
             line: "    cluster-init: true"
             mode: '0600'
           ignore_errors: true
+          tags: [kubernetes, high_availability, 600111]
 
-        - name: Configure HA proxy (kube-proxy in IPVS mode)
+        - name: "ISO 27001 §8.22 | 700030 | Configure HA proxy (kube-proxy in IPVS mode)"
           kubernetes.core.k8s:
             definition:
               apiVersion: v1
@@ -249,11 +322,13 @@
                     strictArp: true
             state: present
           ignore_errors: true
+          tags: [kubernetes, networking, 700030]
 
-    - name: Display HA status
+    - name: "ISO 9001 | 600013 | Display HA status"
       ansible.builtin.debug:
         msg: "HA configuration complete. Use k3s etcd-snapshot for backup/restore."
       when: ha_enabled | bool
+      tags: [kubernetes, internal, 600013]
 
 # Multi-Master Cluster Setup
 - name: Setup Additional Master Nodes
@@ -267,42 +342,60 @@
     ha_enabled: false
 
   tasks:
-    - name: Check if this is additional master
+    - name: "ISO 9001 | 600013 | Check if this is additional master"
       ansible.builtin.set_fact:
         is_additional_master: "{{ inventory_hostname in groups.get('k8s_master_nodes', []) }}"
+      tags: [kubernetes, internal, 600013]
 
-    - name: Install additional master node
+    - name: "ISO 27001 §8.20 | 820000 | Install additional master node"
       when: ha_enabled | bool and is_additional_master and k3s_server_url and k3s_master_token
       block:
-        - name: Download and install K3s as additional master
-          ansible.builtin.shell:
-            cmd: |
-              curl -sfL https://get.k3s.io | \
-                K3S_URL={{ k3s_server_url }} \
-                K3S_TOKEN={{ k3s_master_token }} \
-                K3S_CLUSTER_INIT=true \
-                INSTALL_K3S_VERSION={{ k3s_version }} \
-                sh -
-            creates: "{{ k3s_install_dir }}/bin/k3s"
+        - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
+          ansible.builtin.get_url:
+            url: https://get.k3s.io
+            dest: /tmp/k3s-install.sh
+            mode: '0700'
+            owner: root
+            group: root
+          register: _k3s_script
+          become: true
+          tags: [kubernetes, security, 530000]
 
-        - name: Wait for API server to be ready
+        - name: "ISO 27001 §8.20 | 820000 | Execute K3s installer for additional master"
+          ansible.builtin.command:
+            cmd: /bin/bash /tmp/k3s-install.sh
+            creates: "{{ k3s_install_dir }}/bin/k3s"
+          become: true
+          environment:
+            K3S_URL: "{{ k3s_server_url }}"
+            K3S_TOKEN: "{{ k3s_master_token }}"
+            K3S_CLUSTER_INIT: "true"
+            INSTALL_K3S_VERSION: "{{ k3s_version }}"
+          vars:
+            ansible_no_log: true
+          tags: [kubernetes, deploy, 820000]
+
+        - name: "ISO 9001 | 600013 | Wait for API server to be ready"
           ansible.builtin.wait_for:
             host: "{{ inventory_hostname }}"
             port: 6443
             timeout: 120
+          tags: [kubernetes, internal, 600013]
 
-    - name: Verify master node status
+    - name: "ISO 9001 | 600013 | Verify master node status"
       when: ha_enabled | bool
       ansible.builtin.shell:
         cmd: kubectl get nodes --kubeconfig /etc/rancher/k3s/k3s.yaml
       register: node_status
       changed_when: false
       failed_when: false
+      tags: [kubernetes, audit, 600013]
 
-    - name: Display cluster status
+    - name: "ISO 9001 | 600013 | Display cluster status"
       ansible.builtin.debug:
         msg: "Cluster nodes: {{ node_status.stdout }}"
       when: ha_enabled | bool
+      tags: [kubernetes, internal, 600013]
 
 # etcd Backup Configuration
 - name: Configure etcd Snapshots
@@ -314,15 +407,16 @@
     etcd_retention_days: 7
 
   tasks:
-    - name: Create backup directory
+    - name: "ISO 27040 | 900000 | Create backup directory"
       when: ha_enabled | bool
       ansible.builtin.file:
         path: "{{ etcd_backup_location }}"
         state: directory
         mode: '0700'
       become: true
+      tags: [kubernetes, backup, 900000]
 
-    - name: Create etcd snapshot script
+    - name: "ISO 27040 | 900001 | Create etcd snapshot script"
       when: ha_enabled | bool
       ansible.builtin.copy:
         dest: /usr/local/bin/k3s-etcd-snapshot.sh
@@ -344,8 +438,9 @@
           # Cleanup old snapshots
           find $BACKUP_DIR -name "*.db" -mtime +{{ etcd_retention_days }} -delete
       become: true
+      tags: [kubernetes, backup, 900001]
 
-    - name: Schedule daily etcd snapshots via cron
+    - name: "ISO 27040 | 900002 | Schedule daily etcd snapshots via cron"
       when: ha_enabled | bool
       ansible.builtin.cron:
         name: "K3s etcd snapshot"
@@ -353,4 +448,5 @@
         hour: "2"
         job: "/usr/local/bin/k3s-etcd-snapshot.sh >> /var/log/k3s-etcd-snapshot.log 2>&1"
       become: true
+      tags: [kubernetes, backup, 900002]
 

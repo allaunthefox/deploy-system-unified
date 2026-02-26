@@ -1,16 +1,16 @@
 ---
 # Install K3s binary
 
-- name: Create K3s data directory
-  tags: [kubernetes, master, remediate]
+- name: "ISO 9001 | 600013 | Create K3s data directory"
+  tags: [kubernetes, master, remediate, 600013]
   ansible.builtin.file:
     path: "{{ kubernetes_data_dir }}"
     state: directory
     mode: '0755'
   become: true
 
-- name: Download K3s binary with checksum
-  tags: [kubernetes, master, remediate]
+- name: "ISO 27001 §8.19 | 530000 | Download K3s binary with checksum"
+  tags: [kubernetes, master, remediate, 530000]
   vars:
     _k3s_checksum: "{{ k3s_checksums[kubernetes_k3s_version][_k8s_norm_arch] }}"
   ansible.builtin.get_url:
@@ -26,8 +26,8 @@
   delay: 5
   until: _k3s_download is success
 
-- name: Create symbolic links for kubectl/crictl
-  tags: [kubernetes, master, remediate]
+- name: "ISO 9001 | 600013 | Create symbolic links for kubectl/crictl"
+  tags: [kubernetes, master, remediate, 600013]
   ansible.builtin.file:
     src: "/usr/local/bin/k3s"
     dest: "/usr/local/bin/{{ item }}"

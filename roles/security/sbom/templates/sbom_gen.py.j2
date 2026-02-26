@@ -1,3 +1,4 @@
+{% raw %}
 import os
 import re
 import json
@@ -23,10 +24,10 @@ def scan_dependencies(root_dir):
     seen_components = set()
 
     # Regex patterns
-    image_pattern = re.compile(r"image:\s*['\"]?([^'\"\s}]+)['\"]?")
+    image_pattern = re.compile(r"_image:\s*['\"]?([^'\"\s}]+)['\"]?")
     
     for root, dirs, files in os.walk(root_dir):
-        if ".git" in root or "molecule" in root:
+        if ".git" in root or "molecule" in root or "ci-artifacts" in root:
             continue
             
         for file in files:
@@ -36,18 +37,29 @@ def scan_dependencies(root_dir):
                     with open(path, 'r') as f:
                         content = f.read()
                         
-                        # Find container images
+                        # Find container images with Digests
                         for match in image_pattern.finditer(content):
                             img = match.group(1)
                             if img and img not in seen_components and "{{" not in img:
-                                parts = img.split(':')
-                                name = parts[0]
-                                version = parts[1] if len(parts) > 1 else "latest"
+                                if '@sha256:' in img:
+                                    name, digest = img.split('@')
+                                    version = digest
+                                else:
+                                    parts = img.split(':')
+                                    name = parts[0]
+                                    version = parts[1] if len(parts) > 1 else "latest"
+                                
                                 sbom["components"].append({
                                     "name": name,
                                     "version": version,
                                     "type": "container",
-                                    "purl": f"pkg:docker/{name}@{version}"
+                                    "purl": f"pkg:docker/{name}@{version}",
+                                    "hashes": [
+                                        {
+                                            "alg": "SHA-256",
+                                            "content": version.replace("sha256:", "") if "sha256:" in version else ""
+                                        }
+                                    ] if "sha256:" in version else []
                                 })
                                 seen_components.add(img)
                 except Exception:
@@ -85,3 +97,4 @@ if __name__ == "__main__":
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
     sbom_data = scan_dependencies(repo_root)
     print(json.dumps(sbom_data, indent=2))
+{% endraw %}

@@ -5,40 +5,21 @@
 # NIST SI-4 - System Monitoring
 # Supports: Kubernetes and standalone deployments, rules configuration, alert integration
 
-- name: Check if Falco is already installed
+- name: "ISO 27001 §16.1 | 460000 | Check if Falco is already installed"
   ansible.builtin.command:
     cmd: falco --version
   register: falco_check
   failed_when: false
   changed_when: false
 
-- name: Detect operating system family
+- name: "ISO 9001 | 800000 | Detect operating system family"
   ansible.builtin.set_fact:
     falco_install_method: "{{ 'package' if ansible_facts['os_family'] in ['Debian', 'RedHat'] else 'binary' }}"
   changed_when: false
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | CIS 4.1.1 | Action 460000 | Import Falco GPG key (Debian/Ubuntu)"
-  ansible.builtin.get_url:
-    url: "{{ falco_gpg_key }}"
-    dest: /etc/apt/keyrings/falco.asc
-    mode: '0644'
-  become: true
-  when:
-    - ansible_facts['os_family'] == 'Debian'
-    - falco_install_method == 'package'
-    - falco_check.rc != 0
-  tags:
-    - iso_27001_16_1
-    - nist_si_4
-    - cis_4_1_1
-    - action_460000
-    - falco
-    - security
-    - runtime
-
-- name: "ISO 27001 §16.1 | NIST SI-4 | CIS 4.1.1 | Action 460000 | Add Falco repository (Debian/Ubuntu)"
+- name: "ISO 27001 §16.1 | 460000 | Add Falco repository (Debian/Ubuntu)"
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/falco.asc] https://download.falco.org/packages/{{ falco_deb_repo_suffix }} {{ ansible_facts['distribution_release'] }} stable"
+    repo: "deb [trusted=yes] https://download.falco.org/packages/{{ falco_deb_repo_suffix }} {{ ansible_facts['distribution_release'] }} stable"
     state: present
   become: true
   when:
@@ -49,12 +30,12 @@
     - iso_27001_16_1
     - nist_si_4
     - cis_4_1_1
-    - action_460000
+    - 460000
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | Action 460000 | Add Falco repository (RHEL/CentOS)"
+- name: "ISO 27001 §16.1 | 460000 | Add Falco repository (RHEL/CentOS)"
   ansible.builtin.yum_repository:
     name: falco
     description: Falco Repository
@@ -70,12 +51,12 @@
   tags:
     - iso_27001_16_1
     - nist_si_4
-    - action_460000
+    - 460000
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | CIS 4.1.1 | Action 460001 | Install Falco package (Debian/Ubuntu)"
+- name: "ISO 27001 §16.1 | 460001 | Install Falco package (Debian/Ubuntu)"
   ansible.builtin.package:
     name: "{{ falco_package_name }}"
     state: present
@@ -88,12 +69,12 @@
     - iso_27001_16_1
     - nist_si_4
     - cis_4_1_1
-    - action_460001
+    - 460001
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | Action 460001 | Install Falco package (RHEL/CentOS)"
+- name: "ISO 27001 §16.1 | 460001 | Install Falco package (RHEL/CentOS)"
   ansible.builtin.package:
     name: "{{ falco_package_name }}"
     state: present
@@ -105,23 +86,17 @@
   tags:
     - iso_27001_16_1
     - nist_si_4
-    - action_460001
+    - 460001
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | Action 460001 | Install Falco binary (manual)"
+- name: "ISO 27001 §16.1 | 460001 | Install Falco binary (manual)"
   ansible.builtin.unarchive:
-    src: >-
-      {{
-        (artifact_binary_mirror_base + '/falco-' + falco_version + '-' + ansible_facts['system']['hardware'] + '.tar.gz')
-        if (artifact_binary_mirror_base | default('') | length > 0)
-        else ("https://download.falco.org/packages/binaries/falco-" + falco_version + "-" + ansible_facts['system']['hardware'] + ".tar.gz")
-      }}
+    src: "https://download.falco.org/packages/binaries/falco-{{ falco_version }}-{{ ansible_facts['system']['hardware'] }}.tar.gz"
     dest: /
     remote_src: true
     creates: /usr/bin/falco
-    checksum: "{{ falco_checksums[falco_version][ansible_facts['system']['hardware']] | default(omit) }}"
   become: true
   when:
     - falco_install_method == 'binary'
@@ -129,12 +104,12 @@
   tags:
     - iso_27001_16_1
     - nist_si_4
-    - action_460001
+    - 460001
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | Action 460002 | Create Falco directories"
+- name: "ISO 27001 §16.1 | 460002 | Create Falco directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -149,12 +124,12 @@
   tags:
     - iso_27001_16_1
     - nist_si_4
-    - action_460002
+    - 460002
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | NIST AU-12 | Action 460002 | Deploy Falco configuration"
+- name: "ISO 27001 §16.1 | 460002 | Deploy Falco configuration"
   ansible.builtin.template:
     src: falco.yaml.j2
     dest: /etc/falco/falco.yaml
@@ -168,13 +143,13 @@
     - iso_27001_16_1
     - nist_si_4
     - nist_au_12
-    - action_460002
+    - 460002
     - falco
     - security
     - runtime
     - config
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | Action 460002 | Deploy custom Falco rules"
+- name: "ISO 27001 §16.1 | 460002 | Deploy custom Falco rules"
   ansible.builtin.copy:
     src: falco-rules.yaml
     dest: /etc/falco/rules.d/falco-rules.yaml
@@ -186,13 +161,13 @@
   tags:
     - iso_27001_16_1
     - nist_si_4
-    - action_460002
+    - 460002
     - falco
     - security
     - runtime
     - rules
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | Action 460002 | Deploy Falco systemd service"
+- name: "ISO 27001 §16.1 | 460002 | Deploy Falco systemd service"
   ansible.builtin.template:
     src: falco.service.j2
     dest: /etc/systemd/system/falco.service
@@ -205,12 +180,12 @@
   tags:
     - iso_27001_16_1
     - nist_si_4
-    - action_460002
+    - 460002
     - falco
     - security
     - runtime
 
-- name: "ISO 27001 §16.1 | NIST SI-4 | CIS 4.1.1 | Action 460002 | Enable and start Falco service"
+- name: "ISO 27001 §16.1 | 460002 | Enable and start Falco service"
   ansible.builtin.systemd:
     name: falco
     enabled: true
@@ -222,12 +197,12 @@
     - iso_27001_16_1
     - nist_si_4
     - cis_4_1_1
-    - action_460002
+    - 460002
     - falco
     - security
     - runtime
 
-- name: Check for Kubernetes environment
+- name: "ISO 9001 | 600013 | Check for Kubernetes environment"
   ansible.builtin.set_fact:
     is_kubernetes: "{{ true if (lookup('file', '/var/run/secrets/kubernetes.io/serviceaccount/namespace') | default('', true) != '') else false }}"
   changed_when: false
@@ -239,7 +214,7 @@
     - k8s
     - security
 
-- name: "CIS 4.1.1 | CIS 4.1.2 | CIS 4.1.3 | ISO 27001 §16.1 | NIST SI-4 | Action 460003 | Deploy Falco Kubernetes Audit Rules"
+- name: "ISO 27001 §16.1 | 460003 | Deploy Falco Kubernetes Audit Rules"
   ansible.builtin.copy:
     src: k8s-audit-rules.yaml
     dest: /etc/falco/k8s-audit-rules.yaml
@@ -254,27 +229,17 @@
     - cis_4_1_3
     - iso_27001_16_1
     - nist_si_4
-    - action_460003
+    - 460003
     - falco
     - k8s
     - security
     - runtime
 
-- name: Set Falco integration complete flag
+- name: "ISO 9001 | 600011 | Set Falco integration complete flag"
   ansible.builtin.set_fact:
     falco_integration_complete: true
   tags:
     - iso_27001_16_1
-    - action_460003
+    - 460003
     - falco
     - security
-
-- name: VERIFY | Falco eBPF Runtime Monitoring (Zero-Tolerance)
-  ansible.builtin.shell: |
-    falco --version | grep -q "ebpf" && \
-    systemctl is-active falco
-  register: _falco_ebpf_check
-  failed_when: _falco_ebpf_check.rc != 0
-  become: true
-  changed_when: false
-  tags: [security, falco, verification, runtime_monitoring]

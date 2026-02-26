@@ -1,15 +1,15 @@
 ---
 # Rootless Podman prerequisites
 
-- name: Lookup rootless user UID
+- name: "ISO 9001 | 800000 | Lookup rootless user UID"
   ansible.builtin.command:
     cmd: "id -u {{ podman_rootless_user }}"
   register: podman_rootless_uid_cmd
   changed_when: false
   become: true
-  tags: [containers, runtime, rootless]
+  tags: [containers, runtime, rootless, 800000]
 
-- name: Check newuidmap/newgidmap availability
+- name: "ISO 9001 | 800000 | Check newuidmap/newgidmap availability"
   ansible.builtin.stat:
     path: "{{ item }}"
   loop:
@@ -17,7 +17,7 @@
     - /usr/bin/newgidmap
   register: podman_uidmap_binaries
   changed_when: false
-  tags: [containers, runtime, rootless]
+  tags: [containers, runtime, rootless, 800000]
 
 - name: Assert newuidmap/newgidmap are installed
   ansible.builtin.assert:
@@ -66,7 +66,7 @@
   changed_when: false
   tags: [containers, runtime, rootless, iso27001]
 
-- name: Check systemd user instance is running
+- name: "ISO 27001 §12.4 | 840020 | Check systemd user instance is running"
   ansible.builtin.command:
     cmd: systemctl --user list-units --type=service
   register: rootless_systemd_check
@@ -75,7 +75,7 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ podman_rootless_user }}"
-  tags: [containers, runtime, rootless]
+  tags: [containers, runtime, rootless, 840020]
 
 - name: Assert systemd user instance is available
   ansible.builtin.assert:
