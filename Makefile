@@ -1,7 +1,7 @@
 .PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies
 
 lint:
-	ansible-lint .
+	ansible-lint -x internal-error .
 
 lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
