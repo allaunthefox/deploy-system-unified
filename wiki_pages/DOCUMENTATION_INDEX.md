@@ -56,6 +56,7 @@ Optimizing for specific architectures and GPUs.
 Tools and standards for contributing to DSU.
 
 *   **[Documentation Style Guide](DOCUMENTATION_STYLE_GUIDE)**: Standards for all project documentation.
+*   **[Naming Convention Standard](NAMING_CONVENTION_STANDARD)**: SCREAMING_SNAKE_CASE file naming standard.
 *   **[Ansible Style Guide](ANSIBLE_STYLE_GUIDE)**: Task naming, lint rules, and role structure.
 *   **[Style Guide Overview](STYLE_GUIDE)**: Standards for [YAML](DEV_STYLE_YAML_STYLE_GUIDE), [Ansible](DEV_STYLE_ANSIBLE_STYLE_GUIDE), [Shell](DEV_STYLE_SHELL_STYLE_GUIDE), and [Docs](DEV_STYLE_DOCUMENTATION_STYLE_GUIDE).
 *   **[Development Tooling](TOOLING)**: Usage guide for style enforcement and repair tools.
