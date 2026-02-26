@@ -13,7 +13,7 @@
 | **Metadata & Documentation** | 100/100 | ✅ 81/81 Roles Documented |
 | **Testing & Validation** | 100/100 | ✅ Verified |
 | **Compliance Integration** | 100/100 | ✅ CIS/ISO/NIST/AI Mapped |
-| **Forensic Traceability** | 100/100 | ✅ 480+ Action Codes |
+| **Forensic Traceability** | 100/100 | ✅ 480+ Audit Event Identifiers |
 | **Resilience Engineering** | 100/100 | ✅ HRoT + Automated Threat Analysis |
 
 ## 🛡️ Compliance Certification
@@ -92,6 +92,6 @@ The system is now fully aligned with:
 ## 📚 Related Documentation
 - [Security Audit Report](SECURITY_AUDIT_REPORT)
 - [Role Reference](Role_Reference)
-- [Action Code Catalog](DSU_ACTION_CODES_COMPLETE)
+- [Audit Event Identifier Catalog](DSU_ACTION_CODES_COMPLETE)
 
 *Updated: February 24, 2026*

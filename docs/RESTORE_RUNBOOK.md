@@ -49,7 +49,7 @@ ansible-playbook playbooks/restore_data.yml --tags database
 
 Every restoration run generates the following auditable events in the **Loki** stream:
 
-| Action Code | Description | Standard |
+| Audit Event Identifier | Description | Standard |
 |-------------|-------------|----------|
 | **560000**  | DB Readiness Verified | ISO 27001 §12.4 |
 | **560022**  | DB Schema Re-initialized | ISO 27040 |

@@ -93,3 +93,25 @@ roles/networking/vpn_mesh/defaults/main.yml
 # Reason: Security task uses example password for tests
 roles/security/access/tasks/main.yml
 
+# Reason: Inventory group_vars contain long variable definitions and comments
+inventory/group_vars/all/secrets.migration.yml
+inventory/group_vars/all/os_settings.yml
+inventory/group_vars/all/secrets.sops.yml
+inventory/group_vars/all/vps.yml
+
+# Reason: Virtualization roles contain complex Goss tests and long command strings
+roles/virtualization/storage/tasks/main.yml
+roles/virtualization/storage/molecule/*
+roles/virtualization/storage/tests/*
+roles/virtualization/kvm/tasks/main.yml
+roles/virtualization/kvm/molecule/*
+roles/virtualization/kvm/tests/*
+
+# Reason: Test files contain long validation messages
+tests/validate_rhel_compat_gpg_keys.yml
+
+# Reason: Site and deployment playbooks contain long task descriptions
+site.yml
+production_deploy.yml
+ephemeral_edge.yml
+
