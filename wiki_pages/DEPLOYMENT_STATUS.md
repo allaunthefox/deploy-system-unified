@@ -91,7 +91,7 @@ The system is now fully aligned with:
 
 ## 📚 Related Documentation
 - [Security Audit Report](SECURITY_AUDIT_REPORT)
-- [Role Reference](ROLE_REFERENCE)
-- [Audit Event Identifier Catalog](DSU_AUDIT_EVENT_IDENTIFIERS)
+- [Role Reference](Role_Reference)
+- [Audit Event Identifier Catalog](DSU_ACTION_CODES_COMPLETE)
 
 *Updated: February 24, 2026*

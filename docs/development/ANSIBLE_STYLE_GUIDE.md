@@ -46,7 +46,7 @@ enforce and how to handle exceptions.
 ### DSU001 — No Top-Level Roles in `main.yml`
 
 `main.yml` files at the project root must not contain a top-level `roles:` block. Role lists
-belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `PRODUCTION_DEPLOY.yml`.
+belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `production_deploy.yml`.
 
 ```yaml
 # WRONG — in main.yml
@@ -148,7 +148,7 @@ Triggering a restart on every run is an idempotency violation.
 conditionals inside `command` or `shell` tasks when an Ansible `when` clause can do the same job.
 
 **Secrets**: Never hardcode secrets in playbooks or role files. All secrets are managed via SOPS/Age
-through `core/secrets`. See [../wiki_pages/SECRETS_MANAGEMENT](../wiki_pages/SECRETS_MANAGEMENT).
+through `core/secrets`. See [SECRETS_MANAGEMENT](SECRETS_MANAGEMENT).
 
 **Variables**: Define defaults in `defaults/main.yml`. Use descriptive, namespaced names
 (`rolename_thing_action`, e.g., `core_time_service_enabled`).
@@ -176,7 +176,7 @@ roles/category/rolename/
 
 Roles must not cross category boundaries. A role in `security/` does not install packages that
 belong to `core/`. A role in `containers/` does not configure the firewall. See
-[../wiki_pages/NON_COMINGLING](../wiki_pages/NON_COMINGLING).
+[NON_COMINGLING](NON_COMINGLING).
 
 ---
 

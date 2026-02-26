@@ -226,10 +226,10 @@
     - medium_severity
     - 600113
 
-- name: "ISO 27001 §9.2 | 510002 | Gather system users for SSH validation"
+- name: "ISO 27001 §9.2 | 510002 | Gather system groups for SSH validation"
   ansible.builtin.getent:
-    database: passwd
-  register: sshd_system_users
+    database: group
+  register: sshd_system_groups
   become: true
   tags:
     - security
@@ -240,9 +240,9 @@
 - name: "ISO 27001 §9.2 | 510002 | Validate SSH trusted groups exist before restricting"
   ansible.builtin.assert:
     that:
-      - item in sshd_system_users.ansible_facts.getent_passwd.keys()
+      - item in sshd_system_groups.ansible_facts.getent_group.keys()
     fail_msg: >-
-      SSH trusted group '{{ item }}' does not exist in /etc/passwd.
+      SSH trusted group '{{ item }}' does not exist in /etc/group.
       This would lock out legitimate users. Create the group or remove from
       security_sshd_trusted_groups.
   loop: "{{ security_sshd_trusted_groups | default([]) }}"
