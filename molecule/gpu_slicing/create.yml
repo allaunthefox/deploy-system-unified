@@ -34,6 +34,8 @@
         privileged: true
         state: started
         command: sleep infinity
+        tmpfs:
+          - "/tmp:rw"
         # Add necessary systemd support if needed for specific images
       loop: "{{ platforms }}"
       register: server
