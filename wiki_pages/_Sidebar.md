@@ -27,7 +27,7 @@
 - [ISO Tagging Standard](ISO_TAGGING_STANDARD)
 - [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
 - [Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)
-- [Action Codes](DSU_ACTION_CODES_COMPLETE)
+- [Audit Event Identifiers](DSU_ACTION_CODES_COMPLETE)
 
 ---
 

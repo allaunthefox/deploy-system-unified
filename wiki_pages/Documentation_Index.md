@@ -12,7 +12,7 @@ The core logic and design patterns governing the project.
 *   **[Modular Layers](MODULAR_LAYERS)**: The 7-layer defense-in-depth model.
 *   **[Core Philosophy](NON_COMINGLING)**: Separation of Concerns (SoC) for task modularity.
 *   **[High-Resilience Plan](Plan_HIGH_RESILIENCE_PLAN_2026)**: The project's security roadmap and HRoT mandate.
-*   **[Volatile Design](EPHEMERAL_DESIGN)**: Zero-footprint and RAM-disk secret infrastructure.
+*   **[Volatile Design](EPHEMERAL_DESIGN)**: Zero-footprint and RAM-disk secret infrastructure (Ephemeral Credentials).
 *   **[Layered Security](LAYERED_SECURITY)**: Coordination between firewall, MAC, and kernel hardening.
 *   **Architecture Guides**: [x86](Arch_X86) | [ARM64](Arch_ARM64) | [RISC-V](Arch_RISCV64)
 
@@ -71,7 +71,7 @@ Technical lookup for roles and variables.
 
 *   **[Role Reference](Role_Reference)**: Master list of all 81+ Ansible roles.
 *   **[Variable Reference](Variable_Reference)**: Global and role-specific variable definitions.
-*   **[Action Code Catalog](DSU_ACTION_CODES_COMPLETE)**: 480+ forensic audit codes mapped to ISO standards.
+*   **[Audit Event Identifier Catalog](DSU_ACTION_CODES_COMPLETE)**: 480+ forensic audit codes mapped to ISO standards.
 
 ---
 
