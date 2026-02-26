@@ -71,7 +71,7 @@ Governing standard: ISO/IEC 27001:2022 §8.9; NIST SP 800-53 CM-2.
 
 In practice:
 
-- `production_deploy.yml` imports `base_hardened.yml`. It does not redeclare core, security, or
+- `PRODUCTION_DEPLOY.yml` imports `BASE_HARDENED.yml`. It does not redeclare core, security, or
   networking roles. The infrastructure concern belongs to the base layer.
 - `ephemeral_edge.yml` declares only workload roles (`containers/caddy`, `containers/anubis`).
   The infrastructure is declared separately or assumed to be converged.

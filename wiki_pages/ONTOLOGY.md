@@ -37,10 +37,10 @@ declared in `inventory/group_vars/` and enforced by `ops/preflight`.
 
 | Profile | Security Class | Audit Log Retention Class | Correct Entrypoint | Use when |
 |---|---|---|---|---|
-| `hardened` | Strict | Full (Loki + Grafana) | `base_hardened.yml` | Any persistent host. **This is the default.** |
-| `production` | Strict | Compliance (Signed Logs + Loki) | `production_deploy.yml` | Persistent hosts running active workloads with SBOM and supply-chain verification |
-| `ephemeral` | Strict | Minimal (Journal only) | `base_ephemeral.yml` or `ephemeral_edge.yml` | Disposable hosts: CI runners, test nodes, temporary ingress |
-| `vps` | Strict | Standard (Rsyslog) | `base_hardened.yml` | Cloud VPS instances without the full Loki stack |
+| `hardened` | Strict | Full (Loki + Grafana) | `BASE_HARDENED.yml` | Any persistent host. **This is the default.** |
+| `production` | Strict | Compliance (Signed Logs + Loki) | `PRODUCTION_DEPLOY.yml` | Persistent hosts running active workloads with SBOM and supply-chain verification |
+| `ephemeral` | Strict | Minimal (Journal only) | `BASE_EPHEMERAL.yml` or `ephemeral_edge.yml` | Disposable hosts: CI runners, test nodes, temporary ingress |
+| `vps` | Strict | Standard (Rsyslog) | `BASE_HARDENED.yml` | Cloud VPS instances without the full Loki stack |
 | `dev` | Permissive | None | `site.yml` | Local development and testing. `core_security_fail_secure: false` |
 
 > **Note:** `workstation` and `backup` profile files exist in `inventory/group_vars/` as reserved
@@ -135,7 +135,7 @@ compliance control. Identifiers are grouped into suites by concern domain.
 
 Governing standard: ISO/IEC 27001:2022 §8.15; NIST SP 800-53 Rev 5 AU-3.
 
-The full registry is in [DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE).
+The full registry is in [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS).
 
 Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [Description]`
 
@@ -169,7 +169,7 @@ Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [D
    Governing standard: ISO/IEC 27001:2022 §8.9.
 
 5. **Configuration Baseline Inheritance:** Workloads never define infrastructure. They import it
-   from a verified configuration baseline. `production_deploy.yml` imports `base_hardened.yml`
+   from a verified configuration baseline. `PRODUCTION_DEPLOY.yml` imports `BASE_HARDENED.yml`
    and does not redeclare any of its roles. This makes the audit traceability chain verifiable
    end-to-end. Governing standard: ISO/IEC 27001:2022 §8.9, NIST CM-2.
 
@@ -181,6 +181,6 @@ Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [D
 - [NON_COMINGLING](NON_COMINGLING) — SoC implementation
 - [MODULAR_LAYERS](MODULAR_LAYERS) — The 7-layer defense-in-depth architecture
 - [ISO_TAGGING_STANDARD](ISO_TAGGING_STANDARD) — Tag naming and compliance mapping
-- [Quality_Idempotency_BLOCKERS](Quality_Idempotency_BLOCKERS) — Idempotency contract
-- [DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE) — Full Audit Event Identifier registry
+- [QUALITY_IDEMPOTENCY_BLOCKERS](QUALITY_IDEMPOTENCY_BLOCKERS) — Idempotency contract
+- [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS) — Full Audit Event Identifier registry
 - [LLM_MAP](LLM_MAP) — AI agent usage guide

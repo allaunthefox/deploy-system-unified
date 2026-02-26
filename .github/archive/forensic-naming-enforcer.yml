@@ -1,0 +1,32 @@
+name: "Forensic Naming Enforcer"
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'roles/**/*.yml'
+      - 'playbooks/**/*.yml'
+
+jobs:
+  enforce-naming:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "ISO 27001 §12.2 | 520030 | Scan for non-compliant task names"
+        run: |
+          errors=0
+          while IFS= read -r file; do
+            non_compliant=$(grep -Hn "^[[:space:]]*- name: [\"'][^|]* | [0-9]\{6\} | .*[\"']" "$file" -v | grep -v "^[[:space:]]*#" || true)
+            if [ -n "$non_compliant" ]; then
+              echo "Non-compliant task names found in $file:"
+              echo "$non_compliant"
+              errors=$((errors + 1))
+            fi
+          done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*")
+          if [ $errors -gt 0 ]; then
+            echo "::error::Found $errors files with non-compliant forensic names."
+            exit 1
+          else
+            echo "All task names follow forensic standards."
+          fi

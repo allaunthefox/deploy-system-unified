@@ -44,7 +44,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 ### [3. Deployment](./deployment/EXAMPLES.md)
 
 * **Solution Stacks**: How to use the Production, Development, and Ephemeral templates.
-* **Production Deploy Template**: Use `production_deploy.yml` as the canonical production deployment playbook. Treat `branch_templates/` as reference-only.
+* **Production Deploy Template**: Use `PRODUCTION_DEPLOY.yml` as the canonical production deployment playbook. Treat `branch_templates/` as reference-only.
 * **Variables**: Configuring randomized ports, IP restrictions, and secrets.
 * **[Architecture & Vendor Profiles](./deployment/ARCH_VENDOR_PROFILES.md)**: Explicit arch/vendor selection to avoid x86-only assumptions.
 * **[Hardware Compatibility Matrix](./deployment/HARDWARE_COMPATIBILITY_MATRIX.md)**: Supported CPU/GPU combinations and platform tiers.
@@ -94,7 +94,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 * **[Security Audit Report](./security/SECURITY_AUDIT_REPORT.md)**: Comprehensive security assessment and role analysis.
 * **[Threat Model](./security/THREAT_MODEL.md)**: STRIDE analysis and residual risk assessment.
 * **[Forensic Standards](./security/FORENSIC_STANDARDS.md)**: Mandatory task naming and Audit Event Identifier convention.
-* **[Audit Event Identifier Catalog](../DSU_ACTION_CODES_COMPLETE.md)**: 480+ forensic audit codes mapped to ISO standards.
+* **[Audit Event Identifier Catalog](../DSU_AUDIT_EVENT_IDENTIFIERS.md)**: 480+ forensic audit codes mapped to ISO standards.
 * **[Forensic Restoration Runbook](./RESTORE_RUNBOOK.md)**: Step-by-step guide for ISO 27040 data restoration.
 
 ### [6. Planning](./planning/SUMMARY.md)
