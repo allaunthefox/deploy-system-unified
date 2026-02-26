@@ -85,8 +85,8 @@ def analyze_wiki_content():
     # Analyze the role documentation completeness
     print("Analyzing role documentation completeness:")
     
-    # Get all documented roles from Role_Reference.md
-    role_ref_path = wiki_dir / "Role_Reference.md"
+    # Get all documented roles from ROLE_REFERENCE.md
+    role_ref_path = wiki_dir / "ROLE_REFERENCE.md"
     if role_ref_path.exists():
         role_ref_content = role_ref_path.read_text()
         
