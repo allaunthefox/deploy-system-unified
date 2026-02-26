@@ -11,9 +11,11 @@ inline comments.
 auto-synced from this directory by the CI wiki-lint workflow. Do not edit the GitHub wiki directly
 — changes will be overwritten on the next sync.
 
-**File naming**: Wiki page filenames use `SCREAMING_SNAKE_CASE.md` for top-level pages
-(e.g., `ONTOLOGY.md`, `../wiki_pages/NON_COMINGLING.md`) and `Category_TOPIC.md` for sub-pages
-(e.g., `DEV_STYLE_YAML_STYLE_GUIDE.md`, `REF_VARS_CORE.md`).
+**File naming**: Wiki page filenames MUST use **SCREAMING_SNAKE_CASE.md**.
+
+See **[NAMING_CONVENTION_STANDARD](NAMING_CONVENTION_STANDARD)** for the complete naming standard.
+
+Examples: `ONTOLOGY.md`, `NON_COMINGLING.md`, `DEV_STYLE_YAML_STYLE_GUIDE.md`, `REF_VARS_CORE.md`.
 
 **Internal links**: When linking to another wiki page from within a wiki page, use this format:
 

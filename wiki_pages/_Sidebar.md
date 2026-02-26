@@ -42,6 +42,7 @@
 
 ### 💻 Development
 - [Documentation Style Guide](DOCUMENTATION_STYLE_GUIDE)
+- [Naming Convention Standard](NAMING_CONVENTION_STANDARD)
 - [Ansible Style Guide](ANSIBLE_STYLE_GUIDE)
 - [Style Guide](STYLE_GUIDE)
 - [Tooling](TOOLING)
