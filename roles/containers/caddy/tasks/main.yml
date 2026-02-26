@@ -175,7 +175,17 @@
       HealthStartPeriod=40s
 
       # Using serfriz/caddy-porkbun-dockerproxy:2.10.2 for Porkbun DNS support
-      Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2
+      # Pinned digest prevents supply-chain attacks and ensures reproducible pulls
+      Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2@sha256:{{ caddy_image_digest | default('') }}
+      # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
+      Pull={{ caddy_pull_policy | default('newer') }}
+      # Retry backoff for image pulls (prevents registry rate-limit bans)
+      PullRetry={{ caddy_pull_retry | default(5) }}
+      PullRetryDelay={{ caddy_pull_retry_delay | default('30s') }}
+      {% if podman_rootless_enabled | bool %}
+      # Rootless user namespace mapping for proper subuid/subgid handling
+      UserNS=auto
+      {% endif %}
       CapDrop=ALL
       CapAdd=NET_BIND_SERVICE
       # Override default command to ensure static Caddyfile usage
@@ -199,11 +209,12 @@
       PublishPort={{ caddy_https_port }}:443
       PublishPort={{ caddy_https_port_udp }}:443/udp
       {% endif %}
-      Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      Volume=/srv/containers/caddy/data:/data:Z
-      Volume=/srv/containers/caddy/config:/config:Z
-      Volume=/srv/containers/caddy/logs:/var/log/caddy:Z
-      Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro
+      # :U for rootless namespace ownership, :Z for SELinux, :ro for read-only
+      Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro,U
+      Volume=/srv/containers/caddy/data:/data:U,Z
+      Volume=/srv/containers/caddy/config:/config:U,Z
+      Volume=/srv/containers/caddy/logs:/var/log/caddy:U,Z
+      Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro,U
       {% if quadlet_enable_gpu_support %}
       # GPU support configuration
       {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
@@ -228,7 +239,9 @@
       ReadOnlyPaths=/etc
       ReadWritePaths=/var /tmp /data /config /var/log/caddy
       Restart=always
-      TimeoutStartSec=300
+      # Extended timeout for image pulls (AutoUpdate=registry can be slow)
+      TimeoutStartSec={{ caddy_timeout_start | default(900) }}
+      TimeoutStopSec={{ caddy_timeout_stop | default(70) }}
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
@@ -298,6 +311,11 @@
       HealthStartPeriod=40s
 
       Image={{ crowdsec_image }}
+      # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
+      Pull={{ crowdsec_pull_policy | default('newer') }}
+      # Retry backoff for image pulls (prevents registry rate-limit bans)
+      PullRetry={{ crowdsec_pull_retry | default(5) }}
+      PullRetryDelay={{ crowdsec_pull_retry_delay | default('30s') }}
       CapDrop=ALL
       ContainerName=crowdsec
       CPUQuota=25%
@@ -330,6 +348,9 @@
       ReadOnlyPaths=/etc
       ReadWritePaths=/var /tmp /etc/crowdsec /var/lib/crowdsec
       Restart=always
+      # Extended timeout for image pulls
+      TimeoutStartSec={{ crowdsec_timeout_start | default(600) }}
+      TimeoutStopSec={{ crowdsec_timeout_stop | default(70) }}
 
       [Install]
       WantedBy=multi-user.target default.target

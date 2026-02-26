@@ -13,6 +13,11 @@ After=network-online.target
 ContainerName=grafana-{{ monitoring_instance }}
 CPUQuota=25%
 Image={{ monitoring_grafana_image }}
+# Pull policy: only pull if missing or newer (prevents rate-limit hammering)
+Pull={{ monitoring_pull_policy | default('newer') }}
+# Retry backoff for image pulls (prevents registry rate-limit bans)
+PullRetry={{ monitoring_pull_retry | default(5) }}
+PullRetryDelay={{ monitoring_pull_retry_delay | default('30s') }}
 Label=DSU_UUID={{ object_uuid | default('unassigned') }}
 Label=DSU_ISO_CODE=ISO-27001-8-20
 Label=DSU_ACTION_CODE=700000
@@ -25,9 +30,9 @@ Pod={{ monitoring_pod_name }}
 UserNS=auto
 {% endif %}
 EnvironmentFile={{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env
-Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:Z
-Volume={{ monitoring_config_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
-Volume={{ monitoring_config_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:U,Z
+Volume={{ monitoring_config_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro,U
+Volume={{ monitoring_config_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro,U
 ReadOnlyFilesystem=true
 ReadWritePaths=/var/lib/grafana /var /tmp
 
@@ -39,6 +44,9 @@ ProtectHome=read-only
 NoNewPrivileges=true
 ReadOnlyPaths=/etc
 ReadWritePaths=/var /tmp /var/lib/grafana
+# Extended timeout for image pulls
+TimeoutStartSec={{ monitoring_timeout_start | default(600) }}
+TimeoutStopSec={{ monitoring_timeout_stop | default(70) }}
 
 [Install]
 WantedBy=multi-user.target
