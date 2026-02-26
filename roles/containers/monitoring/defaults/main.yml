@@ -36,3 +36,8 @@ monitoring_gatus_port: 8080
 
 # Hardening: fail-secure gating for secret checks
 containers_monitoring_fail_secure: "{{ containers_fail_secure | default(true) }}"
+
+# Image pull backoff (prevent registry rate-limit bans)
+monitoring_pull_policy: "{{ monitoring_global_pull_policy | default('newer') }}"
+monitoring_pull_retry: "{{ monitoring_global_pull_retry | default(5) }}"
+monitoring_pull_retry_delay: "{{ monitoring_global_pull_retry_delay | default('30s') }}"

@@ -13,6 +13,11 @@ After=network-online.target
 ContainerName=prometheus-{{ monitoring_instance }}
 CPUQuota=25%
 Image={{ monitoring_prometheus_image }}
+# Pull policy: only pull if missing or newer (prevents rate-limit hammering)
+Pull={{ monitoring_pull_policy | default('newer') }}
+# Retry backoff for image pulls (prevents registry rate-limit bans)
+PullRetry={{ monitoring_pull_retry | default(5) }}
+PullRetryDelay={{ monitoring_pull_retry_delay | default('30s') }}
 Label=DSU_UUID={{ object_uuid | default('unassigned') }}
 Label=DSU_ISO_CODE=ISO-27001-8-20
 Label=DSU_ACTION_CODE=700000
@@ -24,8 +29,8 @@ Pod={{ monitoring_pod_name }}
 {% if podman_rootless_enabled | bool %}
 UserNS=auto
 {% endif %}
-Volume={{ monitoring_config_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-Volume={{ monitoring_root_dir }}/prometheus:/prometheus:Z
+Volume={{ monitoring_config_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro,U
+Volume={{ monitoring_root_dir }}/prometheus:/prometheus:U,Z
 Exec=/bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
 ReadOnlyFilesystem=true
 ReadWritePaths=/prometheus /var /tmp
@@ -38,6 +43,9 @@ ProtectHome=read-only
 NoNewPrivileges=true
 ReadOnlyPaths=/etc
 ReadWritePaths=/var /tmp /prometheus
+# Extended timeout for image pulls
+TimeoutStartSec={{ monitoring_timeout_start | default(600) }}
+TimeoutStopSec={{ monitoring_timeout_stop | default(70) }}
 
 [Install]
 WantedBy=multi-user.target
