@@ -6,10 +6,10 @@ To maintain consistency and ensure clean linting across the Deploy-System-Unifie
 
 For detailed style requirements, see the specific guides:
 
-* **[YAML Style Guide](Dev_Style_YAML_Style_Guide)**: Standards for YAML files including proper formatting and syntax
-* **[Ansible Style Guide](Dev_Style_Ansible_Style_Guide)**: Best practices for Ansible playbooks and roles
-* **[Shell Style Guide](Dev_Style_Shell_Style_Guide)**: Requirements for shell scripts and command-line tools
-* **[Documentation Style Guide](Dev_Style_Documentation_Style_Guide)**: Guidelines for documentation and markdown files
+* **[YAML Style Guide](DEV_STYLE_YAML_Style_Guide)**: Standards for YAML files including proper formatting and syntax
+* **[Ansible Style Guide](DEV_STYLE_Ansible_Style_Guide)**: Best practices for Ansible playbooks and roles
+* **[Shell Style Guide](DEV_STYLE_Shell_Style_Guide)**: Requirements for shell scripts and command-line tools
+* **[Documentation Style Guide](DEV_STYLE_Documentation_Style_Guide)**: Guidelines for documentation and markdown files
 
 ## General Standards
 

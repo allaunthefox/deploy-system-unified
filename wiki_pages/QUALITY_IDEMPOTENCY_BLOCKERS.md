@@ -213,5 +213,5 @@ Review each task flagged by `ansible-lint` and apply the fix patterns above.
 ## Related Documents
 
 - **[TERMINOLOGY](TERMINOLOGY)** — Formal definitions including "Configuration Drift"
-- **[Quality_Idempotency_BLOCKERS](Quality_Idempotency_BLOCKERS)** — This document
+- **[QUALITY_IDEMPOTENCY_BLOCKERS](QUALITY_IDEMPOTENCY_BLOCKERS)** — This document
 - **[DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE)** — Audit Event Identifier 600151 (Idempotency check)

@@ -6,10 +6,10 @@ Quick commands and common tasks for Deploy-System-Unified.
 
 ```bash
 # Full production deployment
-ansible-playbook -i inventory/production production_deploy.yml
+ansible-playbook -i inventory/production PRODUCTION_DEPLOY.yml
 
 # Dry run (check mode)
-ansible-playbook -i inventory/production production_deploy.yml --check
+ansible-playbook -i inventory/production PRODUCTION_DEPLOY.yml --check
 
 # Deploy specific stack
 ansible-playbook -i inventory/production run_anubis_only.yml
@@ -128,5 +128,5 @@ systemctl restart podman
 ## Links
 
 - [Deployment Guide](UNIVERSAL_DEPLOYMENT_GUIDE)
-- [Variable Reference](Variable_Reference)
-- [Role Reference](Role_Reference)
+- [Variable Reference](VARIABLE_REFERENCE)
+- [Role Reference](ROLE_REFERENCE)

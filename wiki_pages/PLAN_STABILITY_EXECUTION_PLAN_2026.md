@@ -21,7 +21,7 @@
     - Implemented `smoke_test_production.sh` for production dry-runs.
     - Added `playbooks/preflight_assertions.yml` and `playbooks/preflight_validate.yml` to strictly enforce Vault encryption and SOPS hygiene.
 - ✅ **CI/CD Integration**: Added unit tests for style tools to CI; established mandatory status checks for `main`.
-- ✅ **Entrypoint Hygiene**: Labeled all `branch_templates/` and `site.yml` as "REFERENCE ONLY" to protect `production_deploy.yml`.
+- ✅ **Entrypoint Hygiene**: Labeled all `branch_templates/` and `site.yml` as "REFERENCE ONLY" to protect `PRODUCTION_DEPLOY.yml`.
 
 ## Execution Tracks - Phase 2: Operational Maturity
 

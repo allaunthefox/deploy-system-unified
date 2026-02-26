@@ -1,4 +1,4 @@
-# Variable_Reference_Ingress
+# VARIABLE_REFERENCE_Ingress
 
 ## Ingress Controller Variables
 

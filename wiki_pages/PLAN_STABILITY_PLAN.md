@@ -13,13 +13,13 @@
 - Safe rollback and verified recovery procedures.
 - Continuous validation of core roles and production templates.
 - Clear operational visibility and health checks.
-- **Explicit configuration** - All implicit settings documented and enforced (see `Plan_IMPLICIT_SETTINGS_REMEDIATION.md`)
+- **Explicit configuration** - All implicit settings documented and enforced (see `PLAN_IMPLICIT_SETTINGS_REMEDIATION.md`)
 
 ## Current Baseline (Reference Points)
 
-- Production template: `production_deploy.yml`.
+- Production template: `PRODUCTION_DEPLOY.yml`.
 - Reference templates: `branch_templates/` (do not deploy directly).
-- Hardened base: `base_hardened.yml`.
+- Hardened base: `BASE_HARDENED.yml`.
 - SSH idempotence guardrails: `docs/deployment/SSH_IDEMPOTENCE_GUARDRAILS.md`.
 - Deployment readiness snapshot: `docs/deployment/DEPLOYMENT_STATUS.md`.
 
@@ -39,7 +39,7 @@
 - Add `requirements.yml` for external roles and vendor content.
 - Document OS package baselines and repository pinning strategy.
 - Track container image tags used by production templates.
-- **NEW: Variable Precedence Documentation** - Map all implicit variable dependencies (see `Plan_IMPLICIT_SETTINGS_REMEDIATION.md` Phase 1)
+- **NEW: Variable Precedence Documentation** - Map all implicit variable dependencies (see `PLAN_IMPLICIT_SETTINGS_REMEDIATION.md` Phase 1)
 - **NEW: Checksum Verification** - Populate all empty GPG checksums in `hardened_supply_chain.yml` (CRITICAL security gap)
 
 ### 3. Testing and CI Coverage
@@ -89,7 +89,7 @@
 - Vault password handling for automated CI runs.
 - SOPS migration dependencies (real Age keys and updated `.sops.yaml`).
 - GPU vendor variability in test coverage and runtime behavior.
-- **Implicit configuration complexity** - Addressed by `Plan_IMPLICIT_SETTINGS_REMEDIATION.md` (Q2-Q4 2026)
+- **Implicit configuration complexity** - Addressed by `PLAN_IMPLICIT_SETTINGS_REMEDIATION.md` (Q2-Q4 2026)
 
 ## Historical Immediate Actions (Phase 1 Snapshot)
 

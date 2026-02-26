@@ -36,7 +36,7 @@ system_container_cosign_verify: true
 
 ### 2. Run SBOM Audit
 ```bash
-ansible-playbook production_deploy.yml --tags sbom
+ansible-playbook PRODUCTION_DEPLOY.yml --tags sbom
 ```
 Report location: `ci-artifacts/sbom/sbom.json`
 

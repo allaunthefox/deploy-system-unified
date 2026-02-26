@@ -46,7 +46,7 @@ enforce and how to handle exceptions.
 ### DSU001 — No Top-Level Roles in `main.yml`
 
 `main.yml` files at the project root must not contain a top-level `roles:` block. Role lists
-belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `production_deploy.yml`.
+belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `PRODUCTION_DEPLOY.yml`.
 
 ```yaml
 # WRONG — in main.yml

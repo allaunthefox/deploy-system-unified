@@ -49,7 +49,7 @@ all:
 ansible all -i inventory/ -m ping
 
 # Run deployment
-ansible-playbook -i inventory/production production_deploy.yml
+ansible-playbook -i inventory/production PRODUCTION_DEPLOY.yml
 ```
 
 ## Understanding the Structure
@@ -127,24 +127,24 @@ ansible-playbook -i inventory/production --list-tasks
 ### Verbose Output
 
 ```bash
-ansible-playbook -i inventory/production production_deploy.yml -v
+ansible-playbook -i inventory/production PRODUCTION_DEPLOY.yml -v
 ```
 
 ### Skip Specific Tasks
 
 ```bash
-ansible-playbook -i inventory/production production_deploy.yml --skip-tags=firewall
+ansible-playbook -i inventory/production PRODUCTION_DEPLOY.yml --skip-tags=firewall
 ```
 
 ## Next Steps
 
 - Read [Universal Deployment Guide](UNIVERSAL_DEPLOYMENT_GUIDE)
-- Check [Variable Reference](Variable_Reference)
-- Review [Role Reference](Role_Reference)
+- Check [Variable Reference](VARIABLE_REFERENCE)
+- Review [Role Reference](ROLE_REFERENCE)
 - See [Quick Reference](QUICK_REFERENCE) for common commands
 
 ## Getting Help
 
 - Check [Troubleshooting](POTENTIAL_PROBLEMS)
-- Review [Idempotency Blockers](Quality_Idempotency_BLOCKERS)
+- Review [Idempotency Blockers](QUALITY_IDEMPOTENCY_BLOCKERS)
 - Ask in community channels
