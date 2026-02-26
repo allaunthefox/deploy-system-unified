@@ -10,9 +10,9 @@ ansible-compat==24.10.0 \
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.15.9 \
-    --hash=sha256:25f9b1b5a5af3c0986bd3928ed086eaddb867527fb5c83afef1a03cfad34f345 \
-    --hash=sha256:5b6a4b12aa5358f60933e79d86763e3558862282fb1dc563a29b9999e5849fc3
+ansible-core==2.16.14rc1 \
+    --hash=sha256:731fdd4d1bd8a20cebd7c919006582983a2397df5dea7b24056e08acf5c14ab3 \
+    --hash=sha256:9957e880fdb2685aece141d50f21d62acabd6a984fa75948fb32a9d2b50d4eed
     # via
     #   -r requirements-dev.in
     #   ansible-compat
