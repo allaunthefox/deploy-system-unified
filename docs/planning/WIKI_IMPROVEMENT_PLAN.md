@@ -63,7 +63,11 @@ Based on analysis using the Qwen agent system:
 
 #### 2.2 Update Navigation
 - Update DOCUMENTATION_INDEX.md to reflect new structure
+<<<<<<< HEAD
 - Update HOME.md if necessary
+=======
+- Update Home.md if necessary
+>>>>>>> c42ffcf4 (Rename wiki pages to SCREAMING_SNAKE_CASE convention)
 - Ensure all cross-references are updated
 
 #### 2.3 Redirect/Update Links
@@ -119,7 +123,11 @@ Based on analysis using the Qwen agent system:
 
 1. **Day 1-2**: Update navigation and cross-links
    - Update DOCUMENTATION_INDEX.md
+<<<<<<< HEAD
    - Update HOME.md if needed
+=======
+   - Update Home.md if needed
+>>>>>>> c42ffcf4 (Rename wiki pages to SCREAMING_SNAKE_CASE convention)
    - Verify all internal links
 
 2. **Day 3-4**: Update automation scripts
