@@ -77,8 +77,11 @@
           pipeline_stages:
             - regex:
                 expression: ".*Action (?P<action_code>\\d{6}).*"
+            - regex:
+                expression: ".*DSU_UUID=(?P<object_uuid>[a-f0-9-]{36}).*"
             - labels:
                 action_code:
+                object_uuid:
     mode: '0644'
   become: true
   tags: [monitoring, promtail, forensic]
@@ -92,13 +95,31 @@
       After=network-online.target {{ monitoring_pod_name }}.pod
       Requires={{ monitoring_pod_name }}.pod
       [Container]
+      # Health Check
+      HealthCmd=/usr/bin/curl -f http://localhost:3100/ready || exit 1
+      HealthInterval=30s
+      HealthTimeout=10s
+      HealthRetries=3
+      HealthStartPeriod=40s
+
       Pod={{ monitoring_pod_name }}.pod
       Image={{ monitoring_loki_image }}
+      CapDrop=ALL
       ContainerName=loki-{{ monitoring_instance }}
+      CPUQuota=25%
       Volume={{ monitoring_config_dir }}/loki/loki-config.yml:/etc/loki/local-config.yaml:ro
       Volume={{ monitoring_config_dir }}/loki/forensic_alerts.yml:/loki/rules/fake/forensic_alerts.yml:ro
       Volume={{ monitoring_root_dir }}/loki:/loki:Z
+      ReadOnlyFilesystem=true
+      ReadWritePaths=/loki /var /tmp
       [Service]
+      ProtectSystem=strict
+      PrivateTmp=true
+      PrivateDevices=true
+      ProtectHome=read-only
+      NoNewPrivileges=true
+      ReadOnlyPaths=/etc
+      ReadWritePaths=/var /tmp /loki
       Restart=always
       [Install]
       WantedBy=multi-user.target default.target
@@ -115,14 +136,32 @@
       After=network-online.target {{ monitoring_pod_name }}.pod loki-{{ monitoring_instance }}.service
       Requires={{ monitoring_pod_name }}.pod loki-{{ monitoring_instance }}.service
       [Container]
+      # Health Check
+      HealthCmd=/usr/bin/curl -f http://localhost:9080/metrics || exit 1
+      HealthInterval=30s
+      HealthTimeout=10s
+      HealthRetries=3
+      HealthStartPeriod=40s
+
       Pod={{ monitoring_pod_name }}.pod
       Image={{ monitoring_promtail_image }}
+      CapDrop=ALL
       ContainerName=promtail-{{ monitoring_instance }}
+      CPUQuota=25%
       Volume={{ monitoring_config_dir }}/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
       Volume=/var/log:/var/log:ro
       # Grant access to system journal
       Volume=/run/log/journal:/run/log/journal:ro
+      ReadOnlyFilesystem=true
+      ReadWritePaths=/tmp/positions.yaml /var /tmp
       [Service]
+      ProtectSystem=strict
+      PrivateTmp=true
+      PrivateDevices=true
+      ProtectHome=read-only
+      NoNewPrivileges=true
+      ReadOnlyPaths=/etc
+      ReadWritePaths=/var /tmp /tmp/positions.yaml
       Restart=always
       [Install]
       WantedBy=multi-user.target default.target

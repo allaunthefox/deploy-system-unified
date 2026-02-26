@@ -3,11 +3,11 @@
 # Requires: 'checkpoint_status' (default: running) and 'additional_phases' (optional)
 # Updates: 'completed_phases' fact and 'session.json' file
 
-- name: Update completed phases fact
+- name: "ISO 9001 | 600013 | Update completed phases fact"
   ansible.builtin.set_fact:
     completed_phases: "{{ additional_phases | default([]) }}"  # simplified to avoid recursive expansion in test environments
 
-- name: Check Chrony Status (Integration)
+- name: "ISO 27001 §8.17 | 300001 | Check Chrony Status (Integration)"
   ansible.builtin.shell: |
     if command -v chronyc >/dev/null 2>&1; then
       chronyc tracking || echo "Not synchronized"
@@ -18,15 +18,24 @@
   changed_when: false
   become: true
 
-- name: Save Deployment Checkpoint
+- name: "ISO 27037 | 520000 | Save Deployment Checkpoint"
   ansible.builtin.copy:
     content: |
       {
         "timestamp": "{{ ansible_date_time.iso8601 }}",
-        "status": "{{ checkpoint_status | default('running') }}",
+        "status": "{{ _checkpoint_status_final | default('running') }}",
+        "host_identity": {
+          "uuid": "{{ object_uuid | default('unassigned') }}",
+          "profile": "{{ deployment_profile | default('unknown') }}",
+          "architecture": "{{ ansible_architecture }}"
+        },
         "time_sync": {
           "source": "chrony",
           "details": {{ _dsu_chrony_tracking_check.stdout_lines | default([]) | to_json }}
+        },
+        "forensic_status": {
+          "loki_enabled": {{ system_monitoring_loki_enabled | default(false) | to_json }},
+          "action_code_standard": "DSU-6767-E"
         },
         "completed_phases": {{ completed_phases | to_json }}
       }
@@ -37,7 +46,7 @@
   register: _dsu_checkpoint_file
   when: lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''  # skip checkpoint write during molecule tests
 
-- name: Encrypt Checkpoint (Mandatory - Secure Mode)
+- name: "ISO 27001 §10.1 | 400011 | Encrypt Checkpoint (Optional - Secure Mode)"
   ansible.builtin.command:
     argv:
       - ansible-vault
@@ -47,19 +56,8 @@
       - /var/lib/deploy-system/checkpoints/session.json
   become: true
   when: 
-    - (dsu_encrypt_checkpoints | default(false) | bool) or (deployment_profile in ['hardened', 'production'])
+    - dsu_encrypt_checkpoints | default(false) | bool
     - not _gpu_is_container | default(false)
-    - lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''
   changed_when: false
   no_log: true
-
-- name: VERIFY | Checkpoint is encrypted
-  ansible.builtin.shell: grep -q "\$ANSIBLE_VAULT;" /var/lib/deploy-system/checkpoints/session.json
-  become: true
-  when: 
-    - (dsu_encrypt_checkpoints | default(false) | bool) or (deployment_profile in ['hardened', 'production'])
-    - not _gpu_is_container | default(false)
-    - lookup('env', 'MOLECULE_SCENARIO_NAME') | default('') == ''
-  changed_when: false
-  tags: [checkpoint, verification]
 

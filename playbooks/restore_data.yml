@@ -51,31 +51,46 @@
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
 
-    - name: Restore Jellyfin DB
+    - name: "ISO 27040 | 900010 | Restore Jellyfin DB"
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/jellyfin.db"
         dest: "{{ containers_media_config_dir }}/jellyfin/data/jellyfin.db"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
         mode: '0644'
+      tags:
+        - iso_27040
+        - 900010
+        - restore
+        - jellyfin
 
     # Radarr (Root config dir usually contains radarr.db)
-    - name: Restore Radarr DB
+    - name: "ISO 27040 | 900010 | Restore Radarr DB"
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/radarr.db"
         dest: "{{ containers_media_config_dir }}/radarr/radarr.db"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
         mode: '0644'
+      tags:
+        - iso_27040
+        - 900010
+        - restore
+        - radarr
 
     # Sonarr
-    - name: Restore Sonarr DB
+    - name: "ISO 27040 | 900010 | Restore Sonarr DB"
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/sonarr.db"
         dest: "{{ containers_media_config_dir }}/sonarr/sonarr.db"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
         mode: '0644'
+      tags:
+        - iso_27040
+        - 900010
+        - restore
+        - sonarr
 
     # Vaultwarden (Volume Archive)
     - name: Ensure Vaultwarden dir
@@ -85,34 +100,115 @@
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
 
-    - name: Restore Vaultwarden Data
+    - name: List Vaultwarden archive contents before extraction
+      ansible.builtin.shell:
+        cmd: set -o pipefail && tar -tf "{{ migration_source }}/databases/volumes/vaultwarden.tar"
+        executable: /bin/bash
+      register: _vaultwarden_archive_contents
+      changed_when: false
+      vars:
+        ansible_no_log: true
+
+    - name: Validate Vaultwarden archive doesn't contain path traversal
+      ansible.builtin.assert:
+        that:
+          - "_vaultwarden_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0"
+          - "_vaultwarden_archive_contents.stdout_lines | select('match', '^/') | list | length == 0"
+        fail_msg: >
+          CRITICAL: Vaultwarden archive contains path traversal sequences (../ or absolute paths).
+          This may indicate a malicious archive. Aborting extraction.
+          Files found: {{ _vaultwarden_archive_contents.stdout_lines | select('search', '\\.\\./|/^') | list }}
+      vars:
+        ansible_no_log: true
+
+    - name: "ISO 27040 | 900010 | Restore Vaultwarden Data (safe extraction)"
       ansible.builtin.unarchive:
         src: "{{ migration_source }}/databases/volumes/vaultwarden.tar"
         dest: "{{ ops_config_dir }}/vaultwarden"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
-        # "strip_components" depends on how it was tarred.
-        # Inspecting lists showed "databases/volumes/vaultwarden.tar", contents inside usually start with "data/" or "."
-        # Safest is to extract and then move if needed, or assume standard structure.
-        extra_opts:
-          - --strip-components=0
-          # Warning: Check inside the tar first!
+      when: _vaultwarden_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0
+      vars:
+        ansible_no_log: true
+      tags:
+        - iso_27040
+        - 900010
+        - restore
+        - vaultwarden
 
     # Homarr
-    - name: Restore Homarr Data
+    - name: List Homarr archive contents before extraction
+      ansible.builtin.shell:
+        cmd: set -o pipefail && tar -tf "{{ migration_source }}/databases/volumes/homarr.tar"
+        executable: /bin/bash
+      register: _homarr_archive_contents
+      changed_when: false
+      vars:
+        ansible_no_log: true
+
+    - name: Validate Homarr archive doesn't contain path traversal
+      ansible.builtin.assert:
+        that:
+          - "_homarr_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0"
+          - "_homarr_archive_contents.stdout_lines | select('match', '^/') | list | length == 0"
+        fail_msg: >
+          CRITICAL: Homarr archive contains path traversal sequences (../ or absolute paths).
+          This may indicate a malicious archive. Aborting extraction.
+          Files found: {{ _homarr_archive_contents.stdout_lines | select('search', '\\.\\./|/^') | list }}
+      vars:
+        ansible_no_log: true
+
+    - name: "ISO 27040 | 900010 | Restore Homarr Data (safe extraction)"
       ansible.builtin.unarchive:
         src: "{{ migration_source }}/databases/volumes/homarr.tar"
         dest: "{{ ops_config_dir }}/homarr"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
+      when: _homarr_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0
+      vars:
+        ansible_no_log: true
+      tags:
+        - iso_27040
+        - 900010
+        - restore
+        - homarr
 
     # Wastebin
-    - name: Restore Wastebin Data
+    - name: List Wastebin archive contents before extraction
+      ansible.builtin.shell:
+        cmd: set -o pipefail && tar -tf "{{ migration_source }}/databases/volumes/wastebin.tar"
+        executable: /bin/bash
+      register: _wastebin_archive_contents
+      changed_when: false
+      vars:
+        ansible_no_log: true
+
+    - name: Validate Wastebin archive doesn't contain path traversal
+      ansible.builtin.assert:
+        that:
+          - "_wastebin_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0"
+          - "_wastebin_archive_contents.stdout_lines | select('match', '^/') | list | length == 0"
+        fail_msg: >
+          CRITICAL: Wastebin archive contains path traversal sequences (../ or absolute paths).
+          This may indicate a malicious archive. Aborting extraction.
+          Files found: {{ _wastebin_archive_contents.stdout_lines | select('search', '\\.\\./|/^') | list }}
+      vars:
+        ansible_no_log: true
+
+    - name: "ISO 27040 | 900010 | Restore Wastebin Data (safe extraction)"
       ansible.builtin.unarchive:
         src: "{{ migration_source }}/databases/volumes/wastebin.tar"
         dest: "{{ ops_config_dir }}/wastebin"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
+      when: _wastebin_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0
+      vars:
+        ansible_no_log: true
+      tags:
+        - iso_27040
+        - 900010
+        - restore
+        - wastebin
 
     # -------------------------------------------------------
     # 2. POSTGRESQL RESTORATIONS (Authentik & Wiki.js)
@@ -124,33 +220,62 @@
         src: "{{ migration_source }}/databases/postgres/authentik.sql"
         dest: "/tmp/authentik.sql"
 
-    - name: Wait for Authentik DB
+    - name: "ISO 27001 §12.4 | 560000 | Wait for Authentik DB"
       ansible.builtin.command: podman exec -i authentik-db-default pg_isready -U postgres
       register: db_check
       retries: 30
       delay: 2
       until: db_check.rc == 0
       failed_when: false
+      changed_when: false
+      tags:
+        - iso_27001_12_4
+        - 560000
+        - restore
+        - database
 
-    - name: Drop & Create Authentik DB (Fresh Install State)
+    - name: "ISO 27040 | 560022 | Drop & Create Authentik DB (Fresh Install State)"
       ansible.builtin.command: |
         podman exec -i authentik-db-default psql -U postgres -c "DROP DATABASE IF EXISTS authentik; CREATE DATABASE authentik;"
       when: db_check.rc == 0
+      tags:
+        - iso_27040
+        - 560022
+        - restore
+        - database
+        - authentik
 
-    - name: Import Authentik Dump
-      ansible.builtin.shell: |
-        podman exec -i authentik-db-default psql -U postgres -d authentik < /tmp/authentik.sql
+    - name: "ISO 27040 | 560023 | Import Authentik Dump"
+      ansible.builtin.shell:
+        cmd: set -o pipefail && podman exec -i authentik-db-default psql -U postgres -d authentik < /tmp/authentik.sql
+        executable: /bin/bash
       when: db_check.rc == 0
       register: import_result
+      tags:
+        - iso_27040
+        - 560023
+        - restore
+        - database
+        - authentik
 
     - name: Debug Import
       ansible.builtin.debug:
         var: import_result
 
+    - name: "ISO 27001 §8.8 | 600142 | Cleanup Authentik SQL"
+      ansible.builtin.file:
+        path: "/tmp/authentik.sql"
+        state: absent
+      tags:
+        - iso_27001_8_8
+        - 600142
+        - cleanup
+        - authentik
+
     # -------------------------------------------------------
     # 3. PERMISSIONS FIX
     # -------------------------------------------------------
-    - name: Fix Recursive Permissions
+    - name: "ISO 27001 §8.8 | 600142 | Fix Recursive Permissions"
       ansible.builtin.file:
         path: "{{ item }}"
         owner: "{{ containers_media_puid }}"
@@ -159,3 +284,8 @@
       loop:
         - "{{ containers_media_config_dir }}"
         - "{{ ops_config_dir }}"
+      tags:
+        - iso_27001_8_8
+        - 600142
+        - permissions
+        - drift_correction

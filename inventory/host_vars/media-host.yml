@@ -1,0 +1,26 @@
+---
+# Media Stack Custom Configuration
+# Scenario: Deploy ARR stack with external shared data access
+
+# Drive Locations
+media_root_dir: "/srv/shared_media"
+media_config_dir: "/srv/containers/media_config"
+
+# Overrides for containers/media role
+containers_media_root_dir: "{{ media_root_dir }}"
+containers_media_config_dir: "{{ media_config_dir }}"
+
+# Deployment Profile (Enables high-fidelity forensic logging)
+deployment_profile: "production"
+
+# Shared Data Ownership (Matching containers_media_puid/pgid)
+# Ensure these match your shared drive's mount permissions
+containers_media_puid: 1000
+containers_media_pgid: 1000
+
+# Enable specific ARR components
+containers_radarr_enable: true
+containers_sonarr_enable: true
+containers_prowlarr_enable: true
+containers_transmission_enable: true
+containers_jellyfin_enable: true

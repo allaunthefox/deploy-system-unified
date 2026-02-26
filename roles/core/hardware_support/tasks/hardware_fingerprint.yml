@@ -1,0 +1,54 @@
+---
+# Hardware Fingerprinting and Drift Detection
+# Compliance: ISO 27001 §12.4 | ISO 27037
+
+- name: "ISO 9001 | 800000 | Collect Hardware Inventory for Hashing"
+  ansible.builtin.set_fact:
+    _raw_hw_inventory:
+      cpu_count: "{{ ansible_processor_vcpus }}"
+      cpu_model: "{{ ansible_processor[1] | default('unknown') }}"
+      mem_total: "{{ ansible_memtotal_mb }}"
+      nics: "{{ ansible_interfaces | sort }}"
+      disks: "{{ ansible_devices.keys() | sort }}"
+      machine_id: "{{ ansible_machine_id | default('none') }}"
+  tags: [hardware, discovery, fingerprint]
+
+- name: "ISO 27037 | 520030 | Generate Cryptographic Hardware Fingerprint"
+  ansible.builtin.set_fact:
+    host_hardware_fingerprint: "{{ _raw_hw_inventory | to_json | hash('sha256') }}"
+  tags: [hardware, discovery, fingerprint, 520030]
+
+- name: "ISO 27037 | 520030 | Read Previous Hardware Fingerprint"
+  ansible.builtin.stat:
+    path: /var/lib/deploy-system/fingerprints/hardware.sha256
+  register: prev_hw_fingerprint_file
+  tags: [hardware, discovery, fingerprint]
+
+- name: "ISO 27037 | 520030 | Detect Hardware Drift"
+  block:
+    - name: Get current stored fingerprint
+      ansible.builtin.slurp:
+        src: /var/lib/deploy-system/fingerprints/hardware.sha256
+      register: stored_hw_fingerprint
+      when: prev_hw_fingerprint_file.stat.exists
+
+    - name: "Action 460000 | ALERT: Hardware Configuration Change Detected"
+      ansible.builtin.debug:
+        msg: |
+          🚨 CRITICAL FORENSIC ALERT: Hardware configuration has changed since last deployment!
+          Expected Hash: {{ (stored_hw_fingerprint.content | b64decode | trim) if prev_hw_fingerprint_file.stat.exists else 'None' }}
+          Actual Hash:   {{ host_hardware_fingerprint }}
+          Action Required: Verify physical host integrity and update fingerprint.
+      when: 
+        - prev_hw_fingerprint_file.stat.exists
+        - (stored_hw_fingerprint.content | b64decode | trim) != host_hardware_fingerprint
+      tags: [hardware, alert, 460000]
+
+- name: "ISO 27001 §12.4 | 520031 | Commit Hardware Fingerprint to Disk"
+  ansible.builtin.copy:
+    content: "{{ host_hardware_fingerprint }}"
+    dest: /var/lib/deploy-system/fingerprints/hardware.sha256
+    mode: '0600'
+  become: true
+  when: not (ephemeral_volatile_secrets | default(false) | bool)
+  tags: [hardware, fingerprint, 520031]

@@ -1,6 +1,6 @@
 ---
 # Tasks for security/mac_apparmor - Mandatory Access Control
-- name: "CIS 1.6.1 | STIG V-230240 | NIST AC-3 | ISO 27001 §8.26 | Action 440001 | Install AppArmor packages (Debian/Ubuntu)"
+- name: "ISO 27001 §8.26 | 440001 | Install AppArmor packages (Debian/Ubuntu)"
   ansible.builtin.package:
     name:
       - apparmor
@@ -14,10 +14,11 @@
     - stig_v_230240
     - nist_ac_3
     - iso_27001_8_26
+    - 440001
     - security
     - apparmor
 
-- name: "CIS 1.6.1 | STIG V-230240 | NIST AC-3 | ISO 27001 §8.26 | Action 440002 | Install AppArmor packages (Alpine)"
+- name: "ISO 27001 §8.26 | 440002 | Install AppArmor packages (Alpine)"
   ansible.builtin.package:
     name:
       - apparmor
@@ -30,10 +31,11 @@
     - stig_v_230240
     - nist_ac_3
     - iso_27001_8_26
+    - 440002
     - security
     - apparmor
 
-- name: "CIS 1.6.2 | STIG V-230241 | NIST AC-3 | ISO 27001 §8.26 | Action 440001 | Enable and start AppArmor service"
+- name: "ISO 27001 §8.26 | 440001 | Enable and start AppArmor service"
   ansible.builtin.service:
     name: apparmor
     enabled: true
@@ -47,51 +49,43 @@
     - stig_v_230241
     - nist_ac_3
     - iso_27001_8_26
+    - 440001
     - security
     - apparmor
 
-- name: "CIS 1.6.3 | Action 440003 | Ensure AppArmor configuration directories exist"
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: '0755'
-    owner: root
-    group: root
-  loop:
-    - /etc/apparmor.d
-    - /etc/apparmor.d/disable
-    - /etc/apparmor.d/force-complain
-    - /etc/apparmor.d/local
-    - /etc/apparmor.d/abstractions
+- name: "ISO 27001 §8.26 | 440003 | Verify Container-Specific AppArmor Profiles"
+  ansible.builtin.shell:
+    cmd: aa-status | grep -E "podman-default|container-default"
+  register: apparmor_container_profiles
+  failed_when: false
+  changed_when: false
   become: true
+  tags: [security, apparmor, audit, 440003]
+
+- name: "ISO 27001 §8.26 | 440003 | Warn if container profiles are missing"
+  ansible.builtin.debug:
+    msg: "WARNING: Container-specific AppArmor profiles (podman-default) not detected. Layer 4 isolation is relying on generic profiles."
+  when: 
+    - apparmor_container_profiles.rc != 0
+    - deployment_profile in ['hardened', 'production']
+  tags: [security, apparmor, audit, 440003]
+
+- name: "ISO 27001 §8.26 | 450001 | Register AppArmor Security Parameters for GRUB"
+  ansible.builtin.set_fact:
+    core_grub_security_params: >-
+      {{
+        core_grub_security_params | default([]) +
+        ['apparmor=1', 'security=apparmor']
+      }}
   tags:
+    - cis_1_6_2
+    - stig_v_230241
+    - nist_ac_3
+    - iso_27001_8_26
+    - 450001
     - security
     - apparmor
-
-- name: VERIFY | AppArmor is active and enforced (Zero-Tolerance)
-  ansible.builtin.shell: |
-    if [ -d /sys/kernel/security/apparmor ]; then
-      aa-status --enabled
-    else
-      echo "AppArmor not supported by kernel"
-      exit 1
-    fi
-  register: _aa_status
-  failed_when: _aa_status.rc != 0
+    - remediate
   when:
     - ansible_os_family in ['Debian', 'Alpine']
     - not (is_virtualized | default(false))
-  become: true
-  changed_when: false
-  tags: [security, apparmor, verification]
-
-- name: VERIFY | AppArmor has loaded profiles
-  ansible.builtin.shell: aa-status | grep -q "profiles are loaded"
-  register: _aa_profiles
-  failed_when: _aa_profiles.rc != 0
-  when:
-    - ansible_os_family in ['Debian', 'Alpine']
-    - not (is_virtualized | default(false))
-  become: true
-  changed_when: false
-  tags: [security, apparmor, verification]

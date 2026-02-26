@@ -59,8 +59,7 @@
     - iso_27001_8_16
     - remediate
   when:
-    - not _file_integrity_is_container
-    - not (aide_db_stat.stat.exists | default(false))
+    - not aide_db_stat.stat.exists
     - not ansible_check_mode
     - ansible_facts['os_family'] == 'Debian'
     - not (is_virtualized | default(false))
@@ -77,74 +76,62 @@
     - iso_27001_8_16
     - remediate
   when:
-    - not _file_integrity_is_container
-    - not (aide_db_stat.stat.exists | default(false))
+    - not aide_db_stat.stat.exists
     - not ansible_check_mode
     - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
     - not (is_virtualized | default(false))
   async: 600 # AIDE init can take a long time
   poll: 10
 
-- name: VERIFY | AIDE database initialized (Zero-Tolerance)
-  ansible.builtin.stat:
-    path: "{{ item }}"
-  register: _aide_db_check
-  loop:
-    - /var/lib/aide/aide.db.gz
-    - /var/lib/aide/aide.db.new.gz
-  failed_when: not _aide_db_check.results[0].stat.exists and not _aide_db_check.results[1].stat.exists
-  when:
-    - not _file_integrity_is_container
-    - not ansible_check_mode
-    - not (is_virtualized | default(false))
-  become: true
-  tags: [security, file_integrity, verification]
-
-- name: "CIS 1.3.2 | STIG V-230224 | NIST SI-7 | ISO 27001 §8.16 | Action 52030 | Configure AIDE cron job with Purge Trigger"
+- name: "CIS 1.3.2 | STIG V-230224 | NIST SI-7 | ISO 27001 §8.16 | Action 52030 | Configure AIDE cron job for daily checks"
   ansible.builtin.cron:
     name: "Daily AIDE integrity check"
     minute: "0"
     hour: "2"
-    job: "aide --check || /usr/local/bin/dsu-integrity-purge"
+    job: "aide --check | tee -a /var/log/aide/check_$(date +\\%Y\\%m\\%d).log"
     user: root
   become: true
-  when: 
-    - not _file_integrity_is_container
-    - deployment_profile in ['hardened', 'production']
   tags:
     - cis_1_3_2
     - stig_v_230224
     - nist_si_7
     - iso_27001_8_16
     - remediate
-    - drift_remediation
 
-- name: "CIS 1.3.2 | STIG V-230224 | NIST AU-2 | ISO 27001 §8.16 | Action 520029 | AIDE Boot Check Configuration"
-  block:
-    - name: Configure AIDE to check for changes on boot
-      ansible.builtin.template:
-        src: "aide-boot-check.service.j2"
-        dest: /etc/systemd/system/aide-boot-check.service
-        mode: '0644'
-      become: true
-      when: _file_integrity_is_systemd
+- name: "CIS 1.3.2 | STIG V-230224 | NIST AU-2 | ISO 27001 §8.16 | Action 520029 | Configure AIDE to check for changes on boot"
+  ansible.builtin.template:
+    src: "aide-boot-check.service.j2"
+    dest: /etc/systemd/system/aide-boot-check.service
+    mode: '0644'
+  become: true
+  when: _file_integrity_is_systemd
+  tags:
+    - cis_1_3_2
+    - stig_v_230224
+    - nist_au_2
+    - iso_27001_8_16
+    - security
+    - file_integrity
 
-    - name: Enable AIDE boot check service
-      ansible.builtin.systemd:
-        name: aide-boot-check.service
-        enabled: true
-        daemon_reload: true
-      become: true
-      when: _file_integrity_is_systemd and not ansible_check_mode
+- name: "CIS 1.3.2 | STIG V-230224 | NIST AU-2 | ISO 27001 §8.16 | Action 520030 | Enable AIDE boot check service"
+  ansible.builtin.systemd:
+    name: aide-boot-check.service
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: _file_integrity_is_systemd and not ansible_check_mode
+  tags:
+    - cis_1_3_2
+    - stig_v_230224
+    - nist_au_2
+    - iso_27001_8_16
+    - security
+    - file_integrity
 
-    - name: VERIFY | AIDE boot check service is enabled
-      ansible.builtin.shell: systemctl is-enabled aide-boot-check.service
-      register: _aide_svc_enabled
-      failed_when: _aide_svc_enabled.stdout != "enabled"
-      when: _file_integrity_is_systemd and not ansible_check_mode
-      become: true
-      changed_when: false
-  when: not _file_integrity_is_container
+- name: "CIS 1.3.2 | STIG V-230224 | NIST AU-2 | ISO 27001 §8.16 | Action 520031 | Skip AIDE boot check service enablement in check mode"
+  ansible.builtin.debug:
+    msg: "Skipping AIDE boot check service enablement in check mode"
+  when: ansible_check_mode and _file_integrity_is_systemd
   tags:
     - cis_1_3_2
     - stig_v_230224

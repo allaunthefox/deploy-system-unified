@@ -1,0 +1,44 @@
+---
+# Discovery of Boot Mode and Secure Boot Status
+# Compliance: NIST SP 800-193 | ISO 27001 §12.4
+
+- name: "ISO 9001 | 800000 | Detect EFI vs BIOS Boot Mode"
+  ansible.builtin.stat:
+    path: /sys/firmware/efi
+  register: efi_dir_stat
+  tags: [hardware, discovery, boot]
+
+- name: "ISO 9001 | 800600 | Set Boot Mode Fact"
+  ansible.builtin.set_fact:
+    host_boot_mode: "{{ 'EFI' if efi_dir_stat.stat.exists else 'BIOS' }}"
+  tags: [hardware, discovery, boot]
+
+- name: "NIST SP 800-193 | 800510 | Check Secure Boot Status (EFI only)"
+  ansible.builtin.shell: |
+    set -o pipefail
+    if [ -d /sys/firmware/efi ]; then
+      if command -v mokutil >/dev/null 2>&1; then
+        mokutil --sb-state | grep -i "enabled" > /dev/null && echo "enabled" || echo "disabled"
+      else
+        echo "unknown (mokutil missing)"
+      fi
+    else
+      echo "n/a (BIOS)"
+    fi
+  args:
+    executable: /bin/bash
+  register: sb_state_cmd
+  changed_when: false
+  failed_when: false
+  become: true
+  tags: [hardware, discovery, boot, 800510]
+
+- name: "NIST SP 800-193 | 800510 | Set Secure Boot Fact"
+  ansible.builtin.set_fact:
+    host_secure_boot_enabled: "{{ sb_state_cmd.stdout | trim }}"
+  tags: [hardware, discovery, boot, 800510]
+
+- name: "ISO 27001 §12.4 | 800001 | Report Boot Security State"
+  ansible.builtin.debug:
+    msg: "Boot Mode: {{ host_boot_mode }} | Secure Boot: {{ host_secure_boot_enabled }}"
+  tags: [hardware, discovery, boot]

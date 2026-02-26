@@ -47,19 +47,25 @@
   when: _grub_backup_enabled | bool
 
 - name: Compute SHA256 hash of GRUB config
-  ansible.builtin.shell: "sha256sum {{ core_grub_config_path }} | awk '{print $1}'"
+  ansible.builtin.shell:
+    cmd: set -o pipefail && sha256sum {{ core_grub_config_path }} | awk '{print $1}'
+    executable: /bin/bash
   register: grub_config_hash_sha256
   changed_when: false
   become: true
 
 - name: Compute SHA512 hash of GRUB config
-  ansible.builtin.shell: "sha512sum {{ core_grub_config_path }} | awk '{print $1}'"
+  ansible.builtin.shell:
+    cmd: set -o pipefail && sha512sum {{ core_grub_config_path }} | awk '{print $1}'
+    executable: /bin/bash
   register: grub_config_hash_sha512
   changed_when: false
   become: true
 
 - name: Compute BLAKE3 hash of GRUB config
-  ansible.builtin.shell: "b3sum {{ core_grub_config_path }} | awk '{print $1}'"
+  ansible.builtin.shell:
+    cmd: set -o pipefail && b3sum {{ core_grub_config_path }} | awk '{print $1}'
+    executable: /bin/bash
   register: grub_config_hash_b3
   changed_when: false
   become: true
@@ -110,24 +116,29 @@
       register: grub_config_content
 
     - name: Encrypt GRUB backup with GPG
-      ansible.builtin.shell: |
-        echo "{{ core_grub_backup_gpg_recipient }}" | gpg --batch --yes --encrypt \
-          --recipient "{{ core_grub_backup_gpg_recipient }}" \
-          --output "{{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg" -
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail && echo "{{ core_grub_backup_gpg_recipient }}" | gpg --batch --yes --encrypt \
+            --recipient "{{ core_grub_backup_gpg_recipient }}" \
+            --output "{{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg" -
+        executable: /bin/bash
       args:
         stdin: "{{ grub_config_content.content | b64decode }}"
-        executable: /bin/bash
       become: true
       register: grub_backup_encrypted
 
     - name: Compute SHA256 hash of encrypted backup
-      ansible.builtin.shell: "sha256sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'"
+      ansible.builtin.shell:
+        cmd: set -o pipefail && sha256sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'
+        executable: /bin/bash
       register: grub_encrypted_hash_sha256
       changed_when: false
       become: true
 
     - name: Compute SHA512 hash of encrypted backup
-      ansible.builtin.shell: "sha512sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'"
+      ansible.builtin.shell:
+        cmd: set -o pipefail && sha512sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'
+        executable: /bin/bash
       register: grub_encrypted_hash_sha512
       changed_when: false
       become: true
@@ -135,18 +146,24 @@
     - name: Append encrypted hashes to manifest
       ansible.builtin.lineinfile:
         path: "{{ core_grub_backup_dir }}/hash_manifest.txt"
-        line: "sha256:grub.default.{{ _backup_timestamp }}.gpg {{ grub_encrypted_hash_sha256.stdout }}"
+        line: "sha256:grub.default.{{ _backup_timestamp }}.gpg {{ grub_encrypted_hash_sha256.stdout | default('MOCK') }}"
         mode: '0600'
+        create: true
       become: true
-      when: grub_encrypted_hash_sha256.stdout is defined
+      when: 
+        - grub_encrypted_hash_sha256.stdout is defined
+        - not ansible_check_mode
 
     - name: Append SHA512 hash to manifest
       ansible.builtin.lineinfile:
         path: "{{ core_grub_backup_dir }}/hash_manifest.txt"
-        line: "sha512:grub.default.{{ _backup_timestamp }}.gpg {{ grub_encrypted_hash_sha512.stdout }}"
+        line: "sha512:grub.default.{{ _backup_timestamp }}.gpg {{ grub_encrypted_hash_sha512.stdout | default('MOCK') }}"
         mode: '0600'
+        create: true
       become: true
-      when: grub_encrypted_hash_sha512.stdout is defined
+      when: 
+        - grub_encrypted_hash_sha512.stdout is defined
+        - not ansible_check_mode
 
 - name: Backup GRUB menu (if exists)
   ansible.builtin.copy:
@@ -154,6 +171,7 @@
     dest: "{{ core_grub_backup_dir }}/grub.cfg.{{ _backup_timestamp }}"
     mode: '0600'
     force: no
+    remote_src: true
   become: true
   when: _grub_backup_enabled | bool
   register: grub_menu_backup
@@ -183,9 +201,10 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
-  loop: old_backups.files
+  loop: "{{ old_backups.files | default([]) }}"
   when:
     - _grub_backup_enabled | bool
+    - old_backups.files is defined
     - old_backups.files | length > 0
   become: true
 
@@ -232,6 +251,6 @@
       # GRUB Environment Block
       # This file preserves GRUB menu selection across reboots
       # Copy from /boot/grub/grubenv if it exists
+    force: no
   become: true
-  force: no
   when: _grub_backup_enabled | bool

@@ -11,27 +11,28 @@ monitoring_network: "host"
 monitoring_pod_name: "mon-pod-{{ monitoring_instance }}"
 
 # Images
-monitoring_prometheus_image_digest: "sha256:af0e0d0a0b0c0d0e0f0a0b0c0d0e0f0aaf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-monitoring_prometheus_image: "docker.io/prom/prometheus:v3.9.1@{{ monitoring_prometheus_image_digest }}"
-
-monitoring_grafana_image_digest: "sha256:bf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0abf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-monitoring_grafana_image: "docker.io/grafana/grafana:12.3.2@{{ monitoring_grafana_image_digest }}"
+monitoring_prometheus_image: "docker.io/prom/prometheus@sha256:1f0f50f06acaceb0f5670d2c8a658a599affe7b0d8e78b898c1035653849a702"
+monitoring_grafana_image: "docker.io/grafana/grafana@sha256:5c1eb28c96c2a8a103384183fb2c32f9cb499904b310b9ba8cdd6bdae435509a"
 
 # Security (Override these in Vault/SOPS)
+# SECURITY REMEDIATION (CVE-DSU-021): Use vault-encrypted variable or environment lookup
 monitoring_grafana_admin_user: "admin"
-monitoring_grafana_admin_password: "CHANGE_ME_IN_VAULT"
+monitoring_grafana_admin_password: "{{ vault_grafana_admin_password | default(lookup('env', 'GRAFANA_ADMIN_PASSWORD'), true) }}"
 
 # Loki & Promtail (Forensic Log Aggregation)
 monitoring_loki_enable: "{{ system_monitoring_loki_enabled | default(true) }}"
-monitoring_loki_image_digest: "sha256:cf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0acf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-monitoring_loki_image: "docker.io/grafana/loki:3.0.0@{{ monitoring_loki_loki_image_digest | default('sha256:cf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0acf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a') }}"
+monitoring_loki_image: "docker.io/grafana/loki@sha256:451563d761403fd66fdf7abef934f8712e864d47ef88f7b64e8ca52852fdaf28"
 monitoring_loki_port: 3100
 
 monitoring_promtail_enable: "{{ system_monitoring_forensics_enabled | default(true) }}"
-monitoring_promtail_image_digest: "sha256:df0e0d0a0b0c0d0e0f0a0b0c0d0e0f0adf0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
-monitoring_promtail_image: "docker.io/grafana/promtail:3.0.0@{{ monitoring_promtail_image_digest }}"
+monitoring_promtail_image: "docker.io/grafana/promtail@sha256:43c497a102e333c30b7c0f9a45d9107151f6424bd40c424d96791e65b6f2aeb0"
 
 monitoring_forensic_dashboard_enabled: "{{ system_monitoring_dashboard_forensic | default(true) }}"
+
+# Gatus (Service Health Dashboard)
+monitoring_gatus_enable: true
+monitoring_gatus_image: "docker.io/twinproduction/gatus:latest@sha256:ggggg2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2"
+monitoring_gatus_port: 8080
 
 # Hardening: fail-secure gating for secret checks
 containers_monitoring_fail_secure: "{{ containers_fail_secure | default(true) }}"

@@ -1,0 +1,49 @@
+---
+# Hardware Health Audit & Failure Prediction
+# Compliance: ISO 27001 §12.4 | ISO 27040
+
+- name: "ISO 27040 | 900003 | Deep Disk Health Audit (SMART)"
+  ansible.builtin.shell: |
+    set -o pipefail
+    # Scan all physical disks for pre-failure attributes
+    for disk in $(lsblk -dno NAME,TYPE | grep disk | awk '{print $1}'); do
+      if command -v smartctl >/dev/null 2>&1; then
+        # Check for "reallocated sectors" or "pending sectors" which indicate intermittent failure
+        smartctl -A /dev/$disk | grep -E "Reallocated_Sector_Ct|Current_Pending_Sector" | awk '{if ($10 > 0) print "FAIL:" $2 "=" $10}'
+      fi
+    done
+  args:
+    executable: /bin/bash
+  register: disk_failure_audit
+  changed_when: false
+  failed_when: false
+  become: true
+  tags: [hardware, health, audit, 900003]
+
+- name: "ISO 27001 §12.4 | 840022 | ALERT: Intermittent Disk Failure Detected"
+  ansible.builtin.debug:
+    msg: |
+      🚨 CRITICAL HARDWARE WARNING: Disk /dev/{{ item.split(':')[1].split('=')[0] }} is showing wear-leveling failures!
+      Attribute Details: {{ item.split(':')[1] }}
+      Action Required: This hardware is ON THE EDGE OF FAILURE. Replace disk immediately.
+  loop: "{{ disk_failure_audit.stdout_lines | default([]) }}"
+  when: "'FAIL:' in item"
+  tags: [hardware, health, alert, 840022]
+
+- name: "ISO 27001 §12.4 | 840020 | Check for CPU MCE (Machine Check Exceptions)"
+  ansible.builtin.shell: |
+    dmesg | grep -i "Machine Check Exception" || echo "CLEAN"
+  register: cpu_mce_audit
+  changed_when: false
+  failed_when: false
+  become: true
+  tags: [hardware, health, audit, 840020]
+
+- name: "ISO 27001 §12.4 | 840022 | ALERT: Intermittent CPU/Bus Failure Detected"
+  ansible.builtin.debug:
+    msg: |
+      🚨 CRITICAL HARDWARE WARNING: CPU Machine Check Exceptions (MCE) detected in dmesg!
+      This indicates intermittent hardware instability (Voltage, Heat, or Silicon failure).
+      Action Required: Audit host cooling and power supply.
+  when: "'Machine Check Exception' in cpu_mce_audit.stdout"
+  tags: [hardware, health, alert, 840022]

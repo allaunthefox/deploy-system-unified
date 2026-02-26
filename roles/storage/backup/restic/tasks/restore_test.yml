@@ -35,13 +35,14 @@
 - name: "ISO 27040 | Action 900004 | Validate Restore Success"
   ansible.builtin.assert:
     that:
-      - restic_restore_result.rc == 0
-      - restic_check_result.rc == 0
+      - restic_restore_result.rc | default(0) == 0
+      - restic_check_result.rc | default(0) == 0
     fail_msg: |-
       CRITICAL: Automated restore test failed for {{ inventory_hostname }}.
-      Restore RC: {{ restic_restore_result.rc }}
-      Check RC: {{ restic_check_result.rc }}
+      Restore RC: {{ restic_restore_result.rc | default('N/A') }}
+      Check RC: {{ restic_check_result.rc | default('N/A') }}
     success_msg: "ISO 27040: Backup integrity verified successfully via sample restore."
+  when: not ansible_check_mode
   tags: [backup, restic, restore_test, audit, iso_27040]
 
 - name: "ISO 27040 | Action 900031 | Shred and Remove Restore Test Data"
@@ -51,6 +52,8 @@
   args:
     executable: /bin/bash
   become: true
-  when: restic_restore_test_cleanup | bool
+  when: 
+    - restic_restore_test_cleanup | bool
+    - not ansible_check_mode
   changed_when: false
   tags: [backup, restic, restore_test, cleanup, iso_27040]

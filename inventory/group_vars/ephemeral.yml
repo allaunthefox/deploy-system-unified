@@ -4,3 +4,8 @@ deployment_profile: "ephemeral"
 ephemeral_volatile_secrets: true
 core_security_fail_secure: true
 firewall_enabled: true
+
+# Mandatory Minimal Forensic Grade (Basic Journal)
+system_monitoring_forensics_enabled: false
+system_monitoring_loki_enabled: false
+system_monitoring_dashboard_forensic: false

@@ -17,18 +17,23 @@
       - containers/config
       - containers/quadlets
       - containers/caddy
+      - containers/networking   # DNS & Network Services (AdGuard)
+      - containers/security     # Security Infra (Headscale)
+      - containers/media        # Media Stack (ARR Stack)
+      - containers/immich       # Photo Stack
+      - containers/home_assistant # Automation Stack
+      - containers/life         # Life Management Stack (Mealie, Firefly)
+      - containers/ai           # AI Stack (Ollama, WebUI)
+      - containers/archive      # Long-term Archive (YouTube, Wikipedia)
       # Monitoring
       - ops/monitoring          # Host Agent (Node Exporter)
       - containers/monitoring   # Stack (Forensic Dashboards)
-      - security/automated_threat_analysis # AI SOC Analyst (Requires Loki)
       # Backup & Disaster Recovery
       - storage/backup/restic
       - storage/backup/rclone
       # Final Solution Integrity Verification
       - security/scanning
-      - security/sbom           # Supply Chain Integrity
-      - security/openscap       # Standardized Compliance Audit (SCAP)
-      - ops/forensics           # Deployment Provenance (Signed Metadata)
+      - security/sbom           # Supply Chain Integrity & SBOM Audit
 
   tasks:
     - name: Execute Production Roles with Granular Checkpoints
@@ -37,24 +42,10 @@
       loop_control:
         loop_var: role_item
 
-  post_tasks:
-    - name: Create production container directories
-      ansible.builtin.file:
-        path: "{{ item.path }}"
-        state: directory
-        mode: "{{ item.mode }}"
-        owner: "{{ item.owner | default('root') }}"
-        group: "{{ item.group | default('root') }}"
-      loop:
-        - { path: "/srv/containers", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/srv/containers/config", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/srv/containers/data", mode: '0755', owner: 'root', group: 'root' }
-        - { path: "/srv/containers/secrets", mode: '0700', owner: 'root', group: 'root' }
-
-    - name: Run post-deploy health checks
-      ansible.builtin.include_role:
-        name: ops/health_check
   handlers:
+    - name: Import Global Handlers
+      ansible.builtin.import_tasks: handlers/main.yml
+
     - name: Restart caddy
       ansible.builtin.systemd:
         name: caddy

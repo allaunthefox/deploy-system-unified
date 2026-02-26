@@ -25,7 +25,6 @@
   tags: [networking, containers, remediate]
   community.general.modprobe:
     name: "{{ item }}"
-  tags: [networking, containers, remediate]
     state: present
   loop:
     - bridge
@@ -41,7 +40,6 @@
   tags: [networking, containers, remediate]
   community.general.modprobe:
     name: "{{ item }}"
-  tags: [networking, containers, remediate]
     state: present
   loop:
     - macvlan
@@ -69,7 +67,6 @@
   tags: [networking, containers, remediate]
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
-  tags: [networking, containers, remediate]
     value: '1'
     sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
     state: present
@@ -84,7 +81,6 @@
   tags: [networking, containers, remediate]
   ansible.posix.sysctl:
     name: "{{ item }}"
-  tags: [networking, containers, remediate]
     value: '1'
     sysctl_file: /etc/sysctl.d/99-containers-bridge.conf
     state: present

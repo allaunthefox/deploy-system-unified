@@ -3,8 +3,22 @@ Description=Grafana Container
 After=network-online.target
 
 [Container]
+      # Health Check
+      HealthCmd=/usr/bin/curl -f http://localhost:3000/api/health || exit 1
+      HealthInterval=30s
+      HealthTimeout=10s
+      HealthRetries=3
+      HealthStartPeriod=40s
+
 ContainerName=grafana-{{ monitoring_instance }}
+CPUQuota=25%
 Image={{ monitoring_grafana_image }}
+Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+Label=DSU_ISO_CODE=ISO-27001-8-20
+Label=DSU_ACTION_CODE=700000
+Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+Label=DSU_IMAGE_DIGEST={{ monitoring_grafana_image.split('@')[1] | default('none') }}
+CapDrop=ALL
 Pod={{ monitoring_pod_name }}
 # If running rootless, map the full subuid range so UIDs like 65534 (nobody) and image UIDs are valid
 {% if podman_rootless_enabled | bool %}
@@ -14,6 +28,17 @@ EnvironmentFile={{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.e
 Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:Z
 Volume={{ monitoring_config_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
 Volume={{ monitoring_config_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+ReadOnlyFilesystem=true
+ReadWritePaths=/var/lib/grafana /var /tmp
+
+[Service]
+ProtectSystem=strict
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=read-only
+NoNewPrivileges=true
+ReadOnlyPaths=/etc
+ReadWritePaths=/var /tmp /var/lib/grafana
 
 [Install]
 WantedBy=multi-user.target
