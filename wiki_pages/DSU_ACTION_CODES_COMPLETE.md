@@ -19,7 +19,7 @@
 
 ---
 
-## 1. System Lifecycle {#1-system-lifecycle}
+## 1. System Lifecycle
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -31,7 +31,7 @@
 
 ---
 
-## 13. AI Infrastructure {#13-ai-infrastructure}
+## 13. AI Infrastructure
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -42,7 +42,7 @@
 
 ---
 
-## 14. Life Management Ops {#14-life-management-ops}
+## 14. Life Management Ops
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -52,7 +52,7 @@
 
 ---
 
-## 19. Digital Preservation {#19-digital-preservation}
+## 19. Digital Preservation
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -62,7 +62,7 @@
 
 ---
 
-## 22. Business Continuity {#22-business-continuity}
+## 22. Business Continuity
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -71,7 +71,7 @@
 
 ---
 
-## 23. High-Integrity Archival {#23-high-integrity-archival}
+## 23. High-Integrity Archival
 
 | Action | Intention | Code | ISO Standard |
 |--------|-----------|------|--------------|
@@ -81,7 +81,7 @@
 
 ---
 
-## Appendix A: ISO Standard Reference {#appendix-a-iso-standard-reference}
+## Appendix A: ISO Standard Reference
 
 | ISO Standard | Sections | Action Codes |
 |--------------|----------|--------------|
