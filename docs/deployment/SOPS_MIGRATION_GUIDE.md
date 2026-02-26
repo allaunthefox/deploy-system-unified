@@ -21,7 +21,7 @@ The following checklist must be completed before switching from Vault to SOPS mo
 - [ ] **Backup Vault Secrets**: Copy `secrets.generated.yml` to a secure backup location
 - [ ] **Verify SOPS Decryption**: Run `sops -d secrets.sops.yml` and confirm all keys decrypt
 - [ ] **Validate Age Keys**: Confirm all recipients in `.sops.yaml` have valid keys
-- [ ] **Test Dry-Run**: Execute `ansible-playbook production_deploy.yml --check` in SOPS mode
+- [ ] **Test Dry-Run**: Execute `ansible-playbook PRODUCTION_DEPLOY.yml --check` in SOPS mode
 - [ ] **Operator Signoff**: Get signoff from at least one additional operator
 
 ### Cutover Execution
@@ -29,7 +29,7 @@ The following checklist must be completed before switching from Vault to SOPS mo
 - [ ] **Set Provider Mode**: Set `secrets_provider_mode: 'sops'` in inventory
 - [ ] **Update Preflight**: Modify `playbooks/preflight_assertions.yml` to allow SOPS-only mode
 - [ ] **Run Preflight**: Execute `ansible-playbook playbooks/preflight_assertions.yml`
-- [ ] **Run Production Deploy**: Execute `ansible-playbook production_deploy.yml` with SOPS mode
+- [ ] **Run Production Deploy**: Execute `ansible-playbook PRODUCTION_DEPLOY.yml` with SOPS mode
 
 ### Post-Cutover Verification
 
@@ -160,7 +160,7 @@ Until cutover is approved:
 Example:
 ```bash
 ansible-playbook projects/deploy-system-unified/playbooks/preflight_assertions.yml -i projects/deploy-system-unified/inventory/local.ini
-ansible-playbook projects/deploy-system-unified/production_deploy.yml -i projects/deploy-system-unified/inventory/local.ini --check
+ansible-playbook projects/deploy-system-unified/PRODUCTION_DEPLOY.yml -i projects/deploy-system-unified/inventory/local.ini --check
 ```
 
 ### Phase 5: Cutover Gating Update
@@ -197,7 +197,7 @@ If cutover fails:
 3. Confirm `secrets.generated.yml` decrypts and deploy succeeds:
    ```bash
    ansible-vault view inventory/group_vars/all/secrets.generated.yml
-   ansible-playbook production_deploy.yml --check
+   ansible-playbook PRODUCTION_DEPLOY.yml --check
    ```
 
 4. Open incident review before next cutover attempt.

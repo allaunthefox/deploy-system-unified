@@ -31,12 +31,12 @@ This document serves as a bridge between the main project documentation in `proj
 ### Variable References
 - **Project**: Variables mentioned in `docs/deployment/` guides
 - **Wiki**: 
-  - `Variable_Reference.md` (overview)
-  - `Variable_Reference_Containers.md` - Container-related variables
-  - `Variable_Reference_Core.md` - Core system variables
-  - `Variable_Reference_Security.md` - Security-related variables
-  - `Variable_Reference_Networking.md` - Networking variables
-  - `Variable_Reference_Storage.md` - Storage variables
+  - `VARIABLE_REFERENCE.md` (overview)
+  - `VARIABLE_REFERENCE_Containers.md` - Container-related variables
+  - `VARIABLE_REFERENCE_Core.md` - Core system variables
+  - `VARIABLE_REFERENCE_Security.md` - Security-related variables
+  - `VARIABLE_REFERENCE_Networking.md` - Networking variables
+  - `VARIABLE_REFERENCE_Storage.md` - Storage variables
 
 ### Role Documentation
 - **Project**: High-level role descriptions in `docs/architecture/`
@@ -62,5 +62,5 @@ When updating documentation:
 The following files serve as key integration points between the two documentation systems:
 - `README.md` - Entry point with links to both systems
 - `docs/INDEX.md` - Main project documentation index
-- `wiki_pages/Documentation_Index.md` - Wiki documentation index
+- `wiki_pages/DOCUMENTATION_INDEX.md` - Wiki documentation index
 - `docs/development/CONTRIBUTING.md` - Contribution guidelines mentioning both systems

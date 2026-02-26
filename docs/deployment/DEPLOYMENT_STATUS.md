@@ -55,7 +55,7 @@ Before running the production playbook, you **MUST** perform the following confi
 To deploy the full verified stack:
 
 ```bash
-ansible-playbook production_deploy.yml -i inventory/contabo_cloud_vps_30_ssd.ini
+ansible-playbook PRODUCTION_DEPLOY.yml -i inventory/contabo_cloud_vps_30_ssd.ini
 ```
 
 Use `site.yml` only for development/stabilization. Treat `branch_templates/` as reference-only.

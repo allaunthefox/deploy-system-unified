@@ -16,14 +16,14 @@ This document summarizes the improvements made to the GitHub wiki content for th
   - Main STYLE_GUIDE.md now serves as an overview linking to specific guides
 
 ### 2. Variable Reference Improvements
-- **Before**: Single, long Variable_Reference.md file with all variables
+- **Before**: Single, long VARIABLE_REFERENCE.md file with all variables
 - **After**: Split into category-specific references:
-  - Variable_Reference_Containers.md
-  - Variable_Reference_Core.md
-  - Variable_Reference_Security.md
-  - Variable_Reference_Networking.md
-  - Variable_Reference_Storage.md
-  - Main Variable_Reference.md now serves as an overview linking to specific categories
+  - VARIABLE_REFERENCE_Containers.md
+  - VARIABLE_REFERENCE_Core.md
+  - VARIABLE_REFERENCE_Security.md
+  - VARIABLE_REFERENCE_Networking.md
+  - VARIABLE_REFERENCE_Storage.md
+  - Main VARIABLE_REFERENCE.md now serves as an overview linking to specific categories
 
 ### 3. Long Page Reduction
 - **Before**: Several pages exceeded optimal length (>2000 words)
@@ -38,7 +38,7 @@ This document summarizes the improvements made to the GitHub wiki content for th
 ### 5. Documentation Structure
 - **Before**: Monolithic documents with poor navigation
 - **After**: Well-organized, categorized documentation with clear navigation paths
-- **Added**: New sections in Documentation_Index.md for better discoverability
+- **Added**: New sections in DOCUMENTATION_INDEX.md for better discoverability
 
 ## Technical Achievements
 
@@ -59,8 +59,8 @@ This document summarizes the improvements made to the GitHub wiki content for th
 ## Next Steps
 
 While the main objectives have been achieved, there are still a few pages that could benefit from further splitting:
-- Role_Reference.md
-- Variable_Reference_Containers.md
-- Variable_Reference_Security.md
+- ROLE_REFERENCE.md
+- VARIABLE_REFERENCE_Containers.md
+- VARIABLE_REFERENCE_Security.md
 
 These can be addressed in future iterations as needed.

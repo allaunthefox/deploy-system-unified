@@ -6,8 +6,8 @@ WI-CONT | Forensic Intelligence Stack (Prometheus, Grafana, Loki).
 - **Loki**: Log aggregation for forensic audit trails.
 - **Promtail**: Action-Code aware log collector.
 - **Grafana**: Real-time Forensic Dashboard.
-- **Action Code**: 840040 (Loki Init)
-- **Action Code**: 840041 (Grafana Forensic Dashboard)
+- **Audit Event Identifier**: 840040 (Loki Init)
+- **Audit Event Identifier**: 840041 (Grafana Forensic Dashboard)
 
 ## Key Variables
 | Variable | Default | Description |
@@ -16,4 +16,4 @@ WI-CONT | Forensic Intelligence Stack (Prometheus, Grafana, Loki).
 | `monitoring_forensic_dashboard_enabled` | `true` | Provision DSU Forensic Dashboard |
 
 ## Summary
-Deploys a full observability suite with specialized forensic dashboards that filter by Action Code for real-time compliance auditing.
+Deploys a full observability suite with specialized forensic dashboards that filter by Audit Event Identifier for real-time compliance auditing.

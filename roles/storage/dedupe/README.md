@@ -4,7 +4,7 @@ WI-CONT | NoDupeLabs archival standards for Btrfs deduplication.
 
 ## Compliance
 - **ISO 27040**: Storage Security
-- **Action Code**: 500060 (Dedupe Start)
+- **Audit Event Identifier**: 500060 (Dedupe Start)
 - **Profile Guard**: 600030 (Ephemeral Skip)
 
 ## Summary

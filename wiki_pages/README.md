@@ -12,6 +12,6 @@ This directory contains the source markdown files for the project's [Wiki](https
 ## Editing
 
 - Edit these files to update the project documentation.
-- The `Home.md` file corresponds to the wiki homepage.
+- The `HOME.md` file corresponds to the wiki homepage.
 - Use standard Markdown.
 - Links between pages should follow the `[[Page Name]]` format where supported, or standard relative links.
