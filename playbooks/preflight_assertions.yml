@@ -4,7 +4,18 @@
   gather_facts: false
   run_once: true
   tasks:
-    - name: Define vault secrets file path
+    - name: "ISO 27001 §9.2 | 400005 | Validate ANSIBLE_VAULT_PASSWORD_FILE environment variable"
+      ansible.builtin.assert:
+        that:
+          - lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') | length > 0
+          - lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') is match('^[a-zA-Z0-9/_.-]+$')
+        fail_msg: "CRITICAL: ANSIBLE_VAULT_PASSWORD_FILE contains invalid characters or is empty"
+        success_msg: "ANSIBLE_VAULT_PASSWORD_FILE validated successfully"
+      delegate_to: localhost
+      when: lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE') | length > 0
+      tags: [preflight, security, 400005]
+
+    - name: "ISO 9001 | 600013 | Define vault secrets file path"
       ansible.builtin.set_fact:
         preflight_repo_root: "{{ playbook_dir | dirname }}"
         preflight_vault_secrets_file: "{{ (playbook_dir | dirname) }}/inventory/group_vars/all/secrets.generated.yml"
@@ -15,13 +26,26 @@
           }}
       changed_when: false
       delegate_to: localhost
+      tags: [preflight, internal, 600013]
 
-    - name: Set secret provider facts
+    - name: "ISO 9001 | 600013 | Set secret provider facts"
       ansible.builtin.set_fact:
         preflight_provider_mode: "{{ secrets_provider_mode | default('vault') }}"
       delegate_to: localhost
+      tags: [preflight, internal, 600013]
 
-    - name: Verify secrets file starts with Vault header
+    - name: "ISO 9001 | 600013 | Validate preflight_vault_secrets_file path"
+      ansible.builtin.assert:
+        that:
+          - preflight_vault_secrets_file is defined
+          - preflight_vault_secrets_file | length > 0
+          - preflight_vault_secrets_file is match('^[a-zA-Z0-9/_.-]+$')
+        fail_msg: "CRITICAL: preflight_vault_secrets_file contains invalid characters or is undefined"
+        success_msg: "preflight_vault_secrets_file path validated"
+      delegate_to: localhost
+      tags: [preflight, internal, 600013]
+
+    - name: "ISO 27037 | 520030 | Verify secrets file starts with Vault header"
       ansible.builtin.command:
         argv:
           - head
@@ -34,8 +58,9 @@
       changed_when: false
       check_mode: false
       when: preflight_provider_mode in ['vault', 'dual']
+      tags: [preflight, security, 520030]
 
-    - name: Assert vault header is first line
+    - name: "ISO 27001 §9.2 | 400005 | Assert vault header is first line"
       ansible.builtin.assert:
         that:
           - vault_header_check.rc == 0
@@ -45,8 +70,20 @@
           or malformed. The first line must start with '$ANSIBLE_VAULT;'
       delegate_to: localhost
       when: preflight_provider_mode in ['vault', 'dual']
+      tags: [preflight, security, 400005]
 
-    - name: Verify secrets decryptability (Ansible Vault)
+    - name: "ISO 9001 | 600013 | Validate preflight_vault_password_file path"
+      ansible.builtin.assert:
+        that:
+          - preflight_vault_password_file is defined
+          - preflight_vault_password_file | length > 0
+          - preflight_vault_password_file is match('^[a-zA-Z0-9/_.-]+$')
+        fail_msg: "CRITICAL: preflight_vault_password_file contains invalid characters or is undefined"
+        success_msg: "preflight_vault_password_file path validated"
+      delegate_to: localhost
+      tags: [preflight, internal, 600013]
+
+    - name: "ISO 27001 §10.1 | 400012 | Verify secrets decryptability (Ansible Vault)"
       ansible.builtin.command:
         argv:
           - ansible-vault
@@ -61,23 +98,26 @@
       check_mode: false
       no_log: true
       when: preflight_provider_mode in ['vault', 'dual']
+      tags: [preflight, security, 400012]
 
-    - name: Assert secrets can be decrypted
+    - name: "ISO 27001 §9.2 | 400005 | Assert secrets can be decrypted"
       ansible.builtin.assert:
         that:
           - vault_decrypt_check.rc == 0
         fail_msg: "CRITICAL: inventory/group_vars/all/secrets.generated.yml could not be decrypted."
       delegate_to: localhost
       when: preflight_provider_mode in ['vault', 'dual']
+      tags: [preflight, security, 400005]
 
-    - name: Verify SOPS configuration
+    - name: "ISO 9001 | 600013 | Verify SOPS configuration"
       ansible.builtin.stat:
         path: "{{ preflight_repo_root }}/.sops.yaml"
       register: sops_stat
       delegate_to: localhost
       when: preflight_provider_mode in ['sops', 'dual']
+      tags: [preflight, internal, 600013]
 
-    - name: Validate SOPS config if present
+    - name: "ISO 27037 | 520030 | Validate SOPS config if present"
       ansible.builtin.command:
         argv:
           - grep
@@ -91,16 +131,29 @@
         - sops_stat.stat.exists
       failed_when: false
       changed_when: false
+      tags: [preflight, security, 520030]
 
-    - name: Assert SOPS config is valid
+    - name: "ISO 27001 §9.2 | 400005 | Assert SOPS config is valid"
       ansible.builtin.assert:
         that:
           - sops_config_check.rc | default(1) == 0
         fail_msg: "CRITICAL: .sops.yaml is missing or malformed."
       delegate_to: localhost
       when: preflight_provider_mode in ['sops', 'dual']
+      tags: [preflight, security, 400005]
 
-    - name: Verify SOPS secrets decryptability
+    - name: "ISO 27001 §9.2 | 400005 | Validate SOPS_AGE_KEY_FILE environment variable"
+      ansible.builtin.assert:
+        that:
+          - lookup('env', 'SOPS_AGE_KEY_FILE') | length > 0
+          - lookup('env', 'SOPS_AGE_KEY_FILE') is match('^[a-zA-Z0-9/_.-]+$')
+        fail_msg: "CRITICAL: SOPS_AGE_KEY_FILE contains invalid characters or is empty"
+        success_msg: "SOPS_AGE_KEY_FILE validated successfully"
+      delegate_to: localhost
+      when: lookup('env', 'SOPS_AGE_KEY_FILE') | length > 0
+      tags: [preflight, security, 400005]
+
+    - name: "ISO 27001 §10.1 | 400012 | Verify SOPS secrets decryptability"
       ansible.builtin.command:
         argv:
           - sops
@@ -114,27 +167,30 @@
       environment:
         SOPS_AGE_KEY_FILE: "{{ lookup('env', 'SOPS_AGE_KEY_FILE') | default('/home/prod/.config/sops/age/keys.txt', true) }}"
       no_log: true
+      tags: [preflight, security, 400012]
 
-    - name: Assert SOPS secrets can be decrypted
+    - name: "ISO 27001 §9.2 | 400005 | Assert SOPS secrets can be decrypted"
       ansible.builtin.assert:
         that:
           - sops_decrypt_check.rc == 0
         fail_msg: "CRITICAL: inventory/group_vars/all/secrets.sops.yml could not be decrypted."
       delegate_to: localhost
       when: preflight_provider_mode in ['sops', 'dual']
+      tags: [preflight, security, 400005]
 
-    - name: Validate inventory path
+    - name: "ISO 9001 | 600013 | Validate inventory path"
       ansible.builtin.assert:
         that:
           - inventory_file is defined
           - inventory_file | length > 0
         fail_msg: "CRITICAL: no inventory file specified. Use -i <inventory_path>."
       delegate_to: localhost
+      tags: [preflight, internal, 600013]
 
     # ============================================================
     # Helm Values Security Checks
     # ============================================================
-    - name: Check for unencrypted secrets in Helm values
+    - name: "ISO 27001 §10.1 | 400000 | Check for unencrypted secrets in Helm values"
       ansible.builtin.shell:
         cmd: |
           grep -r "password.*CHANGEME\|secret.*changeme\|password.*default" charts/*/values.yaml 2>/dev/null || true
@@ -142,8 +198,9 @@
       register: helm_unencrypted_check
       changed_when: false
       failed_when: false
+      tags: [preflight, security, 400000]
 
-    - name: Warn about default passwords in Helm values
+    - name: "ISO 27001 §10.1 | 400000 | Warn about default passwords in Helm values"
       ansible.builtin.debug:
         msg: |
           WARNING: Helm charts contain default/placeholder passwords.
@@ -151,32 +208,36 @@
           Run: grep -n "CHANGEME" charts/*/values.yaml
       delegate_to: localhost
       when: helm_unencrypted_check.stdout | length > 0
+      tags: [preflight, security, 400000]
 
-    - name: Verify Age key file is not in repository
+    - name: "ISO 27001 §10.1 | 400015 | Verify Age key file is not in repository"
       ansible.builtin.stat:
         path: "{{ preflight_repo_root }}/age.key"
       register: age_key_check
       delegate_to: localhost
       failed_when: false
       changed_when: false
+      tags: [preflight, security, 400015]
 
-    - name: Assert Age key is not committed
+    - name: "ISO 27001 §10.1 | 400015 | Assert Age key is not committed"
       ansible.builtin.assert:
         that:
           - not age_key_check.stat.exists
         fail_msg: "CRITICAL: age.key found in repository! Never commit encryption keys."
       delegate_to: localhost
+      tags: [preflight, security, 400015]
 
     # ============================================================
     # Backup & Restore Requirements
     # ============================================================
-    - name: Gather OS facts for package detection
+    - name: "ISO 9001 | 800000 | Gather OS facts for package detection"
       ansible.builtin.setup:
         gather_subset:
           - os_family
       delegate_to: localhost
+      tags: [preflight, internal, 800000]
 
-    - name: Detect OS and set package names
+    - name: "ISO 9001 | 600013 | Detect OS and set package names"
       ansible.builtin.set_fact:
         _hash_tools_packages:
           Debian: "coreutils,openssl"
@@ -194,14 +255,16 @@
           Alpine: "gnupg"
           Archlinux: "gnuPG"
       delegate_to: localhost
+      tags: [preflight, internal, 600013]
 
-    - name: Check for hash verification tools
+    - name: "ISO 27040 | 900003 | Check for hash verification tools"
       ansible.builtin.command: which sha256sum sha512sum openssl
       register: hash_tools_check
       changed_when: false
       failed_when: false
+      tags: [preflight, restore, 900003]
 
-    - name: Assert hash tools available
+    - name: "ISO 27040 | 900003 | Assert hash tools available"
       ansible.builtin.assert:
         that:
           - hash_tools_check.rc == 0
@@ -212,14 +275,16 @@
           or: apk add {{ _hash_tools_packages['Alpine'] }}
           or: pacman -S {{ _hash_tools_packages['Archlinux'] }}
       delegate_to: localhost
+      tags: [preflight, restore, 900003]
 
-    - name: Check for chrony time sync
+    - name: "ISO 27001 §8.17 | 300001 | Check for chrony time sync"
       ansible.builtin.command: which chronyc
       register: chrony_check
       changed_when: false
       failed_when: false
+      tags: [preflight, security, 300001]
 
-    - name: Fail if chrony not available for backup security
+    - name: "ISO 27001 §8.17 | 300001 | Fail if chrony not available for backup security"
       ansible.builtin.fail:
         msg: >-
           CRITICAL: chrony required for backup timestamp verification.
@@ -232,14 +297,16 @@
       when: 
         - chrony_check.rc != 0
         - backup_security_enabled | default(true) | bool
+      tags: [preflight, security, 300001]
 
-    - name: Check GPG availability for encrypted backups
+    - name: "ISO 27001 §10.1 | 400011 | Check GPG availability for encrypted backups"
       ansible.builtin.command: which gpg
       register: gpg_check
       changed_when: false
       failed_when: false
+      tags: [preflight, security, 400011]
 
-    - name: Fail if GPG not available for encrypted backups
+    - name: "ISO 27001 §10.1 | 400011 | Fail if GPG not available for encrypted backups"
       ansible.builtin.fail:
         msg: >-
           CRITICAL: GPG required for encrypted GRUB backups.
@@ -252,3 +319,4 @@
       when: 
         - gpg_check.rc != 0
         - core_grub_backup_encrypt | default(true) | bool
+      tags: [preflight, security, 400011]
