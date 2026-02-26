@@ -433,7 +433,7 @@
         remote_src: true
         include:
           - "crowdsec-firewall-bouncer-v{{ crowdsec_firewall_bouncer_version }}/crowdsec-firewall-bouncer"
-        extra_opts: ["--strip-components=1"]
+        strip_components: 1
       tags:
         - cis_3_17_2
         - stg_v230480

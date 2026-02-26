@@ -127,9 +127,6 @@
         dest: "{{ ops_config_dir }}/vaultwarden"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
-        extra_opts:
-          - --no-same-owner
-          - --no-same-permissions
       when: _vaultwarden_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0
       vars:
         ansible_no_log: true
@@ -167,9 +164,6 @@
         dest: "{{ ops_config_dir }}/homarr"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
-        extra_opts:
-          - --no-same-owner
-          - --no-same-permissions
       when: _homarr_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0
       vars:
         ansible_no_log: true
@@ -207,9 +201,6 @@
         dest: "{{ ops_config_dir }}/wastebin"
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
-        extra_opts:
-          - --no-same-owner
-          - --no-same-permissions
       when: _wastebin_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0
       vars:
         ansible_no_log: true
