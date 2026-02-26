@@ -176,7 +176,8 @@
 
       # Using serfriz/caddy-porkbun-dockerproxy:2.10.2 for Porkbun DNS support
       # Pinned digest prevents supply-chain attacks and ensures reproducible pulls
-      Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2@sha256:{{ caddy_image_digest | default('') }}
+      {% set _digest = caddy_image_digest | default('') %}
+      Image=docker.io/serfriz/caddy-porkbun-dockerproxy:2.10.2{% if _digest | length > 0 %}@sha256:{{ _digest }}{% endif %}
       # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
       Pull={{ caddy_pull_policy | default('newer') }}
       # Retry backoff for image pulls (prevents registry rate-limit bans)
