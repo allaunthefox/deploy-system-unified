@@ -1,7 +1,6 @@
 # Runtime dependencies
+certifi==2026.2.25
+charset-normalizer==3.4.4
+idna==3.11
 requests==2.32.3
-
-# Development dependencies
-ansible-core==2.18.1
-ansible-lint==24.12.2
-yamllint==1.35.1
+urllib3==2.6.3
