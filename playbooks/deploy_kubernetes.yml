@@ -12,6 +12,9 @@
     k3s_token_file: /var/lib/rancher/k3s/server/node-token
     k3s_server_url: ""
     k3s_agent_mode: false
+    # Optional checksums for install scripts (sha256)
+    k3s_install_script_checksum: ""
+    helm_install_script_checksum: ""
 
   tasks:
     - name: "ISO 9001 | 600013 | Check if K3s is already installed"
@@ -26,6 +29,7 @@
         - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
           ansible.builtin.get_url:
             url: https://get.k3s.io
+            checksum: "{{ k3s_install_script_checksum | default(omit) }}"
             dest: /tmp/k3s-install.sh
             mode: '0700'
             owner: root
@@ -90,6 +94,7 @@
         - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
           ansible.builtin.get_url:
             url: https://get.k3s.io
+            checksum: "{{ k3s_install_script_checksum | default(omit) }}"
             dest: /tmp/k3s-install.sh
             mode: '0700'
             owner: root
@@ -171,6 +176,7 @@
             mode: '0700'
             owner: root
             group: root
+            checksum: "{{ helm_install_script_checksum | default(omit) }}"
           when: helm_check.rc != 0
           become: true
           tags: [helm, security, 530000]
@@ -353,6 +359,7 @@
         - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
           ansible.builtin.get_url:
             url: https://get.k3s.io
+            checksum: "{{ k3s_install_script_checksum | default(omit) }}"
             dest: /tmp/k3s-install.sh
             mode: '0700'
             owner: root
