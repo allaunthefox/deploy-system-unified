@@ -12,7 +12,7 @@ auto-synced from this directory by the CI wiki-lint workflow. Do not edit the Gi
 — changes will be overwritten on the next sync.
 
 **File naming**: Wiki page filenames use `SCREAMING_SNAKE_CASE.md` for top-level pages
-(e.g., `ONTOLOGY.md`, `NON_COMINGLING.md`) and `Category_TOPIC.md` for sub-pages
+(e.g., `ONTOLOGY.md`, `../wiki_pages/NON_COMINGLING.md`) and `Category_TOPIC.md` for sub-pages
 (e.g., `Dev_Style_YAML_Style_Guide.md`, `Ref_Vars_Core.md`).
 
 **Internal links**: When linking to another wiki page from within a wiki page, use this format:
@@ -24,10 +24,10 @@ auto-synced from this directory by the CI wiki-lint workflow. Do not edit the Gi
 Where `PAGE_NAME` matches the filename without the `.md` extension. Example:
 
 ```markdown
-See [NON_COMINGLING](NON_COMINGLING) for the foundational rule (Separation of Concerns).
+See [../wiki_pages/NON_COMINGLING](../wiki_pages/NON_COMINGLING) for the foundational rule (Separation of Concerns).
 ```
 
-Do not use relative file paths (`../NON_COMINGLING.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
+Do not use relative file paths (`../../wiki_pages/NON_COMINGLING.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
 
 **Terminology:** Use "Separation of Concerns (SoC)" as the primary term.
 
@@ -111,7 +111,7 @@ for implementation; the wiki page is the operator's reference.
 ## Terminology
 
 The canonical definition of every term in this project — with its governing ISO or NIST citation
-— is in [TERMINOLOGY](TERMINOLOGY). That document is the authoritative reference. Do not
+— is in [../wiki_pages/TERMINOLOGY](../wiki_pages/TERMINOLOGY). That document is the authoritative reference. Do not
 invent new terms or use informal terminology as primary labels in documentation.
 
 Use the **Formal Term** as the primary label in all documentation.

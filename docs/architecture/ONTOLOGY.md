@@ -180,7 +180,7 @@ Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [D
 - [TERMINOLOGY](TERMINOLOGY) — Formal definitions with ISO/NIST citations for every term
 - [NON_COMINGLING](NON_COMINGLING) — SoC implementation
 - [MODULAR_LAYERS](MODULAR_LAYERS) — The 7-layer defense-in-depth architecture
-- [ISO_TAGGING_STANDARD](ISO_TAGGING_STANDARD) — Tag naming and compliance mapping
-- [Quality_Idempotency_BLOCKERS](Quality_Idempotency_BLOCKERS) — Idempotency contract
+- [../development/ISO_TAGGING_STANDARD](../development/ISO_TAGGING_STANDARD) — Tag naming and compliance mapping
+- [../wiki_pages/Quality_Idempotency_BLOCKERS](../wiki_pages/Quality_Idempotency_BLOCKERS) — Idempotency contract
 - [DSU_ACTION_CODES_COMPLETE](DSU_ACTION_CODES_COMPLETE) — Full Audit Event Identifier registry
-- [LLM_MAP](LLM_MAP) — AI agent usage guide
+- [../development/LLM_MAP](../development/LLM_MAP) — AI agent usage guide
