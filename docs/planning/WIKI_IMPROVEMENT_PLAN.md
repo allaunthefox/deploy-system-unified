@@ -63,7 +63,7 @@ Based on analysis using the Qwen agent system:
 
 #### 2.2 Update Navigation
 - Update DOCUMENTATION_INDEX.md to reflect new structure
-- Update Home.md if necessary
+- Update HOME.md if necessary
 - Ensure all cross-references are updated
 
 #### 2.3 Redirect/Update Links
@@ -119,7 +119,7 @@ Based on analysis using the Qwen agent system:
 
 1. **Day 1-2**: Update navigation and cross-links
    - Update DOCUMENTATION_INDEX.md
-   - Update Home.md if needed
+   - Update HOME.md if needed
    - Verify all internal links
 
 2. **Day 3-4**: Update automation scripts
