@@ -9,8 +9,7 @@
       raw: >-
         sh -c 'mkdir -p /etc/apt/apt.conf.d &&
         printf "%s\n" "APT::Sandbox::User \\"root\\";" > /etc/apt/apt.conf.d/99molecule-disable-sandbox'
-      changed_when: false
-
+      changed_when: false      ignore_errors: true
     - name: Update package cache
       raw: apt-get update -qq
 
