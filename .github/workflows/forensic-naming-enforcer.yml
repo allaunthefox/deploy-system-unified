@@ -22,7 +22,8 @@ jobs:
             # Pattern: - name: "Standard | 123456 | Name"
             # Note: Allowing for single or double quotes
             # This regex looks for: line start, optional spaces, '- name:', quote, any chars, pipe, spaces, 6 digits, pipe, any chars, quote
-            non_compliant=$(grep -Hn "^[[:space:]]*- name: ["'][^|]* | [0-9]\{6\} | .*["']" "$file" -v | grep -v "^[[:space:]]*#" || true)
+            # shellcheck disable=SC2086  # pattern requires word splitting
+  non_compliant=$(grep -Hn "^[[:space:]]*- name: [\"'][^|]* | [0-9]\{6\} | .*[\"']" "$file" -v | grep -v "^[[:space:]]*#" || true)
             
             # Additional check: Skip simple debug/set_fact tasks if they aren't marked as critical
             # But here we enforce it for ALL names in specified paths for maximum forensic fidelity
