@@ -1,6 +1,6 @@
 ---
 # Internal variables for security/sshd role
-security_sshd_config_path: "/etc/ssh/sshd_config"
+security_sshd_config_path: "/etc/ssh/security_sshd_config"
 security_sshd_binary_path: "/usr/sbin/sshd"
 security_sshd_service_name_map:
   Debian: ssh

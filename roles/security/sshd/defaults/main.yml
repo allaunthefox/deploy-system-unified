@@ -15,7 +15,7 @@ security_sshd_password_authentication: "no"
 # Enables sntrup761 and ML-KEM algorithms where supported by OpenSSH
 security_sshd_pqc_enabled: "{{ system_ssh_pqc_enabled | default(true) }}"
 # Path to sshd config file (useful for testing with a temporary path)
-security_sshd_config_path: "/etc/ssh/sshd_config"
+security_sshd_config_path: "/etc/ssh/security_sshd_config"
 # Trusted groups for limited exceptions (agent/tcp forwarding)
 # - Set sshd_enable_trusted_group_exceptions: true to enable
 # - Populate sshd_trusted_groups with group names (e.g., ['ssh-trusted'])
