@@ -71,7 +71,7 @@ podman build -t deploy-system-unified:latest -f docker/Containerfile .
 
 # 2. Copy Quadlet files to systemd directory
 sudo cp docker/deploy-system.container /etc/containers/systemd/
-sudo cp docker/*.volume /etc/containers/systemd/volumes/
+sudo cp docker/*.volume /etc/containers/systemd/
 
 # 3. Reload systemd
 sudo systemctl daemon-reload

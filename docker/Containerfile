@@ -97,7 +97,7 @@ EXPOSE 8080/tcp
 
 # Health check (container health visibility)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python3 -c "import ansible; print('OK')" || exit 1
+    CMD ["/opt/deploy-system/entrypoint.sh", "healthcheck"]
 
 # Volume mounts for persistence
 # - Config: Mount custom configurations

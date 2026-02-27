@@ -210,7 +210,7 @@ securityContext:
 ### Validation
 ```bash
 # Check for unpinned images
-grep -r ":latest" charts/ roles/containers/
+grep -r ":latest" charts/ roles/containers/ docker/
 # Should return nothing
 
 # Check for version ranges
