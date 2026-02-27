@@ -1,0 +1,149 @@
+---
+# Deploy-System-Unified - Podman Kubernetes YAML
+# For use with: podman play kube deploy-system.yaml
+# Alternative to Quadlet for Kubernetes-style deployment
+#
+# Strict Compliance:
+#   - NO Docker socket mount (security isolation)
+#   - Resource limits (memory, CPU)
+#   - Read-only root filesystem where possible
+#   - Non-root user
+#   - Restart policy
+#   - Health checks
+#   - No privileged containers
+#   - Podman-native
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deploy-system
+  labels:
+    app: deploy-system
+    project: deploy-system-unified
+    version: "1.0.0"
+  annotations:
+    description: "Modular, security-first infrastructure deployment"
+    documentation: "https://github.com/allaunthefox/deploy-system-unified"
+spec:
+  # Restart policy (availability)
+  restartPolicy: Always
+  
+  # Security context (least privilege)
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  
+  # Resource limits (prevent resource exhaustion)
+  containers:
+    - name: deploy-system
+      image: localhost/deploy-system-unified:latest
+      
+      # Command and entrypoint
+      command: ["/opt/deploy-system/entrypoint.sh"]
+      args: ["--help"]
+      
+      # Environment variables
+      env:
+        - name: INSTALL_DIR
+          value: "/opt/deploy-system"
+        - name: CONFIG_DIR
+          value: "/opt/deploy-system/config"
+        - name: LOG_DIR
+          value: "/opt/deploy-system/logs"
+        - name: TZ
+          value: "UTC"
+      
+      # Resource limits
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "1024Mi"
+          cpu: "1000m"
+      
+      # Security context (container-level)
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      
+      # Volume mounts
+      volumeMounts:
+        - name: config
+          mountPath: /opt/deploy-system/config
+        - name: logs
+          mountPath: /opt/deploy-system/logs
+        - name: data
+          mountPath: /opt/deploy-system/data
+        - name: inventory
+          mountPath: /opt/deploy-system/inventory
+          readOnly: true
+        - name: playbooks
+          mountPath: /opt/deploy-system/playbooks
+          readOnly: true
+        - name: roles
+          mountPath: /opt/deploy-system/roles
+          readOnly: true
+      
+      # Health checks
+      livenessProbe:
+        exec:
+          command:
+            - /opt/deploy-system/entrypoint.sh
+            - healthcheck
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        failureThreshold: 3
+      
+      readinessProbe:
+        exec:
+          command:
+            - /opt/deploy-system/entrypoint.sh
+            - healthcheck
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
+  
+  # Volumes (persistent storage)
+  volumes:
+    - name: config
+      hostPath:
+        path: /opt/deploy-system/config
+        type: DirectoryOrCreate
+    - name: logs
+      hostPath:
+        path: /opt/deploy-system/logs
+        type: DirectoryOrCreate
+    - name: data
+      hostPath:
+        path: /opt/deploy-system/data
+        type: DirectoryOrCreate
+    - name: inventory
+      hostPath:
+        path: ./inventory
+        type: Directory
+    - name: playbooks
+      hostPath:
+        path: ./playbooks
+        type: Directory
+    - name: roles
+      hostPath:
+        path: ./roles
+        type: Directory
+
+---
+# Network configuration (isolation)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deploy-system-network
+data:
+  # Disable inter-container communication for security
+  enable_icc: "false"

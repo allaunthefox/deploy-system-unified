@@ -11,7 +11,10 @@ kubernetes_cluster_domain: "cluster.local"
 
 # API Server Configuration
 kubernetes_api_port: 6443
-kubernetes_tls_san: []
+# CRITICAL: TLS SANs MUST be populated for non-localhost setups
+# Empty list causes certificate errors when connecting via LB VIP or custom hostname
+# Example: kubernetes_tls_san: ["192.168.1.100", "k8s.example.com", "kubernetes.default"]
+kubernetes_tls_san: []  # MUST override with your API server endpoints
 
 # K3s Feature Flags
 kubernetes_disable_traefik: false

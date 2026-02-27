@@ -30,9 +30,23 @@
 
     - name: "ISO 9001 | 600013 | Set secret provider facts"
       ansible.builtin.set_fact:
-        preflight_provider_mode: "{{ secrets_provider_mode | default('vault') }}"
+        preflight_provider_mode: "{{ secrets_provider_mode | default('sops') }}"
       delegate_to: localhost
       tags: [preflight, internal, 600013]
+
+    - name: "ISO 27001 §9.2 | 400006 | Validate secrets are not placeholder values"
+      ansible.builtin.assert:
+        that:
+          - authentik_secret_key is defined and authentik_secret_key != omit
+          - authentik_pg_password is defined and authentik_pg_password != omit
+          - vaultwarden_admin_token is defined and vaultwarden_admin_token != omit
+        fail_msg: >-
+          CRITICAL: Placeholder secrets detected! You must set environment variables:
+          AUTHENTIK_SECRET_KEY, AUTHENTIK_PG_PASSWORD, VAULTWARDEN_ADMIN_TOKEN
+          Example: export AUTHENTIK_SECRET_KEY=$(openssl rand -base64 32)
+      delegate_to: localhost
+      run_once: true
+      tags: [preflight, security, 400006]
 
     - name: "ISO 9001 | 600013 | Validate preflight_vault_secrets_file path"
       ansible.builtin.assert:
@@ -190,24 +204,35 @@
     # ============================================================
     # Helm Values Security Checks
     # ============================================================
-    - name: "ISO 27001 §10.1 | 400000 | Check for unencrypted secrets in Helm values"
+    - name: "ISO 27001 §10.1 | 400000 | CRITICAL: Check for unencrypted secrets in Helm values"
       ansible.builtin.shell:
         cmd: |
-          grep -r "password.*CHANGEME\|secret.*changeme\|password.*default" charts/*/values.yaml 2>/dev/null || true
+          # Case-insensitive search for placeholder passwords
+          # Matches: changeme, CHANGEME, ChangeMe, default, placeholder, etc.
+          grep -riE "password.*:.*['\"]?(changeme|change[_-]?me|default|placeholder)['\"]?|secret.*:.*['\"]?(changeme|change[_-]?me|default|placeholder)['\"]?" charts/*/values.yaml 2>/dev/null || true
       delegate_to: localhost
       register: helm_unencrypted_check
       changed_when: false
       failed_when: false
       tags: [preflight, security, 400000]
 
-    - name: "ISO 27001 §10.1 | 400000 | Warn about default passwords in Helm values"
-      ansible.builtin.debug:
-        msg: |
-          WARNING: Helm charts contain default/placeholder passwords.
-          See docs/HELM_SECRETS.md for secure deployment options.
-          Run: grep -n "CHANGEME" charts/*/values.yaml
+    - name: "ISO 27001 §10.1 | 400000 | FAIL: Placeholder passwords detected in Helm charts"
+      ansible.builtin.assert:
+        that:
+          - helm_unencrypted_check.stdout | length == 0
+        fail_msg: >-
+          CRITICAL: Helm charts contain placeholder/default passwords!
+          
+          Found:
+          {{ helm_unencrypted_check.stdout }}
+          
+          ACTION REQUIRED:
+          1. Edit charts/database-stack/values.yaml
+          2. Set passwords to empty strings: password: ""
+          3. Deploy with: helm install ... --set postgresql.password=$(openssl rand -base64 32)
+          
+          See: docs/HELM_SECRETS.md
       delegate_to: localhost
-      when: helm_unencrypted_check.stdout | length > 0
       tags: [preflight, security, 400000]
 
     - name: "ISO 27001 §10.1 | 400015 | Verify Age key file is not in repository"

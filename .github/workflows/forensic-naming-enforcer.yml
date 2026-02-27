@@ -7,6 +7,11 @@ on:
       - 'roles/**/*.yml'
       - 'playbooks/**/*.yml'
 
+# Explicit permissions for GITHUB_TOKEN (least privilege)
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   enforce-naming:
     runs-on: ubuntu-latest

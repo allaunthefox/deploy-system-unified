@@ -29,6 +29,28 @@
       loop_control:
         loop_var: role_item
 
+- name: Apply Security Hardening (CRITICAL - Do Not Skip)
+  hosts: all
+  become: true
+  vars:
+    security_hardening_roles:
+      - security/hardening
+      - security/access
+      - security/sshd
+      - security/kernel
+      - security/sandboxing
+      - security/file_integrity
+      - security/ips
+      - security/resource_protection
+      - core/secrets
+      - core/grub
+  tasks:
+    - name: Execute Security Roles
+      ansible.builtin.include_tasks: tasks/run_role.yml
+      loop: "{{ security_hardening_roles }}"
+      loop_control:
+        loop_var: role_item
+
 - name: Deploy Container Stack
   hosts: all
   become: true

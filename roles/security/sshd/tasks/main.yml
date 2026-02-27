@@ -1,6 +1,33 @@
 ---
 # SSHD configuration role - Enhanced SSH daemon configuration
 
+- name: "ISO 27001 §12.4 | 600013 | Ensure sshd_config.d directory exists"
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  tags:
+    - security
+    - sshd
+    - 600013
+
+- name: "ISO 27001 §10.1 | 400102 | Ensure hardened config is included in sshd_config"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: 'Include /etc/ssh/sshd_config.d/*.conf'
+    insertafter: '^# Include.*'
+    firstmatch: true
+    validate: '/usr/sbin/sshd -t -f %s'
+  become: true
+  notify: 'restart_sshd'
+  tags:
+    - security
+    - sshd
+    - 400102
+
 - name: Check if security_sshd_config backup exists
   ansible.builtin.stat:
     path: "{{ security_sshd_config_path }}.backup"

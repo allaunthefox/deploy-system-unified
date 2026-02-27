@@ -1,7 +1,7 @@
 ---
 # Defaults for security/sshd role
 security_sshd_backup_config: true
-security_sshd_disable_weak_keys: false
+security_sshd_disable_weak_keys: true  # CRITICAL: Remove weak DSA/ECDSA keys by default
 security_sshd_use_strong_ciphers: true
 security_sshd_allow_tcp_forwarding: false
 security_sshd_allow_agent_forwarding: false
@@ -14,8 +14,10 @@ security_sshd_password_authentication: "no"
 # Post-Quantum Cryptography (PQC) support (Hybrid Mode)
 # Enables sntrup761 and ML-KEM algorithms where supported by OpenSSH
 security_sshd_pqc_enabled: "{{ system_ssh_pqc_enabled | default(true) }}"
-# Path to sshd config file (useful for testing with a temporary path)
-security_sshd_config_path: "/etc/ssh/security_sshd_config"
+# Path to sshd config file - uses sshd_config.d drop-in for modern systems
+# Falls back to /etc/ssh/sshd_config for older systems without config.d support
+security_sshd_config_path: "/etc/ssh/sshd_config.d/99-hardened.conf"
+security_sshd_config_fallback_path: "/etc/ssh/sshd_config"
 # Trusted groups for limited exceptions (agent/tcp forwarding)
 # - Set sshd_enable_trusted_group_exceptions: true to enable
 # - Populate sshd_trusted_groups with group names (e.g., ['ssh-trusted'])

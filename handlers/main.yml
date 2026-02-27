@@ -1,9 +1,11 @@
 ---
-# Global Shared Handlers for Deploy-System-Unified
+# Reboot Handler for Deploy-System-Unified
+# Centralized reboot coordination to prevent uncoordinated reboots
 
 - name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
+  become: true
   listen: "reload_systemd"
 
 - name: restart_journald
@@ -12,8 +14,52 @@
     state: restarted
   listen: "restart_journald"
 
-- name: update-grub
-  ansible.builtin.command: /usr/bin/update-grub
+- name: update-grub (Debian family)
+  ansible.builtin.command: update-grub
+  when: ansible_facts['os_family'] == "Debian"
   become: true
   failed_when: false
+  changed_when: true
   listen: "update-grub"
+
+- name: update-grub (RedHat family)
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  when: ansible_facts['os_family'] == "RedHat"
+  become: true
+  failed_when: false
+  changed_when: true
+  listen: "update-grub"
+
+# Caddy Handler (reachable from include_role scopes)
+- name: restart_caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: restarted
+    enabled: true
+  become: true
+  listen: "restart_caddy"
+
+# Firewall Handler (for SSH port changes)
+- name: save_firewall_rules
+  ansible.builtin.command: /sbin/iptables-save > /etc/iptables/rules.v4
+  become: true
+  listen: "save_firewall_rules"
+
+# Alternative: grub-mkconfig for non-Debian systems
+- name: grub-mkconfig
+  ansible.builtin.command: /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg
+  become: true
+  failed_when: false
+  changed_when: true
+  listen: "grub-mkconfig"
+
+# CRITICAL: Conditional Reboot Handler
+# Only reboots if system_reboot_required fact is set
+- name: conditional_reboot
+  ansible.builtin.reboot:
+    msg: "Reboot required for kernel/hardening changes (Deploy-System-Unified)"
+    reboot_timeout: 300
+    test_command: uptime
+  when: system_reboot_required | default(false) | bool
+  become: true
+  listen: "conditional_reboot"

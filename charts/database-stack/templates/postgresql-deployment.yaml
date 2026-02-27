@@ -26,18 +26,63 @@ spec:
       labels:
         app: postgresql
     spec:
+      # Security Context - Run as non-root user
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999  # postgres user
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: postgresql
           image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          # Security Context - Least privilege
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false  # PostgreSQL needs write access
+            capabilities:
+              drop:
+                - ALL
+          # Resource Limits - Prevent resource exhaustion
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           env:
             - name: POSTGRES_DB
               value: {{ .Values.postgresql.database }}
             - name: POSTGRES_USER
               value: {{ .Values.postgresql.username }}
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.postgresql.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "database-stack.fullname" . }}-secrets
+                  key: postgres-password
           ports:
             - containerPort: 5432
+              name: postgres
+          # Health Checks - Container health visibility
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.postgresql.username }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.postgresql.username }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
@@ -49,17 +94,4 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
----
-{{- if .Values.postgresql.persistence.enabled }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ include "database-stack.fullname" . }}-postgresql
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.postgresql.persistence.size }}
-{{- end }}
 {{- end }}

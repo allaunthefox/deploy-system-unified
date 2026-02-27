@@ -1,0 +1,83 @@
+---
+# Bootstrap SSH for a single target host (called from bootstrap_ssh.yml)
+# This task probes SSH ports for remote hosts, not just localhost
+
+- name: "Bootstrap SSH for {{ target_host }}"
+  block:
+    - name: Read cached SSH port for {{ target_host }}
+      ansible.builtin.set_fact:
+        cached_ssh_port: >-
+          {{ lookup('ansible.builtin.file',
+                    ssh_port_cache_dir_effective ~ '/' ~
+                    (target_host | regex_replace('[^A-Za-z0-9_.-]', '_')) ~ '.port',
+                    errors='ignore') | default('', true) | trim }}
+      changed_when: false
+
+    - name: Build candidate port list for {{ target_host }}
+      ansible.builtin.set_fact:
+        ssh_port_candidates_resolved: >-
+          {{ ([cached_ssh_port]
+              + (ssh_bootstrap_port_candidates | default([]))
+              + [2222, 22])
+             | reject('equalto','')
+             | map('int')
+             | reject('equalto', 0)
+             | list
+             | unique }}
+      changed_when: false
+
+    - name: "CRITICAL: Remove 2222 from candidates (false positive risk)"
+      ansible.builtin.set_fact:
+        ssh_port_candidates_resolved: >-
+          {{ ssh_port_candidates_resolved | difference([2222]) }}
+      changed_when: false
+      when: ssh_port_candidates_resolved | length > 2
+
+    - name: Probe candidate SSH ports for {{ target_host }}
+      ansible.builtin.wait_for:
+        host: "{{ hostvars[target_host].ansible_host | default(target_host) }}"
+        port: "{{ item }}"
+        timeout: "{{ ssh_bootstrap_timeout_effective }}"
+        state: started
+      loop: "{{ ssh_port_candidates_resolved }}"
+      register: ssh_port_probe
+      failed_when: false
+      changed_when: false
+      check_mode: false
+      delegate_to: localhost
+
+    - name: Select discovered SSH port for {{ target_host }}
+      ansible.builtin.set_fact:
+        discovered_ssh_port: >-
+          {{ (ssh_port_probe.results
+              | selectattr('failed', 'defined')
+              | selectattr('failed', 'eq', false)
+              | map(attribute='item')
+              | list
+              | first) | default('') }}
+      changed_when: false
+
+    - name: Assert SSH port reachable for {{ target_host }}
+      ansible.builtin.assert:
+        that:
+          - discovered_ssh_port != ""
+        fail_msg: >-
+          No reachable SSH port for {{ target_host }}
+          ({{ hostvars[target_host].ansible_host | default(target_host) }}).
+          Tried: {{ ssh_port_candidates_resolved }}.
+      changed_when: false
+
+    - name: Set SSH port for {{ target_host }}
+      ansible.builtin.add_host:
+        name: "{{ target_host }}"
+        ansible_ssh_port: "{{ discovered_ssh_port }}"
+        ansible_port: "{{ discovered_ssh_port }}"
+      changed_when: false
+
+    - name: Cache SSH port for {{ target_host }}
+      ansible.builtin.copy:
+        content: "{{ discovered_ssh_port }}"
+        dest: "{{ ssh_port_cache_dir_effective }}/{{ (target_host | regex_replace('[^A-Za-z0-9_.-]', '_')) }}.port"
+        mode: '0600'
+      changed_when: false
+      delegate_to: localhost

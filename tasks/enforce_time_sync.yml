@@ -1,0 +1,134 @@
+---
+# Time Synchronization Enforcement
+# Ensures NTP/chrony is configured and synchronized
+
+- name: "ISO 27001 §8.19 | 450030 | Detect time synchronization service"
+  ansible.builtin.service_facts:
+  register: time_services
+  tags:
+    - security
+    - time
+    - ntp
+    - 450030
+
+- name: "ISO 27001 §8.19 | 450030 | Set time sync service fact"
+  ansible.builtin.set_fact:
+    time_sync_service: >-
+      {{ 'chronyd' if time_services.ansible_facts.services.get('chronyd.service', {}).get('state') == 'running'
+         else 'systemd-timesyncd' if time_services.ansible_facts.services.get('systemd-timesyncd.service', {}).get('state') == 'running'
+         else 'none' }}
+  tags:
+    - security
+    - time
+    - ntp
+    - 450030
+
+- name: "ISO 27001 §8.19 | 450031 | Install chrony if not present"
+  ansible.builtin.package:
+    name: chrony
+    state: present
+  when: time_sync_service == 'none'
+  become: true
+  tags:
+    - security
+    - time
+    - ntp
+    - 450031
+
+- name: "ISO 27001 §8.19 | 450032 | Enable and start chronyd"
+  ansible.builtin.systemd:
+    name: chronyd
+    state: started
+    enabled: true
+  when: time_sync_service == 'none' or time_sync_service == 'chronyd'
+  become: true
+  tags:
+    - security
+    - time
+    - ntp
+    - 450032
+
+- name: "ISO 27001 §8.19 | 450033 | Check chrony synchronization status"
+  ansible.builtin.shell:
+    cmd: chronyc tracking 2>/dev/null | grep -E "System time|Stratum|Reference ID" || echo "Not synchronized"
+  register: chrony_status
+  changed_when: false
+  failed_when: false
+  when: time_sync_service == 'chronyd' or time_services.ansible_facts.services.get('chronyd.service', {}).get('state') == 'running'
+  tags:
+    - security
+    - time
+    - ntp
+    - 450033
+
+- name: "ISO 27001 §8.19 | 450034 | CRITICAL: Assert time synchronization"
+  ansible.builtin.assert:
+    that:
+      - chrony_status.stdout is not search("Not synchronized")
+    fail_msg: >-
+      CRITICAL: Time synchronization NOT active!
+      
+      Status: {{ chrony_status.stdout | default('Unknown') }}
+      
+      This can cause:
+      - TLS certificate validation failures
+      - Kubernetes cluster join failures
+      - Vault/SOPS decryption failures
+      - Log correlation issues
+      
+      ACTION REQUIRED:
+      1. Check chrony status: chronyc tracking
+      2. Verify NTP servers: cat /etc/chrony/chrony.conf
+      3. Check firewall: ensure UDP 123 is allowed
+      
+      See: docs/security/TIME_SYNCHRONIZATION.md
+  when:
+    - time_sync_service == 'chronyd' or time_services.ansible_facts.services.get('chronyd.service', {}).get('state') == 'running'
+  tags:
+    - security
+    - time
+    - ntp
+    - critical
+    - 450034
+
+- name: "ISO 27001 §8.19 | 450035 | Check clock drift"
+  ansible.builtin.shell:
+    cmd: timedatectl status 2>/dev/null | grep "System clock synchronized" | awk '{print $NF}'
+  register: clock_synchronized
+  changed_when: false
+  failed_when: false
+  tags:
+    - security
+    - time
+    - ntp
+    - 450035
+
+- name: "ISO 27001 §8.19 | 450036 | Assert clock is synchronized"
+  ansible.builtin.assert:
+    that:
+      - clock_synchronized.stdout == 'yes'
+    fail_msg: >-
+      WARNING: System clock is not synchronized!
+      
+      Run: timedatectl status
+      
+      Consider enabling systemd-timesyncd or chronyd.
+  when: clock_synchronized.stdout is defined
+  tags:
+    - security
+    - time
+    - ntp
+    - 450036
+
+- name: "ISO 27001 §8.19 | 450037 | Display time synchronization status"
+  ansible.builtin.debug:
+    msg:
+      - "Time sync service: {{ time_sync_service }}"
+      - "Chrony status: {{ chrony_status.stdout | default('N/A') | truncate(100) }}"
+      - "Clock synchronized: {{ clock_synchronized.stdout | default('unknown') }}"
+      - "Status: {{ 'PASS' if time_sync_service != 'none' else 'FAIL - Install chrony' }}"
+  tags:
+    - security
+    - time
+    - ntp
+    - 450037

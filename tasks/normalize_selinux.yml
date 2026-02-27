@@ -1,0 +1,165 @@
+---
+# SELinux State Normalization
+# Ensures consistent SELinux policy across RHEL-family systems
+
+- name: "ISO 27001 §8.8 | 450060 | Detect SELinux status"
+  ansible.builtin.command: getenforce
+  register: selinux_status
+  changed_when: false
+  failed_when: false
+  when: ansible_facts['os_family'] == "RedHat"
+  tags:
+    - security
+    - selinux
+    - 450060
+
+- name: "ISO 27001 §8.8 | 450061 | Set SELinux mode fact"
+  ansible.builtin.set_fact:
+    selinux_mode: >-
+      {{ selinux_status.stdout | default('Disabled') }}
+  when: ansible_facts['os_family'] == "RedHat"
+  tags:
+    - security
+    - selinux
+    - 450061
+
+- name: "ISO 27001 §8.8 | 450062 | Assert SELinux policy compliance"
+  ansible.builtin.assert:
+    that:
+      - selinux_mode in ['Enforcing', 'Permissive', 'Disabled']
+    fail_msg: >-
+      SELinux detected on RHEL-family system!
+      
+      Current mode: {{ selinux_mode }}
+      
+      This can cause:
+      - Container permission failures
+      - Port binding issues
+      - File access denials
+      
+      ACTION REQUIRED (choose one):
+      
+      Option 1: Keep SELinux Enforcing (recommended for production)
+        Add to inventory:
+        ```yaml
+        selinux_mode: enforcing
+        selinux_manage_ports: true
+        ```
+      
+      Option 2: Set to Permissive (logging only)
+        Add to inventory:
+        ```yaml
+        selinux_mode: permissive
+        ```
+      
+      Option 3: Disable SELinux (not recommended)
+        Add to inventory:
+        ```yaml
+        selinux_mode: disabled
+        ```
+      
+      See: docs/security/SELINUX_NORMALIZATION.md
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - selinux_mode is defined
+  tags:
+    - security
+    - selinux
+    - policy
+    - 450062
+
+- name: "ISO 27001 §8.8 | 450063 | Configure SELinux mode"
+  ansible.posix.selinux:
+    policy: targeted
+    state: "{{ selinux_mode | default('enforcing') }}"
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - selinux_mode is defined
+    - selinux_mode != 'disabled'
+  become: true
+  notify: conditional_reboot
+  tags:
+    - security
+    - selinux
+    - 450063
+
+- name: "ISO 27001 §8.8 | 450064 | Install SELinux management tools"
+  ansible.builtin.package:
+    name:
+      - policycoreutils
+      - selinux-policy-targeted
+      - libselinux-python
+    state: present
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - selinux_mode | default('disabled') != 'disabled'
+  become: true
+  tags:
+    - security
+    - selinux
+    - 450064
+
+- name: "ISO 27001 §8.8 | 450065 | Add container port contexts (if enabled)"
+  ansible.builtin.command: >-
+    semanage port -a -t container_port_t -p tcp {{ item }}
+  loop: "{{ container_ports | default([80, 443, 8080, 8443]) }}"
+  register: semanage_result
+  changed_when: "'defined' not in semanage_result.stderr"
+  failed_when: false
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - selinux_mode | default('disabled') != 'disabled'
+    - selinux_manage_ports | default(true) | bool
+  become: true
+  tags:
+    - security
+    - selinux
+    - containers
+    - 450065
+
+- name: "ISO 27001 §8.8 | 450066 | Set container file contexts"
+  ansible.builtin.command: >-
+    semanage fcontext -a -t container_file_t "{{ item }}(/.*)?"
+  loop: "{{ container_storage_paths | default(['/var/lib/containers', '/srv/containers']) }}"
+  register: semanage_fcontext
+  changed_when: "'defined' not in semanage_fcontext.stderr"
+  failed_when: false
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - selinux_mode | default('disabled') != 'disabled'
+    - selinux_manage_ports | default(true) | bool
+  become: true
+  tags:
+    - security
+    - selinux
+    - containers
+    - 450066
+
+- name: "ISO 27001 §8.8 | 450067 | Apply file context changes"
+  ansible.builtin.command: restorecon -Rv {{ item }}
+  loop: "{{ container_storage_paths | default(['/var/lib/containers', '/srv/containers']) }}"
+  changed_when: true
+  failed_when: false
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - selinux_mode | default('disabled') != 'disabled'
+    - selinux_manage_ports | default(true) | bool
+  become: true
+  tags:
+    - security
+    - selinux
+    - containers
+    - 450067
+
+- name: "ISO 27001 §8.8 | 450068 | Display SELinux status summary"
+  ansible.builtin.debug:
+    msg:
+      - "OS Family: {{ ansible_facts['os_family'] }}"
+      - "SELinux mode: {{ selinux_mode | default('N/A') }}"
+      - "Port management: {{ selinux_manage_ports | default(true) }}"
+      - "Status: {{ 'CONFIGURED' if (selinux_mode is defined and selinux_mode != 'Disabled') else 'NOT APPLICABLE' }}"
+  when: ansible_facts['os_family'] == "RedHat"
+  tags:
+    - security
+    - selinux
+    - 450068

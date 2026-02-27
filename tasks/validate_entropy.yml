@@ -1,0 +1,106 @@
+---
+# Entropy and RNG Validation for Cryptographic Operations
+# Ensures sufficient entropy for secure key generation
+
+- name: "ISO 27001 §8.24 | 450020 | Check available entropy"
+  ansible.builtin.shell:
+    cmd: cat /proc/sys/kernel/random/entropy_avail
+  register: entropy_available
+  changed_when: false
+  failed_when: false
+  tags:
+    - security
+    - entropy
+    - rng
+    - 450020
+
+- name: "ISO 27001 §8.24 | 450020 | Check if rng-tools is installed"
+  ansible.builtin.stat:
+    path: /usr/sbin/rngd
+  register: rngd_binary
+  changed_when: false
+  failed_when: false
+  tags:
+    - security
+    - entropy
+    - rng
+    - 450020
+
+- name: "ISO 27001 §8.24 | 450020 | Check if rngd service is running"
+  ansible.builtin.service_facts:
+  register: services_state
+  tags:
+    - security
+    - entropy
+    - rng
+    - 450020
+
+- name: "ISO 27001 §8.24 | 450021 | CRITICAL: Assert minimum entropy threshold"
+  ansible.builtin.assert:
+    that:
+      - (entropy_available.stdout | default('0') | int) >= 1000
+    fail_msg: >-
+      CRITICAL: Low entropy detected!
+      
+      Current entropy: {{ entropy_available.stdout | default('0') }} bits
+      Minimum required: 1000 bits
+      
+      This can cause:
+      - Weak SSH/TLS key generation
+      - Slow cryptographic operations
+      - Blocking on /dev/random
+      
+      ACTION REQUIRED:
+      1. Install rng-tools: apt install rng-tools or yum install rng-tools
+      2. Enable service: systemctl enable --now rngd
+      3. Or install haveged: apt install haveged
+      
+      See: docs/security/ENTROPY_VALIDATION.md
+  tags:
+    - security
+    - entropy
+    - rng
+    - critical
+    - 450021
+
+- name: "ISO 27001 §8.24 | 450022 | Install rng-tools if missing"
+  ansible.builtin.package:
+    name: rng-tools
+    state: present
+  when:
+    - not rngd_binary.stat.exists
+    - ansible_facts['os_family'] in ['Debian', 'RedHat']
+  become: true
+  tags:
+    - security
+    - entropy
+    - rng
+    - 450022
+
+- name: "ISO 27001 §8.24 | 450023 | Enable rngd service"
+  ansible.builtin.systemd:
+    name: rngd
+    state: started
+    enabled: true
+  when:
+    - rngd_binary.stat.exists
+    - services_state.ansible_facts.services.get('rngd.service', {}).get('state', '') != 'running'
+  become: true
+  tags:
+    - security
+    - entropy
+    - rng
+    - 450023
+
+- name: "ISO 27001 §8.24 | 450024 | Display entropy status"
+  ansible.builtin.debug:
+    msg:
+      - "Available entropy: {{ entropy_available.stdout | default('0') }} bits"
+      - "rngd installed: {{ rngd_binary.stat.exists }}"
+      - "rngd running: {{ services_state.ansible_facts.services.get('rngd.service', {}).get('state', 'not found') }}"
+      - "Status: {{ 'PASS' if (entropy_available.stdout | default('0') | int) >= 1000 else 'FAIL - Install rng-tools' }}"
+  tags:
+    - security
+    - entropy
+    - rng
+    - 450024

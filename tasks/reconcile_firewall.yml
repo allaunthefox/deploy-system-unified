@@ -1,0 +1,86 @@
+---
+# Firewall Reconciliation - Verify Active Ports Match Firewall Rules
+# Compares listening sockets against configured firewall rules
+
+- name: "ISO 27001 §12.4 | 600014 | Enumerate all listening TCP ports"
+  ansible.builtin.shell:
+    cmd: ss -tlnp 2>/dev/null | grep LISTEN | awk '{print $4}' | grep -oE '[0-9]+$' | sort -u
+  register: listening_tcp_ports
+  changed_when: false
+  failed_when: false
+  tags:
+    - security
+    - firewall
+    - reconciliation
+    - 600014
+
+- name: "ISO 27001 §12.4 | 600014 | Enumerate all listening UDP ports"
+  ansible.builtin.shell:
+    cmd: ss -ulnp 2>/dev/null | grep -v 'State' | awk '{print $4}' | grep -oE '[0-9]+$' | sort -u
+  register: listening_udp_ports
+  changed_when: false
+  failed_when: false
+  tags:
+    - security
+    - firewall
+    - reconciliation
+    - 600014
+
+- name: "ISO 27001 §12.4 | 600014 | Get configured firewall TCP ports"
+  ansible.builtin.set_fact:
+    firewall_tcp_ports: >-
+      {{ (networking_firewall_allowed_tcp_ports | default([])) + [ssh_effective_port | default(22)] | unique }}
+  tags:
+    - security
+    - firewall
+    - reconciliation
+    - 600014
+
+- name: "ISO 27001 §12.4 | 600014 | Identify exposed ports NOT in firewall rules"
+  ansible.builtin.set_fact:
+    exposed_unprotected_ports: >-
+      {{ (listening_tcp_ports.stdout_lines | map('int') | list) | difference(firewall_tcp_ports | map('int') | list) }}
+  when: listening_tcp_ports.stdout | length > 0
+  tags:
+    - security
+    - firewall
+    - reconciliation
+    - 600014
+
+- name: "ISO 27001 §12.4 | 600014 | CRITICAL: Warn about exposed unprotected ports"
+  ansible.builtin.assert:
+    that:
+      - exposed_unprotected_ports | length == 0
+    fail_msg: >-
+      SECURITY WARNING: Ports listening but NOT protected by firewall:
+      
+      {{ exposed_unprotected_ports | to_nice_json }}
+      
+      These ports are accessible from the network without firewall protection!
+      
+      ACTION REQUIRED:
+      1. Add to networking_firewall_allowed_tcp_ports in inventory
+      2. Or stop the service listening on these ports
+      3. Run: ss -tlnp | grep -E ':({{ exposed_unprotected_ports | join('|') }})'
+      
+      See: docs/security/FIREWALL_RECONCILIATION.md
+  when: exposed_unprotected_ports is defined and exposed_unprotected_ports | length > 0
+  tags:
+    - security
+    - firewall
+    - reconciliation
+    - critical
+    - 600014
+
+- name: "ISO 27001 §12.4 | 600014 | Display firewall reconciliation summary"
+  ansible.builtin.debug:
+    msg:
+      - "Listening TCP ports: {{ listening_tcp_ports.stdout_lines | default([]) }}"
+      - "Firewall protected TCP ports: {{ firewall_tcp_ports | default([]) }}"
+      - "Exposed unprotected ports: {{ exposed_unprotected_ports | default([]) | length }} (should be 0)"
+      - "Status: {{ 'PASS' if (exposed_unprotected_ports | default([]) | length) == 0 else 'FAIL - Review immediately' }}"
+  tags:
+    - security
+    - firewall
+    - reconciliation
+    - 600014

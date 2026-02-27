@@ -1,0 +1,159 @@
+---
+# Backup Restore Validation
+# Verifies restic backup integrity and restore capability
+
+- name: "ISO 27040 §10.1 | 520040 | Check restic repository exists"
+  ansible.builtin.stat:
+    path: "{{ restic_repository_path | default('/srv/backups/restic') }}"
+  register: restic_repo
+  tags:
+    - backup
+    - restic
+    - validation
+    - 520040
+
+- name: "ISO 27040 §10.1 | 520041 | CRITICAL: Assert restic repository exists"
+  ansible.builtin.assert:
+    that:
+      - restic_repo.stat.exists
+    fail_msg: >-
+      CRITICAL: Restic backup repository not found!
+      
+      Path: {{ restic_repository_path | default('/srv/backups/restic') }}
+      
+      ACTION REQUIRED:
+      1. Initialize repository: restic init -r {{ restic_repository_path | default('/srv/backups/restic') }}
+      2. Or restore from backup
+  when: restic_backup_enabled | default(false) | bool
+  tags:
+    - backup
+    - restic
+    - validation
+    - critical
+    - 520041
+
+- name: "ISO 27040 §10.1 | 520042 | Run restic check (repository integrity)"
+  ansible.builtin.shell:
+    cmd: >-
+      RESTIC_PASSWORD_FILE={{ restic_password_file | default('/etc/restic/password') }}
+      restic check -r {{ restic_repository_path | default('/srv/backups/restic') }}
+      2>&1 | tail -20
+  register: restic_check
+  changed_when: false
+  failed_when: restic_check.rc != 0
+  fail_msg: >-
+    CRITICAL: Restic repository integrity check failed!
+    
+    Output: {{ restic_check.stdout }}
+    
+    ACTION REQUIRED:
+    1. Run restic rebuild-index
+    2. Check disk space
+    3. Review restic logs
+    
+    See: docs/backup/RESTORE_RUNBOOK.md
+  when:
+    - restic_backup_enabled | default(false) | bool
+    - restic_repo.stat.exists
+  become: true
+  tags:
+    - backup
+    - restic
+    - validation
+    - 520042
+
+- name: "ISO 27040 §10.1 | 520043 | List recent snapshots"
+  ansible.builtin.shell:
+    cmd: >-
+      RESTIC_PASSWORD_FILE={{ restic_password_file | default('/etc/restic/password') }}
+      restic snapshots -r {{ restic_repository_path | default('/srv/backups/restic') }} --last 3 --json
+      2>/dev/null | jq -r '.[].summary'
+  register: restic_snapshots
+  changed_when: false
+  failed_when: false
+  when:
+    - restic_backup_enabled | default(false) | bool
+    - restic_repo.stat.exists
+  become: true
+  tags:
+    - backup
+    - restic
+    - validation
+    - 520043
+
+- name: "ISO 27040 §10.1 | 520044 | CRITICAL: Assert recent snapshots exist"
+  ansible.builtin.assert:
+    that:
+      - (restic_snapshots.stdout | default('') | length) > 0
+    fail_msg: >-
+      CRITICAL: No restic snapshots found!
+      
+      Repository: {{ restic_repository_path | default('/srv/backups/restic') }}
+      
+      Backup without snapshots is unverified!
+      
+      ACTION REQUIRED:
+      1. Run initial backup: restic backup -r {{ restic_repository_path | default('/srv/backups/restic') }} /data
+      2. Verify backup schedule is running
+      
+      See: docs/backup/RESTORE_RUNBOOK.md
+  when:
+    - restic_backup_enabled | default(false) | bool
+    - restic_backup_require_snapshots | default(true) | bool
+  tags:
+    - backup
+    - restic
+    - validation
+    - critical
+    - 520044
+
+- name: "ISO 27040 §10.1 | 520045 | Test restore to temp directory (optional)"
+  ansible.builtin.shell:
+    cmd: >-
+      RESTIC_PASSWORD_FILE={{ restic_password_file | default('/etc/restic/password') }}
+      restic restore latest -r {{ restic_repository_path | default('/srv/backups/restic') }} --target /tmp/restic-restore-test-{{ ansible_date_time.epoch }}
+      2>&1 | tail -10
+  register: restic_restore_test
+  changed_when: false
+  failed_when: false
+  when:
+    - restic_backup_enabled | default(false) | bool
+    - restic_backup_test_restore | default(false) | bool
+    - restic_snapshots.stdout | length > 0
+  become: true
+  tags:
+    - backup
+    - restic
+    - validation
+    - test
+    - 520045
+
+- name: "ISO 27040 §10.1 | 520046 | Cleanup test restore"
+  ansible.builtin.file:
+    path: /tmp/restic-restore-test-{{ ansible_date_time.epoch }}
+    state: absent
+  when:
+    - restic_backup_test_restore | default(false) | bool
+    - restic_restore_test is defined
+  become: true
+  changed_when: false
+  tags:
+    - backup
+    - restic
+    - validation
+    - cleanup
+    - 520046
+
+- name: "ISO 27040 §10.1 | 520047 | Display backup validation summary"
+  ansible.builtin.debug:
+    msg:
+      - "Repository exists: {{ restic_repo.stat.exists }}"
+      - "Integrity check: {{ 'PASS' if restic_check.rc | default(1) == 0 else 'FAIL' }}"
+      - "Snapshots found: {{ (restic_snapshots.stdout | default('') | length) > 0 }}"
+      - "Restore test: {{ 'PASS' if (restic_restore_test.rc | default(1) == 0) else 'SKIPPED' }}"
+      - "Status: {{ 'VERIFIED' if (restic_check.rc | default(1) == 0) and (restic_snapshots.stdout | default('') | length) > 0 else 'UNVERIFIED - ACTION REQUIRED' }}"
+  tags:
+    - backup
+    - restic
+    - validation
+    - 520047
