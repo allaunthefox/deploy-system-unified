@@ -5,8 +5,8 @@
 [![License](https://img.shields.io/github/license/allaunthefox/deploy-system-unified)](https://github.com/allaunthefox/deploy-system-unified/blob/main/LICENSE)
 [![Ansible](https://img.shields.io/badge/ansible-%3E%3D2.16-red?logo=ansible)](https://ansible.com)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.8-blue?logo=python)](https://python.org)
-[![Security](https://img.shields.io/badge/security-CIS%20Level%201%262-brightgreen)](https://www.cisecurity.org/benchmark/ubuntu_linux)
-[![Compliance](https://img.shields.io/badge/compliance-ISO%2027001%20%7C%20NIST%20SP%20800--193-blue)](./docs/compliance/)
+[![Security](https://img.shields.io/badge/security-CIS%20Level%201%262-brightgreen)](./docs/compliance/CIS_MAPPING.md)
+[![Compliance](https://img.shields.io/badge/compliance-ISO%2027001%20%7C%20NIST%20SP%20800--193-blue)](./docs/compliance/COMPLIANCE_REPORT.md)
 [![Last Commit](https://img.shields.io/github/last-commit/allaunthefox/deploy-system-unified)](https://github.com/allaunthefox/deploy-system-unified/commits/main)
 
 **Modular, security-first infrastructure deployment with Ansible. CIS, NIST, ISO 27001 compliant.**
@@ -175,14 +175,16 @@ This ensures every action performed by Ansible leaves a high-fidelity auditable 
 
 ### 🏷️ Standards Coverage
 
-| Standard | Coverage | Implementation |
-|----------|----------|----------------|
-| **CIS Benchmark** | Level 1 & 2 (Ubuntu 22.04) | Automated via `cis_level_1` tags |
-| **ISO/IEC 27001:2022** | Full Coverage | Mapped via `iso_27001` tags |
-| **ISO/IEC 27040:2024** | Storage Security | Automated `restore_test` enabled |
-| **NIST SP 800-193** | Platform Firmware | Full compliance |
-| **Autonomic Recovery**| **ISO 27040** (Storage) | Automated restore verification |
-| **Forensic Intelligence**| **ISO 27001** (§12.4) | Loki-backed `Audit Event Identifier` dashboards |
+> **Note:** Compliance claims are based on automated control implementation. Full certification requires organizational processes and audits. See detailed mappings in [docs/compliance](./docs/compliance/).
+
+| Standard | Coverage | Implementation | Evidence |
+|----------|----------|----------------|----------|
+| **CIS Benchmark** | Level 1 & 2 (Ubuntu 22.04) | Automated via `cis_level_1` tags | [CIS Mapping](./docs/compliance/CIS_MAPPING.md) |
+| **ISO/IEC 27001:2022** | Full Coverage | Mapped via `iso_27001` tags | [Compliance Report](./docs/compliance/COMPLIANCE_REPORT.md) |
+| **ISO/IEC 27040:2024** | Storage Security | Automated `restore_test` enabled | [Restore Runbook](./docs/RESTORE_RUNBOOK.md) |
+| **NIST SP 800-193** | Platform Firmware | Full compliance | [NIST Mapping](./docs/compliance/NIST_MAPPING.md) |
+| **Autonomic Recovery**| **ISO 27040** (Storage) | Automated restore verification | [Restore Runbook](./docs/RESTORE_RUNBOOK.md) |
+| **Forensic Intelligence**| **ISO 27001** (§12.4) | Loki-backed `Audit Event Identifier` dashboards | [Security Docs](./docs/security/) |
 
 ---
 
@@ -204,7 +206,7 @@ This ensures every action performed by Ansible leaves a high-fidelity auditable 
 
 | Category | Roles | Status | Documentation |
 |----------|-------|--------|---------------|
-| **Core** | 12 | ✅ Production Ready | [docs/core](./docs/architecture/) |
+| **Core** | 12 | ✅ Production Ready | [docs/architecture](./docs/architecture/) |
 | **Security** | 18 | ✅ Production Ready | [docs/security](./docs/security/) |
 | **Kubernetes** | 4 | ✅ Production Ready | [docs/deployment](./docs/deployment/) |
 | **Networking** | 7 | ✅ Production Ready | [docs/architecture](./docs/architecture/) |
