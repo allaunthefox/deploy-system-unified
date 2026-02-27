@@ -1,0 +1,116 @@
+---
+# IPv6 Policy Enforcement
+# Explicitly asserts IPv6 policy (disable or harden)
+
+- name: "ISO 27001 §8.20 | 450010 | Detect IPv6 availability"
+  ansible.builtin.set_fact:
+    ipv6_available: >-
+      {{ ansible_default_ipv6.address is defined or
+         (ansible_all_ipv6_addresses | default([]) | length > 0) }}
+  tags:
+    - security
+    - ipv6
+    - 450010
+
+- name: "ISO 27001 §8.20 | 450010 | Check IPv6 kernel module status"
+  ansible.builtin.shell:
+    cmd: lsmod | grep -q ipv6 && echo "loaded" || echo "not_loaded"
+  register: ipv6_module_status
+  changed_when: false
+  failed_when: false
+  tags:
+    - security
+    - ipv6
+    - 450010
+
+- name: "ISO 27001 §8.20 | 450011 | Assert IPv6 policy compliance"
+  ansible.builtin.assert:
+    that:
+      - not ipv6_available or ipv6_hardening_enabled | default(false)
+    fail_msg: >-
+      IPv6 POLICY VIOLATION DETECTED!
+      
+      Status:
+      - IPv6 available: {{ ipv6_available }}
+      - IPv6 module: {{ ipv6_module_status.stdout | default('unknown') }}
+      - Hardening enabled: {{ ipv6_hardening_enabled | default(false) }}
+      
+      ACTION REQUIRED (choose one):
+      
+      Option 1: Disable IPv6 (recommended if not needed)
+        Add to inventory/group_vars/all/networking.yml:
+        ```yaml
+        ipv6_hardening_enabled: false
+        ipv6_disable: true
+        ```
+      
+      Option 2: Enable IPv6 hardening (if IPv6 is required)
+        Add to inventory/group_vars/all/networking.yml:
+        ```yaml
+        ipv6_hardening_enabled: true
+        ipv6_firewall_rules:
+          - chain: INPUT
+            protocol: tcp
+            destination_port: [22, 80, 443]
+            jump: ACCEPT
+        ```
+      
+      See: docs/security/IPV6_POLICY.md
+  when:
+    - ipv6_available | bool
+    - not (ipv6_hardening_enabled | default(false))
+  tags:
+    - security
+    - ipv6
+    - policy
+    - 450011
+
+- name: "ISO 27001 §8.20 | 450012 | Apply IPv6 hardening (if enabled)"
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/99-ipv6-hardening.conf
+    reload: true
+  loop:
+    - { name: 'net.ipv6.conf.all.accept_redirects', value: '0' }
+    - { name: 'net.ipv6.conf.all.accept_ra', value: '0' }
+    - { name: 'net.ipv6.conf.default.accept_redirects', value: '0' }
+    - { name: 'net.ipv6.conf.default.accept_ra', value: '0' }
+    - { name: 'net.ipv6.conf.all.accept_source_route', value: '0' }
+    - { name: 'net.ipv6.conf.default.accept_source_route', value: '0' }
+  when: ipv6_hardening_enabled | default(false) | bool
+  become: true
+  tags:
+    - security
+    - ipv6
+    - hardening
+    - 450012
+
+- name: "ISO 27001 §8.20 | 450013 | Disable IPv6 (if policy requires)"
+  ansible.builtin.lineinfile:
+    path: /etc/modprobe.d/ipv6.conf
+    regexp: '^install ipv6'
+    line: 'install ipv6 /bin/true'
+    create: true
+    mode: '0644'
+  when: ipv6_disable | default(false) | bool
+  become: true
+  notify: conditional_reboot
+  tags:
+    - security
+    - ipv6
+    - disable
+    - 450013
+
+- name: "ISO 27001 §8.20 | 450014 | Display IPv6 policy status"
+  ansible.builtin.debug:
+    msg:
+      - "IPv6 Available: {{ ipv6_available }}"
+      - "IPv6 Module: {{ ipv6_module_status.stdout | default('unknown') }}"
+      - "Hardening Enabled: {{ ipv6_hardening_enabled | default(false) }}"
+      - "Disable Policy: {{ ipv6_disable | default(false) }}"
+      - "Status: {{ 'COMPLIANT' if (not ipv6_available) or (ipv6_hardening_enabled | default(false)) or (ipv6_disable | default(false)) else 'NON-COMPLIANT' }}"
+  tags:
+    - security
+    - ipv6
+    - 450014
