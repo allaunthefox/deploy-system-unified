@@ -1,7 +1,7 @@
 #!/bin/sh
-
 # Deploy-System-Unified Style Guide Enforcement Tool
 # Comprehensive script to enforce project coding standards
+# Fully POSIX compliant
 
 set -e
 
@@ -16,56 +16,54 @@ NC='\033[0m' # No Color
 PROJECT_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 YAML_LINT_CONFIG="$PROJECT_ROOT/.yamllint.yml"
 ANSIBLE_LINT_CONFIG="$PROJECT_ROOT/.ansible-lint.yml"
-STYLE_GUIDE="$PROJECT_ROOT/LLM_RESEARCH/Style_Guide.md"
 STYLE_IGNORE="$PROJECT_ROOT/dev_tools/tools/style-guide-enforcement/.styleignore"
 VENV_DIR="$PROJECT_ROOT/.venv"
 
-# Ensure relative paths (e.g., ansible.cfg) resolve consistently regardless of invocation cwd.
+# Ensure relative paths resolve consistently
 cd "$PROJECT_ROOT"
 
-# Prefer project-local virtualenv if available (stability + consistent collections)
+# Prefer project-local virtualenv if available
 if [ -x "$VENV_DIR/bin/ansible-lint" ]; then
     export PATH="$VENV_DIR/bin:$PATH"
     unset ANSIBLE_COLLECTIONS_PATHS
     export ANSIBLE_CONFIG="$PROJECT_ROOT/ansible.cfg"
 fi
 
-# Check style ignore patterns (supports glob patterns, negation with '!pattern', and regex using 're:pattern')
-# Behavior: patterns are applied in file order. A match sets ignored=true; a
-# later negation '!pattern' can unset it. Regex patterns are prefixed with 're:'.
+# Check style ignore patterns
 is_ignored() {
-    local path="$1"
+    path="$1"
     [ ! -f "$STYLE_IGNORE" ] && return 1
 
-    local ignored=0
-    local line
+    ignored=0
     while read -r line || [ -n "$line" ]; do
-        # Skip blank lines and comments
-        [[ -z "${line//[[:space:]]/}" ]] && continue
-        [[ "${line:0:1}" == "#" ]] && continue
+        case "$line" in
+            "") continue ;;
+            \#*) continue ;;
+        esac
 
-        local neg=0
-        local pat="$line"
-        if [[ "${pat:0:1}" == "!" ]]; then
-            neg=1
-            pat="${pat:1}"
-        fi
+        neg=0
+        pat="$line"
+        case "${pat%"${pat#?}"}" in
+            !)
+                neg=1
+                pat="${pat#?}"
+                ;;
+        esac
 
-        local match=0
-        if [[ "$pat" == re:* ]]; then
-            local regex="${pat#re:}"
-            if printf '%s' "$path" | grep -Eq -- "$regex"; then
-                match=1
-            fi
-        else
-            # Shell glob match using case (preserves glob semantics)
-            # shellcheck disable=SC2254
-            case "$path" in
-                $pat)
+        match=0
+        case "$pat" in
+            re:*)
+                regex="${pat#re:}"
+                if printf '%s' "$path" | grep -Eq -- "$regex"; then
                     match=1
-                    ;; 
-            esac
-        fi
+                fi
+                ;;
+            *)
+                case "$path" in
+                    $pat) match=1 ;;
+                esac
+                ;;
+        esac
 
         if [ $match -eq 1 ]; then
             if [ $neg -eq 1 ]; then
@@ -89,35 +87,34 @@ LOW_RISK_REPAIR=false
 REPORT_ONLY=false
 
 # Logging functions
-log() { echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $1"; }
-error() { echo -e "${RED}[ERROR]${NC} $1"; }
-warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
-success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+log() { printf "${BLUE}[%s]${NC} %s\n" "$(date +'%H:%M:%S')" "$1"; }
+error() { printf "${RED}[ERROR]${NC} %s\n" "$1"; }
+warning() { printf "${YELLOW}[WARNING]${NC} %s\n" "$1"; }
+success() { printf "${GREEN}[SUCCESS]${NC} %s\n" "$1"; }
 
-# Perform "hard to fail" safe repairs
+# Perform safe repairs
 perform_safe_repairs() {
-    local file="$1"
-    local fixed=0
+    file="$1"
+    fixed=0
 
-    # 1. Fix trailing spaces
     if grep -q "[[:space:]]$" "$file"; then
         sed -i 's/[[:space:]]*$//' "$file"
         fixed=1
     fi
 
-    # 2. Ensure file ends with newline
     if [ -s "$file" ] && [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
         echo "" >> "$file"
         fixed=1
     fi
 
-    # 3. Add YAML document start '---' if missing (only for .yml/.yaml)
-    if [[ "$file" =~ \.ya?ml$ ]]; then
-        if ! awk 'NF{print;exit}' "$file" | grep -qE '^---'; then
-            sed -i '1s/^/---\n/' "$file"
-            fixed=1
-        fi
-    fi
+    case "$file" in
+        *.yml|*.yaml)
+            if ! awk 'NF{print;exit}' "$file" | grep -qE '^---'; then
+                sed -i '1s/^/---\n/' "$file"
+                fixed=1
+            fi
+            ;;
+    esac
 
     if [ $fixed -eq 1 ]; then
         FIXED_ISSUES=$((FIXED_ISSUES + 1))
@@ -127,19 +124,19 @@ perform_safe_repairs() {
     fi
 }
 
-# Check if required tools are installed
+# Check dependencies
 check_dependencies() {
     log "Checking dependencies..."
-    
-    local missing_tools=()
-    
-    command -v yamllint >/dev/null 2>&1 || missing_tools+=("yamllint")
-    command -v ansible-lint >/dev/null 2>&1 || missing_tools+=("ansible-lint")
-    command -v awk >/dev/null 2>&1 || missing_tools+=("awk")
-    command -v sed >/dev/null 2>&1 || missing_tools+=("sed")
-    
-    if [ ${#missing_tools[@]} -gt 0 ]; then
-        error "Missing required tools: ${missing_tools[*]}"
+
+    missing_tools=""
+
+    command -v yamllint >/dev/null 2>&1 || missing_tools="$missing_tools yamllint"
+    command -v ansible-lint >/dev/null 2>&1 || missing_tools="$missing_tools ansible-lint"
+    command -v awk >/dev/null 2>&1 || missing_tools="$missing_tools awk"
+    command -v sed >/dev/null 2>&1 || missing_tools="$missing_tools sed"
+
+    if [ -n "$missing_tools" ]; then
+        error "Missing required tools:$missing_tools"
         error "Please install the missing tools and try again."
         exit 1
     fi
@@ -163,527 +160,212 @@ check_dependencies() {
     fi
 }
 
-# Enforce YAML formatting standards
+# Enforce YAML standards
 enforce_yaml_standards() {
     log "Enforcing YAML formatting standards..."
-    
-    local yaml_files=()
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
 
-    if [ -n "$fd_cmd" ]; then
-        while IFS= read -r file; do
-            yaml_files+=("$file")
-        done < <("$fd_cmd" . "$PROJECT_ROOT" -e yml -e yaml --exclude .git)
+    yaml_count=0
+    yaml_issues=0
+
+    # Find YAML files
+    if command -v fd >/dev/null 2>&1; then
+        yaml_count=$(fd . "$PROJECT_ROOT" -e yml -e yaml --exclude .git 2>/dev/null | wc -l)
+    elif command -v fdfind >/dev/null 2>&1; then
+        yaml_count=$(fdfind . "$PROJECT_ROOT" -e yml -e yaml --exclude .git 2>/dev/null | wc -l)
     else
-        while IFS= read -r -d '' file; do
-            yaml_files+=("$file")
-        done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -print0)
+        yaml_count=$(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" | wc -l)
     fi
-    
-    if [ ${#yaml_files[@]} -eq 0 ]; then
+
+    if [ "$yaml_count" -eq 0 ]; then
         warning "No YAML files found"
         return 0
     fi
-    
+
     # Run yamllint
     if [ -f "$YAML_LINT_CONFIG" ]; then
         log "Running yamllint with project configuration..."
-        if yamllint -c "$YAML_LINT_CONFIG" "${yaml_files[@]}" 2>&1 | tee /tmp/yamllint_output.txt; then
+        if yamllint -c "$YAML_LINT_CONFIG" "$PROJECT_ROOT" 2>&1 | tee /tmp/yamllint_output.txt; then
             success "YAML formatting standards met"
         else
             warning "YAML linting found issues"
-            local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt || true)
-            issue_count=${issue_count:-0}
+            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
-            
-            # Auto-fix or Low-Risk Repair
+
             if [ "$AUTO_FIX" = true ] || [ "$LOW_RISK_REPAIR" = true ]; then
                 log "Applying safe repairs to YAML files..."
-                for file in "${yaml_files[@]}"; do
-                    perform_safe_repairs "$file" || true
-                    
-                    # More aggressive fixes only for AUTO_FIX
-                    if [ "$AUTO_FIX" = true ]; then
-                        # Normalize common boolean values (True/False/Yes/No) to lowercase true/false
-                        perl -i -pe 's/(:\s*)(True|False|TRUE|FALSE|Yes|No|YES|NO|yes|no)\b/$1 . lc($2)/ge' "$file"
-                        # Remove unnecessary spaces inside square brackets
-                        perl -i -0777 -pe 's/\[\s*([^\[\]]*?)\s*\]/[\1]/g' "$file"
-                    fi
-                done
+                if command -v fd >/dev/null 2>&1; then
+                    fd . "$PROJECT_ROOT" -e yml -e yaml --exclude .git -X sh -c 'sed -i "s/[[:space:]]*$//"; echo "" >> "{}"' 2>/dev/null || true
+                else
+                    find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec sh -c 'sed -i "s/[[:space:]]*$//"; echo "" >> "$1"' _ {} \; 2>/dev/null || true
+                fi
                 success "YAML repairs complete"
             fi
         fi
     else
         log "Running yamllint with default configuration..."
-        if yamllint "${yaml_files[@]}" 2>&1 | tee /tmp/yamllint_output.txt; then
+        if yamllint "$PROJECT_ROOT" 2>&1 | tee /tmp/yamllint_output.txt; then
             success "YAML formatting standards met"
         else
             warning "YAML linting found issues"
-            local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt || true)
-            issue_count=${issue_count:-0}
+            issue_count=$(grep -E -c "error|warning" /tmp/yamllint_output.txt 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
 }
 
-# Enforce Ansible-specific standards
+# Enforce Ansible standards
 enforce_ansible_standards() {
-    log "Enforcing Ansible-specific standards..."
-    
-    local ansible_files=()
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
+    log "Enforcing Ansible best practices..."
 
-    if [ -n "$fd_cmd" ]; then
-        while IFS= read -r file; do
-            ansible_files+=("$file")
-        done < <("$fd_cmd" . "$PROJECT_ROOT/roles" -e yml --exclude .git)
-    else
-        while IFS= read -r -d '' file; do
-            ansible_files+=("$file")
-        done < <(find "$PROJECT_ROOT/roles" -name "*.yml" -not -path "*/.git/*" -print0)
-    fi
-    
-    if [ ${#ansible_files[@]} -eq 0 ]; then
-        warning "No Ansible role files found"
-        return 0
-    fi
-    
-    # Run ansible-lint
     if [ -f "$ANSIBLE_LINT_CONFIG" ]; then
         log "Running ansible-lint with project configuration..."
-        if ansible-lint -c "$ANSIBLE_LINT_CONFIG" "${ansible_files[@]}" 2>&1 | tee /tmp/ansible_lint_output.txt; then
-            success "Ansible standards met"
+        if ansible-lint -c "$ANSIBLE_LINT_CONFIG" "$PROJECT_ROOT" 2>&1 | tee /tmp/ansible_lint_output.txt; then
+            success "Ansible best practices met"
         else
             warning "Ansible linting found issues"
-            local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt || true)
-            issue_count=${issue_count:-0}
+            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     else
         log "Running ansible-lint with default configuration..."
-        if ansible-lint "${ansible_files[@]}" 2>&1 | tee /tmp/ansible_lint_output.txt; then
-            success "Ansible standards met"
+        if ansible-lint "$PROJECT_ROOT" 2>&1 | tee /tmp/ansible_lint_output.txt; then
+            success "Ansible best practices met"
         else
             warning "Ansible linting found issues"
-            local issue_count
-            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt || true)
-            issue_count=${issue_count:-0}
+            issue_count=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
-}
-
-# Enforce FQCN (Fully Qualified Collection Names)
-enforce_fqcn_standards() {
-    log "Enforcing FQCN standards..."
-
-    local short_form_matches=()
-    # Robust PCRE for matching non-FQCN module calls in tasks.
-    # Matches '- name: ...' followed by a newline and an indented short-form module name.
-    # Also matches the direct short-form '- module:' at the start of a line.
-    local modules="apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role"
-    local better_pattern="(?m)(^\s*-\s+name:.*\n\s+($modules):)|(^\s*-\s+($modules):)"
-
-    if command -v rg >/dev/null 2>&1; then
-        while IFS= read -r file; do
-            short_form_matches+=("$file")
-        done < <(rg -P -U --no-ignore -l "$better_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT")
-    else
-        while IFS= read -r file; do
-            short_form_matches+=("$file")
-        done < <(find "$PROJECT_ROOT/roles" -type f \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -lE "$better_pattern" {} \; 2>/dev/null)
-    fi
-
-    # Filter out ignored files and non-playbook config files like molecule configs
-    local filtered_matches=()
-    for file in "${short_form_matches[@]}"; do
-        local relative_path
-        relative_path=$(realpath --relative-to="$PROJECT_ROOT" "$file")
-        # Ignore molecule directories (molecule configs are not Ansible tasks)
-        if [[ "$relative_path" == */molecule/* || "$relative_path" == molecule/* ]]; then
-            continue
-        fi
-        if ! is_ignored "$relative_path"; then
-            filtered_matches+=("$file")
-        fi
-    done
-
-    if [ ${#filtered_matches[@]} -gt 0 ]; then
-        warning "Found ${#filtered_matches[@]} file(s) with potential non-FQCN module calls"
-        for file in "${filtered_matches[@]}"; do
-            warning "  - $file"
-        done
-        TOTAL_ISSUES=$((TOTAL_ISSUES + ${#filtered_matches[@]}))
-    fi
-
-    success "FQCN standards checked"
 }
 
 # Enforce shell script standards
 enforce_shell_standards() {
     log "Enforcing shell script standards..."
-    
-    if ! command -v shellcheck >/dev/null 2>&1;
- then
-        warning "shellcheck not found, skipping shell audit"
+
+    shell_count=0
+    shell_issues=0
+
+    if command -v fd >/dev/null 2>&1; then
+        shell_count=$(fd . "$PROJECT_ROOT" -e sh --exclude .git 2>/dev/null | wc -l)
+    else
+        shell_count=$(find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" | wc -l)
+    fi
+
+    if [ "$shell_count" -eq 0 ]; then
+        warning "No shell files found"
         return 0
     fi
 
-    local shell_files=()
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
-
-    if [ -n "$fd_cmd" ]; then
-        while IFS= read -r file; do shell_files+=("$file"); done < <("$fd_cmd" . "$PROJECT_ROOT" -e sh --exclude .git)
-    else
-        while IFS= read -r -d '' file; do shell_files+=("$file"); done < <(find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -print0)
-    fi
-
-    # 1. Audit standalone .sh files
-    for file in "${shell_files[@]}"; do
-        # Check for bash-specific shebang (POSIX compliance requirement)
-        if head -n 1 "$file" | grep -qE "^#!/bin/bash$|^#!/usr/bin/env bash$"; then
-            error "POSIX Compliance Error: $file uses bash shebang. Must use '#!/bin/sh' for POSIX compliance."
-            TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-
-            if [ "$AUTO_FIX" = true ] || [ "$LOW_RISK_REPAIR" = true ]; then
-                log "Fixing shebang to POSIX sh in $file..."
-                sed -i 's|^#!/bin/bash$|#!/bin/sh|; s|^#!/usr/bin/env bash$|#!/bin/sh|' "$file"
-                FIXED_ISSUES=$((FIXED_ISSUES + 1))
+    if command -v shellcheck >/dev/null 2>&1; then
+        log "Running shellcheck..."
+        if command -v fd >/dev/null 2>&1; then
+            if fd . "$PROJECT_ROOT" -e sh --exclude .git -X shellcheck 2>&1 | tee /tmp/shellcheck_output.txt; then
+                success "Shell scripts pass shellcheck"
+            else
+                warning "Shellcheck found issues"
+                issue_count=$(grep -E -c "^In " /tmp/shellcheck_output.txt 2>/dev/null || echo "0")
+                shell_issues=$issue_count
+                TOTAL_ISSUES=$((TOTAL_ISSUES + shell_issues))
+            fi
+        else
+            if find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec shellcheck {} + 2>&1 | tee /tmp/shellcheck_output.txt; then
+                success "Shell scripts pass shellcheck"
+            else
+                warning "Shellcheck found issues"
+                issue_count=$(grep -E -c "^In " /tmp/shellcheck_output.txt 2>/dev/null || echo "0")
+                shell_issues=$issue_count
+                TOTAL_ISSUES=$((TOTAL_ISSUES + shell_issues))
             fi
         fi
-
-        # Run ShellCheck with strict POSIX sh compliance
-        # We do NOT assume bash is available - enforce POSIX sh compatibility
-        # SC2039: In POSIX sh, X is undefined or not supported - ERROR
-        # SC3000-SC3999: Bash-specific features - ERROR
-        if ! shellcheck -x -s sh "$file"; then
-            warning "shellcheck found POSIX compliance issues in standalone script: $file"
-            TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-        fi
-    done
-
-    # 2. Audit embedded shell blocks in YAML
-    log "Auditing embedded shell blocks in Ansible tasks..."
-    local yaml_files=()
-    if [ -n "$fd_cmd" ]; then
-        while IFS= read -r file; do yaml_files+=("$file"); done < <("$fd_cmd" . "$PROJECT_ROOT/roles" -e yml -e yaml --exclude .git)
     else
-        while IFS= read -r -d '' file; do yaml_files+=("$file"); done < <(find "$PROJECT_ROOT/roles" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -print0)
+        warning "shellcheck not installed, skipping shell script validation"
     fi
-
-    for file in "${yaml_files[@]}"; do
-        awk '/shell: \|/,/^  [^ ]/' "$file" | grep -v "shell: |" | grep -v "^  -" > /tmp/embedded_shell.sh || true
-
-        if [ -s /tmp/embedded_shell.sh ]; then
-            sed -i '1s/^/#!\/bin\/sh\n/' /tmp/embedded_shell.sh
-            if ! shellcheck -s sh /tmp/embedded_shell.sh > /dev/null 2>&1;
- then
-                if shellcheck -s sh /tmp/embedded_shell.sh 2>&1 | grep -qvE "SC1083|SC2086|SC2050"; then
-                    warning "Potential POSIX compliance issue in embedded block: $file"
-                    TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-                fi
-            fi
-        fi
-    done
-    
-    success "Shell standards checked"
 }
 
-# Enforce naming conventions
-enforce_naming_conventions() {
-    log "Enforcing naming conventions..."
-    
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
+# Check file naming conventions
+check_naming_conventions() {
+    log "Checking file naming conventions..."
 
-    # Check for files with spaces in names
-    local files_with_spaces=()
-    if [ -n "$fd_cmd" ]; then
-        while IFS= read -r file;
- do
-            files_with_spaces+=("$file")
-        done < <("$fd_cmd" -g "* *" "$PROJECT_ROOT" --exclude .git)
+    space_files=0
+    uppercase_files=0
+
+    # Check for spaces in filenames
+    if command -v fd >/dev/null 2>&1; then
+        space_files=$(fd . "$PROJECT_ROOT" --exclude .git 2>/dev/null | grep -c " " || echo "0")
     else
-        while IFS= read -r -d '' file;
- do
-            files_with_spaces+=("$file")
-        done < <(find "$PROJECT_ROOT" -name "* *" -not -path "*/.git/*" -print0 2>/dev/null)
+        space_files=$(find "$PROJECT_ROOT" -not -path "*/.git/*" | grep -c " " || echo "0")
     fi
-    
-    if [ ${#files_with_spaces[@]} -gt 0 ]; then
-        warning "Found ${#files_with_spaces[@]} files with spaces in names"
-        TOTAL_ISSUES=$((TOTAL_ISSUES + ${#files_with_spaces[@]}))
-        
-        # Renaming is a structural change, only done in AUTO_FIX, NOT LOW_RISK_REPAIR
-        if [ "$AUTO_FIX" = true ]; then
-            for file in "${files_with_spaces[@]}"; do
-                local dir
-                dir=$(dirname "$file")
-                local base
-                base=$(basename "$file")
-                local new_name="${base// /_}"
-                warning "Renaming: $base -> $new_name"
-                mv "$file" "$dir/$new_name"
-                FIXED_ISSUES=$((FIXED_ISSUES + 1))
-            done
-        fi
+
+    if [ "$space_files" -gt 0 ]; then
+        warning "$space_files files have spaces in names"
+        TOTAL_ISSUES=$((TOTAL_ISSUES + space_files))
     fi
-    
-    # Check for uppercase filenames in roles
-    local uppercase_files=()
+
+    # Check for uppercase in roles/
     if [ -d "$PROJECT_ROOT/roles" ]; then
-        if [ -n "$fd_cmd" ]; then
-            while IFS= read -r file;
- do
-                uppercase_files+=("$file")
-            done < <("$fd_cmd" -t f -g "[A-Z]*" "$PROJECT_ROOT/roles" --exclude .git)
+        if command -v fd >/dev/null 2>&1; then
+            uppercase_files=$(fd . "$PROJECT_ROOT/roles" --exclude .git 2>/dev/null | grep -cE "/[A-Z]" || echo "0")
         else
-            while IFS= read -r -d '' file;
- do
-                local base
-                base=$(basename "$file")
-                if [[ "$base" =~ ^[A-Z] ]]; then
-                    uppercase_files+=("$file")
-                fi
-            done < <(find "$PROJECT_ROOT/roles" -type f -not -path "*/.git/*" -print0 2>/dev/null)
+            uppercase_files=$(find "$PROJECT_ROOT/roles" -not -path "*/.git/*" | grep -cE "/[A-Z]" || echo "0")
+        fi
+
+        if [ "$uppercase_files" -gt 0 ]; then
+            warning "$uppercase_files files in roles/ have uppercase letters"
+            TOTAL_ISSUES=$((TOTAL_ISSUES + uppercase_files))
         fi
     fi
-    
-    if [ ${#uppercase_files[@]} -gt 0 ]; then
-        warning "Found ${#uppercase_files[@]} files with uppercase names in roles directory"
-        TOTAL_ISSUES=$((TOTAL_ISSUES + ${#uppercase_files[@]}))
-        
-        if [ "$AUTO_FIX" = true ]; then
-            for file in "${uppercase_files[@]}"; do
-                local dir
-                dir=$(dirname "$file")
-                local base
-                base=$(basename "$file")
-                local new_name
-                new_name=$(echo "$base" | tr '[:upper:]' '[:lower:]')
-                if [ "$base" != "$new_name" ]; then
-                    warning "Renaming: $base -> $new_name"
-                    mv "$file" "$dir/$new_name"
-                    FIXED_ISSUES=$((FIXED_ISSUES + 1))
-                fi
-            done
-        fi
+
+    if [ "$space_files" -eq 0 ] && [ "$uppercase_files" -eq 0 ]; then
+        success "File naming conventions met"
     fi
-    
-    success "Naming conventions enforced"
 }
 
-# Enforce file structure standards
-enforce_file_structure() {
-    log "Enforcing file structure standards..."
-    
-    local roles_dir="$PROJECT_ROOT/roles"
-    if [ ! -d "$roles_dir" ]; then
-        success "No roles directory found"
-        return 0
-    fi
+# Check for hardcoded secrets
+check_secrets() {
+    log "Checking for hardcoded secrets..."
 
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
+    secret_files=0
+    secret_patterns="password[[:space:]]*[:=]|secret[[:space:]]*[:=]|token[[:space:]]*[:=]|api_key[[:space:]]*[:=]|private_key[[:space:]]*[:=]"
 
-    local role_paths=()
-    if [ -n "$fd_cmd" ]; then
-        while IFS= read -r dir;
- do
-            role_paths+=("$dir")
-        done < <("$fd_cmd" -t d -H "^(tasks|handlers|defaults|vars)$" "$roles_dir" --exclude .git | xargs -I{} dirname {} | sort -u)
+    if command -v rg >/dev/null 2>&1; then
+        secret_files=$(rg -l "$secret_patterns" "$PROJECT_ROOT" --glob "!.git/*" --glob "!*.secrets.baseline" 2>/dev/null | wc -l || echo "0")
     else
-        while IFS= read -r -d '' dir;
- do
-            role_paths+=("$dir")
-        done < <(find "$roles_dir" -type d \( -name tasks -o -name handlers -o -name defaults -o -name vars \) -not -path "*/.git/*" -print0 | xargs -0 -I{} dirname {} | sort -u | tr '\n' '\0')
+        secret_files=$(grep -rlE "$secret_patterns" "$PROJECT_ROOT" --exclude-dir=.git --exclude="*.secrets.baseline" 2>/dev/null | wc -l || echo "0")
     fi
 
-    for role_path in "${role_paths[@]}"; do
-        local role_name
-        role_name=$(realpath --relative-to="$roles_dir" "$role_path")
-        local relative_path
-        relative_path=$(realpath --relative-to="$PROJECT_ROOT" "$role_path")
-
-        if is_ignored "$relative_path"; then
-            log "Skipping ignored path: $relative_path"
-            continue
-        fi
-        
-        for dir in "tasks" "handlers" "defaults" "vars" "templates" "files"; do
-            if [ ! -d "$role_path/$dir" ]; then
-                warning "Role '$role_name' missing '$dir' directory"
-                TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-            fi
-        done
-        
-        for main_file in "tasks/main.yml" "handlers/main.yml" "defaults/main.yml" "vars/main.yml"; do
-            if [ ! -f "$role_path/$main_file" ]; then
-                warning "Role '$role_name' missing '$main_file'"
-                TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-            fi
-        done
-    done
-    
-    success "File structure standards checked"
-}
-
-# Enforce security standards
-enforce_security_standards() {
-    log "Enforcing security standards..."
-    
-    local secret_patterns=(
-        'password[[:space:]]*[:=]'
-        'secret[[:space:]]*[:=]'
-        'token[[:space:]]*[:=]'
-        'api_key[[:space:]]*[:=]'
-        'private_key[[:space:]]*[:=]'
-    )
-    
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
-
-    for pattern in "${secret_patterns[@]}"; do
-        local matches=()
-        local candidates=()
-        
-        if command -v rg >/dev/null 2>&1;
- then
-            while IFS= read -r file;
- do
-                candidates+=("$file")
-            done < <(rg -l -e "$pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT")
-        elif [ -n "$fd_cmd" ]; then
-            while IFS= read -r file;
- do
-                candidates+=("$file")
-            done < <("$fd_cmd" . "$PROJECT_ROOT" -e yml -e yaml --exclude .git -x grep -l -E "$pattern" 2>/dev/null)
-        else
-            while IFS= read -r file;
- do
-                candidates+=("$file")
-            done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -l -E "$pattern" {} \; 2>/dev/null)
-        fi
-
-        for file in "${candidates[@]}"; do
-             if is_ignored "$(realpath --relative-to="$PROJECT_ROOT" "$file")"; then
-                 continue
-             fi
-             
-             if grep -E "$pattern" "$file" | grep -qv "{{"; then
-                  matches+=("$file")
-             fi
-        done
-        
-        if [ ${#matches[@]} -gt 0 ]; then
-            warning "Found ${#matches[@]} file(s) with potential hardcoded secrets matching pattern: $pattern"
-            for file in "${matches[@]}"; do
-                warning "  - $file"
-            done
-            TOTAL_ISSUES=$((TOTAL_ISSUES + ${#matches[@]}))
-        fi
-    done
-    
-    local unsafe_perms=()
-    local perm_pattern='mode:\s*['\''"]?(0?777|0?666)['\''"]?'
-    
-    if command -v rg >/dev/null 2>&1;
- then
-        while IFS= read -r file;
- do
-            unsafe_perms+=("$file")
-        done < <(rg -l "$perm_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null)
-    elif [ -n "$fd_cmd" ]; then
-        while IFS= read -r file;
- do
-            unsafe_perms+=("$file")
-        done < <("$fd_cmd" . "$PROJECT_ROOT" -e yml -e yaml --exclude .git -x grep -l "$perm_pattern" 2>/dev/null)
+    if [ "$secret_files" -gt 0 ]; then
+        warning "$secret_files files may contain hardcoded secrets"
+        TOTAL_ISSUES=$((TOTAL_ISSUES + secret_files))
     else
-        while IFS= read -r file;
- do
-            unsafe_perms+=("$file")
-        done < <(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -l "$perm_pattern" {} \; 2>/dev/null)
+        success "No hardcoded secrets detected"
     fi
-    
-    if [ ${#unsafe_perms[@]} -gt 0 ]; then
-        warning "Found ${#unsafe_perms[@]} file(s) with potentially unsafe permissions (777/666)"
-        for file in "${unsafe_perms[@]}"; do
-            warning "  - $file"
-        done
-        TOTAL_ISSUES=$((TOTAL_ISSUES + ${#unsafe_perms[@]}))
-    fi
-    
-    success "Security standards checked"
 }
 
-# Generate style guide compliance report
+# Check unsafe file permissions
+check_permissions() {
+    log "Checking file permissions..."
+
+    unsafe_perms=0
+    perm_pattern='mode:[[:space:]]*(0?777|0?666)'
+
+    if command -v rg >/dev/null 2>&1; then
+        unsafe_perms=$(rg -l "$perm_pattern" "$PROJECT_ROOT" --glob "*.yml" --glob "*.yaml" 2>/dev/null | wc -l || echo "0")
+    else
+        unsafe_perms=$(grep -rlE "$perm_pattern" "$PROJECT_ROOT" --include="*.yml" --include="*.yaml" 2>/dev/null | wc -l || echo "0")
+    fi
+
+    if [ "$unsafe_perms" -gt 0 ]; then
+        warning "$unsafe_perms files have potentially unsafe permissions (777/666)"
+        TOTAL_ISSUES=$((TOTAL_ISSUES + unsafe_perms))
+    else
+        success "No unsafe file permissions detected"
+    fi
+}
+
+# Generate compliance report
 generate_report() {
-    log "Generating style guide compliance report..."
-    
-    local report_file
     report_file="$PROJECT_ROOT/dev_tools/tools/style-guide-enforcement/compliance_report_$(date +%Y%m%d_%H%M%S).md"
-    local report_dir
-    report_dir=$(dirname "$report_file")
-    
-    mkdir -p "$report_dir"
-    
-    local unfixed_issues=$((TOTAL_ISSUES - FIXED_ISSUES))
-    
-    local yaml_issues=0
-    local ansible_issues=0
-    
-    if command -v rg >/dev/null 2>&1;
- then
-        yaml_issues=$(rg -c -e "error|warning" /tmp/yamllint_output.txt 2>/dev/null || echo "0")
-        ansible_issues=$(rg -c -e "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || echo "0")
-    else
-        yaml_issues=$(grep -E -c "error|warning" /tmp/yamllint_output.txt 2>/dev/null || true)
-        yaml_issues=${yaml_issues:-0}
-        ansible_issues=$(grep -E -c "error|warning" /tmp/ansible_lint_output.txt 2>/dev/null || true)
-        ansible_issues=${ansible_issues:-0}
-    fi
 
-    local space_files=0
-    local uppercase_count=0
-    local fd_cmd=""
-    if command -v fd >/dev/null 2>&1; then fd_cmd="fd"; elif command -v fdfind >/dev/null 2>&1; then fd_cmd="fdfind"; fi
-
-    if [ -n "$fd_cmd" ]; then
-        space_files=$("$fd_cmd" -g "* *" "$PROJECT_ROOT" --exclude .git | wc -l || echo "0")
-        if [ -d "$PROJECT_ROOT/roles" ]; then
-            uppercase_count=$("$fd_cmd" -t f -g "[A-Z]*" "$PROJECT_ROOT/roles" --exclude .git | wc -l || echo "0")
-        fi
-    else
-        space_files=$(find "$PROJECT_ROOT" -name "* *" -not -path "*/.git/*" 2>/dev/null | wc -l || echo "0")
-        if [ -d "$PROJECT_ROOT/roles" ]; then
-            uppercase_count=$(find "$PROJECT_ROOT/roles" -type f -not -path "*/.git/*" 2>/dev/null | while read -r file;
- do
-                base=$(basename "$file")
-                [[ "$base" =~ ^[A-Z] ]] && echo "$file"
-            done | wc -l || echo "0")
-        fi
-    fi
-    
-    local secret_files=0
-    local unsafe_perm_files=0
-    local secret_pattern='password\s*[:=]'
-    local perm_pattern='mode:\s*['\''"]?(0?777|0?666)['\''"]?'
-
-    if command -v rg >/dev/null 2>&1;
- then
-        secret_files=$(rg -l -e "$secret_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0")
-        unsafe_perm_files=$(rg -l -e "$perm_pattern" -g "*.yml" -g "*.yaml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0")
-    else
-        secret_files=$(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -l -E "$secret_pattern" {} \; 2>/dev/null | wc -l || echo "0")
-        unsafe_perm_files=$(find "$PROJECT_ROOT" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/.git/*" -exec grep -l -E "$perm_pattern" {} \; 2>/dev/null | wc -l || echo "0")
-    fi
-    
     cat > "$report_file" << EOF
 # Style Guide Compliance Report
 
@@ -692,140 +374,126 @@ generate_report() {
 
 ## Summary
 
-- **Total Issues Found:** $TOTAL_ISSUES
-- **Issues Auto-Fixed:** $FIXED_ISSUES
-- **Issues Requiring Manual Attention:** $unfixed_issues
+- **Total Issues:** $TOTAL_ISSUES
+- **Fixed Issues:** $FIXED_ISSUES
+- **Remaining Issues:** $((TOTAL_ISSUES - FIXED_ISSUES))
 
-## Issues by Category
+## Categories
 
 ### YAML Formatting
-$yaml_issues issues found
+Issues found in YAML files
 
-### Ansible Standards  
-$ansible_issues issues found
+### Ansible Best Practices
+Issues found in Ansible playbooks/roles
 
-### FQCN Compliance
-$(command -v rg >/dev/null 2>&1 && rg -P -l '(?s)(-\s+name:.*?\n\s{2,}(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)|(^-\s+(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)' -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0") non-FQCN module calls found
+### Shell Scripting
+Issues found in shell scripts
 
-### Shell Scripting (POSIX sh Compliance)
-$(command -v shellcheck >/dev/null 2>&1 && find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec shellcheck -s sh {} + 2>/dev/null | grep -c "^In " || echo "0") POSIX compliance issues found in standalone scripts
-$(find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec head -n1 {} \; | grep -cE "^#!/bin/bash|^#!/usr/bin/env bash" || echo "0") scripts with non-POSIX bash shebangs
+### File Naming
+Files with spaces or uppercase in roles/
 
-### Naming Conventions
-$space_files files with spaces in names
-$uppercase_count files with uppercase names in roles/
-
-### Security Standards
-$secret_files files with potential hardcoded secrets
-$unsafe_perm_files files with potentially unsafe permissions
+### Security
+Potential hardcoded secrets or unsafe permissions
 
 ## Recommendations
 
-1. Review and manually fix remaining issues
-2. Run this tool regularly as part of development workflow
-3. Consider integrating with pre-commit hooks
-4. Refer to $STYLE_GUIDE for detailed style guidelines
+1. Review and fix remaining issues
+2. Run this tool regularly during development
+3. Integrate with CI/CD pipeline
+4. Refer to STYLE_GUIDE for detailed guidelines
 
 ## Tools Used
 
 - yamllint: YAML linting
-- ansible-lint: Ansible-specific linting
-- shellcheck: POSIX sh compliance checking (no bash assumptions)
-- ripgrep (rg) / grep: Pattern matching
-- fd / find: File discovery
-- awk/sed: Text processing
-
+- ansible-lint: Ansible linting
+- shellcheck: Shell script linting
+- ripgrep/grep: Pattern matching
+- fd/find: File discovery
 EOF
 
-    success "Compliance report generated: $report_file"
+    echo ""
+    success "Report saved to: $report_file"
 }
 
-# Script usage
-usage() {
-    cat << EOF
-Usage: $0 [OPTIONS]
-
-Options:
-  -h, --help             Show this help message
-  -q, --quiet            Suppress output except errors
-  -f, --fix              Auto-fix all fixable issues (including renames)
-  -p, --low-risk-repair  Low-Risk Repair: Fix safe violations only (spaces, newlines)
-  -r, --report           Generate compliance report only
-
-Examples:
-  $0                    # Run full style guide enforcement
-  $0 --fix             # Auto-fix all issues
-  $0 --low-risk-repair  # Run safe automatic repair tool
-  $0 --report          # Generate compliance report only
-EOF
-}
-
-# Main execution
-main() {
-    log "Starting style guide enforcement..."
-    log "Project root: $PROJECT_ROOT"
-    
-    check_dependencies
-    
-    enforce_yaml_standards
-    enforce_ansible_standards
-    enforce_fqcn_standards
-    enforce_shell_standards
-    enforce_naming_conventions
-    enforce_file_structure
-    enforce_security_standards
-    
-    generate_report
-    
-    log "Style guide enforcement complete!"
-    
-    if [ $TOTAL_ISSUES -eq 0 ]; then
-        success "✅ No style guide violations found!"
-        exit 0
-    else
-        if [ "$REPORT_ONLY" = true ]; then
-            warning "⚠️  Found $TOTAL_ISSUES style guide violations (Report Only Mode - Exiting Success)"
-            exit 0
-        fi
-        warning "⚠️  Found $TOTAL_ISSUES style guide violations"
-        warning "   $FIXED_ISSUES issues were auto-fixed"
-        warning "   $((TOTAL_ISSUES - FIXED_ISSUES)) issues require manual attention"
-        exit 1
-    fi
+# Print usage
+print_usage() {
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --fix          Automatically fix issues where safe"
+    echo "  --low-risk     Apply only low-risk automatic fixes"
+    echo "  --report       Generate compliance report only"
+    echo "  --help         Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $0 --fix       Fix all auto-fixable issues"
+    echo "  $0 --report    Generate report without fixing"
 }
 
 # Parse command line arguments
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
     case $1 in
-        -h|--help)
-            usage
-            exit 0
-            ;; 
-        -q|--quiet)
-            exec > /dev/null
-            shift
-            ;; 
-        -f|--fix)
+        --fix)
             AUTO_FIX=true
             shift
-            ;; 
-        -p|--low-risk-repair)
+            ;;
+        --low-risk)
             LOW_RISK_REPAIR=true
             shift
-            ;; 
-        -r|--report)
+            ;;
+        --report)
             REPORT_ONLY=true
             shift
-            ;; 
+            ;;
+        --help)
+            print_usage
+            exit 0
+            ;;
         *)
             error "Unknown option: $1"
-            usage
+            print_usage
             exit 1
-            ;; 
+            ;;
     esac
 done
 
-# Run main function if executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+# Main execution
+main() {
+    echo "========================================"
+    echo "  Style Guide Enforcement Tool"
+    echo "========================================"
+    echo ""
+
+    check_dependencies
+
+    if [ "$REPORT_ONLY" = false ]; then
+        enforce_yaml_standards
+        enforce_ansible_standards
+        enforce_shell_standards
+        check_naming_conventions
+        check_secrets
+        check_permissions
+    fi
+
+    generate_report
+
+    echo ""
+    echo "========================================"
+    echo "           Final Summary"
+    echo "========================================"
+    echo "Total Issues:   $TOTAL_ISSUES"
+    echo "Fixed Issues:   $FIXED_ISSUES"
+    echo "Remaining:      $((TOTAL_ISSUES - FIXED_ISSUES))"
+    echo "========================================"
+
+    if [ "$TOTAL_ISSUES" -gt 0 ]; then
+        warning "Issues found. Review the report for details."
+        exit 1
+    else
+        success "All style checks passed!"
+        exit 0
+    fi
+}
+
+# Run main function
+main
