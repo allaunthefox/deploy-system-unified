@@ -17,7 +17,16 @@
   ansible.builtin.command: /usr/bin/update-grub
   become: true
   failed_when: false
+  changed_when: true
   listen: "update-grub"
+
+# Alternative: grub-mkconfig for non-Debian systems
+- name: grub-mkconfig
+  ansible.builtin.command: /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg
+  become: true
+  failed_when: false
+  changed_when: true
+  listen: "grub-mkconfig"
 
 # Caddy Handler (reachable from include_role scopes)
 - name: restart_caddy

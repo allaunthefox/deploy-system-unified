@@ -1,9 +1,12 @@
 ---
-- name: Bootstrap SSH connectivity (controller-only)
-  hosts: local
-  gather_facts: false
+- name: Bootstrap SSH connectivity (run on controller for all targets)
+  hosts: localhost
   connection: local
-  tasks:
+  gather_facts: false
+  vars:
+    # Get all target hosts from the inventory (excluding localhost)
+    target_hosts: "{{ groups['all'] | default([]) | difference(['localhost', 'local']) }}"
+  pre_tasks:
     - name: Resolve bootstrap settings
       ansible.builtin.set_fact:
         ssh_bootstrap_timeout_effective: "{{ ssh_bootstrap_timeout | default(2) | int }}"
@@ -14,126 +17,26 @@
           {{ (ssh_bootstrap_scan_max_ports is defined)
              | ternary(ssh_bootstrap_scan_max_ports | int,
                        (ssh_randomize_port | default(false)) | ternary(0, 200)) }}
-      changed_when: false
-
-    - name: Compute scan range size
-      ansible.builtin.set_fact:
-        ssh_bootstrap_scan_range_size: >-
-          {{ (ssh_bootstrap_scan_range_end_effective | int)
-             - (ssh_bootstrap_scan_range_start_effective | int) + 1 }}
-      changed_when: false
-
-    - name: Compute scan step
-      ansible.builtin.set_fact:
-        ssh_bootstrap_scan_step: >-
-          {{ 1 if (ssh_bootstrap_scan_max_ports_effective | int == 0) else
-             ([1, (ssh_bootstrap_scan_range_size | int) // (ssh_bootstrap_scan_max_ports_effective | int)] | max) }}
-      changed_when: false
-
-    - name: Determine SSH port cache directory
-      ansible.builtin.set_fact:
         ssh_port_cache_dir_effective: >-
           {{ (ssh_port_cache_dir | default('') | trim | length > 0)
              | ternary(ssh_port_cache_dir, (inventory_dir | default(playbook_dir)) ~ '/.ssh_port_cache') }}
       changed_when: false
 
-    - name: Read cached SSH port if present
-      ansible.builtin.set_fact:
-        cached_ssh_port: >-
-          {{ lookup('ansible.builtin.file',
-                    ssh_port_cache_dir_effective ~ '/' ~
-                    (inventory_hostname | regex_replace('[^A-Za-z0-9_.-]', '_')) ~ '.port',
-                    errors='ignore') | trim }}
+    - name: Ensure SSH port cache directory exists
+      ansible.builtin.file:
+        path: "{{ ssh_port_cache_dir_effective }}"
+        state: directory
+        mode: '0700'
+      delegate_to: localhost
       changed_when: false
 
-    - name: Build candidate port list
-      ansible.builtin.set_fact:
-        ssh_port_candidates_resolved: >-
-          {{ ([cached_ssh_port]
-              + (ssh_bootstrap_port_candidates | default([]))
-             + [ansible_ssh_port | default(''),
-                 ansible_port | default(''),
-                 ssh_effective_port | default(''),
-                 system_ssh_port | default(''),
-                 2222,
-                 22])
-             | reject('equalto','')
-             | map('int')
-             | reject('equalto', 0)
-             | list
-             | unique }}
-      changed_when: false
-
-    - name: Validate SSH scan range size
-      ansible.builtin.assert:
-        that:
-          - (not ssh_bootstrap_scan_enabled_effective | bool) or
-            (ssh_bootstrap_scan_range_start_effective | int <= ssh_bootstrap_scan_range_end_effective | int)
-        fail_msg: >-
-          SSH bootstrap scan range is invalid ({{ ssh_bootstrap_scan_range_start_effective }}-{{ ssh_bootstrap_scan_range_end_effective }}).
-      changed_when: false
-
-    - name: Build scan range candidates
-      ansible.builtin.set_fact:
-        ssh_port_scan_candidates: >-
-          {{ (ssh_bootstrap_scan_enabled_effective | bool)
-             | ternary(range(ssh_bootstrap_scan_range_start_effective | int,
-                             (ssh_bootstrap_scan_range_end_effective | int) + 1,
-                             (ssh_bootstrap_scan_step | int)) | list,
-                       []) }}
-      changed_when: false
-
-    - name: Merge scan candidates into candidate list
-      ansible.builtin.set_fact:
-        ssh_port_candidates_resolved: >-
-          {{ (ssh_port_candidates_resolved + ssh_port_scan_candidates)
-             | unique }}
-      changed_when: false
-
-    - name: Report SSH bootstrap scan plan
-      ansible.builtin.debug:
-        msg:
-          - "SSH bootstrap scan enabled={{ ssh_bootstrap_scan_enabled_effective }}"
-          - "Scan range={{ ssh_bootstrap_scan_range_start_effective }}-{{ ssh_bootstrap_scan_range_end_effective }} step={{ ssh_bootstrap_scan_step }}"
-          - "Candidate ports={{ ssh_port_candidates_resolved }}"
-      when: ssh_bootstrap_scan_enabled_effective | bool
-      changed_when: false
-
-    - name: Probe candidate SSH ports from controller
-      ansible.builtin.wait_for:
-        host: "{{ hostvars[inventory_hostname].ansible_host | default(inventory_hostname) }}"
-        port: "{{ item }}"
-        timeout: "{{ ssh_bootstrap_timeout_effective }}"
-        state: started
-      loop: "{{ ssh_port_candidates_resolved }}"
-      register: ssh_port_probe
-      failed_when: false
-      changed_when: false
-      check_mode: false
-
-    - name: Select discovered SSH port
-      ansible.builtin.set_fact:
-        discovered_ssh_port: >-
-          {{ (ssh_port_probe.results
-              | selectattr('failed', 'defined')
-              | selectattr('failed', 'eq', false)
-              | map(attribute='item')
-              | list
-              | first) | default('') }}
-      changed_when: false
-
-    - name: Assert SSH port is reachable
-      ansible.builtin.assert:
-        that:
-          - discovered_ssh_port != ""
-        fail_msg: >-
-          No reachable SSH port found for {{ inventory_hostname }} ({{ hostvars[inventory_hostname].ansible_host | default(inventory_hostname) }}).
-          Tried: {{ ssh_port_candidates_resolved }}.
-      changed_when: false
-
-    - name: Set SSH port for this run
-      ansible.builtin.add_host:
-        name: "{{ inventory_hostname }}"
-        ansible_ssh_port: "{{ discovered_ssh_port }}"
-        ansible_port: "{{ discovered_ssh_port }}"
-      changed_when: false
+  tasks:
+    - name: "CRITICAL: Bootstrap SSH for ALL target hosts (not just localhost)"
+      ansible.builtin.include_tasks: tasks/bootstrap_ssh_per_host.yml
+      loop: "{{ target_hosts }}"
+      loop_control:
+        loop_var: target_host
+      when:
+        - target_host is defined
+        - target_host != 'localhost'
+        - target_host != 'local'
