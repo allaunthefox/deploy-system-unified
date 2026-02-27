@@ -1,0 +1,15 @@
+# Exclude vendored Ansible collections from language stats
+.ansible/** linguist-vendored=true
+.ansible/** linguist-documentation=false
+
+# Exclude virtual environments
+.venv/** linguist-vendored=true
+venv/** linguist-vendored=true
+
+# Exclude compiled Python files
+*.pyc linguist-vendored=true
+*.pyo linguist-vendored=true
+__pycache__/** linguist-vendored=true
+
+# Exclude node_modules
+node_modules/** linguist-vendored=true
