@@ -64,6 +64,23 @@
     - firewall
     - critical
 
+- name: "CRITICAL: Validate SSH connectivity after port change (prevents lockout)"
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host | default(inventory_hostname) }}"
+    port: "{{ ssh_effective_port | default(advanced_security_hardening_random_ssh_port) }}"
+    timeout: 60
+    state: started
+  delegate_to: localhost
+  when:
+    - ssh_randomize_port | bool
+    - advanced_security_hardening_random_ssh_port is defined
+  tags:
+    - security
+    - advanced
+    - ssh
+    - critical
+    - validation
+
 - name: "CIS 5.2.4 | STIG V-230221 | NIST IA-5 | ISO 27001 §10.1 | Action 540201 | Enable SSH key rotation if enabled (idempotent)"
   ansible.builtin.debug:
     msg: "SSH key rotation is enabled and will rotate keys every {{ ssh_key_rotation_interval_days }} days"

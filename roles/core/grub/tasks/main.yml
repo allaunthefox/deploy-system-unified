@@ -45,6 +45,9 @@
     validate: '/bin/grep -q "GRUB_CMDLINE_LINUX_DEFAULT" %s'
   become: true
   register: grub_config_update
+  notify:
+    - update-grub
+    - conditional_reboot
   tags:
     - cis_1_4_1
     - iso_27001_8_9

@@ -28,6 +28,35 @@
     # IPv6 Hardening
     - { name: 'net.ipv6.conf.all.accept_ra', value: '0' }
     - { name: 'net.ipv6.conf.all.accept_redirects', value: '0' }
+  become: true
+  notify: conditional_reboot
+  tags:
+    - cis_3_1_1
+    - cis_3_1_2
+    - cis_3_2_1
+    - cis_3_2_2
+    - cis_3_2_3
+    - cis_3_2_4
+    - cis_3_2_5
+    - cis_3_2_6
+    - cis_3_2_7
+    - cis_3_3_1
+    - cis_3_3_2
+    - cis_3_3_3
+    - stig_v_230231
+    - iso_27001_8_26
+    - nist_sc_8
+    - nist_sc_7
+    - nist_sc_5
+    - nist_sc_4
+    - nist_sc_3
+    - nist_ac_4
+    - nist_si_16
+    - nist_cm_6
+    - security
+    - kernel
+    - sysctl
+    - 450002
     # System Hardening (CIS Level 2)
     - { name: 'kernel.kptr_restrict', value: '2' }
     - { name: 'kernel.dmesg_restrict', value: '1' }
