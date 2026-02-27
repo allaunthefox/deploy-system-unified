@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
 
 # RESTORE_DATA.SH
 # Wrapper for Restic restore operations
@@ -19,27 +19,32 @@ echo "Available Snapshots:"
 restic snapshots
 
 echo ""
-if [[ -n "${RESTIC_SNAPSHOT_ID:-}" ]]; then
+if [ -n "${RESTIC_SNAPSHOT_ID:-}" ]; then
     SNAP_ID="$RESTIC_SNAPSHOT_ID"
     echo "Using Snapshot ID from env: $SNAP_ID"
 else
-    read -rp "Enter Snapshot ID to restore (or 'latest'): " SNAP_ID
-    SNAP_ID=${SNAP_ID:-latest}
+    printf "Enter Snapshot ID to restore (or 'latest'): "
+    read -r SNAP_ID
+    SNAP_ID="${SNAP_ID:-latest}"
 fi
 
 echo "Restoring snapshot '$SNAP_ID'..."
 echo "WARNING: This will overwrite files in /var/lib/docker/volumes and /srv/..."
-if [[ "${AUTO_CONFIRM:-no}" != "yes" ]]; then
-    read -p "Are you sure? (y/N) " -n 1 -r
+if [ "${AUTO_CONFIRM:-no}" != "yes" ]; then
+    printf "Are you sure? (y/N) "
+    read -r reply
     echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Aborted."
-        exit 1
-    fi
+    case "$reply" in
+        [Yy]*) ;;
+        *)
+            echo "Aborted."
+            exit 1
+            ;;
+    esac
 fi
 
 # Stop Docker to release file locks
-if [[ "${SKIP_DOCKER_STOP:-no}" != "yes" ]]; then
+if [ "${SKIP_DOCKER_STOP:-no}" != "yes" ]; then
     echo "Stopping Docker..."
     systemctl stop docker
 fi
@@ -49,7 +54,7 @@ RESTORE_TARGET="${RESTIC_RESTORE_TARGET:-/}"
 echo "Restoring..."
 restic restore "$SNAP_ID" --target "$RESTORE_TARGET"
 
-if [[ "${SKIP_DOCKER_STOP:-no}" != "yes" ]]; then
+if [ "${SKIP_DOCKER_STOP:-no}" != "yes" ]; then
     echo "Restarting Docker..."
     systemctl start docker
 fi

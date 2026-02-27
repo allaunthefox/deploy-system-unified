@@ -1,5 +1,7 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
+
+USER="${SUDO_USER:-$USER}"
 
 if command -v podman >/dev/null 2>&1; then
   if podman info >/dev/null 2>&1; then

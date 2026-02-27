@@ -1,7 +1,7 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
 
-USER=${SUDO_USER:-$USER}
+USER="${SUDO_USER:-$USER}"
 
 if docker info >/dev/null 2>&1; then
   echo "Docker is accessible to user: $USER"

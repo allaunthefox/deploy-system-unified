@@ -23,10 +23,10 @@ TESTS_PASSED=0
 TESTS_FAILED=0
 TESTS_SKIPPED=0
 
-log_pass() { echo -e "${GREEN}[PASS]${NC} $1"; TESTS_PASSED=$((TESTS_PASSED + 1)); }
-log_fail() { echo -e "${RED}[FAIL]${NC} $1"; TESTS_FAILED=$((TESTS_FAILED + 1)); }
-log_skip() { echo -e "${YELLOW}[SKIP]${NC} $1"; TESTS_SKIPPED=$((TESTS_SKIPPED + 1)); }
-log_info() { echo "[INFO] $1"; }
+log_pass() { printf "${GREEN}[PASS]${NC} %s\n" "$1"; TESTS_PASSED=$((TESTS_PASSED + 1)); }
+log_fail() { printf "${RED}[FAIL]${NC} %s\n" "$1"; TESTS_FAILED=$((TESTS_FAILED + 1)); }
+log_skip() { printf "${YELLOW}[SKIP]${NC} %s\n" "$1"; TESTS_SKIPPED=$((TESTS_SKIPPED + 1)); }
+log_info() { printf "[INFO] %s\n" "$1"; }
 
 echo "========================================"
 echo "   CHAOS MONKEY TEST SUITE"
@@ -215,15 +215,15 @@ echo ""
 echo "========================================"
 echo "   CHAOS TEST SUMMARY"
 echo "========================================"
-echo -e "Passed: ${GREEN}$TESTS_PASSED${NC}"
-echo -e "Failed: ${RED}$TESTS_FAILED${NC}"
-echo -e "Skipped: ${YELLOW}$TESTS_SKIPPED${NC}"
+printf "Passed: ${GREEN}%s${NC}\n" "$TESTS_PASSED"
+printf "Failed: ${RED}%s${NC}\n" "$TESTS_FAILED"
+printf "Skipped: ${YELLOW}%s${NC}\n" "$TESTS_SKIPPED"
 echo ""
 
-if [ $TESTS_FAILED -eq 0 ]; then
-    echo -e "${GREEN}All chaos tests passed!${NC}"
+if [ "$TESTS_FAILED" -eq 0 ]; then
+    printf "%s\n" "${GREEN}All chaos tests passed!${NC}"
     exit 0
 else
-    echo -e "${RED}Some tests failed. Review output above.${NC}"
+    printf "%s\n" "${RED}Some tests failed. Review output above.${NC}"
     exit 1
 fi
