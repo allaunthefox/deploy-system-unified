@@ -22,7 +22,9 @@ jobs:
         run: |
           errors=0
           while IFS= read -r file; do
-            non_compliant=$(grep -Hn "^[[:space:]]*- name: [\"'][^|]* | [0-9]\{6\} | .*[\"']" "$file" -v | grep -v "^[[:space:]]*#" || true)
+            # Find task names that don't follow forensic pattern: "Standard | CODE | Description"
+            # Only check lines that start with "- name:"
+            non_compliant=$(grep -E "^[[:space:]]*-[[:space:]]*name:" "$file" | grep -v -E "^[[:space:]]*-[[:space:]]*name:[[:space:]]*[\"'][^|]*[|][[:space:]]*[0-9]{6}[[:space:]]*[|]" || true)
             if [ -n "$non_compliant" ]; then
               echo "Non-compliant task names found in $file:"
               echo "$non_compliant"
