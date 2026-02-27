@@ -57,6 +57,10 @@ def get_roles_by_category():
 def process_categories():
     roles_map = get_roles_by_category()
     
+    # Category-to-file mapping must follow the canonical
+    # SCREAMING_SNAKE_CASE naming that the wiki now uses.  Older commits
+    # attempted to reference `REF_Vars_*` variants, which no longer
+    # exist.
     categories_to_files = {
         'Containers': 'REF_VARS_CONTAINERS.md',
         'Core': 'REF_VARS_CORE.md',
