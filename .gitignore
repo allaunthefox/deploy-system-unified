@@ -1,4 +1,6 @@
-# Python artifacts
+# =============================================================================
+# Python
+# =============================================================================
 __pycache__/
 *.pyc
 *.pyo
@@ -6,6 +8,7 @@ __pycache__/
 .Python
 *.so
 *.egg
+*.egg-info/
 *.egg-info/
 dist/
 build/
@@ -15,15 +18,25 @@ htmlcov/
 .tox/
 .venv/
 venv/
+*.ipynb_checkpoints
+.mypy_cache/
+.ruff_cache/
 
-# Ansible artifacts
+# =============================================================================
+# Ansible
+# =============================================================================
 .ansible/
 .ansible_local/
 ansible.cfg.local
 *.retry
 *.log
+ansible.log
+*.vault_password
+vault_password.txt
 
-# Molecule artifacts
+# =============================================================================
+# Molecule
+# =============================================================================
 .molecule/
 molecule/**/molecule_shared/
 molecule/**/__pycache__/
@@ -31,45 +44,143 @@ molecule/**/__pycache__/
 .molecule-full-run.pid
 .molecule-full-run.log
 
-# CI/CD artifacts
+# =============================================================================
+# CI/CD
+# =============================================================================
 .github/workflows/*.log
 .reports/
 test_results.xml
 coverage.xml
-.coverage
+.compliance_reports/
+compliance_report*.md
 
-# Secrets and sensitive files
-# track secret baselines so CI can use them
+# =============================================================================
+# Secrets and Sensitive Files
+# =============================================================================
+# Keep baseline for CI comparison
 !*.secrets.baseline
 secrets.generated.yml
+secrets.yml
+secrets.yaml
+*.secret
+*.secrets
 .vault_pass
 .ansible-vault-password
+.vault_password
+vault_pass.txt
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
 
-# IDE and editor
+# =============================================================================
+# IDE and Editors
+# =============================================================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+*.sublime-project
+*.sublime-workspace
+*.tmproj
+*.sublime-user
+.project
+.pydevproject
+*.iml
 
-# OS artifacts
+# =============================================================================
+# OS Artifacts
+# =============================================================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Build artifacts
+# =============================================================================
+# Build Artifacts
+# =============================================================================
 *.tar.xz
 *.zip
+*.tar.gz
+*.rar
+*.7z
 
-# Wiki and documentation builds
+# =============================================================================
+# Documentation Builds
+# =============================================================================
 wiki_audit/
 wiki_clean_sync/
 wiki_crowdsec_audit/
 wiki_final/
+docs/_build/
+site/
+*.pdf
 
-# Third-party integrations
+# =============================================================================
+# Third-Party and Vendored Code
+# =============================================================================
 third_party/
+vendor/
 
-# Project-specific
+# =============================================================================
+# Project-Specific
+# =============================================================================
 Offline_Research/
 projects/
 SystemBackups/
+backups/
+*.bak
+*.backup
+
+# =============================================================================
+# Terraform
+# =============================================================================
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock
+.terraform/
+.terraform.lock.hcl
+
+# =============================================================================
+# Docker
+# =============================================================================
+.docker/
+docker-compose.override.yml
+
+# =============================================================================
+# Kubernetes
+# =============================================================================
+*.kubeconfig
+kubeconfig
+
+# =============================================================================
+# Logs and Temp
+# =============================================================================
+*.log
+logs/
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+
+# =============================================================================
+# Database
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# =============================================================================
+# Environment Files
+# =============================================================================
+.env
+.env.local
+.env.*.local
+*.env
