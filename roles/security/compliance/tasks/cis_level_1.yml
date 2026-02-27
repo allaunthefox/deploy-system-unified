@@ -3,7 +3,7 @@
 
 - name: "CIS 1.1.1 | Ensure mounting of squashfs filesystems is disabled"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     modprobe -n -v squashfs 2>&1 | grep -c "install /bin/true" || echo "0"
   register: cis_1_1_1_result
   changed_when: false

@@ -99,10 +99,10 @@
       failed_when: false
     - name: Set sticky bit on world-writable directories
       ansible.builtin.shell: |
-        set -o pipefail
+        
         find / -type d -perm -0002 ! -perm -1000 ! -path '/proc*' ! -path '/sys*' ! -path '/dev*' ! -path '/run*' -exec chmod +t {} \; -print | wc -l
       args:
-        executable: /bin/bash
+        executable: /bin/sh
       become: true
       register: sticky_result
       changed_when: (sticky_result.stdout | default('0') | trim | int) > 0
@@ -360,12 +360,12 @@
 
 - name: "NIST AC-18 | 540004 | Disable wireless interfaces"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     for iface in $(iw dev 2>/dev/null | grep -i interface | awk '{print $2}'); do
       ip link set "$iface" down 2>/dev/null || true
     done
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   become: true
   changed_when: false
   failed_when: false

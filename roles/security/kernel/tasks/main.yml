@@ -177,8 +177,8 @@
   block:
     - name: Check if Landlock is supported
       ansible.builtin.shell:
-        cmd: set -o pipefail && cat /proc/filesystems | grep -q landlock && echo "supported" || echo "not_supported"
-        executable: /bin/bash
+        cmd:  cat /proc/filesystems | grep -q landlock && echo "supported" || echo "not_supported"
+        executable: /bin/sh
       register: landlock_check
       changed_when: false
       failed_when: false
@@ -304,8 +304,8 @@
   block:
     - name: Check if TOMOYO is supported
       ansible.builtin.shell:
-        cmd: set -o pipefail && cat /proc/filesystems | grep -q tomoyo && echo "supported" || echo "not_supported"
-        executable: /bin/bash
+        cmd:  cat /proc/filesystems | grep -q tomoyo && echo "supported" || echo "not_supported"
+        executable: /bin/sh
       register: tomoyo_check
       changed_when: false
       failed_when: false
