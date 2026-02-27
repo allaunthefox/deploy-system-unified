@@ -1,0 +1,51 @@
+# =============================================================================
+# GitHub Linguist - Language Statistics
+# =============================================================================
+
+# Exclude vendored Ansible collections from language stats
+.ansible/** linguist-vendored=true
+.ansible/** linguist-documentation=false
+
+# Exclude virtual environments
+.venv/** linguist-vendored=true
+venv/** linguist-vendored=true
+.eggs/** linguist-vendored=true
+*.egg-info/** linguist-vendored=true
+
+# Exclude compiled Python files
+*.pyc linguist-vendored=true
+*.pyo linguist-vendored=true
+*.pyd linguist-vendored=true
+__pycache__/** linguist-vendored=true
+
+# Exclude node_modules
+node_modules/** linguist-vendored=true
+
+# Exclude third-party vendored code
+third_party/** linguist-vendored=true
+
+# Exclude generated documentation
+wiki_audit/** linguist-documentation=true
+wiki_clean_sync/** linguist-documentation=true
+wiki_crowdsec_audit/** linguist-documentation=true
+wiki_final/** linguist-documentation=true
+
+# Exclude build artifacts
+dist/** linguist-vendored=true
+build/** linguist-vendored=true
+*.tar.xz linguist-vendored=true
+
+# =============================================================================
+# Diff Settings
+# =============================================================================
+
+# Ansible vault files should not show diffs
+.ansible-vault-password diff=0
+.vault_pass diff=0
+*.secrets.baseline diff=0
+
+# Binary files
+*.pyc binary
+*.pyo binary
+*.pyd binary
+*.so binary
