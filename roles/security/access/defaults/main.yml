@@ -13,7 +13,7 @@ ssh_match_rules: []
 access_admin_user: "admin"
 # Store a hashed password (e.g., $6$... or $y$...) in encrypted secrets.
 access_admin_password_hash: ""
-access_admin_password_enforce: false
+access_admin_password_enforce: true  # SECURITY: Enforce password policy by default
 access_admin_password_placeholders:
   - "admin_password_change_me"
   - "CHANGE_ME_IN_SOPS"

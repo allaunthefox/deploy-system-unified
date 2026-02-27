@@ -1,4 +1,8 @@
 # Database Stack Values
+# =============================================================================
+# SECURITY WARNING: Passwords MUST be set via secrets management
+# Do NOT commit passwords to version control
+# =============================================================================
 
 # PostgreSQL
 postgresql:
@@ -10,7 +14,9 @@ postgresql:
     port: 5432
   database: app
   username: appuser
-  password: changeme  # Change in production
+  # CRITICAL: Set password via secrets or helm --set postgresql.password=<secure>
+  # Example: helm install ... --set postgresql.password=$(openssl rand -base64 32)
+  password: ""  # MUST be overridden - deployment will fail if empty
   persistence:
     enabled: true
     size: 10Gi
@@ -23,7 +29,9 @@ redis:
     tag: "7"
   service:
     port: 6379
-  password: changeme  # Change in production
+  # CRITICAL: Set password via secrets or helm --set redis.password=<secure>
+  # Example: helm install ... --set redis.password=$(openssl rand -base64 32)
+  password: ""  # MUST be overridden - deployment will fail if empty
   persistence:
     enabled: true
     size: 5Gi
