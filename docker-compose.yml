@@ -1,18 +1,132 @@
-# ⚠️ DEPRECATED: Docker Compose Configuration
+---
+# Deploy-System-Unified - Docker Compose (Podman Docker Compatibility Mode)
 #
-# This project uses Podman as the default and preferred container runtime.
-# Docker Compose is provided for legacy compatibility only.
+# This file works with Podman's Docker compatibility mode.
+# Podman emulates the Docker socket for seamless compatibility.
 #
-# RECOMMENDED: Use Podman Quadlet instead
-#   1. Copy .container file: sudo cp docker/deploy-system.container /etc/containers/systemd/
-#   2. Copy .volume files: sudo cp docker/*.volume /etc/containers/systemd/volumes/
-#   3. Reload systemd: sudo systemctl daemon-reload
-#   4. Start service: sudo systemctl start deploy-system
+# Prerequisites:
+#   1. Enable Podman Docker compatibility:
+#      sudo ./docker/setup-podman-docker-compat.sh
 #
-# ALTERNATIVE: Use Podman kube play
-#   podman play kube docker/deploy-system.yaml
+#   2. Or manually:
+#      sudo systemctl enable --now podman-docker-compat.socket
 #
-# If you must use Docker Compose (not recommended):
-#   docker-compose -f docker-compose.yml.legacy up -d
+# Usage:
+#   docker-compose up -d
+#   docker-compose ps
+#   docker-compose logs -f
 #
-# See: docker/deploy-system.container for Podman-native configuration
+# The same commands work whether backend is Docker or Podman!
+
+services:
+  # Main deployment service
+  deploy-system:
+    build:
+      context: .
+      dockerfile: docker/Containerfile
+    image: localhost/deploy-system-unified:latest
+    
+    # Container name for easy reference
+    container_name: deploy-system
+    
+    # Restart policy (availability)
+    restart: unless-stopped
+    
+    # Run as non-root user (least privilege)
+    user: "1000:1000"
+    
+    # Resource limits (prevent resource exhaustion)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    
+    # Environment variables
+    environment:
+      - INSTALL_DIR=/opt/deploy-system
+      - CONFIG_DIR=/opt/deploy-system/config
+      - LOG_DIR=/opt/deploy-system/logs
+      - TZ=UTC
+    
+    # Volume mounts (persistent data)
+    volumes:
+      # Configuration (read-write for updates)
+      - deploy-config:/opt/deploy-system/config
+      # Logs (read-write for logging)
+      - deploy-logs:/opt/deploy-system/logs
+      # Data/checkpoints (read-write)
+      - deploy-data:/opt/deploy-system/data
+      # Inventory (mount from host)
+      - ./inventory:/opt/deploy-system/inventory:ro
+      # Playbooks (read-only for security)
+      - ./playbooks:/opt/deploy-system/playbooks:ro
+      # Roles (read-only for security)
+      - ./roles:/opt/deploy-system/roles:ro
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Read-only root filesystem (with tmpfs for writable dirs)
+    read_only: true
+    tmpfs:
+      - /tmp:size=100M,mode=1777
+      - /var/tmp:size=50M,mode=1777
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "/opt/deploy-system/entrypoint.sh", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Network mode
+    network_mode: bridge
+    
+    # Logging configuration
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Labels for organization
+    labels:
+      - "com.deploy-system.project=deploy-system-unified"
+      - "com.deploy-system.component=management"
+      - "com.deploy-system.version=1.0.0"
+
+# Named volumes (persistent storage)
+volumes:
+  deploy-config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./volumes/config
+  
+  deploy-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./volumes/logs
+  
+  deploy-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./volumes/data
+
+# Network configuration
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"

@@ -1,14 +1,61 @@
 # Podman Usage Guide
 
-This project uses **Podman** as the default and preferred container runtime. Docker is supported for legacy compatibility only.
+This project uses **Podman** as the default and preferred container runtime with **Docker compatibility mode** enabled.
 
 ## Why Podman?
 
 - **Rootless by default** - No daemon required, better security
 - **Systemd integration** - Native Quadlet support for service management
-- **Docker-compatible** - Same CLI commands, same images
-- **No socket exposure** - No `/var/run/podman/podman.sock` security risk
+- **Docker-compatible** - Same CLI commands, same images via compatibility socket
+- **No socket exposure** - Optional Docker socket emulation (on-demand)
 - **Kubernetes-native** - Direct YAML support with `podman play kube`
+
+---
+
+## Docker Compatibility Mode
+
+Podman can emulate the Docker socket for seamless compatibility with existing Docker tools.
+
+### Enable Docker Compatibility
+
+```bash
+# Run the setup script
+sudo ./docker/setup-podman-docker-compat.sh
+
+# Or manually enable the socket
+sudo systemctl enable --now podman-docker-compat.socket
+```
+
+### Use Docker Commands with Podman
+
+Once compatibility mode is enabled:
+
+```bash
+# All Docker CLI commands work
+docker ps
+docker images
+docker-compose up -d
+docker-compose ps
+
+# Behind the scenes, Podman handles the requests
+# No Docker daemon required!
+```
+
+### Verify Compatibility
+
+```bash
+# Check if Docker socket is available
+ls -la /var/run/docker.sock
+# Output: srw-rw---- 1 root docker ... /var/run/docker.sock
+
+# Test Docker CLI
+docker version
+# Shows Podman version with Docker API compatibility
+
+# Test docker-compose
+docker-compose ps
+# Shows Quadlet-managed containers
+```
 
 ---
 

@@ -1,0 +1,14 @@
+[Unit]
+Description=Podman Docker Compatibility Socket
+Documentation=man:podman-system-service(1)
+Requires=podman.socket
+After=podman.socket
+
+[Socket]
+ListenStream=/var/run/docker.sock
+SocketMode=0660
+SocketUser=root
+SocketGroup=docker
+
+[Install]
+WantedBy=sockets.target

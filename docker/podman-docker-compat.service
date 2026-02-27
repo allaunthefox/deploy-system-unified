@@ -1,0 +1,22 @@
+[Unit]
+Description=Podman Docker Compatibility Service
+Documentation=man:podman-system-service(1)
+After=network-online.target podman.socket
+Wants=network-online.target
+
+[Service]
+Type=notify
+Environment=PODMAN_SYSTEMD_UNIT=%n
+ExecStart=/usr/bin/podman system service --time=0 unix:///var/run/docker.sock
+ExecReload=/bin/kill -s HUP $MAINPID
+TimeoutSec=120
+TimeoutStopSec=30
+LimitNOFILE=infinity
+LimitNPROC=infinity
+Delegate=yes
+KillMode=mixed
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target default.target
