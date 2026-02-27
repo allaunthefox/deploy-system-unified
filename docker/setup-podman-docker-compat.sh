@@ -47,12 +47,35 @@ check_root() {
 
 # Detect init system
 detect_init() {
-    if command -v systemctl >/dev/null 2>&1; then
+    if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
         echo "systemd"
+    elif [ -d /etc/init.d ] && command -v service >/dev/null 2>&1; then
+        echo "sysvinit"
+    elif [ -d /etc/init.d ] && command -v rc-service >/dev/null 2>&1; then
+        echo "openrc"
     else
-        log_error "Only systemd is supported for Docker compatibility mode"
-        exit 1
+        echo "unknown"
     fi
+}
+
+# Validate init system
+validate_init() {
+    init_system="$1"
+    case "$init_system" in
+        systemd)
+            log_info "Init system: systemd (fully supported)"
+            return 0
+            ;;
+        sysvinit|openrc)
+            log_warn "Init system: ${init_system} (Docker compatibility may require manual configuration)"
+            return 0
+            ;;
+        *)
+            log_error "Unknown init system - Docker compatibility setup may fail"
+            log_error "Continuing anyway..."
+            return 0
+            ;;
+    esac
 }
 
 # Install Podman if not present
@@ -211,6 +234,7 @@ show_summary() {
 main() {
     check_root
     init_system=$(detect_init)
+    validate_init "${init_system}"
     install_podman
     create_docker_group
     install_systemd_services

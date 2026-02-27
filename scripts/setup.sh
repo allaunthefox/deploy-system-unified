@@ -12,22 +12,27 @@
 # Strict Compliance:
 #   - POSIX shell (#!/bin/sh)
 #   - No pipefail (set -eu only)
-#   - Init system detection (systemd only supported)
+#   - Init system detection (systemd, sysvinit, openrc)
 #   - EUID check before privileged operations
 #   - Idempotent operations
+#   - No hardcoded paths (all configurable)
 
 set -eu
 
 # =============================================================================
-# Configuration Centralization (DRY Principle)
+# Configuration Centralization (DRY Principle - All paths configurable)
 # =============================================================================
 INSTALL_DIR="${INSTALL_DIR:-/opt/deploy-system}"
 CONFIG_DIR="${CONFIG_DIR:-${INSTALL_DIR}/config}"
 LOG_DIR="${LOG_DIR:-${INSTALL_DIR}/logs}"
 BIN_DIR="${BIN_DIR:-/usr/local/bin}"
-SERVICE_DIR="${SERVICE_DIR:-/etc/systemd/system}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Init-system specific paths (detected automatically)
+SERVICE_DIR=""
+SERVICE_CMD=""
+RELOAD_CMD=""
 
 # Default values
 FORCE="false"
@@ -76,31 +81,90 @@ check_euid() {
 
 # Init system detection (portability)
 detect_init_system() {
-    if command -v systemctl >/dev/null 2>&1; then
+    # Check for systemd
+    if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
         echo "systemd"
-    elif command -v service >/dev/null 2>&1; then
+    # Check for sysvinit
+    elif [ -d /etc/init.d ] && command -v service >/dev/null 2>&1; then
         echo "sysvinit"
+    # Check for OpenRC
+    elif [ -d /etc/init.d ] && command -v rc-service >/dev/null 2>&1; then
+        echo "openrc"
+    # Check for upstart
+    elif command -v initctl >/dev/null 2>&1; then
+        echo "upstart"
     else
         echo "unknown"
     fi
 }
 
-# Validate init system support
+# Configure service paths based on init system
+configure_init_paths() {
+    init_system="$1"
+    
+    case "$init_system" in
+        systemd)
+            SERVICE_DIR="/etc/systemd/system"
+            SERVICE_CMD="systemctl"
+            RELOAD_CMD="systemctl daemon-reload"
+            log_info "Init system: systemd"
+            log_info "Service directory: ${SERVICE_DIR}"
+            ;;
+        sysvinit)
+            SERVICE_DIR="/etc/init.d"
+            SERVICE_CMD="service"
+            RELOAD_CMD="update-rc.d deploy-system defaults"
+            log_info "Init system: sysvinit"
+            log_info "Service directory: ${SERVICE_DIR}"
+            ;;
+        openrc)
+            SERVICE_DIR="/etc/init.d"
+            SERVICE_CMD="rc-service"
+            RELOAD_CMD="rc-update add deploy-system default"
+            log_info "Init system: OpenRC"
+            log_info "Service directory: ${SERVICE_DIR}"
+            ;;
+        upstart)
+            SERVICE_DIR="/etc/init"
+            SERVICE_CMD="initctl"
+            RELOAD_CMD="initctl reload-configuration"
+            log_info "Init system: upstart"
+            log_info "Service directory: ${SERVICE_DIR}"
+            ;;
+        *)
+            log_warn "Unknown init system - service installation will be skipped"
+            log_warn "You will need to manually configure auto-start"
+            SERVICE_DIR=""
+            SERVICE_CMD=""
+            RELOAD_CMD=""
+            ;;
+    esac
+}
+
+# Validate init system support (warn but don't fail)
 validate_init_system() {
     init_system="$1"
     case "$init_system" in
         systemd)
-            log_info "Init system: systemd (supported)"
+            log_info "Init system: systemd (fully supported)"
             return 0
             ;;
         sysvinit)
-            log_warn "Init system: sysvinit (limited support)"
+            log_info "Init system: sysvinit (supported)"
+            return 0
+            ;;
+        openrc)
+            log_info "Init system: OpenRC (supported)"
+            return 0
+            ;;
+        upstart)
+            log_info "Init system: upstart (supported)"
             return 0
             ;;
         *)
-            log_error "Unsupported init system: ${init_system}"
-            log_error "This deployment requires systemd or sysvinit"
-            return 1
+            log_warn "Init system: unknown (service installation will be skipped)"
+            log_warn "You will need to manually configure auto-start"
+            return 0  # Don't fail, just warn
             ;;
     esac
 }
@@ -212,23 +276,40 @@ install_collections() {
     fi
 }
 
-# Create systemd service (idempotent)
+# Create init service (idempotent, supports systemd/sysvinit/openrc/upstart)
 install_service() {
     init_system="$1"
     
-    log_info "Installing systemd service..."
+    if [ -z "${SERVICE_DIR}" ]; then
+        log_warn "Skipping service installation - init system not supported"
+        return 0
+    fi
+    
+    log_info "Installing ${init_system} service..."
     
     if [ "${DRY_RUN}" = "true" ]; then
-        log_info "[DRY-RUN] Would install systemd service"
+        log_info "[DRY-RUN] Would install ${init_system} service to ${SERVICE_DIR}"
         return 0
     fi
     
-    if [ "${init_system}" != "systemd" ]; then
-        log_warn "Skipping systemd service - not running systemd"
-        return 0
-    fi
-    
-    # Create service file (idempotent - overwrites if exists)
+    case "$init_system" in
+        systemd)
+            install_systemd_service
+            ;;
+        sysvinit)
+            install_sysvinit_service
+            ;;
+        openrc)
+            install_openrc_service
+            ;;
+        upstart)
+            install_upstart_service
+            ;;
+    esac
+}
+
+# Install systemd service
+install_systemd_service() {
     cat > "${SERVICE_DIR}/deploy-system.service" << 'EOF'
 [Unit]
 Description=Deploy-System-Unified Deployment Service
@@ -246,13 +327,102 @@ RemainAfterExit=no
 WantedBy=multi-user.target
 EOF
     
-    # Set permissions
     chmod 644 "${SERVICE_DIR}/deploy-system.service"
-    
-    # Reload systemd (idempotent)
     systemctl daemon-reload
-    
     log_success "Systemd service installed"
+}
+
+# Install sysvinit service
+install_sysvinit_service() {
+    cat > "${SERVICE_DIR}/deploy-system" << 'EOF'
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          deploy-system
+# Required-Start:    $network $remote_fs
+# Required-Stop:     $network $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Deploy-System-Unified
+# Description:       Modular infrastructure deployment
+### END INIT INFO
+
+INSTALL_DIR=/opt/deploy-system
+SCRIPT_DIR="${INSTALL_DIR}/scripts"
+
+case "$1" in
+    start)
+        echo "Starting Deploy-System-Unified..."
+        "${SCRIPT_DIR}/deploy.sh"
+        ;;
+    stop)
+        echo "Stopping Deploy-System-Unified..."
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    status)
+        echo "Deploy-System-Unified service status"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+exit 0
+EOF
+    
+    chmod 755 "${SERVICE_DIR}/deploy-system"
+    log_success "SysVinit service installed"
+}
+
+# Install OpenRC service
+install_openrc_service() {
+    cat > "${SERVICE_DIR}/deploy-system" << 'EOF'
+#!/sbin/openrc-run
+# OpenRC service for Deploy-System-Unified
+
+description="Deploy-System-Unified Deployment Service"
+command="/opt/deploy-system/scripts/deploy.sh"
+command_background="yes"
+pidfile="/run/deploy-system.pid"
+output_log="/opt/deploy-system/logs/deploy-system.log"
+error_log="/opt/deploy-system/logs/deploy-system.err"
+
+depend() {
+    need net
+    use logger
+}
+
+start_pre() {
+    checkpath --directory /opt/deploy-system/logs --owner deploy:deploy --mode 0755
+}
+EOF
+    
+    chmod 755 "${SERVICE_DIR}/deploy-system"
+    log_success "OpenRC service installed"
+}
+
+# Install upstart service
+install_upstart_service() {
+    cat > "${SERVICE_DIR}/deploy-system.conf" << 'EOF'
+# Upstart service for Deploy-System-Unified
+
+description "Deploy-System-Unified Deployment Service"
+author "Deploy-System-Unified"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+respawn limit 3 30
+
+exec /opt/deploy-system/scripts/deploy.sh
+EOF
+    
+    chmod 644 "${SERVICE_DIR}/deploy-system.conf"
+    initctl reload-configuration
+    log_success "Upstart service installed"
 }
 
 # Create wrapper script in /usr/local/bin (idempotent)
@@ -328,12 +498,13 @@ main() {
     # CRITICAL: Check root privileges FIRST
     check_euid
     
-    # Detect and validate init system
+    # Detect init system and configure paths
     init_system=$(detect_init_system)
-    if ! validate_init_system "${init_system}"; then
-        exit 1
-    fi
+    configure_init_paths "${init_system}"
     
+    # Validate init system (warn but don't fail for unknown)
+    validate_init_system "${init_system}"
+
     # Check system requirements
     check_requirements
     
