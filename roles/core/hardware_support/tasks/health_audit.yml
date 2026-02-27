@@ -4,7 +4,7 @@
 
 - name: "ISO 27040 | 900003 | Deep Disk Health Audit (SMART)"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     # Scan all physical disks for pre-failure attributes
     for disk in $(lsblk -dno NAME,TYPE | grep disk | awk '{print $1}'); do
       if command -v smartctl >/dev/null 2>&1; then
@@ -13,7 +13,7 @@
       fi
     done
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: disk_failure_audit
   changed_when: false
   failed_when: false

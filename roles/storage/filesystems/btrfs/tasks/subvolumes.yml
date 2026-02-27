@@ -19,7 +19,7 @@
   changed_when: false
   failed_when: false
   args:
-    pipefail: true
+    
   become: true
   when: item.stdout == "btrfs"
 

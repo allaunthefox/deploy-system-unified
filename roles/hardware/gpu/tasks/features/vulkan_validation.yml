@@ -46,7 +46,7 @@
 
 - name: Run Vulkan Information Probe
   tags: [hardware, gpu, remediate]
-  ansible.builtin.shell: "set -o pipefail && (vulkaninfo --summary || vkinfo --summary) | grep -i 'Devices:' -A 5"
+  ansible.builtin.shell: " (vulkaninfo --summary || vkinfo --summary) | grep -i 'Devices:' -A 5"
   register: vulkan_info
   changed_when: false
   failed_when: false

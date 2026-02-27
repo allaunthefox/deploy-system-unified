@@ -7,7 +7,7 @@
   register: physical_swap_count
   changed_when: false
   args:
-    pipefail: true
+    
   become: true
   tags:
     - cis_3_4_1

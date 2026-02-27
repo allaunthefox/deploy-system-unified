@@ -16,7 +16,7 @@
   register: existing_ssh_port
   changed_when: false
   args:
-    pipefail: true
+    
   when: ssh_randomize_port | default(false) | bool
   become: true
   tags:

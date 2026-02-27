@@ -13,4 +13,4 @@
   changed_when: false
   failed_when: false
   args:
-    pipefail: true
+    

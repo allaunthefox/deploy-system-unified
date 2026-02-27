@@ -19,7 +19,7 @@
 - name: Run Vulkan Smoke Test Container
   tags: [hardware, gpu, remediate]
   ansible.builtin.shell: |
-    set -o pipefail
+    
     {% set pkg_cmd = "apk add --no-cache vulkan-utils" if ansible_facts['os_family'] == 'Alpine' else "apt-get update && apt-get install -y vulkan-tools" %}
     podman run --rm \
       --security-opt label=disable \

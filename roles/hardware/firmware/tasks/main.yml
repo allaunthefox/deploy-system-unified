@@ -135,7 +135,7 @@
 
 - name: "CIS 3.5.11 | STIG V-230590 | NIST SC-43 | NIST SP 800-193 | Action 800510 | Verify Secure Boot Status"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     if command -v mokutil >/dev/null 2>&1; then
       mokutil --sb-state
     elif [ -d /sys/firmware/efi ]; then
@@ -146,7 +146,7 @@
       exit 1
     fi
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: hardware_secure_boot_status
   changed_when: false
   become: true
