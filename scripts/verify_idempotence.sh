@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Stability 2026 - Idempotence Verification Tool
 # This script runs a playbook and ensures that a subsequent run produces zero changes.
 
-set -euo pipefail
+set -eu
 
-PLAYBOOK=$1
-INVENTORY=${2:-inventory/local.ini}
+PLAYBOOK="$1"
+INVENTORY="${2:-inventory/local.ini}"
 
 if [ -z "$PLAYBOOK" ]; then
     echo "Usage: $0 <playbook> [inventory]"

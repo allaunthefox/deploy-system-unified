@@ -59,7 +59,7 @@
       become: true
       changed_when: false
       args:
-        pipefail: true
+        
       when: gpu_stack_egpu_auto_enroll | default(false)
 
 # --- OCuLink Config ---

@@ -132,7 +132,7 @@
   changed_when: false
   failed_when: false
   args:
-    pipefail: true
+    
   when:
     - k8s_gpu_device_plugins_enabled
 - name: Debug GPU resources available in Kubernetes

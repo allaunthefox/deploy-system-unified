@@ -11,9 +11,9 @@
 
 - name: Check for IOMMU (Kernel level)
   tags: [hardware, gpu, audit]
-  ansible.builtin.shell: "set -o pipefail && (dmesg | grep -Ei 'IOMMU|VT-d|AMD-Vi' | grep -i 'enabled' || [ -d /sys/class/iommu ])"
+  ansible.builtin.shell: " (dmesg | grep -Ei 'IOMMU|VT-d|AMD-Vi' | grep -i 'enabled' || [ -d /sys/class/iommu ])"
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: iommu_check
   changed_when: false
   failed_when: false
@@ -26,9 +26,9 @@
 - name: Detect SR-IOV Capability
   tags: [hardware, gpu, audit]
   # Check if any detected device supports SR-IOV via sysfs
-  ansible.builtin.shell: "set -o pipefail && find /sys/devices -name 'sriov_numvfs' | grep -q 'sriov_numvfs'"
+  ansible.builtin.shell: " find /sys/devices -name 'sriov_numvfs' | grep -q 'sriov_numvfs'"
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: sriov_sysfs_check
   changed_when: false
   failed_when: false

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Helper script to perform the same steps executed by the CI workflows
 # so that developers can run the check locally and be confident the
 # actions runner will see the same behavior.

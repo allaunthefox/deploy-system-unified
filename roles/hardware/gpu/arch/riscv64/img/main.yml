@@ -16,7 +16,7 @@
   changed_when: false
   failed_when: false
   args:
-    pipefail: true
+    
 
 - name: Warning for IMG GPU support
   ansible.builtin.debug:

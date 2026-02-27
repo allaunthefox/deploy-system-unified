@@ -161,7 +161,7 @@
   changed_when: false
   failed_when: false
   args:
-    pipefail: true
+    
   become: true
   tags:
     - cis_3_2_10

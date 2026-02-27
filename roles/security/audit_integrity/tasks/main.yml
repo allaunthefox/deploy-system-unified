@@ -112,10 +112,10 @@
 
 - name: "CIS 4.2.1.3 | STIG V-230251 | NIST AU-12 | ISO 27001 §12.4 | Action 520030 | Initialize Forward Secure Sealing (FSS) keys"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     journalctl --setup-keys --force 2>&1 | grep -E "[0-9a-f]{6}-[0-9a-f]{6}" | tail -n 1
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: security_audit_integrity_fss_verification_key_output
   become: true
   changed_when: security_audit_integrity_fss_verification_key_output.rc == 0

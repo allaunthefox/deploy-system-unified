@@ -2,7 +2,7 @@
 # Enhanced security scanning for Deploy-System-Unified
 - name: "ISO 27001 §12.2 | Action 520010 | Run comprehensive security scan (idempotent)"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     scan_results=""
     
     # REQUIRE Trivy
@@ -33,8 +33,8 @@
     - scanning
     - audit
   args:
-    executable: /bin/bash
-    pipefail: true
+    executable: /bin/sh
+    
   when: not security_scanning_ephemeral_skip | bool
 
 - name: Parse security scan results (idempotent)

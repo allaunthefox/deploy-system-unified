@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #===============================================================================
 # chaos_monkey.sh - Chaos Testing for Deploy-System-Unified
 #===============================================================================
@@ -8,12 +8,12 @@
 # - K8s playbook (various configurations)
 #===============================================================================
 
-set -euo pipefail
+set -eu
 
 # Colors
 
 # determine repository root (directory above scripts/)
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -23,10 +23,10 @@ TESTS_PASSED=0
 TESTS_FAILED=0
 TESTS_SKIPPED=0
 
-log_pass() { echo -e "${GREEN}[PASS]${NC} $1"; ((TESTS_PASSED++)); }
-log_fail() { echo -e "${RED}[FAIL]${NC} $1"; ((TESTS_FAILED++)); }
-log_skip() { echo -e "${YELLOW}[SKIP]${NC} $1"; ((TESTS_SKIPPED++)); }
-log_info() { echo -e "[INFO] $1"; }
+log_pass() { printf "${GREEN}[PASS]${NC} %s\n" "$1"; TESTS_PASSED=$((TESTS_PASSED + 1)); }
+log_fail() { printf "${RED}[FAIL]${NC} %s\n" "$1"; TESTS_FAILED=$((TESTS_FAILED + 1)); }
+log_skip() { printf "${YELLOW}[SKIP]${NC} %s\n" "$1"; TESTS_SKIPPED=$((TESTS_SKIPPED + 1)); }
+log_info() { printf "[INFO] %s\n" "$1"; }
 
 echo "========================================"
 echo "   CHAOS MONKEY TEST SUITE"
@@ -69,21 +69,21 @@ log_info "Test 3: Benchmark script with various inputs"
 cd "$REPO_ROOT"
 
 # Test with podman (will fail if podman not available, but should handle gracefully)
-if bash scripts/benchmark/benchmark_metrics.sh podman 1 2>&1 | grep -q "ERROR\| dependency\|Missing"; then
+if /bin/sh scripts/benchmark/benchmark_metrics.sh podman 1 2>&1 | grep -q "ERROR\| dependency\|Missing"; then
     log_pass "Benchmark handles missing podman gracefully"
 else
     log_skip "Benchmark podman test - depends on environment"
 fi
 
 # Test with k8s (will fail if kubectl not available)
-if bash scripts/benchmark/benchmark_metrics.sh k8s 1 2>&1 | grep -q "ERROR\| dependency\|Missing"; then
+if /bin/sh scripts/benchmark/benchmark_metrics.sh k8s 1 2>&1 | grep -q "ERROR\| dependency\|Missing"; then
     log_pass "Benchmark handles missing kubectl gracefully"
 else
     log_skip "Benchmark k8s test - depends on environment"
 fi
 
 # Test help output
-if bash scripts/benchmark/benchmark_metrics.sh --help >/dev/null 2>&1; then
+if /bin/sh scripts/benchmark/benchmark_metrics.sh --help >/dev/null 2>&1; then
     log_pass "Benchmark help works"
 else
     log_fail "Benchmark help failed"
@@ -215,15 +215,15 @@ echo ""
 echo "========================================"
 echo "   CHAOS TEST SUMMARY"
 echo "========================================"
-echo -e "Passed: ${GREEN}$TESTS_PASSED${NC}"
-echo -e "Failed: ${RED}$TESTS_FAILED${NC}"
-echo -e "Skipped: ${YELLOW}$TESTS_SKIPPED${NC}"
+printf "Passed: ${GREEN}%s${NC}\n" "$TESTS_PASSED"
+printf "Failed: ${RED}%s${NC}\n" "$TESTS_FAILED"
+printf "Skipped: ${YELLOW}%s${NC}\n" "$TESTS_SKIPPED"
 echo ""
 
-if [ $TESTS_FAILED -eq 0 ]; then
-    echo -e "${GREEN}All chaos tests passed!${NC}"
+if [ "$TESTS_FAILED" -eq 0 ]; then
+    printf "%s\n" "${GREEN}All chaos tests passed!${NC}"
     exit 0
 else
-    echo -e "${RED}Some tests failed. Review output above.${NC}"
+    printf "%s\n" "${RED}Some tests failed. Review output above.${NC}"
     exit 1
 fi

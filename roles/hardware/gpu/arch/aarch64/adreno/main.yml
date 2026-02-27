@@ -38,7 +38,7 @@
   register: adreno_module
   changed_when: false
   args:
-    pipefail: true
+    
   failed_when: false
 
 - name: Report Adreno Status

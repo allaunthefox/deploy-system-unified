@@ -36,7 +36,7 @@
   register: panfrost_check
   changed_when: false
   args:
-    pipefail: true
+    
   failed_when: false
 - name: Report Panfrost status
   ansible.builtin.debug:

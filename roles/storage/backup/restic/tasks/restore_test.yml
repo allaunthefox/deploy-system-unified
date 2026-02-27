@@ -13,12 +13,12 @@
 
 - name: "ISO 27040 | Action 900003 | Perform Sample Restore (Latest Snapshot)"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     restic -r "{{ restic_repo }}" -p "{{ restic_config_dir }}/password" restore latest \
       --target "{{ restic_restore_test_path }}" \
       --include "{{ restic_restore_test_subset }}"
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   become: true
   register: restic_restore_result
   changed_when: false
@@ -50,7 +50,7 @@
     find "{{ restic_restore_test_path }}" -type f -exec shred -u {} \;
     rm -rf "{{ restic_restore_test_path }}"
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   become: true
   when: 
     - restic_restore_test_cleanup | bool

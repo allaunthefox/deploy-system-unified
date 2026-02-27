@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 ENFORCE_SCRIPT="$(dirname "$0")/enforce_style_guide.sh"
 REPORT_DIR="$(dirname "$0")"
 

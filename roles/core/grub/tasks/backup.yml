@@ -48,24 +48,24 @@
 
 - name: Compute SHA256 hash of GRUB config
   ansible.builtin.shell:
-    cmd: set -o pipefail && sha256sum {{ core_grub_config_path }} | awk '{print $1}'
-    executable: /bin/bash
+    cmd:  sha256sum {{ core_grub_config_path }} | awk '{print $1}'
+    executable: /bin/sh
   register: grub_config_hash_sha256
   changed_when: false
   become: true
 
 - name: Compute SHA512 hash of GRUB config
   ansible.builtin.shell:
-    cmd: set -o pipefail && sha512sum {{ core_grub_config_path }} | awk '{print $1}'
-    executable: /bin/bash
+    cmd:  sha512sum {{ core_grub_config_path }} | awk '{print $1}'
+    executable: /bin/sh
   register: grub_config_hash_sha512
   changed_when: false
   become: true
 
 - name: Compute BLAKE3 hash of GRUB config
   ansible.builtin.shell:
-    cmd: set -o pipefail && b3sum {{ core_grub_config_path }} | awk '{print $1}'
-    executable: /bin/bash
+    cmd:  b3sum {{ core_grub_config_path }} | awk '{print $1}'
+    executable: /bin/sh
   register: grub_config_hash_b3
   changed_when: false
   become: true
@@ -118,10 +118,10 @@
     - name: Encrypt GRUB backup with GPG
       ansible.builtin.shell:
         cmd: |
-          set -o pipefail && echo "{{ core_grub_backup_gpg_recipient }}" | gpg --batch --yes --encrypt \
+           echo "{{ core_grub_backup_gpg_recipient }}" | gpg --batch --yes --encrypt \
             --recipient "{{ core_grub_backup_gpg_recipient }}" \
             --output "{{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg" -
-        executable: /bin/bash
+        executable: /bin/sh
       args:
         stdin: "{{ grub_config_content.content | b64decode }}"
       become: true
@@ -129,16 +129,16 @@
 
     - name: Compute SHA256 hash of encrypted backup
       ansible.builtin.shell:
-        cmd: set -o pipefail && sha256sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'
-        executable: /bin/bash
+        cmd:  sha256sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'
+        executable: /bin/sh
       register: grub_encrypted_hash_sha256
       changed_when: false
       become: true
 
     - name: Compute SHA512 hash of encrypted backup
       ansible.builtin.shell:
-        cmd: set -o pipefail && sha512sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'
-        executable: /bin/bash
+        cmd:  sha512sum {{ core_grub_backup_dir }}/grub.default.{{ _backup_timestamp }}.gpg | awk '{print $1}'
+        executable: /bin/sh
       register: grub_encrypted_hash_sha512
       changed_when: false
       become: true

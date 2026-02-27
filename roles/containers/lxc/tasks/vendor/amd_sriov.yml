@@ -14,7 +14,7 @@
       changed_when: false
       failed_when: false
       args:
-        pipefail: true
+        
       become: true
     - name: Parse AMD SR-IOV devices
   tags: [containers, lxc, gpu, amd]

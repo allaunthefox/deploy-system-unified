@@ -102,8 +102,8 @@
 
     - name: List Vaultwarden archive contents before extraction
       ansible.builtin.shell:
-        cmd: set -o pipefail && tar -tf "{{ migration_source }}/databases/volumes/vaultwarden.tar"
-        executable: /bin/bash
+        cmd:  tar -tf "{{ migration_source }}/databases/volumes/vaultwarden.tar"
+        executable: /bin/sh
       register: _vaultwarden_archive_contents
       changed_when: false
       vars:
@@ -139,8 +139,8 @@
     # Homarr
     - name: List Homarr archive contents before extraction
       ansible.builtin.shell:
-        cmd: set -o pipefail && tar -tf "{{ migration_source }}/databases/volumes/homarr.tar"
-        executable: /bin/bash
+        cmd:  tar -tf "{{ migration_source }}/databases/volumes/homarr.tar"
+        executable: /bin/sh
       register: _homarr_archive_contents
       changed_when: false
       vars:
@@ -176,8 +176,8 @@
     # Wastebin
     - name: List Wastebin archive contents before extraction
       ansible.builtin.shell:
-        cmd: set -o pipefail && tar -tf "{{ migration_source }}/databases/volumes/wastebin.tar"
-        executable: /bin/bash
+        cmd:  tar -tf "{{ migration_source }}/databases/volumes/wastebin.tar"
+        executable: /bin/sh
       register: _wastebin_archive_contents
       changed_when: false
       vars:
@@ -247,8 +247,8 @@
 
     - name: "ISO 27040 | 560023 | Import Authentik Dump"
       ansible.builtin.shell:
-        cmd: set -o pipefail && podman exec -i authentik-db-default psql -U postgres -d authentik < /tmp/authentik.sql
-        executable: /bin/bash
+        cmd:  podman exec -i authentik-db-default psql -U postgres -d authentik < /tmp/authentik.sql
+        executable: /bin/sh
       when: db_check.rc == 0
       register: import_result
       tags:

@@ -20,7 +20,7 @@
 
 - name: "ISO 27001 §8.26 | 410003 | Verify Landlock support in Kernel"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     # Check if landlock is enabled in the kernel
     if dmesg | grep -i landlock > /dev/null 2>&1 || [ -c /dev/landlock ]; then
       exit 0
@@ -28,7 +28,7 @@
       exit 1
     fi
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: landlock_check
   failed_when: false
   changed_when: false

@@ -9,7 +9,7 @@
   failed_when: false
   changed_when: false
   args:
-    pipefail: true
+    
 - name: Report Hetzner Routing Status
   tags: [hardware, virtualization, remediate]
   ansible.builtin.debug:

@@ -2,9 +2,9 @@
 # Handlers for hardware role
 
 - name: reload_udev
-  ansible.builtin.shell: set -o pipefail && udevadm control --reload-rules && udevadm trigger
+  ansible.builtin.shell:  udevadm control --reload-rules && udevadm trigger
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   become: true
   listen: "reload udev"
   changed_when: true

@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 # CI Gate Fixes - Collection Cleanup
 # This script resolves collection version conflicts
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # ISO 27001 §14.2 | Action 520040 | DSU Image Update Sentinel
 # Usage: ./check_image_updates.sh [--json]
 

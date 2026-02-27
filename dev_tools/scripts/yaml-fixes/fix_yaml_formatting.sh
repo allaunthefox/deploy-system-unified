@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Script to fix YAML formatting violations using ripgrep and awk
 

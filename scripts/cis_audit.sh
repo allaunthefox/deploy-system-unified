@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # CIS Benchmark Audit Script
 # Validates system configuration against CIS Ubuntu Linux 22.04 LTS Benchmark
@@ -25,34 +25,34 @@ TOTAL_COUNT=0
 
 # Functions
 log_pass() {
-    echo -e "${GREEN}[PASS]${NC} $1"
-    ((PASS_COUNT++))
-    ((TOTAL_COUNT++))
+    printf "${GREEN}[PASS]${NC} %s\n" "$1"
+    PASS_COUNT=$((PASS_COUNT + 1))
+    TOTAL_COUNT=$((TOTAL_COUNT + 1))
 }
 
 log_fail() {
-    echo -e "${RED}[FAIL]${NC} $1"
-    ((FAIL_COUNT++))
-    ((TOTAL_COUNT++))
+    printf "${RED}[FAIL]${NC} %s\n" "$1"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+    TOTAL_COUNT=$((TOTAL_COUNT + 1))
 }
 
 log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-    ((WARN_COUNT++))
-    ((TOTAL_COUNT++))
+    printf "${YELLOW}[WARN]${NC} %s\n" "$1"
+    WARN_COUNT=$((WARN_COUNT + 1))
+    TOTAL_COUNT=$((TOTAL_COUNT + 1))
 }
 
 check_file_permissions() {
-    local file="$1"
-    local expected_mode="$2"
-    
+    file="$1"
+    expected_mode="$2"
+
     if [ ! -f "$file" ]; then
         log_warn "$file does not exist"
         return
     fi
-    
-    local actual_mode=$(stat -c '%a' "$file" 2>/dev/null)
-    if [ "$actual_mode" == "$expected_mode" ]; then
+
+    actual_mode=$(stat -c '%a' "$file" 2>/dev/null)
+    if [ "$actual_mode" = "$expected_mode" ]; then
         log_pass "$file has correct permissions ($expected_mode)"
     else
         log_fail "$file has incorrect permissions ($actual_mode, expected $expected_mode)"
@@ -60,11 +60,11 @@ check_file_permissions() {
 }
 
 check_sysctl() {
-    local param="$1"
-    local expected="$2"
-    
-    local actual=$(sysctl -n "$param" 2>/dev/null || echo "N/A")
-    if [ "$actual" == "$expected" ]; then
+    param="$1"
+    expected="$2"
+
+    actual=$(sysctl -n "$param" 2>/dev/null || echo "N/A")
+    if [ "$actual" = "$expected" ]; then
         log_pass "$param = $actual"
     else
         log_fail "$param = $actual (expected $expected)"
@@ -72,11 +72,11 @@ check_sysctl() {
 }
 
 check_service() {
-    local service="$1"
-    local expected_state="$2"
-    
-    local state=$(systemctl is-active "$service" 2>/dev/null || echo "inactive")
-    if [ "$state" == "$expected_state" ]; then
+    service="$1"
+    expected_state="$2"
+
+    state=$(systemctl is-active "$service" 2>/dev/null || echo "inactive")
+    if [ "$state" = "$expected_state" ]; then
         log_pass "$service is $expected_state"
     else
         log_fail "$service is $state (expected $expected_state)"
@@ -84,17 +84,17 @@ check_service() {
 }
 
 check_package() {
-    local package="$1"
-    local should_exist="$2"
-    
-    if dpkg -l "$package" &>/dev/null || rpm -q "$package" &>/dev/null; then
-        if [ "$should_exist" == "true" ]; then
+    package="$1"
+    should_exist="$2"
+
+    if dpkg -l "$package" >/dev/null 2>&1 || rpm -q "$package" >/dev/null 2>&1; then
+        if [ "$should_exist" = "true" ]; then
             log_pass "$package is installed"
         else
             log_fail "$package is installed (should be removed)"
         fi
     else
-        if [ "$should_exist" == "false" ]; then
+        if [ "$should_exist" = "false" ]; then
             log_pass "$package is not installed"
         else
             log_fail "$package is not installed"
@@ -173,7 +173,7 @@ audit_logging() {
     check_package "auditd" "true"
     
     # CIS 4.1.2 - Ensure auditd service is enabled
-    if systemctl is-enabled auditd &>/dev/null; then
+    if systemctl is-enabled auditd >/dev/null 2>&1; then
         log_pass "CIS 4.1.2: auditd is enabled"
     else
         log_fail "CIS 4.1.2: auditd is not enabled"
@@ -214,7 +214,7 @@ audit_access_control() {
     fi
     
     # CIS 5.5.5 - Ensure SSH MaxAuthTries is set to 4 or less
-    local max_auth=$(sshd -T 2>/dev/null | grep "^maxauthtries" | awk '{print $2}' || \
+    max_auth=$(sshd -T 2>/dev/null | grep "^maxauthtries" | awk '{print $2}' || \
                     grep "^MaxAuthTries" /etc/ssh/sshd_config 2>/dev/null | awk '{print $2}' || echo "6")
     if [ "$max_auth" -le 4 ] 2>/dev/null; then
         log_pass "CIS 5.5.5: SSH MaxAuthTries is $max_auth"
@@ -226,10 +226,10 @@ audit_access_control() {
 audit_mac() {
     echo ""
     echo "=== Mandatory Access Control (CIS 9.x) ==="
-    
+
     # CIS 9.1.1 - Ensure AppArmor is installed
     check_package "apparmor" "true"
-    
+
     # CIS 9.1.2 - Ensure AppArmor is enabled in bootloader
     if grep -q "apparmor=1" /proc/cmdline 2>/dev/null; then
         log_pass "CIS 9.1.2: AppArmor is enabled in bootloader"
@@ -243,22 +243,22 @@ print_summary() {
     echo "========================================"
     echo "           CIS Audit Summary"
     echo "========================================"
-    echo -e "Total Checks:  $TOTAL_COUNT"
-    echo -e "${GREEN}Passed:${NC}       $PASS_COUNT"
-    echo -e "${RED}Failed:${NC}       $FAIL_COUNT"
-    echo -e "${YELLOW}Warnings:${NC}     $WARN_COUNT"
-    
+    printf "Total Checks:  %s\n" "$TOTAL_COUNT"
+    printf "${GREEN}Passed:${NC}       %s\n" "$PASS_COUNT"
+    printf "${RED}Failed:${NC}       %s\n" "$FAIL_COUNT"
+    printf "${YELLOW}Warnings:${NC}     %s\n" "$WARN_COUNT"
+
     if [ $TOTAL_COUNT -gt 0 ]; then
-        local percentage=$((PASS_COUNT * 100 / TOTAL_COUNT))
+        percentage=$((PASS_COUNT * 100 / TOTAL_COUNT))
         echo ""
-        echo -e "Compliance Score: ${GREEN}${percentage}%${NC}"
-        
-        if [ $percentage -ge 95 ]; then
-            echo -e "Status: ${GREEN}PASS${NC} (CIS Level 1)"
-        elif [ $percentage -ge 80 ]; then
-            echo -e "Status: ${YELLOW}PARTIAL${NC} (Improvement needed)"
+        printf "Compliance Score: ${GREEN}${percentage}%${NC}\n" "$percentage"
+
+        if [ "$percentage" -ge 95 ]; then
+            printf "Status: %s\n" "${GREEN}PASS${NC} (CIS Level 1)"
+        elif [ "$percentage" -ge 80 ]; then
+            printf "Status: %s\n" "${YELLOW}PARTIAL${NC} (Improvement needed)"
         else
-            echo -e "Status: ${RED}FAIL${NC} (Significant gaps)"
+            printf "Status: %s\n" "${RED}FAIL${NC} (Significant gaps)"
         fi
     fi
     echo "========================================"
@@ -266,7 +266,7 @@ print_summary() {
 
 generate_report() {
     mkdir -p "$REPORT_PATH"
-    local report_file="$REPORT_PATH/cis_audit_$(date +%Y%m%d_%H%M%S).json"
+    report_file="$REPORT_PATH/cis_audit_$(date +%Y%m%d_%H%M%S).json"
     
     cat > "$report_file" << EOF
 {
@@ -288,7 +288,7 @@ EOF
 }
 
 # Parse command line arguments
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
     case $1 in
         --level)
             CIS_LEVEL="$2"
@@ -331,13 +331,13 @@ audit_network
 audit_logging
 audit_access_control
 
-if [ "$CIS_LEVEL" == "2" ]; then
+if [ "$CIS_LEVEL" = "2" ]; then
     audit_mac
 fi
 
 print_summary
 
-if [ "$GENERATE_REPORT" == "true" ]; then
+if [ "$GENERATE_REPORT" = "true" ]; then
     generate_report
 fi
 

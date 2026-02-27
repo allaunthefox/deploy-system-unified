@@ -15,7 +15,7 @@
 
 - name: "NIST SP 800-193 | 800510 | Check Secure Boot Status (EFI only)"
   ansible.builtin.shell: |
-    set -o pipefail
+    
     if [ -d /sys/firmware/efi ]; then
       if command -v mokutil >/dev/null 2>&1; then
         mokutil --sb-state | grep -i "enabled" > /dev/null && echo "enabled" || echo "disabled"
@@ -26,7 +26,7 @@
       echo "n/a (BIOS)"
     fi
   args:
-    executable: /bin/bash
+    executable: /bin/sh
   register: sb_state_cmd
   changed_when: false
   failed_when: false

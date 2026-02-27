@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
+
 # =================================================================================================
 # SCRIPT: run_deployment_session.sh
 # ARCHITECTURE: Agnostic (x86_64, aarch64, riscv64)
@@ -53,7 +54,7 @@ usage() {
 }
 
 # 1. Dependency Check: Tmux (Cross-Platform)
-if ! command -v tmux &> /dev/null; then
+if ! command -v tmux >/dev/null 2>&1; then
     echo "ERROR: 'tmux' is not installed."
     echo "This script requires tmux to provide session persistence."
     echo "Please install it using your system's package manager:"

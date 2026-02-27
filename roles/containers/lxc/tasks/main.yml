@@ -97,8 +97,8 @@
       loop: "{{ lxc_container_gpu_config.keys() | list }}"
       when: lxc_container_gpu_config | length > 0
       args:
-        executable: /bin/bash
-        pipefail: true
+        executable: /bin/sh
+        
       tags:
         - cis_4_2_3
         - stg_v230430

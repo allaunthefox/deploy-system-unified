@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 # Wiki Sync Script - Sync wiki_pages/ to GitHub Wiki
-# 
+#
 # This script syncs the wiki_pages/ directory to the GitHub wiki repository.
 # The GitHub wiki is a separate git repository at:
 #   github.com:allaunthefox/deploy-system-unified.wiki.git
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
