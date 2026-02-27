@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Run detect-secrets with the same options used by CI.  This allows
 # developers to reproduce the scan locally and understand failures.
 

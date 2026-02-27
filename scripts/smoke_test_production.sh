@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Stability 2026 - Production Smoke Test
 # Verifies that production_deploy.yml can be parsed and run in check-mode.
 

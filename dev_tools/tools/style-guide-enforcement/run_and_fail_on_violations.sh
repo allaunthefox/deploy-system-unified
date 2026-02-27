@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -euo pipefail
 ENFORCE_SCRIPT="$(dirname "$0")/enforce_style_guide.sh"
 REPORT_DIR="$(dirname "$0")"

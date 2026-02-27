@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Stability 2026 - Idempotence Verification Tool
 # This script runs a playbook and ensures that a subsequent run produces zero changes.
 

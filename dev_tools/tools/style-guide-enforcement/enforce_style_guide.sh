@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Deploy-System-Unified Style Guide Enforcement Tool
 # Comprehensive script to enforce project coding standards
@@ -347,23 +347,24 @@ enforce_shell_standards() {
 
     # 1. Audit standalone .sh files
     for file in "${shell_files[@]}"; do
-        # Check specific architectural compatibility (#!/usr/bin/env bash)
-        if head -n 1 "$file" | grep -q "^#!/bin/bash$"; then
-            warning "Compatibility Issue: $file uses '#!/bin/bash'. Recommend '#!/usr/bin/env bash' for cross-platform support."
+        # Check for bash-specific shebang (POSIX compliance requirement)
+        if head -n 1 "$file" | grep -qE "^#!/bin/bash$|^#!/usr/bin/env bash$"; then
+            error "POSIX Compliance Error: $file uses bash shebang. Must use '#!/bin/sh' for POSIX compliance."
             TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-            
+
             if [ "$AUTO_FIX" = true ] || [ "$LOW_RISK_REPAIR" = true ]; then
-                 log "Fixing shebang in $file..."
-                 sed -i 's|^#!/bin/bash$|#!/usr/bin/env bash|' "$file"
-                 FIXED_ISSUES=$((FIXED_ISSUES + 1))
+                log "Fixing shebang to POSIX sh in $file..."
+                sed -i 's|^#!/bin/bash$|#!/bin/sh|; s|^#!/usr/bin/env bash$|#!/bin/sh|' "$file"
+                FIXED_ISSUES=$((FIXED_ISSUES + 1))
             fi
         fi
 
-        # Run ShellCheck with architectural awareness checks
-        # SC2039: In POSIX sh, something is undefined. (Ignored as we assume bash-compatible env)
-        # SC3000-SC3999: Checks specific to shells (we want these)
-        if ! shellcheck -x -e SC2039 "$file"; then
-            warning "shellcheck found issues in standalone script: $file"
+        # Run ShellCheck with strict POSIX sh compliance
+        # We do NOT assume bash is available - enforce POSIX sh compatibility
+        # SC2039: In POSIX sh, X is undefined or not supported - ERROR
+        # SC3000-SC3999: Bash-specific features - ERROR
+        if ! shellcheck -x -s sh "$file"; then
+            warning "shellcheck found POSIX compliance issues in standalone script: $file"
             TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
         fi
     done
@@ -379,13 +380,13 @@ enforce_shell_standards() {
 
     for file in "${yaml_files[@]}"; do
         awk '/shell: \|/,/^  [^ ]/' "$file" | grep -v "shell: |" | grep -v "^  -" > /tmp/embedded_shell.sh || true
-        
+
         if [ -s /tmp/embedded_shell.sh ]; then
-            sed -i '1s/^/#!\/bin\/bash\n/' /tmp/embedded_shell.sh
-            if ! shellcheck -s bash /tmp/embedded_shell.sh > /dev/null 2>&1;
+            sed -i '1s/^/#!\/bin\/sh\n/' /tmp/embedded_shell.sh
+            if ! shellcheck -s sh /tmp/embedded_shell.sh > /dev/null 2>&1;
  then
-                if shellcheck -s bash /tmp/embedded_shell.sh 2>&1 | grep -qvE "SC1083|SC2086|SC2050"; then
-                    warning "Potential shell logic issue in embedded block: $file"
+                if shellcheck -s sh /tmp/embedded_shell.sh 2>&1 | grep -qvE "SC1083|SC2086|SC2050"; then
+                    warning "Potential POSIX compliance issue in embedded block: $file"
                     TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
                 fi
             fi
@@ -707,8 +708,9 @@ $ansible_issues issues found
 ### FQCN Compliance
 $(command -v rg >/dev/null 2>&1 && rg -P -l '(?s)(-\s+name:.*?\n\s{2,}(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)|(^-\s+(?:apt|dnf|copy|template|service|systemd|shell|command|stat|mount|cron|assert|debug|set_fact|include_tasks|import_tasks|import_role|include_role):)' -g "roles/**/tasks/**/*.yml" -g "roles/**/tasks/*.yml" -g "roles/**/handlers/**/*.yml" -g "roles/**/handlers/*.yml" -g "roles/**/meta/**/*.yml" -g "roles/**/meta/*.yml" --glob "!.git/*" "$PROJECT_ROOT" 2>/dev/null | wc -l || echo "0") non-FQCN module calls found
 
-### Shell Scripting
-$(command -v shellcheck >/dev/null 2>&1 && find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec shellcheck {} + 2>/dev/null | grep -c "^In " || echo "0") issues found in standalone scripts
+### Shell Scripting (POSIX sh Compliance)
+$(command -v shellcheck >/dev/null 2>&1 && find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec shellcheck -s sh {} + 2>/dev/null | grep -c "^In " || echo "0") POSIX compliance issues found in standalone scripts
+$(find "$PROJECT_ROOT" -name "*.sh" -not -path "*/.git/*" -exec head -n1 {} \; | grep -cE "^#!/bin/bash|^#!/usr/bin/env bash" || echo "0") scripts with non-POSIX bash shebangs
 
 ### Naming Conventions
 $space_files files with spaces in names
@@ -729,7 +731,7 @@ $unsafe_perm_files files with potentially unsafe permissions
 
 - yamllint: YAML linting
 - ansible-lint: Ansible-specific linting
-- shellcheck: Shell script linting
+- shellcheck: POSIX sh compliance checking (no bash assumptions)
 - ripgrep (rg) / grep: Pattern matching
 - fd / find: File discovery
 - awk/sed: Text processing

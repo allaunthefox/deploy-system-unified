@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # CI Gate Fixes - Collection Cleanup
 # This script resolves collection version conflicts
 

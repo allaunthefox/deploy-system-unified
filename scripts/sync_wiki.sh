@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Wiki Sync Script - Sync wiki_pages/ to GitHub Wiki
 # 
 # This script syncs the wiki_pages/ directory to the GitHub wiki repository.

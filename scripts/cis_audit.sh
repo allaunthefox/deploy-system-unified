@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # CIS Benchmark Audit Script
 # Validates system configuration against CIS Ubuntu Linux 22.04 LTS Benchmark

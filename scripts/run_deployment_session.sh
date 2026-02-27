@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -euo pipefail
 # =================================================================================================
 # SCRIPT: run_deployment_session.sh

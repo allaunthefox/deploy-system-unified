@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -euo pipefail
 
 WORKSPACES_ROOT="${WORKSPACES_ROOT:-$HOME/Workspaces}"
