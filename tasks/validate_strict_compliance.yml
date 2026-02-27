@@ -1,0 +1,219 @@
+---
+# Strict Compliance Validation
+# Validates POSIX shell, container security, deterministic builds, least-privilege
+
+- name: "ISO 27001 §8.8 | 450100 | Validate shell scripts are POSIX compliant"
+  ansible.builtin.shell:
+    cmd: |
+      #!/bin/sh
+      # Check scripts for bashisms
+      errors=0
+      for script in scripts/*.sh tasks/*.sh; do
+        [ -f "$script" ] || continue
+        # Check shebang
+        if head -1 "$script" | grep -q "#!/bin/bash"; then
+          echo "FAIL: $script uses #!/bin/bash (not POSIX)"
+          errors=$((errors + 1))
+        fi
+        # Check for set -o pipefail
+        if grep -q "set -o pipefail" "$script"; then
+          echo "FAIL: $script uses set -o pipefail (not POSIX)"
+          errors=$((errors + 1))
+        fi
+        # Check for [[ ]]
+        if grep -q '\[\[' "$script"; then
+          echo "FAIL: $script uses [[ ]] (not POSIX)"
+          errors=$((errors + 1))
+        fi
+        # Check for echo -e
+        if grep -q 'echo -e' "$script"; then
+          echo "FAIL: $script uses echo -e (not POSIX)"
+          errors=$((errors + 1))
+        fi
+      done
+      if [ "$errors" -gt 0 ]; then
+        echo "Total POSIX violations: $errors"
+        exit 1
+      fi
+      echo "All scripts are POSIX compliant"
+      exit 0
+  register: posix_compliance_check
+  changed_when: false
+  failed_when: posix_compliance_check.rc != 0
+  delegate_to: localhost
+  tags:
+    - compliance
+    - posix
+    - validation
+    - 450100
+
+- name: "ISO 27001 §8.8 | 450101 | Validate Helm charts have security contexts"
+  ansible.builtin.shell:
+    cmd: |
+      #!/bin/sh
+      # Check Helm charts for security contexts
+      errors=0
+      for chart in charts/*/templates/*.yaml; do
+        [ -f "$chart" ] || continue
+        # Check for securityContext in Deployments
+        if grep -q "kind: Deployment" "$chart"; then
+          if ! grep -q "securityContext:" "$chart"; then
+            echo "FAIL: $chart - Deployment missing securityContext"
+            errors=$((errors + 1))
+          fi
+          if ! grep -q "runAsNonRoot: true" "$chart"; then
+            echo "FAIL: $chart - Deployment missing runAsNonRoot"
+            errors=$((errors + 1))
+          fi
+          if ! grep -q "resources:" "$chart"; then
+            echo "FAIL: $chart - Deployment missing resource limits"
+            errors=$((errors + 1))
+          fi
+        fi
+      done
+      if [ "$errors" -gt 0 ]; then
+        echo "Total security violations: $errors"
+        exit 1
+      fi
+      echo "All Helm charts have security contexts"
+      exit 0
+  register: helm_security_check
+  changed_when: false
+  failed_when: helm_security_check.rc != 0
+  delegate_to: localhost
+  tags:
+    - compliance
+    - containers
+    - security
+    - 450101
+
+- name: "ISO 27001 §8.8 | 450102 | Validate no Docker socket mounts"
+  ansible.builtin.shell:
+    cmd: |
+      #!/bin/sh
+      # Check for Docker socket mounts (security risk)
+      if grep -r "/var/run/docker.sock" charts/ roles/containers/ 2>/dev/null; then
+        echo "FAIL: Docker socket mount detected - security risk"
+        exit 1
+      fi
+      echo "No Docker socket mounts found"
+      exit 0
+  register: docker_socket_check
+  changed_when: false
+  failed_when: docker_socket_check.rc != 0
+  delegate_to: localhost
+  tags:
+    - compliance
+    - containers
+    - security
+    - 450102
+
+- name: "ISO 27001 §8.8 | 450103 | Validate image tags are pinned"
+  ansible.builtin.shell:
+    cmd: |
+      #!/bin/sh
+      # Check for unpinned image tags (latest, etc.)
+      errors=0
+      for file in charts/*/values.yaml roles/containers/*/defaults/main.yml; do
+        [ -f "$file" ] || continue
+        if grep -E "image.*:.*latest" "$file" 2>/dev/null; then
+          echo "FAIL: $file uses 'latest' tag"
+          errors=$((errors + 1))
+        fi
+      done
+      if [ "$errors" -gt 0 ]; then
+        echo "Total unpinned images: $errors"
+        exit 1
+      fi
+      echo "All image tags are pinned"
+      exit 0
+  register: image_tag_check
+  changed_when: false
+  failed_when: image_tag_check.rc != 0
+  delegate_to: localhost
+  tags:
+    - compliance
+    - containers
+    - deterministic
+    - 450103
+
+- name: "ISO 27001 §8.8 | 450104 | Validate no hardcoded paths in scripts"
+  ansible.builtin.shell:
+    cmd: |
+      #!/bin/sh
+      # Check for hardcoded /opt/deploy-system (should use variable)
+      errors=0
+      for script in scripts/*.sh; do
+        [ -f "$script" ] || continue
+        # Count hardcoded paths (excluding comments)
+        count=$(grep -v "^#" "$script" | grep -c "/opt/deploy-system" || echo "0")
+        if [ "$count" -gt 0 ]; then
+          echo "FAIL: $script has $count hardcoded /opt/deploy-system references"
+          errors=$((errors + 1))
+        fi
+      done
+      if [ "$errors" -gt 0 ]; then
+        echo "Total hardcoded paths: $errors"
+        exit 1
+      fi
+      echo "No hardcoded paths found"
+      exit 0
+  register: hardcoded_paths_check
+  changed_when: false
+  failed_when: hardcoded_paths_check.rc != 0
+  delegate_to: localhost
+  tags:
+    - compliance
+    - configuration
+    - 450104
+
+- name: "ISO 27001 §8.8 | 450105 | Validate idempotency safeguards"
+  ansible.builtin.shell:
+    cmd: |
+      #!/bin/sh
+      # Check scripts for idempotency safeguards
+      errors=0
+      for script in scripts/*.sh; do
+        [ -f "$script" ] || continue
+        # Check for mkdir without -p
+        if grep -q "mkdir /" "$script" && ! grep -q "mkdir -p" "$script"; then
+          echo "FAIL: $script uses mkdir without -p"
+          errors=$((errors + 1))
+        fi
+        # Check for EUID check before privileged operations
+        if grep -q "/etc/systemd\|/usr/local/bin" "$script"; then
+          if ! grep -q "id -u\|EUID" "$script"; then
+            echo "FAIL: $script writes to privileged paths without EUID check"
+            errors=$((errors + 1))
+          fi
+        fi
+      done
+      if [ "$errors" -gt 0 ]; then
+        echo "Total idempotency violations: $errors"
+        exit 1
+      fi
+      echo "All scripts have idempotency safeguards"
+      exit 0
+  register: idempotency_check
+  changed_when: false
+  failed_when: idempotency_check.rc != 0
+  delegate_to: localhost
+  tags:
+    - compliance
+    - idempotency
+    - 450105
+
+- name: "ISO 27001 §8.8 | 450106 | Display compliance validation summary"
+  ansible.builtin.debug:
+    msg:
+      - "POSIX Compliance: {{ 'PASS' if posix_compliance_check.rc == 0 else 'FAIL' }}"
+      - "Helm Security: {{ 'PASS' if helm_security_check.rc == 0 else 'FAIL' }}"
+      - "Docker Socket: {{ 'PASS' if docker_socket_check.rc == 0 else 'FAIL' }}"
+      - "Image Tags: {{ 'PASS' if image_tag_check.rc == 0 else 'FAIL' }}"
+      - "Hardcoded Paths: {{ 'PASS' if hardcoded_paths_check.rc == 0 else 'FAIL' }}"
+      - "Idempotency: {{ 'PASS' if idempotency_check.rc == 0 else 'FAIL' }}"
+      - "Overall: {{ 'COMPLIANT' if ([posix_compliance_check.rc, helm_security_check.rc, docker_socket_check.rc, image_tag_check.rc, hardcoded_paths_check.rc, idempotency_check.rc] | select('!=', 0) | list | length) == 0 else 'NON-COMPLIANT' }}"
+  tags:
+    - compliance
+    - validation
+    - 450106
