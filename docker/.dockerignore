@@ -1,0 +1,70 @@
+# Deploy-System-Unified - Docker Ignore File
+# Ensures clean, reproducible builds
+
+# Git
+.git
+.gitignore
+.gitmodules
+
+# Documentation (not needed in container)
+*.md
+docs/
+wiki_pages/
+
+# Development tools
+dev_tools/
+.qwen/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+
+# Ansible artifacts
+.ansible/
+.ansible.cfg
+*.retry
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.molecule/
+
+# CI/CD
+.github/
+.woodpecker.yml
+.pre-commit-config.yaml
+
+# Secrets (never include in image)
+*.secrets.baseline
+.vault_pass
+secrets.generated.yml
+.age-key
+*.key
+*.pem
+
+# Build artifacts
+dist/
+build/
+
+# Volumes (mounted at runtime)
+volumes/
+
+# Inventory (mounted separately)
+inventory/
+
+# Large files
+*.tar.xz
+*.zip
+SystemBackups/
