@@ -1,0 +1,78 @@
+---
+# Deploy-System-Unified - Docker Compose (LEGACY/COMPATIBILITY ONLY)
+# ⚠️ DEPRECATED: Use Podman Quadlet instead (docker/deploy-system.container)
+#
+# This file is provided for backward compatibility only.
+# Podman is the preferred and default container runtime.
+#
+# Usage (not recommended):
+#   docker-compose -f docker-compose.yml.legacy up -d
+#
+# Recommended alternative:
+#   sudo cp docker/deploy-system.container /etc/containers/systemd/
+#   sudo systemctl daemon-reload
+#   sudo systemctl start deploy-system
+
+services:
+  deploy-system:
+    build:
+      context: .
+      dockerfile: docker/Containerfile
+    image: deploy-system-unified:latest
+    container_name: deploy-system
+    restart: unless-stopped
+    user: "1000:1000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    environment:
+      - INSTALL_DIR=/opt/deploy-system
+      - CONFIG_DIR=/opt/deploy-system/config
+      - LOG_DIR=/opt/deploy-system/logs
+      - TZ=UTC
+    volumes:
+      - deploy-config:/opt/deploy-system/config
+      - deploy-logs:/opt/deploy-system/logs
+      - deploy-data:/opt/deploy-system/data
+      - ./inventory:/opt/deploy-system/inventory:ro
+      - ./playbooks:/opt/deploy-system/playbooks:ro
+      - ./roles:/opt/deploy-system/roles:ro
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=100M,mode=1777
+      - /var/tmp:size=50M,mode=1777
+    healthcheck:
+      test: ["CMD", "/opt/deploy-system/entrypoint.sh", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    network_mode: bridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "com.deploy-system.project=deploy-system-unified"
+      - "com.deploy-system.component=management"
+      - "com.deploy-system.version=1.0.0"
+
+volumes:
+  deploy-config:
+    driver: local
+  deploy-logs:
+    driver: local
+  deploy-data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge

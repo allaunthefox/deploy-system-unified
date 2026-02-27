@@ -1,0 +1,11 @@
+# Deploy-System-Unified - Data Volume (Podman Quadlet)
+# Persistent storage for checkpoints and backups
+
+[Volume]
+Driver=local
+DriverOpts=type=none
+DriverOpts=o=bind
+Device=%h/.local/share/deploy-system/data
+
+[Install]
+WantedBy=deploy-system.service

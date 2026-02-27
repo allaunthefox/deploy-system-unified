@@ -1,0 +1,110 @@
+---
+# Deploy-System-Unified - Podman Quadlet Configuration
+# Podman-native container orchestration (no Docker required)
+#
+# Usage:
+#   1. Copy .container file: sudo cp deploy-system.container /etc/containers/systemd/
+#   2. Copy .volume files: sudo cp *.volume /etc/containers/systemd/volumes/
+#   3. Reload systemd: sudo systemctl daemon-reload
+#   4. Start service: sudo systemctl start deploy-system
+#   5. Enable auto-start: sudo systemctl enable deploy-system
+#
+# Strict Compliance:
+#   - NO Docker socket mount (security isolation)
+#   - Resource limits (memory, CPU)
+#   - Read-only root filesystem where possible
+#   - Non-root user
+#   - Restart policy
+#   - Health checks
+#   - No privileged containers
+#   - Podman-native (systemd integration)
+
+[Unit]
+Description=Deploy-System-Unified Management Container
+Documentation=https://github.com/allaunthefox/deploy-system-unified
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+# Image configuration
+Image=localhost/deploy-system-unified:latest
+ContainerName=deploy-system
+
+# Run as non-root user (least privilege)
+User=1000:1000
+
+# Resource limits (prevent resource exhaustion)
+MemoryLimit=1024M
+CPUQuota=100000
+
+# Environment variables
+Environment=INSTALL_DIR=/opt/deploy-system
+Environment=CONFIG_DIR=/opt/deploy-system/config
+Environment=LOG_DIR=/opt/deploy-system/logs
+Environment=TZ=UTC
+
+# Volume mounts (persistent data)
+# Configuration (read-write for updates)
+Volume=deploy-config:/opt/deploy-system/config
+# Logs (read-write for logging)
+Volume=deploy-logs:/opt/deploy-system/logs
+# Data/checkpoints (read-write)
+Volume=deploy-data:/opt/deploy-system/data
+# Inventory (read-only from host)
+Volume=./inventory:/opt/deploy-system/inventory:ro
+# Playbooks (read-only for security)
+Volume=./playbooks:/opt/deploy-system/playbooks:ro
+# Roles (read-only for security)
+Volume=./roles:/opt/deploy-system/roles:ro
+
+# Security options
+SecurityOpt=no-new-privileges:true
+
+# Read-only root filesystem (with tmpfs for writable dirs)
+ReadOnly=true
+Tmpfs=/tmp:size=100M,mode=1777
+Tmpfs=/var/tmp:size=50M,mode=1777
+
+# Health check
+HealthCmd=/opt/deploy-system/entrypoint.sh healthcheck
+HealthInterval=30s
+HealthTimeout=10s
+HealthRetries=3
+HealthStartPeriod=10s
+
+# Network configuration
+Network=bridge
+
+# Logging configuration (journald for systemd integration)
+LogDriver=journald
+
+# Restart policy (availability)
+Restart=unless-stopped
+
+# Stop timeout
+StopTimeout=30
+
+# Labels for organization
+Label=com.deploy-system.project=deploy-system-unified
+Label=com.deploy-system.component=management
+Label=com.deploy-system.version=1.0.0
+
+# Working directory
+WorkingDir=/opt/deploy-system
+
+# Entrypoint and command
+Exec=/opt/deploy-system/entrypoint.sh
+Command=--help
+
+[Service]
+# Systemd service configuration
+RestartSec=5
+TimeoutStartSec=300
+TimeoutStopSec=30
+
+# Resource limits at systemd level
+LimitNOFILE=65536
+LimitNPROC=64
+
+[Install]
+WantedBy=multi-user.target default.target

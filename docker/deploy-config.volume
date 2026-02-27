@@ -1,0 +1,11 @@
+# Deploy-System-Unified - Configuration Volume (Podman Quadlet)
+# Persistent storage for configuration files
+
+[Volume]
+Driver=local
+DriverOpts=type=none
+DriverOpts=o=bind
+Device=%h/.local/share/deploy-system/config
+
+[Install]
+WantedBy=deploy-system.service

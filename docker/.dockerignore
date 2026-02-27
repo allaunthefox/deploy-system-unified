@@ -1,5 +1,7 @@
-# Deploy-System-Unified - Docker Ignore File
-# Ensures clean, reproducible builds
+# Deploy-System-Unified - Podman Build Ignore File
+# Ensures clean, reproducible builds with Podman
+#
+# Build with: podman build -t deploy-system-unified:latest -f docker/Containerfile .
 
 # Git
 .git
@@ -68,3 +70,8 @@ inventory/
 *.tar.xz
 *.zip
 SystemBackups/
+
+# Docker-specific (using Podman)
+docker-compose.yml
+docker-compose.yml.legacy
+Dockerfile

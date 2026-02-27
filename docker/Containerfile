@@ -1,4 +1,7 @@
-# Deploy-System-Unified - Containerized Management System
+# Deploy-System-Unified - Containerized Management System (Podman-native)
+# Build with: podman build -t deploy-system-unified:latest -f docker/Containerfile .
+# Run with: podman run --rm deploy-system-unified:latest
+#
 # Strict Compliance:
 #   - Base image pinned to digest (deterministic build)
 #   - Non-root USER (least privilege)
@@ -6,6 +9,7 @@
 #   - Version-pinned dependencies
 #   - --no-install-recommends (minimal image)
 #   - Cache cleanup in same layer
+#   - Podman-native (no Docker dependencies)
 
 # Pin to specific digest for deterministic builds
 # Image: ubuntu:24.04 (Noble Numbat)
