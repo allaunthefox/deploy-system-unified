@@ -4,6 +4,7 @@
 - name: reload_systemd
   ansible.builtin.systemd:
     daemon_reload: true
+  become: true
   listen: "reload_systemd"
 
 - name: restart_journald
@@ -17,3 +18,18 @@
   become: true
   failed_when: false
   listen: "update-grub"
+
+# Caddy Handler (reachable from include_role scopes)
+- name: restart_caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: restarted
+    enabled: true
+  become: true
+  listen: "restart_caddy"
+
+# Firewall Handler (for SSH port changes)
+- name: save_firewall_rules
+  ansible.builtin.command: /sbin/iptables-save > /etc/iptables/rules.v4
+  become: true
+  listen: "save_firewall_rules"

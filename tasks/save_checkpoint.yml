@@ -1,11 +1,15 @@
 ---
 # Generic task to save the current session state
-# Requires: 'checkpoint_status' (default: running) and 'additional_phases' (optional)
+# Requires: '_checkpoint_status' (default: running) and 'additional_phases' (optional)
 # Updates: 'completed_phases' fact and 'session.json' file
 
-- name: "ISO 9001 | 600013 | Update completed phases fact"
+- name: "ISO 9001 | 600013 | Update completed phases fact (accumulate)"
   ansible.builtin.set_fact:
-    completed_phases: "{{ additional_phases | default([]) }}"  # simplified to avoid recursive expansion in test environments
+    completed_phases: "{{ (completed_phases | default([])) + (additional_phases | default([]) | list) }}"
+  tags:
+    - checkpoint
+    - forensic
+    - 600013
 
 - name: "ISO 27001 §8.17 | 300001 | Check Chrony Status (Integration)"
   ansible.builtin.shell: |
