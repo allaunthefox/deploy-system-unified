@@ -3,9 +3,13 @@
 [![Style Enforcement](https://img.shields.io/github/actions/workflow/status/allaunthefox/deploy-system-unified/style-enforcement.yml?branch=main)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/style-enforcement.yml)
 [![Forensic Naming](https://img.shields.io/github/actions/workflow/status/allaunthefox/deploy-system-unified/forensic-naming-enforcer.yml?branch=main)](https://github.com/allaunthefox/deploy-system-unified/actions/workflows/forensic-naming-enforcer.yml)
 [![License](https://img.shields.io/github/license/allaunthefox/deploy-system-unified)](https://github.com/allaunthefox/deploy-system-unified/blob/main/LICENSE)
+[![Ansible](https://img.shields.io/badge/ansible-%3E%3D2.16-red?logo=ansible)](https://ansible.com)
+[![Python](https://img.shields.io/badge/python-%3E%3D3.8-blue?logo=python)](https://python.org)
+[![Security](https://img.shields.io/badge/security-CIS%20Level%201%262-brightgreen)](https://www.cisecurity.org/benchmark/ubuntu_linux)
+[![Compliance](https://img.shields.io/badge/compliance-ISO%2027001%20%7C%20NIST%20SP%20800--193-blue)](./docs/compliance/)
+[![Last Commit](https://img.shields.io/github/last-commit/allaunthefox/deploy-system-unified)](https://github.com/allaunthefox/deploy-system-unified/commits/main)
 
-
-**Modular, security-first infrastructure deployment built on Ansible.**
+**Modular, security-first infrastructure deployment with Ansible. CIS, NIST, ISO 27001 compliant.**
 
 ---
 
@@ -28,6 +32,35 @@ The core infrastructure and security hardening layers are fully implemented, ver
 - **Compliance:** 100/100 (ISO 27001, ISO 27040, NIST SP 800-193, CIS)
 
 👉 **[View Detailed Implementation Status](./docs/development/BASE_LAYER_IMPLEMENTATION_STATUS.md)**
+
+---
+
+## 📋 Requirements
+
+- **Ansible:** ≥ 2.16
+- **Python:** ≥ 3.8
+- **Target OS:** Ubuntu 22.04+, Debian 11+, RHEL 8+, CentOS Stream 9+
+- **Architecture:** x86_64 (verified), aarch64/riscv64 (experimental)
+- **Privileges:** Root/sudo access on target systems
+
+---
+
+## 🔧 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/allaunthefox/deploy-system-unified.git
+cd deploy-system-unified
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Install Ansible collections
+ansible-galaxy install -r requirements.yml
+
+# Verify installation
+ansible --version
+```
 
 ---
 
@@ -164,6 +197,31 @@ This ensures every action performed by Ansible leaves a high-fidelity auditable 
 - **Post-Quantum Security**: Hybrid ML-KEM/Ed25519 SSH, lattice-based secret archival
 - **Runtime Security**: Falco-based threat detection
 - **Supply Chain**: Cosign image verification, CycloneDX SBOM generation
+
+---
+
+## 📦 What's Included
+
+| Category | Roles | Status | Documentation |
+|----------|-------|--------|---------------|
+| **Core** | 12 | ✅ Production Ready | [docs/core](./docs/architecture/) |
+| **Security** | 18 | ✅ Production Ready | [docs/security](./docs/security/) |
+| **Kubernetes** | 4 | ✅ Production Ready | [docs/deployment](./docs/deployment/) |
+| **Networking** | 7 | ✅ Production Ready | [docs/architecture](./docs/architecture/) |
+| **Containers** | 13 | ✅ Production Ready | [docs/deployment](./docs/deployment/) |
+| **Storage** | 3 | ✅ Production Ready | [docs/architecture](./docs/architecture/) |
+| **Hardware** | 5 | 🔶 Experimental | [docs/deployment](./docs/deployment/) |
+| **Virtualization** | 2 | ✅ Production Ready | [docs/deployment](./docs/deployment/) |
+| **Ops** | 8 | ✅ Production Ready | [docs/development](./docs/development/) |
+
+---
+
+## 💬 Community
+
+- **Discussions:** [GitHub Discussions](https://github.com/allaunthefox/deploy-system-unified/discussions)
+- **Issues:** [Report a bug](https://github.com/allaunthefox/deploy-system-unified/issues/new?template=bug_report.yml) | [Request a feature](https://github.com/allaunthefox/deploy-system-unified/issues/new?template=feature_request.yml)
+- **Wiki:** [Documentation & Guides](https://github.com/allaunthefox/deploy-system-unified/wiki)
+- **Security:** [Report a vulnerability](./SECURITY.md)
 
 ---
 
