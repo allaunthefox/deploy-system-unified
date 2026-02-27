@@ -1,0 +1,39 @@
+---
+# PostgreSQL PersistentVolumeClaim Definition
+# Separated from deployment for better organization and reusability
+#
+# Usage: This PVC is referenced by postgresql-deployment.yaml
+# Install: helm install ... or kubectl apply -f pvc.yaml
+
+{{- if and .Values.postgresql.enabled .Values.postgresql.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "database-stack.fullname" . }}-postgresql
+  labels:
+    app.kubernetes.io/name: {{ include "database-stack.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: {{ include "database-stack.fullname" . }}
+  {{- with .Values.postgresql.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.persistence.size }}
+  {{- if .Values.postgresql.persistence.storageClass }}
+  {{- if (eq "-" .Values.postgresql.persistence.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.postgresql.persistence.storageClass }}"
+  {{- end }}
+  {{- end }}
+  {{- if .Values.postgresql.persistence.selector }}
+  selector:
+    {{- toYaml .Values.postgresql.persistence.selector | nindent 4 }}
+  {{- end }}
+{{- end }}

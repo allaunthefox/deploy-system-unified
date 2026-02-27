@@ -50,12 +50,13 @@ Volume=deploy-config:/opt/deploy-system/config
 Volume=deploy-logs:/opt/deploy-system/logs
 # Data/checkpoints (read-write)
 Volume=deploy-data:/opt/deploy-system/data
-# Inventory (read-only from host)
-Volume=./inventory:/opt/deploy-system/inventory:ro
+# Inventory (read-only from host) - Use absolute path or symlink
+# Note: Create symlink: sudo ln -s /path/to/project/inventory /opt/deploy-system/inventory
+Volume=/opt/deploy-system/inventory:/opt/deploy-system/inventory:ro
 # Playbooks (read-only for security)
-Volume=./playbooks:/opt/deploy-system/playbooks:ro
+Volume=/opt/deploy-system/playbooks:/opt/deploy-system/playbooks:ro
 # Roles (read-only for security)
-Volume=./roles:/opt/deploy-system/roles:ro
+Volume=/opt/deploy-system/roles:/opt/deploy-system/roles:ro
 
 # Security options
 SecurityOpt=no-new-privileges:true

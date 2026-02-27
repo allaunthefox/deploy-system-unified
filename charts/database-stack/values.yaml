@@ -20,6 +20,12 @@ postgresql:
   persistence:
     enabled: true
     size: 10Gi
+    # Optional: Specify storage class (default: cluster default)
+    # storageClass: "-"  # Use empty string for default, "-" for no storage class
+    # Optional: PVC annotations
+    # annotations: {}
+    # Optional: PVC selector for existing PVs
+    # selector: {}
 
 # Redis
 redis:
@@ -35,3 +41,9 @@ redis:
   persistence:
     enabled: true
     size: 5Gi
+    # Optional: Specify storage class (default: cluster default)
+    # storageClass: "-"
+    # Optional: PVC annotations
+    # annotations: {}
+    # Optional: PVC selector for existing PVs
+    # selector: {}
