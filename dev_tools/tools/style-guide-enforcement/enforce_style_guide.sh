@@ -4,7 +4,6 @@
 # Comprehensive script to enforce project coding standards
 
 set -e
-set -o pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -14,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 YAML_LINT_CONFIG="$PROJECT_ROOT/.yamllint.yml"
 ANSIBLE_LINT_CONFIG="$PROJECT_ROOT/.ansible-lint.yml"
 STYLE_GUIDE="$PROJECT_ROOT/LLM_RESEARCH/Style_Guide.md"
