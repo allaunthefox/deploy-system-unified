@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
 
 WORKSPACES_ROOT="${WORKSPACES_ROOT:-$HOME/Workspaces}"
 BACKUP_FILE="${WORKSPACES_ROOT}/Offline_Research/system-backup-2026-01-13.tar.xz"
