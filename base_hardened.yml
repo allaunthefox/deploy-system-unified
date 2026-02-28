@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100009
+# Playbook Type: Base Hardening
+# Description: Base hardened infrastructure deployment
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # WARNING: This playbook is part of the solution stack.
 # Use production_deploy.yml as the primary deployment entrypoint.

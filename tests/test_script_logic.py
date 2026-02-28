@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000107
+# File Type: Python Test Script
+# Test Type: Script Logic Validation
+# Description: Test the exact logic from the script
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """Test the exact logic from the script."""
 
 import os

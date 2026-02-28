@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CIC-600001
+# Pipeline Type: Idempotence Testing
+# Description: Runs playbook twice and asserts zero changes on second run
+# Trigger: push, pull_request
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Idempotence Test Pipeline
 # Runs playbook twice and asserts zero changes on second run

@@ -1,3 +1,9 @@
+{# =============================================================================
+# Audit Event Identifier: DSU-TPL-900009
+# Template Type: monitoring Configuration
+# Last Updated: 2026-02-28
+# Version: 1.0
+# ============================================================================= #}
 [Unit]
 Description=Grafana Container
 After=network-online.target
@@ -11,20 +17,17 @@ After=network-online.target
       HealthStartPeriod=40s
 
 ContainerName=grafana-{{ monitoring_instance }}
-CPUQuota=25%
 Image={{ monitoring_grafana_image }}
 # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
 Pull={{ monitoring_pull_policy | default('newer') }}
 # Retry backoff for image pulls (prevents registry rate-limit bans)
-PullRetry={{ monitoring_pull_retry | default(5) }}
-PullRetryDelay={{ monitoring_pull_retry_delay | default('30s') }}
 Label=DSU_UUID={{ object_uuid | default('unassigned') }}
 Label=DSU_ISO_CODE=ISO-27001-8-20
 Label=DSU_ACTION_CODE=700000
 Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
 Label=DSU_IMAGE_DIGEST={{ monitoring_grafana_image.split('@')[1] | default('none') }}
-CapDrop=ALL
-Pod={{ monitoring_pod_name }}
+DropCapability=ALL
+Pod={{ monitoring_pod_name }}.pod
 # If running rootless, map the full subuid range so UIDs like 65534 (nobody) and image UIDs are valid
 {% if podman_rootless_enabled | bool %}
 UserNS=auto
@@ -33,8 +36,7 @@ EnvironmentFile={{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.e
 Volume={{ monitoring_root_dir }}/grafana:/var/lib/grafana:U,Z
 Volume={{ monitoring_config_dir }}/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro,U
 Volume={{ monitoring_config_dir }}/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro,U
-ReadOnlyFilesystem=true
-ReadWritePaths=/var/lib/grafana /var /tmp
+
 
 [Service]
 ProtectSystem=strict
@@ -43,7 +45,6 @@ PrivateDevices=true
 ProtectHome=read-only
 NoNewPrivileges=true
 ReadOnlyPaths=/etc
-ReadWritePaths=/var /tmp /var/lib/grafana
 # Extended timeout for image pulls
 TimeoutStartSec={{ monitoring_timeout_start | default(600) }}
 TimeoutStopSec={{ monitoring_timeout_stop | default(70) }}

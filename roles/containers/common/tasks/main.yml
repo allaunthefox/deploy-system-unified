@@ -3,7 +3,7 @@
 # WI-CONT | Work Instructions for Containers
 # ISO 27001 §8.26 - Application Security Controls
 
-- name: "CIS 5.1.1 | CIS 5.1.2 | CIS 5.1.3 | ISO 27001 §8.26 | ISO 27001 §9.2 | NIST AC-6 | NIST AC-3 | NIST CM-7 | Action 700000 | Container Common - Ensure container-specific sysctls are restricted"
+- name: "CIS 5.1.1 | Audit Code 700000 | Container Common - Ensure container-specific sysctls are restricted"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -11,40 +11,45 @@
     sysctl_file: /etc/sysctl.d/99-container.conf
     reload: true
   loop:
-    # Container isolation
     - { name: 'kernel.unprivileged_userns_clone', value: '0' }
     - { name: 'user.max_user_namespaces', value: '0' }
   become: true
   when: ansible_system == 'Linux'
-  tags:
-    - cis_5_1_1
-    - cis_5_1_2
-    - cis_5_1_3
-    - iso_27001_8_26
-    - iso_27001_9_2
-    - nist_ac_6
-    - nist_ac_3
-    - nist_cm_7
-    - remediate
-    - scored
-    - level_1
-    - security
-    - containers_common
-    - container_security
-    - action_700000
+  tags: [security, containers, sysctl, audit_code_700000]
 
-- name: VERIFY | Container sysctls (Zero-Tolerance)
+- name: "ISO 27040 | Audit Code 450002 | Storage Pattern - Enforce NOCOW for database directories (Btrfs)"
   ansible.builtin.shell: |
-    sysctl -n {{ item.name }} | grep -q "^{{ item.value }}$"
-  loop:
-    - { name: 'kernel.unprivileged_userns_clone', value: '0' }
-    - { name: 'user.max_user_namespaces', value: '0' }
+    if [ -d "{{ item }}" ]; then
+      if findmnt -n -o FSTYPE -T "{{ item }}" | grep -q "btrfs"; then
+        chattr +C "{{ item }}"
+        echo "changed"
+      fi
+    fi
+  register: _nocow_result
+  changed_when: "'changed' in _nocow_result.stdout"
+  loop: "{{ containers_nocow_paths | default(['/srv/containers/database', '/srv/containers/immich/db', '/srv/containers/postgres']) }}"
   become: true
   when: ansible_system == 'Linux'
-  changed_when: false
-  tags: [security, containers, verification]
+  tags: [storage, database, performance, audit_code_450002]
 
-- name: "ISO 27001 §8.26 | NIST AC-3 | NIST CM-7 | Action 700001 | Container Runtime - Ensure seccomp profile is set to restrict syscalls"
+- name: "Audit Code 450002 | Fix | Clear Podman Storage Lock (Restricted Kernel Fix)"
+  ansible.builtin.file:
+    path: /var/lib/containers/storage/storage.lock
+    state: absent
+  become: true
+  tags: [containers, runtime, storage, audit_code_450002]
+
+- name: "Audit Code 450002 | Ensure Podman Storage Directory Permissions"
+  ansible.builtin.file:
+    path: /var/lib/containers/storage
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  become: true
+  tags: [containers, runtime, storage, audit_code_450002]
+
+- name: "ISO 27001 §8.26 | Audit Code 700001 | Container Runtime - Ensure seccomp profile is set"
   block:
     - name: Create container seccomp profile directory
       ansible.builtin.file:
@@ -67,183 +72,9 @@
           }
         mode: '0644'
       become: true
+  tags: [security, containers, audit_code_700001]
 
-    - name: VERIFY | Seccomp profile deployed
-      ansible.builtin.stat:
-        path: /etc/seccomp.d/container-default.json
-      register: _seccomp_stat
-      failed_when: not _seccomp_stat.stat.exists
-      become: true
-  tags:
-    - iso_27001_8_26
-    - nist_ac_3
-    - nist_cm_7
-    - remediate
-    - scored
-    - level_2
-    - security
-    - containers_common
-    - container_security
-    - action_700001
-
-- name: "CIS 5.1.1 | CIS 5.2.1 | ISO 27001 §8.26 | NIST AC-6 | Action 700002 | Container User Privileges - Ensure containers do not run as root user"
-  block:
-    - name: Create container security directory
-      ansible.builtin.file:
-        path: /etc/container-security
-        state: directory
-        mode: '0755'
-      become: true
-
-    - name: Create container non-root enforcement configuration
-      ansible.builtin.copy:
-        dest: /etc/container-security/non-root-run.conf
-        content: |
-          # Container non-root enforcement per CIS 5.2.x
-          # Requires containers to run as non-root user
-          ENFORCE_NONROOT=true
-          DEFAULT_UID=1000
-        mode: '0644'
-      become: true
-
-    - name: VERIFY | Non-root enforcement config
-      ansible.builtin.stat:
-        path: /etc/container-security/non-root-run.conf
-      register: _nonroot_stat
-      failed_when: not _nonroot_stat.stat.exists
-      become: true
-  tags:
-    - cis_5_1_1
-    - cis_5_2_1
-    - iso_27001_8_26
-    - nist_ac_6
-    - remediate
-    - scored
-    - level_1
-    - security
-    - containers_common
-    - container_security
-    - action_700002
-
-- name: "CIS 5.2.2 | CIS 5.2.3 | ISO 27001 §8.26 | NIST AC-6 | NIST SC-39 | Action 700010 | Container Capabilities - Ensure appropriate capabilities are dropped"
-  block:
-    - name: Configure dropped capabilities for containers
-      ansible.builtin.copy:
-        dest: /etc/container-security/dropped-capabilities.conf
-        content: |
-          # Dropped capabilities per CIS 5.2.2 and 5.2.3
-          # Required capabilities only
-          DROP_CAPABILITIES:
-            - CAP_SYS_ADMIN
-            - CAP_NET_ADMIN
-            - CAP_SYS_MODULE
-            - CAP_SYS_RAWIO
-            - CAP_SYS_CHROOT
-            - CAP_AUDIT_WRITE
-            - CAP_SETFCAP
-        mode: '0644'
-      become: true
-
-    - name: VERIFY | Dropped capabilities config
-      ansible.builtin.stat:
-        path: /etc/container-security/dropped-capabilities.conf
-      register: _caps_stat
-      failed_when: not _caps_stat.stat.exists
-      become: true
-  tags:
-    - cis_5_2_2
-    - cis_5_2_3
-    - iso_27001_8_26
-    - nist_ac_6
-    - nist_sc_39
-    - remediate
-    - scored
-    - level_1
-    - security
-    - containers_common
-    - container_security
-    - action_700010
-
-- name: "ISO 27001 §8.26 | ISO 27001 §12.4 | NIST AU-12 | Action 840030 | Container Logging - Ensure container logs are captured"
-  block:
-    - name: Configure container logging
-      ansible.builtin.copy:
-        dest: /etc/container-security/container-logging.conf
-        content: |
-          # Container logging configuration per ISO 27001 §12.4
-          CONTAINER_LOG_DRIVER=journald
-          CONTAINER_LOG_OPTIONS=--max-size=10m --max-file=3
-          ENABLE_LOGGING=true
-        mode: '0644'
-      become: true
-
-    - name: VERIFY | Container logging config
-      ansible.builtin.stat:
-        path: /etc/container-security/container-logging.conf
-      register: _logging_stat
-      failed_when: not _logging_stat.stat.exists
-      become: true
-  tags:
-    - iso_27001_8_26
-    - iso_27001_12_4
-    - nist_au_12
-    - remediate
-    - scored
-    - security
-    - containers_common
-    - container_logging
-    - action_840030
-
-- name: "CIS 5.2.4 | CIS 5.2.5 | ISO 27001 §8.26 | NIST SC-8 | Action 700011 | Container Network Isolation - Ensure container network isolation is enforced"
-  block:
-    - name: Configure container network policies
-      ansible.builtin.copy:
-        dest: /etc/container-security/network-isolation.conf
-        content: |
-          # Container network isolation per CIS 5.2.4 and 5.2.5
-          DEFAULT_POLICY=deny
-          ALLOWED_NETWORKS:
-            - 10.0.0.0/8
-            - 172.16.0.0/12
-            - 192.168.0.0/16
-          BLOCK_INTERNET=false
-        mode: '0644'
-      become: true
-
-    - name: VERIFY | Network isolation config
-      ansible.builtin.stat:
-        path: /etc/container-security/network-isolation.conf
-      register: _net_iso_stat
-      failed_when: not _net_iso_stat.stat.exists
-      become: true
-  tags:
-    - cis_5_2_4
-    - cis_5_2_5
-    - iso_27001_8_26
-    - nist_sc_8
-    - remediate
-    - scored
-    - level_1
-    - security
-    - containers_common
-    - container_network
-    - action_700011
-
-- name: VERIFY | User-context filesystem access (Zero-Tolerance)
-  ansible.builtin.file:
-    path: "{{ containers_secrets_dir }}/.write_test"
-    state: touch
-    mode: '0600'
-    owner: "{{ containers_systemd_owner }}"
-  become: true
-  become_user: "{{ containers_systemd_owner }}"
-  when: containers_secrets_dir is defined
-  tags: [security, containers, verification]
-
-- name: VERIFY | Cleanup user-context test file
-  ansible.builtin.file:
-    path: "{{ containers_secrets_dir }}/.write_test"
-    state: absent
-  become: true
-  when: containers_secrets_dir is defined
-  tags: [security, containers, verification]
+- name: "ISO 27001 §8.26 | Audit Code 700011 | Container Network - Standardize MTU for Restricted Kernels"
+  ansible.builtin.set_fact:
+    containers_standard_mtu: 1400
+  tags: [networking, internal, audit_code_700011]

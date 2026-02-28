@@ -48,7 +48,7 @@ argument_specs:
       security_sshd_config_path:
         type: str
         description: Destination path for the sshd configuration file
-        default: "/etc/ssh/sshd_config"
+        default: "/etc/ssh/sshd_config.d/99-hardened.conf"
       security_sshd_enable_trusted_group_exceptions:
         type: bool
         description: Enable granular forwarding exceptions for specific groups

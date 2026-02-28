@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500003
+# Script Type: Security Setup (CrowdSec)
+# Description: CrowdSec security monitoring setup automation
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 import subprocess
 import json
 import os

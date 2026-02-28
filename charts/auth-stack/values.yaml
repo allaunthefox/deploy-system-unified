@@ -1,5 +1,8 @@
 # Auth Stack Values (Authentik)
-# SECURITY: Do not store credentials here. Use SOPS or external secrets management.
+# =============================================================================
+# SECURITY: Secrets are auto-generated if not provided (for testing only)
+# For production, set via secrets management or helm --set
+# =============================================================================
 
 # Global settings
 global:
@@ -13,18 +16,21 @@ authentik:
   service:
     type: ClusterIP
     port: 9000
-  # SECURITY: adminPassword must be provided via external secrets or SOPS-encrypted values
-  # Do not use default passwords in production
-  adminPassword: ""  # REQUIRED: Set via --set-file or external secret
+  # Secrets - auto-generated if not provided
+  secretKey: ""      # Auto-generated 64-char random string if empty
+  adminPassword: ""  # Auto-generated 32-char random string if empty
+  # Email configuration (optional)
   email:
     host: ""
     port: 587
     username: ""
     password: ""
     useTls: true
+  # Persistence
   persistence:
-    enabled: true
+    enabled: true  # Set to false for testing (uses emptyDir)
     size: 10Gi
+    storageClass: ""  # Use default storage class
 
 # Ingress Configuration
 ingress:

@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CNT-850007
+# File Type: Podman Volume Definition
+# Description: Persistent storage for deployment logs
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Deploy-System-Unified - Logs Volume (Podman Quadlet)
 # Persistent storage for deployment logs
 

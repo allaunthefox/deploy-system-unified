@@ -1,5 +1,12 @@
 # Strict Compliance Remediation Checklist
 
+**Audit Event Identifier:** DSU-CMP-210002  
+**Document Type:** Compliance Checklist  
+**Frameworks:** POSIX, Docker Security, FHS, ISO 27001  
+**Last Updated:** 2026-02-27  
+**Version:** 1.0  
+**Review Status:** Quarterly  
+
 This document tracks compliance with strict production-grade standards for POSIX shell, container security, deterministic builds, and least-privilege enforcement.
 
 ## Compliance Status
@@ -135,7 +142,7 @@ fi
 ### Validation
 ```bash
 # Run playbook twice, assert zero changes
-ansible-playbook site.yml --check --diff | grep -c '"changed": true'
+ansible-playbook SITE.YML --check --diff | grep -c '"changed": true'
 # Should be 0 on second run
 ```
 
@@ -225,7 +232,7 @@ grep -r ">=.*<" requirements.yml
 ### Full Compliance Check
 ```bash
 # Run compliance validation task
-ansible-playbook playbooks/preflight_assertions.yml \
+ansible-playbook playbooks/PREFLIGHT_ASSERTIONS.YML \
   -e "compliance_validation_enabled=true"
 ```
 
@@ -244,7 +251,7 @@ grep -E "image.*:.*latest" charts/*/values.yaml
 grep -v "^#" scripts/*.sh | grep "/opt/deploy-system"
 
 # Idempotency
-ansible-playbook site.yml && ansible-playbook site.yml --check
+ansible-playbook SITE.YML && ansible-playbook SITE.YML --check
 ```
 
 ---

@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-130002
+# File Type: Role Handlers (main.yml)
+# Role: core
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Standardized placeholder for handlers
 # Part of ISO 9001 Structural Consistency

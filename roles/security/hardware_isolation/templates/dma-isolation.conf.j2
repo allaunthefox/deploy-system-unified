@@ -1,3 +1,9 @@
+{# =============================================================================
+# Audit Event Identifier: DSU-TPL-900023
+# Template Type: hardware_isolation Configuration
+# Last Updated: 2026-02-28
+# Version: 1.0
+# ============================================================================= #}
 # Managed by Ansible - security/hardware_isolation
 {% for module in hardware_isolation_blacklist_modules %}
 blacklist {{ module }}

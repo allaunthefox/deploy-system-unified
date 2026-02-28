@@ -1,9 +1,13 @@
 # CIS_MAPPING
 
+**Audit Event Identifier:** DSU-CMP-210001  
 **Document Version:** 2.0  
 **Date:** February 25, 2026  
 **Framework:** CIS Ubuntu Linux 22.04 LTS Benchmark v1.0.0  
-**Compliance Level:** Level 1 + Level 2
+**Compliance Level:** Level 1 + Level 2  
+**Control Count:** 98 Level 1 + 72 Level 2 = 170 controls mapped  
+**Review Status:** Quarterly  
+**Next Review:** 2026-05-28  
 
 ---
 
@@ -157,10 +161,10 @@ This document maps Deploy-System-Unified security roles to CIS Benchmark control
 
 ```bash
 # Run CIS Level 1 validation
-ansible-playbook -t cis_level_1 site.yml
+ansible-playbook -t cis_level_1 SITE.YML
 
 # Run CIS Level 2 validation
-ansible-playbook -t cis_level_2 site.yml
+ansible-playbook -t cis_level_2 SITE.YML
 
 # Generate compliance report
 python3 scripts/compliance_report.py --format markdown --output compliance_report.md

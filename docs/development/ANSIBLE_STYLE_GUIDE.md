@@ -21,7 +21,7 @@ compliance-critical tasks; it is optional on helper/prerequisite tasks.
 
 ```yaml
 # Full compliance task with Audit Event Identifier
-- name: "CIS 5.4.1 | STIG V-230270 | NIST AU-8 | ISO 27001 §8.17 | Action 300001 | Configure secure time synchronization (idempotent)"
+- name: "CIS 5.4.1 | STIG V-230270 | NIST AU-8 | ISO 27001 §8.17 | Audit Code 300001 | Configure secure time synchronization (idempotent)"
 
 # Multi-standard task without Audit Event Identifier (prerequisite step)
 - name: "CIS 5.4.1 | STIG V-230270 | NIST AU-8 | Refresh package cache for time synchronization dependencies (Debian/Ubuntu)"
@@ -46,7 +46,7 @@ enforce and how to handle exceptions.
 ### DSU001 — No Top-Level Roles in `main.yml`
 
 `main.yml` files at the project root must not contain a top-level `roles:` block. Role lists
-belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `PRODUCTION_DEPLOY.yml`.
+belong in `branch_templates/*.yml` or named playbooks like `SITE.YML` and `PRODUCTION_DEPLOY.yml`.
 
 ```yaml
 # WRONG — in main.yml
@@ -55,7 +55,7 @@ belong in `branch_templates/*.yml` or named playbooks like `site.yml` and `PRODU
     - core/bootstrap
 
 # CORRECT — in main.yml (only imports are allowed)
-- ansible.builtin.import_playbook: playbooks/preflight_assertions.yml
+- ansible.builtin.import_playbook: playbooks/PREFLIGHT_ASSERTIONS.YML
 ```
 
 This enforces Configuration Baseline Inheritance: `main.yml` stays a pristine orchestration surface.
@@ -116,7 +116,7 @@ audit log tagged `DSU-SHIM`, and must not perform network or subprocess operatio
 
 | Use | When |
 |---|---|
-| `ansible.builtin.include_tasks` | Dynamic inclusion — the task list is determined at runtime (e.g., looped role execution via `tasks/run_role.yml`) |
+| `ansible.builtin.include_tasks` | Dynamic inclusion — the task list is determined at runtime (e.g., looped role execution via `tasks/RUN_ROLE.YML`) |
 | `ansible.builtin.import_playbook` | Static inclusion — the playbook is always included and parsed at load time |
 | `ansible.builtin.import_tasks` | Static inclusion — always parsed, no conditionals on the import itself |
 
@@ -125,7 +125,7 @@ The DSU pattern for executing roles dynamically uses `include_tasks` with a loop
 ```yaml
 tasks:
   - name: Execute roles
-    ansible.builtin.include_tasks: tasks/run_role.yml
+    ansible.builtin.include_tasks: tasks/RUN_ROLE.YML
     loop: "{{ role_list }}"
     loop_control:
       loop_var: role_item

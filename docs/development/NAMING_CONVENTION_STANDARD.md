@@ -101,9 +101,9 @@ Standard prefixes help organize files by category:
 
 Playbook files in the repository root use lowercase with underscores:
 
-- `site.yml`
-- `base_hardened.yml`
-- `production_deploy.yml`
+- `SITE.YML`
+- `BASE_HARDENED.YML`
+- `PRODUCTION_DEPLOY.YML`
 - `ephemeral_edge.yml`
 
 This follows Ansible convention and distinguishes playbooks from documentation.

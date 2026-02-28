@@ -27,7 +27,7 @@
 
 ### D. Security & Integrity
 - **Role:** `security/scanning` (Refined)
-- **Preflight:** `preflight_assertions.yml` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
+- **Preflight:** `PREFLIGHT_ASSERTIONS.YML` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
 
 ## 2. Pre-Deployment Check List
 
@@ -58,4 +58,4 @@ To deploy the full verified stack:
 ansible-playbook PRODUCTION_DEPLOY.yml -i inventory/contabo_cloud_vps_30_ssd.ini
 ```
 
-Use `site.yml` only for development/stabilization. Treat `branch_templates/` as reference-only.
+Use `SITE.YML` only for development/stabilization. Treat `branch_templates/` as reference-only.

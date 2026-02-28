@@ -13,7 +13,7 @@ argument_specs:
         default: true
       security_enable_ufw:
         type: bool
-        description: Enable UFW firewall management (Note: mostly handled by networking/firewall)
+        description: "Enable UFW firewall management (Note: mostly handled by networking/firewall)"
         default: true
       security_enable_fail2ban:
         type: bool

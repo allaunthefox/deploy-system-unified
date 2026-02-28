@@ -1,12 +1,12 @@
 ---
 # Deployment of Loki/Promtail for Forensic Intelligence
 
-- name: "ISO 27001 §12.4 | Action 840030 | Create Loki Directories"
+- name: "ISO 27001 §12.4 | Audit Code 840030 | Create Loki Directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "1000"
-    group: "1000"
+    owner: "{{ containers_user_uid }}"
+    group: "{{ containers_user_gid }}"
     mode: '0755'
   loop:
     - "{{ monitoring_root_dir }}/loki"
@@ -14,7 +14,7 @@
     - "{{ monitoring_config_dir }}/promtail"
   become: true
 
-- name: "ISO 27001 §12.4 | Action 840030 | Deploy Loki Configuration"
+- name: "ISO 27001 §12.4 | Audit Code 840030 | Deploy Loki Configuration"
   ansible.builtin.copy:
     dest: "{{ monitoring_config_dir }}/loki/loki-config.yml"
     content: |
@@ -55,12 +55,12 @@
   become: true
   tags: [monitoring, loki, forensic]
 
-- name: "ISO 27001 §12.4 | Action 840031 | Deploy Promtail Configuration (Forensic Aware)"
+- name: "ISO 27001 §12.4 | Audit Code 840031 | Deploy Promtail Configuration (Forensic Aware)"
   ansible.builtin.copy:
     dest: "{{ monitoring_config_dir }}/promtail/promtail-config.yml"
     content: |
       server:
-        http_listen_port: 9080
+        http_listen_port: 9081
         grpc_listen_port: 0
       positions:
         filename: /tmp/positions.yaml
@@ -76,17 +76,27 @@
               __path__: /var/log/*log
           pipeline_stages:
             - regex:
-                expression: ".*Action (?P<action_code>\\d{6}).*"
+                expression: ".*Audit Code (?P<audit_code>\\d{6}).*"
             - regex:
                 expression: ".*DSU_UUID=(?P<object_uuid>[a-f0-9-]{36}).*"
             - labels:
-                action_code:
+                audit_code:
                 object_uuid:
+        - job_name: journal
+          journal:
+            max_age: 12h
+            labels:
+              job: systemd-journal
+          pipeline_stages:
+            - regex:
+                expression: ".*Audit Code (?P<audit_code>\\d{6}).*"
+            - labels:
+                audit_code:
     mode: '0644'
   become: true
   tags: [monitoring, promtail, forensic]
 
-- name: "ISO 27001 §8.26 | Action 700000 | Deploy Loki Container Quadlet"
+- name: "ISO 27001 §8.26 | Audit Code 700000 | Deploy Loki Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/loki-{{ monitoring_instance }}.container"
     content: |
@@ -104,14 +114,11 @@
 
       Pod={{ monitoring_pod_name }}.pod
       Image={{ monitoring_loki_image }}
-      CapDrop=ALL
+      DropCapability=ALL
       ContainerName=loki-{{ monitoring_instance }}
-      CPUQuota=25%
       Volume={{ monitoring_config_dir }}/loki/loki-config.yml:/etc/loki/local-config.yaml:ro
       Volume={{ monitoring_config_dir }}/loki/forensic_alerts.yml:/loki/rules/fake/forensic_alerts.yml:ro
       Volume={{ monitoring_root_dir }}/loki:/loki:Z
-      ReadOnlyFilesystem=true
-      ReadWritePaths=/loki /var /tmp
       [Service]
       ProtectSystem=strict
       PrivateTmp=true
@@ -119,7 +126,6 @@
       ProtectHome=read-only
       NoNewPrivileges=true
       ReadOnlyPaths=/etc
-      ReadWritePaths=/var /tmp /loki
       Restart=always
       [Install]
       WantedBy=multi-user.target default.target
@@ -127,7 +133,7 @@
   become: true
   notify: reload_systemd
 
-- name: "ISO 27001 §8.26 | Action 700000 | Deploy Promtail Container Quadlet"
+- name: "ISO 27001 §8.26 | Audit Code 700000 | Deploy Promtail Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/promtail-{{ monitoring_instance }}.container"
     content: |
@@ -137,7 +143,7 @@
       Requires={{ monitoring_pod_name }}.pod loki-{{ monitoring_instance }}.service
       [Container]
       # Health Check
-      HealthCmd=/usr/bin/curl -f http://localhost:9080/metrics || exit 1
+      HealthCmd=/usr/bin/curl -f http://localhost:9081/metrics || exit 1
       HealthInterval=30s
       HealthTimeout=10s
       HealthRetries=3
@@ -145,15 +151,12 @@
 
       Pod={{ monitoring_pod_name }}.pod
       Image={{ monitoring_promtail_image }}
-      CapDrop=ALL
+      DropCapability=ALL
       ContainerName=promtail-{{ monitoring_instance }}
-      CPUQuota=25%
       Volume={{ monitoring_config_dir }}/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
       Volume=/var/log:/var/log:ro
       # Grant access to system journal
       Volume=/run/log/journal:/run/log/journal:ro
-      ReadOnlyFilesystem=true
-      ReadWritePaths=/tmp/positions.yaml /var /tmp
       [Service]
       ProtectSystem=strict
       PrivateTmp=true
@@ -161,7 +164,6 @@
       ProtectHome=read-only
       NoNewPrivileges=true
       ReadOnlyPaths=/etc
-      ReadWritePaths=/var /tmp /tmp/positions.yaml
       Restart=always
       [Install]
       WantedBy=multi-user.target default.target

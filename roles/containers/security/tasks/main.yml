@@ -7,8 +7,8 @@
     path: "{{ containers_headscale_config_dir }}"
     state: directory
     mode: '0755'
-    owner: "1000"
-    group: "1000"
+    owner: "{{ containers_user_uid }}"
+    group: "{{ containers_user_gid }}"
   become: true
   tags: [security, storage, 900000]
 

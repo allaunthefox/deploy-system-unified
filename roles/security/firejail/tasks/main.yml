@@ -1,6 +1,6 @@
 ---
 # Tasks for security/firejail - Application Sandboxing
-- name: "CIS 5.1.1 | STIG V-230220 | NIST CM-7 | ISO 27001 §8.26 | Action 410001 | Install Firejail"
+- name: "CIS 5.1.1 | STIG V-230220 | NIST CM-7 | ISO 27001 §8.26 | Audit Code 410001 | Install Firejail"
   ansible.builtin.package:
     name: firejail
     state: present
@@ -13,7 +13,7 @@
     - security
     - sandboxing
 
-- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410006 | Ensure Firejail profile directory exists"
+- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Audit Code 410006 | Ensure Firejail profile directory exists"
   ansible.builtin.file:
     path: "{{ security_firejail_config_path }}"
     state: directory
@@ -27,7 +27,7 @@
     - security
     - sandboxing
 
-- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410008 | Ensure Firejail profiles.d directory exists"
+- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Audit Code 410008 | Ensure Firejail profiles.d directory exists"
   ansible.builtin.file:
     path: "{{ security_firejail_profiles_path }}"
     state: directory
@@ -41,7 +41,7 @@
     - security
     - sandboxing
 
-- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Action 410007 | Create local Firejail configuration directory"
+- name: "CIS 5.1.2 | STIG V-230220 | NIST SC-39 | ISO 27001 §8.26 | Audit Code 410007 | Create local Firejail configuration directory"
   ansible.builtin.file:
     path: /usr/local/etc/firejail
     state: directory
@@ -55,7 +55,7 @@
     - security
     - sandboxing
 
-- name: "CIS 5.1.3 | STIG V-230221 | NIST AC-6 | ISO 27001 §8.26 | Action 410002 | Configure Firejail GPU Access (Globals)"
+- name: "CIS 5.1.3 | STIG V-230221 | NIST AC-6 | ISO 27001 §8.26 | Audit Code 410002 | Configure Firejail GPU Access (Globals)"
   ansible.builtin.copy:
     content: |
       # Enable GPU acceleration for all Firejail sandboxes

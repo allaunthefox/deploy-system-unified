@@ -65,3 +65,10 @@
   listen: "restart aardvark-dns"
   when: ansible_service_mgr == 'systemd'
   failed_when: false
+
+- name: migrate_podman_system
+  ansible.builtin.command:
+    cmd: podman system migrate
+  become: true
+  listen: "migrate podman system"
+  changed_when: true

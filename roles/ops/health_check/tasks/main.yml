@@ -52,7 +52,7 @@
         label: "{{ item }}"
       changed_when: false
 
-- name: "CIS 4.6.2 | STIG V-230701 | NIST CA-7 | ISO 27001 §12.4 | Action 840020 | Evaluate systemd unit health"
+- name: "CIS 4.6.2 | STIG V-230701 | NIST CA-7 | ISO 27001 §12.4 | Audit Code 840020 | Evaluate systemd unit health"
   ansible.builtin.set_fact:
     health_check_results_systemd: "{{ health_check_results_systemd + [_systemd_result] }}"
   loop: "{{ health_check_systemd_checks }}"
@@ -433,7 +433,7 @@
     - ops
     - health
 
-- name: "CIS 4.6.18 | STIG V-230717 | NIST CA-7 | ISO 27001 §12.4 | Action 840021 | Enforce mandatory health checks"
+- name: "CIS 4.6.18 | STIG V-230717 | NIST CA-7 | ISO 27001 §12.4 | Audit Code 840021 | Enforce mandatory health checks"
   ansible.builtin.assert:
     that:
       - (health_check_mandatory_failures | length) == 0

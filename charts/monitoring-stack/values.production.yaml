@@ -1,0 +1,186 @@
+# Monitoring Stack - Production Values
+# =============================================================================
+# For production deployment with security hardening and proper resource limits
+# =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: "monitoring-sa"
+  annotations: {}
+  # For EKS IRSA (uncomment and configure):
+  # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/monitoring-role
+
+# RBAC Configuration
+rbac:
+  create: true
+  podLogs: false  # Enable if Prometheus needs pod logs access
+  services: true  # Enable service discovery
+
+# Ingress Configuration (Production)
+ingress:
+  enabled: true
+  className: caddy  # or nginx, traefik
+  host: monitoring.example.com  # CHANGE ME
+  tls: true  # Enable TLS
+  # For cert-manager (uncomment):
+  # annotations:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+  # tls:
+  #   - secretName: monitoring-tls
+  #     hosts:
+  #       - monitoring.example.com
+
+# Prometheus (Production Settings)
+prometheus:
+  enabled: true
+  image:
+    repository: prom/prometheus
+    tag: v2.53.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9090
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+  persistence:
+    enabled: true
+    size: "50Gi"  # Adjust based on retention needs
+    storageClass: ""  # Use cluster default or specify
+  # Retention settings
+  retention:
+    time: "15d"
+    size: "50GB"
+  # Scrape interval
+  scrapeInterval: "15s"
+  scrapeTimeout: "10s"
+
+# Grafana (Production Settings)
+grafana:
+  enabled: true
+  image:
+    repository: grafana/grafana
+    tag: "11.5"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  persistence:
+    enabled: true
+    size: "10Gi"
+    storageClass: ""
+  # Admin credentials - MUST be overridden via secrets
+  adminUser: "admin"
+  adminPassword: ""  # Set via secret: kubectl create secret generic grafana-secrets --from-literal=admin-password=CHANGE_ME
+  # Production security settings
+  security:
+    adminUser: "admin"
+    adminPassword: ""  # Use secret
+    secretKey: ""  # Use secret - auto-generated if empty
+    cookieSecure: true
+    cookieSameSite: "strict"
+    allowEmbedding: false
+  # SMTP configuration (optional)
+  smtp:
+    enabled: false
+    # host: smtp.example.com
+    # port: 587
+    # user: grafana@example.com
+    # password: ""  # Use secret
+    # fromAddress: grafana@example.com
+  # Alerting
+  alerting:
+    enabled: true
+    # Configure alertmanager integration
+    alertmanagerUrl: "http://alertmanager:9093"
+
+# Alertmanager (Production Settings)
+alertmanager:
+  enabled: true
+  image:
+    repository: prom/alertmanager
+    tag: v0.27.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9093
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  persistence:
+    enabled: true
+    size: "5Gi"
+  # Alert routing configuration
+  config:
+    route:
+      group_by: ['alertname', 'severity']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: 'default'
+      routes:
+        - match:
+            severity: critical
+          receiver: 'critical'
+          group_wait: 10s
+          repeat_interval: 1h
+    receivers:
+      - name: 'default'
+        # Configure your notification channels
+        # email_configs:
+        #   - to: alerts@example.com
+        #     send_resolved: true
+        # slack_configs:
+        #   - api_url: ""  # Use secret
+        #     channel: '#alerts'
+        #     send_resolved: true
+      - name: 'critical'
+        # High priority notifications
+        # pagerduty_configs:
+        #   - service_key: ""  # Use secret
+        #     send_resolved: true
+
+# Production monitoring dashboards
+dashboards:
+  enabled: true
+  # Import standard Kubernetes dashboards
+  kubernetes:
+    enabled: true
+  # Import Prometheus dashboards
+  prometheus:
+    enabled: true
+  # Import Grafana dashboards
+  grafana:
+    enabled: true
+
+# Production service monitors
+serviceMonitors:
+  enabled: true
+  # Monitor Kubernetes components
+  kubernetes:
+    enabled: true
+    namespaces:
+      - kube-system
+      - monitoring
+  # Monitor application namespaces
+  applications:
+    enabled: true
+    namespaces:
+      - default
+      - production

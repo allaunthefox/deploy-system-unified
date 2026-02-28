@@ -54,8 +54,8 @@ The deploy-system-unified project is a comprehensive Ansible-based infrastructur
 - Comprehensive documentation structure
 
 ### Key Components
-- Base hardened infrastructure playbook (base_hardened.yml)
-- Production deployment playbook (production_deploy.yml)
+- Base hardened infrastructure playbook (BASE_HARDENED.YML)
+- Production deployment playbook (PRODUCTION_DEPLOY.YML)
 - Multiple specialized roles for different infrastructure components
 - Container workload support with monitoring and backup solutions
 

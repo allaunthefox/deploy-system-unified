@@ -15,7 +15,7 @@
     - entropy
     - prerequisite
 
-- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1 | Action 530001 | Install entropy enhancement services (idempotent)"
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12, SP 800-90 | ISO 27001 §10.1 | Audit Code 530001 | Install entropy enhancement services (idempotent)"
   ansible.builtin.package:
     name:
       - "{{ entropy_service_mapping[ansible_distribution | lower].entropy_package }}"
@@ -33,7 +33,7 @@
     - remediate
   when: ansible_distribution | lower in entropy_service_mapping.keys()
 
-- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12 | ISO 27001 §10.1 | Action 300014 | Enable and start entropy enhancement services (idempotent)"
+- name: "CIS 3.5.1 | STIG V-230300 | NIST SC-12 | ISO 27001 §10.1 | Audit Code 300014 | Enable and start entropy enhancement services (idempotent)"
   ansible.builtin.systemd:
     name: "{{ item }}"
     enabled: true

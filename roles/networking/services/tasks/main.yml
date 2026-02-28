@@ -2,7 +2,7 @@
 # Networking Services Role
 # SOP-OPS | Standard Operating Procedures
 
-- name: "ISO 27001 §8.17 | NIST AU-8 | Action 300001 | Configure NTP service for time synchronization"
+- name: "ISO 27001 §8.17 | NIST AU-8 | Audit Code 300001 | Configure NTP service for time synchronization"
   block:
     - name: Install chrony package
       ansible.builtin.package:
@@ -40,7 +40,7 @@
     - ntp
     - networking
 
-- name: "ISO 27001 §9.4 | NIST AC-3 | NIST SC-7 | Action 540002 | Configure firewall rules for network services"
+- name: "ISO 27001 §9.4 | NIST AC-3 | NIST SC-7 | Audit Code 540002 | Configure firewall rules for network services"
   block:
     - name: Configure default firewall policy
       ansible.builtin.iptables:
@@ -73,7 +73,7 @@
     - firewall
     - networking
 
-- name: "ISO 27001 §10.1 | NIST SC-13 | Action 540200 | Configure TLS for network services"
+- name: "ISO 27001 §10.1 | NIST SC-13 | Audit Code 540200 | Configure TLS for network services"
   block:
     - name: Create TLS configuration directory
       ansible.builtin.file:
@@ -125,7 +125,7 @@
     - pqc
     - pqc_hybrid
 
-- name: "ISO 27001 §10.1 | NIST SC-13 | Action 540201 | Configure HSTS headers for enhanced security"
+- name: "ISO 27001 §10.1 | NIST SC-13 | Audit Code 540201 | Configure HSTS headers for enhanced security"
   block:
     - name: Configure HSTS security headers
       ansible.builtin.copy:
@@ -159,7 +159,7 @@
     - hsts
     - networking
 
-- name: "ISO 27001 §10.1 | NIST SC-13 | Action 540202 | Configure certificate transparency logging"
+- name: "ISO 27001 §10.1 | NIST SC-13 | Audit Code 540202 | Configure certificate transparency logging"
   block:
     - name: Configure certificate transparency compliance
       ansible.builtin.copy:
@@ -193,7 +193,7 @@
     - certificate
     - supply_chain
 
-- name: "NIST SC-12 | ISO 27001 §10.1 | Action 400015 | Configure cryptographic key rotation"
+- name: "NIST SC-12 | ISO 27001 §10.1 | Audit Code 400015 | Configure cryptographic key rotation"
   block:
     - name: Configure key rotation policy
       ansible.builtin.copy:

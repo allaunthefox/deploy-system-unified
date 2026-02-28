@@ -29,7 +29,7 @@
     - hardware
     - virtualization
 
-- name: "CIS 3.4.3 | STIG V-230572 | NIST AC-6 | ISO 27001 §8.26 | Action 450002 | Optimize Virtual Memory for shared cloud resources"
+- name: "CIS 3.4.3 | STIG V-230572 | NIST AC-6 | ISO 27001 §8.26 | Audit Code 450002 | Optimize Virtual Memory for shared cloud resources"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"

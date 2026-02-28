@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100006
+# Playbook Type: Preflight Validation
+# Description: Ontological contract enforcement and preflight assertions
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 - name: Preflight Validation - Ontological Contract Enforcement
   hosts: all

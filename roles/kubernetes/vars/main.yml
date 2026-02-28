@@ -1,6 +1,9 @@
 ---
 # Internal variables for kubernetes role
 # Part of ISO 9001 Structural Consistency
+# 
+# NOTE: These are fallback defaults. Override in group_vars/<inventory>.yml
+# Project Standard: host-gw backend, 172.17.x.x CIDRs (avoid conflicts with 10.x VPS networks)
 
 # K3s/Kubernetes paths
 _k8s_binary_path: /usr/local/bin/k3s
@@ -20,11 +23,18 @@ _k8s_api_port: 6443
 _k8s_api_secure_port: 6443
 _k8s_api_localhost_port: 10250
 
-# Internal cluster networking
-_k8s_cluster_dns: 10.43.0.10
-_k8s_cluster_domain: cluster.local
-_k8s_pod_cidr: 10.42.0.0/16
-_k8s_service_cidr: 10.43.0.0/16
+# Internal cluster networking (Project Standard: 172.17.x.x to avoid VPS conflicts)
+# These MUST match roles/kubernetes/master/defaults/main.yml
+_k8s_cluster_dns: "{{ kubernetes_cluster_dns | default('172.17.0.10') }}"
+_k8s_cluster_domain: "{{ kubernetes_cluster_domain | default('cluster.local') }}"
+_k8s_pod_cidr: "{{ kubernetes_pod_cidr | default('172.16.0.0/16') }}"
+_k8s_service_cidr: "{{ kubernetes_service_cidr | default('172.17.0.0/16') }}"
+
+# Flannel backend (Project Standard: host-gw for performance)
+_k8s_flannel_backend: "{{ kubernetes_flannel_backend | default('host-gw') }}"
+
+# Proxy mode (Project Standard: nftables for restricted kernels)
+_k8s_proxy_mode: "{{ kubernetes_proxy_mode | default('nftables') }}"
 
 # K3s component ports
 _k8s_kubelet_port: 10250

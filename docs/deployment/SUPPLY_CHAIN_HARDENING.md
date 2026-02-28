@@ -45,7 +45,7 @@ rpmfusion_nonfree_sha256: "e5f6g7h8..."
 Run your standard playbook. The `hardware/gpu` and `core/repositories` roles will automatically detect the hardened variables and switch to "Verified Mode".
 
 ```bash
-ansible-playbook -i inventory/prod.ini site.yml
+ansible-playbook -i inventory/prod.ini SITE.YML
 ```
 
 ## ⚠️ Maintenance Note

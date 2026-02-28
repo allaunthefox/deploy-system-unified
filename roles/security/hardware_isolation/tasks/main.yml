@@ -1,7 +1,7 @@
 ---
 # Tasks for security/hardware_isolation - PCIe and DMA Protection
 
-- name: "CIS 3.2.1 | STIG V-230231 | NIST SC-43 | ISO 27001 §8.26 | Action 450003 | Detect CPU Vendor for IOMMU"
+- name: "CIS 3.2.1 | STIG V-230231 | NIST SC-43 | ISO 27001 §8.26 | Audit Code 450003 | Detect CPU Vendor for IOMMU"
   ansible.builtin.set_fact:
     _hardware_isolation_vendor: >-
       {{
@@ -18,7 +18,7 @@
     - security
     - isolation
 
-- name: "CIS 3.2.1 | STIG V-230231 | NIST SC-43 | ISO 27001 §8.26 | Action 450004 | Set IOMMU Vendor Fact"
+- name: "CIS 3.2.1 | STIG V-230231 | NIST SC-43 | ISO 27001 §8.26 | Audit Code 450004 | Set IOMMU Vendor Fact"
   ansible.builtin.set_fact:
     _hardware_isolation_vendor: "{{ hardware_isolation_iommu_vendor }}"
   when: hardware_isolation_iommu_vendor != "auto"
@@ -30,7 +30,7 @@
     - security
     - isolation
 
-- name: "CIS 3.2.2 | STIG V-230232 | NIST SC-8 | ISO 27001 §8.26 | Action 450002 | Register IOMMU Isolation Parameters for GRUB"
+- name: "CIS 3.2.2 | STIG V-230232 | NIST SC-8 | ISO 27001 §8.26 | Audit Code 450002 | Register IOMMU Isolation Parameters for GRUB"
   ansible.builtin.set_fact:
     core_grub_isolation_params: >-
       {{
@@ -56,7 +56,7 @@
     - hardware_isolation_iommu_enabled
     - _hardware_isolation_vendor in ['intel', 'amd']
 
-- name: "CIS 3.2.3 | STIG V-230232 | NIST SC-8 | ISO 27001 §8.26 | Action 450104 | Blacklist dangerous DMA-capable modules"
+- name: "CIS 3.2.3 | STIG V-230232 | NIST SC-8 | ISO 27001 §8.26 | Audit Code 450104 | Blacklist dangerous DMA-capable modules"
   ansible.builtin.template:
     src: dma-isolation.conf.j2
     dest: /etc/modprobe.d/99-dma-isolation.conf

@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400009
+# Script Type: Restore Operations
+# Description: Wrapper for Restic restore operations
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 set -eu
 
 # RESTORE_DATA.SH

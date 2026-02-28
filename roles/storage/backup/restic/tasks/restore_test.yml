@@ -1,7 +1,7 @@
 ---
 # Tasks for automated restore testing (ISO 27040 Compliance)
 
-- name: "ISO 27040 | Action 900003 | Initialize Restore Test Environment"
+- name: "ISO 27040 | Audit Code 900003 | Initialize Restore Test Environment"
   ansible.builtin.file:
     path: "{{ restic_restore_test_path }}"
     state: directory
@@ -11,7 +11,7 @@
   become: true
   tags: [backup, restic, restore_test, iso_27040]
 
-- name: "ISO 27040 | Action 900003 | Perform Sample Restore (Latest Snapshot)"
+- name: "ISO 27040 | Audit Code 900003 | Perform Sample Restore (Latest Snapshot)"
   ansible.builtin.shell: |
     
     restic -r "{{ restic_repo }}" -p "{{ restic_config_dir }}/password" restore latest \
@@ -24,7 +24,7 @@
   changed_when: false
   tags: [backup, restic, restore_test, iso_27040]
 
-- name: "ISO 27040 | Action 900003 | Verify Repository Integrity (Restic Check)"
+- name: "ISO 27040 | Audit Code 900003 | Verify Repository Integrity (Restic Check)"
   ansible.builtin.command:
     cmd: restic -r "{{ restic_repo }}" -p "{{ restic_config_dir }}/password" check
   become: true
@@ -32,7 +32,7 @@
   changed_when: false
   tags: [backup, restic, restore_test, iso_27040]
 
-- name: "ISO 27040 | Action 900004 | Validate Restore Success"
+- name: "ISO 27040 | Audit Code 900004 | Validate Restore Success"
   ansible.builtin.assert:
     that:
       - restic_restore_result.rc | default(0) == 0
@@ -45,7 +45,7 @@
   when: not ansible_check_mode
   tags: [backup, restic, restore_test, audit, iso_27040]
 
-- name: "ISO 27040 | Action 900031 | Shred and Remove Restore Test Data"
+- name: "ISO 27040 | Audit Code 900031 | Shred and Remove Restore Test Data"
   ansible.builtin.shell: |
     find "{{ restic_restore_test_path }}" -type f -exec shred -u {} \;
     rm -rf "{{ restic_restore_test_path }}"

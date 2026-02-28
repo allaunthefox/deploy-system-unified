@@ -26,7 +26,7 @@
     - kubernetes
     - orchestration
 
-- name: "CIS 4.3.3 | STIG V-230522 | NIST SC-7 | ISO 27001 §8.26 | Action 820000 | Load Kubernetes required kernel modules"
+- name: "CIS 4.3.3 | STIG V-230522 | NIST SC-7 | ISO 27001 §8.26 | Audit Code 820000 | Load Kubernetes required kernel modules"
   community.general.modprobe:
     name: "{{ item }}"
     state: present
@@ -42,7 +42,7 @@
     - kubernetes
     - orchestration
 
-- name: "CIS 4.3.4 | STIG V-230523 | NIST SC-8 | ISO 27001 §8.26 | Action 820000 | Configure sysctl for Kubernetes networking"
+- name: "CIS 4.3.4 | STIG V-230523 | NIST SC-8 | ISO 27001 §8.26 | Audit Code 820000 | Configure sysctl for Kubernetes networking"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"

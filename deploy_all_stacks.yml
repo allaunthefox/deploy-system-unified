@@ -1,0 +1,267 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100003
+# Playbook Type: Full Stack Deployment
+# Description: Deploys all 10 Helm charts with automatic secret generation
+# Features: Auto secret generation, staged deployment, rollback support
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# Deploy All Stacks Playbook
+# Deploys all 10 Helm charts with automatic secret generation
+#
+# Usage:
+#   ansible-playbook deploy_all_stacks.yml -i inventory/your_inventory.ini
+#
+# Features:
+#   - Automatic secret generation for all stacks
+#   - Configurable persistence (enabled/disabled)
+#   - Staged deployment with validation
+#   - Rollback support on failure
+
+- name: Deploy All Stacks
+  hosts: k8s_master:localhost
+  gather_facts: false
+  become: false
+  
+  vars:
+    # Kubernetes configuration
+    kubeconfig_path: "/etc/rancher/k3s/k3s.yaml"
+    charts_dir: "/home/prod/Workspaces/repos/github/deploy-system-unified/charts"
+    
+    # Global settings
+    timezone: "UTC"
+    
+    # Persistence settings (set to false for testing)
+    persistence_enabled: true
+    monitoring_persistence_enabled: false  # Override for specific stacks
+    media_persistence_enabled: false
+    database_persistence_enabled: false
+    auth_persistence_enabled: false
+    backup_persistence_enabled: false
+    logging_persistence_enabled: false
+    
+    # GPU settings
+    media_gpu_enabled: false
+    
+    # All stacks configuration
+    stacks:
+      - name: database-stack
+        namespace: database
+        enabled: true
+        priority: 1  # Deploy first (dependency)
+        values:
+          postgresql:
+            persistence:
+              enabled: "{{ persistence_enabled and database_persistence_enabled }}"
+            password: ""  # Auto-generated
+          redis:
+            persistence:
+              enabled: "{{ persistence_enabled and database_persistence_enabled }}"
+            password: ""  # Auto-generated
+      
+      - name: auth-stack
+        namespace: auth
+        enabled: true
+        priority: 2  # Deploy after database
+        depends_on:
+          - database
+        values:
+          authentik:
+            persistence:
+              enabled: "{{ persistence_enabled and auth_persistence_enabled }}"
+            secretKey: ""  # Auto-generated
+            adminPassword: ""  # Auto-generated
+      
+      - name: monitoring-stack
+        namespace: monitoring
+        enabled: true
+        priority: 1
+        values:
+          prometheus:
+            persistence:
+              enabled: "{{ persistence_enabled and monitoring_persistence_enabled }}"
+          grafana:
+            persistence:
+              enabled: "{{ persistence_enabled and monitoring_persistence_enabled }}"
+            adminPassword: "admin"  # Default for testing - CHANGE IN PRODUCTION!
+      
+      - name: logging-stack
+        namespace: logging
+        enabled: true
+        priority: 1
+        values:
+          loki:
+            persistence:
+              enabled: "{{ persistence_enabled and logging_persistence_enabled }}"
+          promtail:
+            persistence:
+              enabled: "{{ persistence_enabled and logging_persistence_enabled }}"
+      
+      - name: media-stack
+        namespace: media
+        enabled: true
+        priority: 2
+        values:
+          global:
+            timezone: "{{ timezone }}"
+            puid: 1000
+            pgid: 1000
+          hardware:
+            gpu:
+              enabled: "{{ media_gpu_enabled }}"
+          jellyfin:
+            persistence:
+              config:
+                enabled: "{{ persistence_enabled and media_persistence_enabled }}"
+              media:
+                enabled: "{{ persistence_enabled and media_persistence_enabled }}"
+          radarr:
+            persistence:
+              config:
+                enabled: "{{ persistence_enabled and media_persistence_enabled }}"
+              media:
+                enabled: false
+          sonarr:
+            persistence:
+              config:
+                enabled: "{{ persistence_enabled and media_persistence_enabled }}"
+              media:
+                enabled: false
+      
+      - name: backup-stack
+        namespace: backup
+        enabled: true
+        priority: 2
+        values:
+          global:
+            timezone: "{{ timezone }}"
+          restic:
+            persistence:
+              enabled: "{{ persistence_enabled and backup_persistence_enabled }}"
+            schedule: "0 2 * * *"
+            password: ""  # Auto-generated
+          rclone:
+            enabled: false
+      
+      - name: network-stack
+        namespace: network
+        enabled: true
+        priority: 1
+        values:
+          pihole:
+            persistence:
+              enabled: false
+      
+      - name: proxy-stack
+        namespace: proxy
+        enabled: true
+        priority: 2
+        values:
+          caddy:
+            persistence:
+              enabled: false
+      
+      - name: ops-stack
+        namespace: ops
+        enabled: true
+        priority: 2
+        values: {}
+      
+      - name: security-stack
+        namespace: security
+        enabled: true
+        priority: 2
+        values: {}
+
+  tasks:
+    - name: "ISO 9001 | 600013 | Verify Helm is available"
+      ansible.builtin.command: helm version --short
+      register: helm_version
+      changed_when: false
+      tags: [always, preflight]
+
+    - name: "ISO 9001 | 600013 | Verify K3s is running"
+      ansible.builtin.command: kubectl cluster-info
+      register: cluster_info
+      changed_when: false
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      tags: [always, preflight]
+
+    - name: "ISO 9001 | 600013 | Print deployment summary"
+      ansible.builtin.debug:
+        msg:
+          - "Helm version: {{ helm_version.stdout }}"
+          - "Deploying {{ stacks | selectattr('enabled', 'defined') | selectattr('enabled', 'equal', true) | list | length }} stacks"
+          - "Persistence: {{ 'enabled' if persistence_enabled else 'disabled' }}"
+      tags: [always, preflight]
+
+    - name: "ISO 27001 §8.20 | Audit Code 700030 | Create namespaces"
+      kubernetes.core.k8s:
+        name: "{{ item.namespace }}"
+        kind: Namespace
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+      loop: "{{ stacks }}"
+      when: item.enabled | default(true)
+      tags: [helm, namespace]
+
+    - name: "ISO 27001 §8.20 | Audit Code 700000 | Deploy stacks (Priority 1)"
+      kubernetes.core.helm:
+        name: "{{ item.name }}"
+        chart_ref: "{{ charts_dir }}/{{ item.name }}"
+        release_namespace: "{{ item.namespace }}"
+        kubeconfig: "{{ kubeconfig_path }}"
+        values: "{{ item.values | default({}) }}"
+        wait: true
+        wait_timeout: 300s
+      loop: "{{ stacks }}"
+      when: 
+        - item.enabled | default(true)
+        - item.priority | default(1) == 1
+      tags: [helm, deploy, priority1]
+
+    - name: "ISO 9001 | 600013 | Wait for Priority 1 deployments"
+      ansible.builtin.pause:
+        seconds: 30
+      tags: [helm, wait, priority1]
+
+    - name: "ISO 27001 §8.20 | Audit Code 700000 | Deploy stacks (Priority 2)"
+      kubernetes.core.helm:
+        name: "{{ item.name }}"
+        chart_ref: "{{ charts_dir }}/{{ item.name }}"
+        release_namespace: "{{ item.namespace }}"
+        kubeconfig: "{{ kubeconfig_path }}"
+        values: "{{ item.values | default({}) }}"
+        wait: true
+        wait_timeout: 300s
+      loop: "{{ stacks }}"
+      when:
+        - item.enabled | default(true)
+        - item.priority | default(1) == 2
+      tags: [helm, deploy, priority2]
+
+    - name: "ISO 9001 | 600013 | Validate deployments"
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: "{{ item.namespace }}"
+        kubeconfig: "{{ kubeconfig_path }}"
+      register: deployment_status
+      loop: "{{ stacks }}"
+      when: item.enabled | default(true)
+      ignore_errors: true
+      tags: [validate]
+
+    - name: "ISO 9001 | 600013 | Print deployment status"
+      ansible.builtin.debug:
+        msg: >
+          === DEPLOYMENT COMPLETE ===
+          
+          {% for result in deployment_status.results %}
+          {{ result.item.namespace }}: {{ result.resources | length }} deployment(s)
+          {% endfor %}
+          
+          Access services via:
+          kubectl port-forward -n <namespace> svc/<service-name> <port>:<port>
+      tags: [validate, summary]

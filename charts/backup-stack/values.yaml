@@ -1,5 +1,6 @@
 # Backup Stack Values
 # SECURITY: Do not store credentials here. Use SOPS or external secrets management.
+# NOTE: If no credentials are provided, the chart will generate random defaults for testing.
 
 # Global settings
 global:
@@ -11,14 +12,26 @@ restic:
   image:
     repository: restic/restic
     tag: 0.17.0
-  # SECURITY: repository and password must be provided via external secrets
-  repository: ""  # e.g., s3:https://s3.amazonaws.com/bucket - REQUIRED
-  password: ""    # Encryption password - REQUIRED: Set via external secret
-  schedule: "0 2 * *"  # Daily at 2am
+  # Repository configuration
+  # If not specified, will use local backup to emptyDir (testing mode)
+  repository: ""  # e.g., s3:https://s3.amazonaws.com/bucket or local:/path
+  
+  # SECURITY: These will be auto-generated if not provided (for testing only)
+  password: ""    # Encryption password - auto-generated if empty
+  s3AccessKey: ""  # S3 access key - auto-generated if empty
+  s3SecretKey: ""  # S3 secret key - auto-generated if empty
+  
+  schedule: "0 2 * * *"  # Daily at 2am (5-field cron)
   retention:
     daily: 7
     weekly: 4
     monthly: 6
+  
+  # Persistence configuration
+  persistence:
+    enabled: true  # Set to false for testing (uses emptyDir)
+    size: 10Gi
+    storageClass: ""  # Use default storage class
 
 # Rclone
 rclone:
@@ -27,8 +40,8 @@ rclone:
     repository: rclone/rclone
     tag: 1.68.0
   # SECURITY: config must be provided via external secrets
-  config: ""  # Rclone config content - REQUIRED: Set via external secret
-  schedule: "0 3 * *"  # Daily at 3am
+  config: ""  # Rclone config content
+  schedule: "0 3 * * *"  # Daily at 3am (5-field cron)
 
 # Ingress Configuration
 ingress:

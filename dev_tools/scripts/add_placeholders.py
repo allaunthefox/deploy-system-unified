@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500011
+# Script Type: Repository Maintenance
+# Description: Adds .gitkeep placeholders to role directories
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 from pathlib import Path
 import sys
 

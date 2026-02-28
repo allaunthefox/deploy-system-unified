@@ -40,6 +40,14 @@ system_dns_servers:
   - "1.1.1.1"
   - "8.8.8.8"
 
+# Internal Networking Policy (ISO 27001 §13.1)
+# - Prefer static internal ranges (RFC 1918) to avoid loopback inaccuracies.
+# - DO NOT rely on localhost/127.0.0.1 for inter-service or container benchmarks.
+# - Preferred ranges: 10.0.0.0/8 and 172.16.0.0/12.
+system_network_internal_range: "10.0.0.0/8,172.16.0.0/12"
+system_network_preferred_dynamic_range: "10.42.0.0/16"
+system_network_avoid_localhost: true
+
 # -----------------------------------------------------------------------------
 # Package Management (Bootstrap)
 # -----------------------------------------------------------------------------

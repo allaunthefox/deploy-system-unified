@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CIC-600003
+# Pipeline Type: Forensic Naming Enforcement
+# Description: Validates Ansible forensic naming conventions
+# Trigger: pull_request (roles/**/*.yml, playbooks/**/*.yml)
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 name: "Forensic Naming Enforcer"
 
 on:

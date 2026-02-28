@@ -1,4 +1,12 @@
-#!/bin/sh
+#!/bin/bash
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400012
+# Script Type: Metrics Collection Benchmark
+# Description: Collects resource utilization metrics for K8s vs Podman
+# Usage: ./benchmark_metrics.sh [podman|k8s] [duration_minutes]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 #===============================================================================
 # benchmark_metrics.sh - Container Runtime Benchmark Metrics Collection
 #===============================================================================
@@ -13,6 +21,14 @@ RUNTIME="${1:-podman}"
 DURATION="${2:-60}"
 OUTPUT_DIR="${OUTPUT_DIR:-/var/lib/deploy-system/evidence/benchmark}"
 INTERVAL=5  # seconds between samples
+OUTPUT_FORMAT="text"
+
+# Parse arguments for --json
+for arg in "$@"; do
+    if [ "$arg" = "--json" ]; then
+        OUTPUT_FORMAT="json"
+    fi
+done
 
 # Colors for output
 RED='\033[0;31m'
@@ -20,8 +36,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-log_info() { printf "${GREEN}[INFO]${NC} %s\n" "$1"; }
-log_warn() { printf "${YELLOW}[WARN]${NC} %s\n" "$1"; }
+log_info() { if [ "$OUTPUT_FORMAT" != "json" ]; then printf "${GREEN}[INFO]${NC} %s\n" "$1"; fi; }
+log_warn() { if [ "$OUTPUT_FORMAT" != "json" ]; then printf "${YELLOW}[WARN]${NC} %s\n" "$1"; fi; }
 log_error() { printf "${RED}[ERROR]${NC} %s\n" "$1"; }
 
 #===============================================================================
@@ -102,19 +118,10 @@ convert_mem_to_percent() {
     echo "scale=2; $mem_num * 100 / $total_mem" | bc
 }
 
-# Create output directory
-mkdir -p "$OUTPUT_DIR"
-
-# Timestamp for output files
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-LOG_FILE="$OUTPUT_DIR/${RUNTIME}_benchmark_${TIMESTAMP}.log"
-
-log_info "Starting $RUNTIME benchmark for $DURATION minutes..."
-log_info "Output directory: $OUTPUT_DIR"
-log_info "Log file: $LOG_FILE"
+# Create output directory, timestamp, and log file are set up inside main()
 
 # Check dependencies before starting
-check_dependencies
+# (moved inside main to avoid running on --help)
 
 #===============================================================================
 # CPU Metrics Collection
@@ -183,6 +190,16 @@ measure_startup() {
 # Main Collection Loop
 #===============================================================================
 main() {
+    mkdir -p "$OUTPUT_DIR"
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    LOG_FILE="$OUTPUT_DIR/${RUNTIME}_benchmark_${TIMESTAMP}.log"
+
+    log_info "Starting $RUNTIME benchmark for $DURATION minutes..."
+    log_info "Output directory: $OUTPUT_DIR"
+    log_info "Log file: $LOG_FILE"
+
+    check_dependencies
+
     iterations=$((DURATION * 60 / INTERVAL))
     count=0
 
@@ -191,10 +208,35 @@ main() {
     while [ $count -lt "$iterations" ]; do
         timestamp=$(date +%Y-%m-%dT%H:%M:%S)
 
+       if [ "$OUTPUT_FORMAT" = "json" ]; then
+        # CPU Usage via /proc/stat
+        CPU_STATS=($(grep '^cpu ' /proc/stat))
+        IDLE_BEFORE=${CPU_STATS[4]}
+        TOTAL_BEFORE=0
+        for i in "${CPU_STATS[@]:1}"; do TOTAL_BEFORE=$((TOTAL_BEFORE + i)); done
+        sleep 0.1
+        CPU_STATS=($(grep '^cpu ' /proc/stat))
+        IDLE_AFTER=${CPU_STATS[4]}
+        TOTAL_AFTER=0
+        for i in "${CPU_STATS[@]:1}"; do TOTAL_AFTER=$((TOTAL_AFTER + i)); done
+        
+        CPU_USAGE=$(awk "BEGIN {print (1 - ($IDLE_AFTER - $IDLE_BEFORE) / ($TOTAL_AFTER - $TOTAL_BEFORE)) * 100}")
+        
+        # Memory Usage via /proc/meminfo
+        MEM_TOTAL=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+        MEM_FREE=$(grep MemFree /proc/meminfo | awk '{print $2}')
+        MEM_BUFFERS=$(grep Buffers /proc/meminfo | awk '{print $2}')
+        MEM_CACHED=$(grep "^Cached" /proc/meminfo | awk '{print $2}')
+        MEM_USED=$((MEM_TOTAL - MEM_FREE - MEM_BUFFERS - MEM_CACHED))
+        MEM_USAGE_PERC=$(awk "BEGIN {print ($MEM_USED / $MEM_TOTAL) * 100}")
+        
+        echo "{ \"cpu_load_percent\": $CPU_USAGE, \"mem_usage_percent\": $MEM_USAGE_PERC }"
+        exit 0
+    fi
         # Collect system metrics
         cpu_usage=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
 
-        mem_usage=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2}')
+        mem_usage=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2}' )
 
         echo "$timestamp,$cpu_usage,$mem_usage,system,0,0" >> "$LOG_FILE"
 
@@ -228,9 +270,9 @@ main() {
         sleep "$INTERVAL"
     done
 
-    log_info "Benchmark complete. Results saved to: $LOG_FILE"
+    log_info "Benchmark complete. Results saved in $OUTPUT_DIR"
 
-    # Generate summary
+
     avg_cpu=$(awk -F',' 'NR>1 {sum+=$2; count++} END {print sum/count}' "$LOG_FILE")
     avg_mem=$(awk -F',' 'NR>1 {sum+=$3; count++} END {print sum/count}' "$LOG_FILE")
 

@@ -1,3 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CNT-850002
+# File Type: Podman Quadlet Configuration
+# Description: Deploy-System-Unified container orchestration via systemd
+# Usage: sudo cp deploy-system.container /etc/containers/systemd/
+# Compliance: Resource limits, read-only rootfs, non-root user
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Deploy-System-Unified - Podman Quadlet Configuration
 # Podman-native container orchestration (no Docker required)

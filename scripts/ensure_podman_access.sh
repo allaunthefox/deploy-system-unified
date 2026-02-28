@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400016
+# Script Type: Access Configuration (Podman)
+# Description: Ensures Podman is accessible and configured
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 set -eu
 
 USER="${SUDO_USER:-$USER}"

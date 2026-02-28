@@ -1,3 +1,4 @@
+{{- if .Values.jellyfin.persistence.config.enabled }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -12,7 +13,9 @@ spec:
   {{- if .Values.jellyfin.persistence.config.storageClass }}
   storageClassName: {{ .Values.jellyfin.persistence.config.storageClass }}
   {{- end }}
+{{- end }}
 ---
+{{- if .Values.radarr.persistence.config.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -22,8 +25,13 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: {{ .Values.radarr.persistence.config.size }}
+  {{- if .Values.radarr.persistence.config.storageClass }}
+  storageClassName: {{ .Values.radarr.persistence.config.storageClass }}
+  {{- end }}
+{{- end }}
 ---
+{{- if .Values.sonarr.persistence.config.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -33,8 +41,13 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: {{ .Values.sonarr.persistence.config.size }}
+  {{- if .Values.sonarr.persistence.config.storageClass }}
+  storageClassName: {{ .Values.sonarr.persistence.config.storageClass }}
+  {{- end }}
+{{- end }}
 ---
+{{- if or .Values.jellyfin.persistence.media.enabled .Values.radarr.persistence.media.enabled .Values.sonarr.persistence.media.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -44,7 +57,8 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.jellyfin.persistence.media.size }}
+      storage: {{ .Values.jellyfin.persistence.media.size | default "100Gi" }}
   {{- if .Values.jellyfin.persistence.media.storageClass }}
   storageClassName: {{ .Values.jellyfin.persistence.media.storageClass }}
   {{- end }}
+{{- end }}

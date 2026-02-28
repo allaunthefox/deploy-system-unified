@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CIC-600002
+# Pipeline Type: Style Guide Enforcement
+# Description: Validates code style for Ansible, Python, Shell, YAML
+# Trigger: push, pull_request
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 name: Style Guide Enforcement
 

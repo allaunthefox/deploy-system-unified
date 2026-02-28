@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100015
+# Playbook Type: Preflight Assertions
+# Description: Ontological contract enforcement assertions
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 - name: Preflight Assertions - Stability & Secrets Hygiene
   hosts: all

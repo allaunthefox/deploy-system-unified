@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400025
+# Script Type: YAML Remediation
+# Description: Fixes trailing spaces and newlines in YAML files
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 
 echo "=== Fixing Remaining YAML Issues ==="
 

@@ -60,7 +60,7 @@
       ansible.builtin.set_fact:
         containers_gpu_nvidia_mig_supported: "{{ gpu_slicing_mig_supported | default(false) }}"
 
-- name: "ISO 27001 §8.26 | Action 800420 | Process GPU Allocation Map"
+- name: "ISO 27001 §8.26 | Audit Code 800420 | Process GPU Allocation Map"
   ansible.builtin.set_fact:
     containers_gpu_allocation_flags: >-
       {% set results = {} %}

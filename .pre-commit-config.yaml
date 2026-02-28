@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CIC-600005
+# Configuration Type: Pre-commit Hooks
+# Description: Local CI gate mirroring MegaLinter, TruffleHog, dead code, code smells
+# Updated: 2026-02-24 with 2025/2026 tooling
+# Run: pre-commit install
+# To bypass: git commit --no-verify
+# =============================================================================
 # Local CI Gate - Pre-commit hooks
 # Mirrors CI gates: MegaLinter, TruffleHog, Dead Code, Code Smells
 # Run: pre-commit install

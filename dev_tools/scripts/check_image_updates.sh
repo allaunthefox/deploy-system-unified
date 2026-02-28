@@ -1,5 +1,13 @@
 #!/bin/sh
-# ISO 27001 §14.2 | Action 520040 | DSU Image Update Sentinel
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400023
+# Script Type: Image Update Audit
+# Description: ISO 27001 §14.2 - Image digest verification
+# Usage: ./check_image_updates.sh [--json]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+# ISO 27001 §14.2 | Audit Code 520040 | DSU Image Update Sentinel
 # Usage: ./check_image_updates.sh [--json]
 
 echo "--- DSU Immutable Digest Audit Start ---"

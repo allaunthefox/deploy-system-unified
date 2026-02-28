@@ -15,7 +15,7 @@ Initial role list (audit and mitigation planned):
 - `roles/storage/backup/restic` — `restic_password` placeholder default.
 
 How to proceed
-1. Run the diagnostic playbook (non‑failing): `ansible-playbook playbooks/preflight_diagnose.yml` to get a JSON report (`ci-artifacts/preflight_diagnose_<host>.json`).
+1. Run the diagnostic playbook (non‑failing): `ansible-playbook playbooks/PREFLIGHT_DIAGNOSE.YML` to get a JSON report (`ci-artifacts/preflight_diagnose_<host>.json`).
 2. Fix placeholders and secret files, or set the per-role fail_secure flag to `false` if you accept risk:
    - Global override: `core_security_fail_secure: false`
    - Per-role alias: `containers_fail_secure: false` or service override `vaultwarden_fail_secure: false`

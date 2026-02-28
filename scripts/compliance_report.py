@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500001
+# Script Type: Compliance Reporting
+# Description: Generates comprehensive compliance reports for CIS, STIG, NIST, ISO 27001
+# Usage: python compliance_report.py [--format json|markdown|html] [--output FILE]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """
 Compliance Report Generator for Deploy-System-Unified Ansible Roles
 

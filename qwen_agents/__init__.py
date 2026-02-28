@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500009
+# File Type: Python Package Initializer
+# Description: Qwen Sub-Agent System initializer
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """
 Initializer script for Qwen Sub-Agent System
 """

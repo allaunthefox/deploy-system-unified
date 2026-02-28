@@ -1,0 +1,186 @@
+# Logging Stack - Production Values
+# =============================================================================
+# For production deployment with Loki and Promtail
+# =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: "logging-sa"
+  annotations: {}
+  # For GCP Workload Identity:
+  # iam.gke.io/gcp-service-account: logging@PROJECT_ID.iam.gserviceaccount.com
+
+# RBAC Configuration
+rbac:
+  create: true
+  services: false
+  podLogs: true  # Promtail needs pod logs access
+
+# Global Settings
+global:
+  timezone: "UTC"
+
+# Loki (Production Settings)
+loki:
+  enabled: true
+  image:
+    repository: grafana/loki
+    tag: "3.2.0"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3100
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+  persistence:
+    enabled: true
+    size: "100Gi"  # Adjust based on log retention
+    storageClass: ""
+  # Retention settings
+  retention:
+    enabled: true
+    period: "30d"  # Keep logs for 30 days
+    maxSize: "100GB"
+  # Compaction settings
+  compaction:
+    enabled: true
+    interval: "1h"
+  # Query settings
+  query:
+    maxEntriesLimit: 5000
+    timeout: "2m"
+  # Ingester settings
+  ingester:
+    chunkIdlePeriod: "30m"
+    chunkBlockPeriod: "2h"
+    chunkRetainPeriod: "1m"
+  # Schema configuration
+  schema:
+    version: "v13"
+    from: "2024-01-01"
+    store: "tsdb"
+    objectStore: "filesystem"
+
+# Promtail (Production Settings)
+promtail:
+  enabled: true
+  image:
+    repository: grafana/promtail
+    tag: "3.2.0"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  # Scrape configurations
+  scrapeConfigs:
+    # Kubernetes pods
+    - job_name: kubernetes-pods
+      enabled: true
+      # Only scrape pods with annotation
+      annotation: "prometheus.io/scrape"
+      # Pipeline stages for log processing
+      pipelineStages:
+        - cri: {}
+        - multiline:
+            firstline: '^\d{4}-\d{2}-\d{2}'
+            max_wait_time: 3s
+        - labeldrop:
+            - filename
+    # Kubernetes nodes
+    - job_name: kubernetes-nodes
+      enabled: true
+    # System logs
+    - job_name: system-logs
+      enabled: true
+      paths:
+        - /var/log/*.log
+        - /var/log/syslog
+        - /var/log/messages
+  # Position tracking
+  positions:
+    filename: /tmp/positions.yaml
+    syncPeriod: "10s"
+  # Client settings
+  client:
+    serverTimeout: "10s"
+    batchWait: "1s"
+    batchSize: 1048576  # 1MB
+    minBackoff: "100ms"
+    maxBackoff: "5m"
+    maxRetries: 5
+
+# Ingress Configuration (Optional)
+ingress:
+  enabled: false
+  # className: caddy
+  # host: loki.example.com
+  # tls: true
+
+# Monitoring Integration
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: "30s"
+  # Loki alerts
+  alerts:
+    enabled: true
+    # Alert on high error rate
+    highErrorRate: true
+    # Alert on ingestion latency
+    ingestionLatency: true
+    # Alert on storage usage
+    storageUsage: true
+
+# Grafana Integration
+grafana:
+  enabled: true
+  # Auto-configure Loki datasource in Grafana
+  datasource:
+    enabled: true
+    name: "Loki"
+    default: false
+    # Datasource settings
+    maxLines: 1000
+    derivedFields:
+      - name: TraceID
+        matcherRegex: "traceID=(\\w+)"
+        url: "$${__value.raw}"
+        datasourceUid: "tempo"
+
+# LogQL Query Templates
+queryTemplates:
+  enabled: true
+  # Common queries for dashboards
+  common:
+    - name: "Error Rate"
+      query: 'sum(rate({job=~".+"} |~ "(?i)error" [5m])) by (job)'
+    - name: "Log Volume"
+      query: 'sum(rate({job=~".+"}[5m])) by (job)'
+    - name: "Pod Restarts"
+      query: 'sum(increase({job=~".+"} |~ "restart" [1h])) by (pod)'
+
+# Security Settings
+security:
+  # Network policies
+  networkPolicy:
+    enabled: true
+    allowedNamespaces:
+      - monitoring
+      - logging
+  # TLS configuration
+  tls:
+    enabled: false
+    # certManager:
+    #   enabled: true
+    #   issuer: letsencrypt-prod

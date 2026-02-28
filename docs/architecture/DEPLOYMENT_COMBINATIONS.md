@@ -1,5 +1,11 @@
 # Master Deployment Combination Matrix
 
+**Audit Event Identifier:** DSU-MMD-180005  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+**Compliance:** ISO 9001 / ISO 27001 §17.1  
+
 This document provides a visual guide to the supported and experimental combinations within the **Deploy-System-Unified** ecosystem.
 
 ---

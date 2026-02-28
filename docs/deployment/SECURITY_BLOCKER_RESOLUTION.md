@@ -46,7 +46,7 @@ contabo_cloud_vps_30_ssd
 
 **Validation:**
 ```bash
-ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242.222.130
+ansible-playbook -i inventory/ playbooks/PREFLIGHT_VALIDATE.YML --limit 38.242.222.130
 # Result: ok=3 changed=0 failed=0
 ```
 
@@ -273,7 +273,7 @@ $ yamllint -f parsable roles/security/*/
 # No errors
 
 # Preflight validation
-$ ansible-playbook -i inventory/ playbooks/preflight_validate.yml --limit 38.242.222.130
+$ ansible-playbook -i inventory/ playbooks/PREFLIGHT_VALIDATE.YML --limit 38.242.222.130
 # ok=3 changed=0 failed=0
 ```
 

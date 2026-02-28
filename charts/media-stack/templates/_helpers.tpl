@@ -22,3 +22,14 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create a ServiceAccount name for media components
+*/}}
+{{- define "media-stack.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+{{- default (include "media-stack.fullname" .) .Values.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.serviceAccount.name -}}
+{{- end -}}
+{{- end -}}

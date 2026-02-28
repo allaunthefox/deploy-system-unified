@@ -41,7 +41,7 @@ declared in `inventory/group_vars/` and enforced by `ops/preflight`.
 | `production` | Strict | Compliance (Signed Logs + Loki) | `PRODUCTION_DEPLOY.yml` | Persistent hosts running active workloads with SBOM and supply-chain verification |
 | `ephemeral` | Strict | Minimal (Journal only) | `BASE_EPHEMERAL.yml` or `ephemeral_edge.yml` | Disposable hosts: CI runners, test nodes, temporary ingress |
 | `vps` | Strict | Standard (Rsyslog) | `BASE_HARDENED.yml` | Cloud VPS instances without the full Loki stack |
-| `dev` | Permissive | None | `site.yml` | Local development and testing. `core_security_fail_secure: false` |
+| `dev` | Permissive | None | `SITE.YML` | Local development and testing. `core_security_fail_secure: false` |
 
 > **Note:** `workstation` and `backup` profile files exist in `inventory/group_vars/` as reserved
 > placeholders. They are not yet active deployment targets.

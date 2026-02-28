@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000101
+# File Type: Python Test Script
+# Test Type: Debug/Validation
+# Description: Test script to debug linter anchor processing
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """Test script to debug the linter's anchor processing."""
 
 import os

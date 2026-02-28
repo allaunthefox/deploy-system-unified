@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100012
+# Playbook Type: Remediation (SSH)
+# Description: SSH hardening remediation playbook
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 - ansible.builtin.import_playbook: bootstrap_ssh.yml
 

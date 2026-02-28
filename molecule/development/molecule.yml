@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000002
+# File Type: Molecule Scenario Configuration
+# Scenario: development
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # molecule.yml - Ansible-Native Molecule configuration for development scenario
 #

@@ -1,3 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CNT-850001
+# File Type: Container Build Definition (Containerfile)
+# Description: Deploy-System-Unified containerized management system
+# Build: podman build -t deploy-system-unified:latest -f docker/Containerfile .
+# Compliance: Non-root USER, HEALTHCHECK, pinned dependencies
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Deploy-System-Unified - Containerized Management System (Podman-native with Docker compatibility)
 # Build with: podman build -t deploy-system-unified:latest -f docker/Containerfile .
 # Build with: docker build -t deploy-system-unified:latest -f docker/Containerfile .

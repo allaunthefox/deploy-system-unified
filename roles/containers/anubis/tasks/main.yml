@@ -1,6 +1,6 @@
 ---
 # Tasks for containers/anubis - Web AI Firewall
-- name: "ISO 27001 §8.26 | Action 700030 | Create Anubis Network Quadlet"
+- name: "ISO 27001 §8.26 | Audit Code 700030 | Create Anubis Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/anubis_net.network"
     content: |
@@ -30,7 +30,7 @@
     - security
     - containers
 
-- name: "ISO 27001 §8.26 | Action 700000 | Create Anubis container quadlet"
+- name: "ISO 27001 §8.26 | Audit Code 700000 | Create Anubis container quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/anubis.container"
     content: |
@@ -48,14 +48,13 @@
       HealthStartPeriod=40s
 
       Image={{ anubis_image }}
-      CapDrop=ALL
+      DropCapability=ALL
       ContainerName={{ anubis_container_name }}
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-26
       Label=DSU_ACTION_CODE=700000
       Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
       Label=DSU_IMAGE_DIGEST={{ anubis_image.split('@')[1] | default(anubis_image.split(':')[1]) | default('unknown') }}
-      CPUQuota=50%
       {% if podman_rootless_enabled | bool %}
       Network=anubis_net.network
       # Port 31338 is not published to host; Caddy proxies internally
@@ -81,7 +80,7 @@
       Volume={{ mount }}
       {% endfor %}
       {% endif %}
-      ReadOnlyFilesystem=true
+      ReadOnly=true
       ReadWritePaths=/var /tmp
       [Service]
       ProtectSystem=strict
@@ -109,7 +108,7 @@
     - restart anubis
   when: anubis_enabled | bool
 
-- name: "ISO 27001 §8.26 | Action 700001 | Enable and start Anubis service"
+- name: "ISO 27001 §8.26 | Audit Code 700001 | Enable and start Anubis service"
   ansible.builtin.systemd:
     name: anubis
     enabled: true

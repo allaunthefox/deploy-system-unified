@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300002
+# Chart: media-stack (Jellyfin, Radarr, Sonarr)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: media-stack
 description: A Helm chart for Deploy-System-Unified Media Stack

@@ -1,12 +1,11 @@
 # Explicit Boot Lifecycle & Forensic Chain of Trust
 
-**Standard**: DSU-6767-B  
-**Compliance**: NIST SP 800-193 (Platform Integrity) / ISO 27001 §12.4  
-**Scope**: All Hardware & Virtualization Runtimes
-
----
-
-## 🛰️ The Forensic Boot Sequence
+**Audit Event Identifier:** DSU-MMD-180004  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+**Compliance:** NIST SP 800-193 (Platform Integrity) / ISO 27001 §12.4  
+**Scope:** All Hardware & Virtualization Runtimes  
 
 This document defines the mandatory execution order during system startup. No layer may initialize until its forensic predecessor has verified the environment.
 

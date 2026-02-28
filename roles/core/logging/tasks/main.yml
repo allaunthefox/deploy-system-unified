@@ -2,7 +2,7 @@
 # Tasks for core/logging role - Mandatory Forensic Readiness
 # CIS 4.2.x | STIG V-230330 | NIST AU-2, AU-3, AU-12 | ISO 27001 §12.4
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Install systemd-journal-remote for log aggregation readiness"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Install systemd-journal-remote for log aggregation readiness"
   ansible.builtin.package:
     name: "{{ logging_journal_remote_packages[ansible_facts['distribution'] | lower] | default('systemd-journal-remote') }}"
     state: present
@@ -16,8 +16,9 @@
     - nist_au_2
     - logging
     - remediate
+    - action_840030
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Ensure journald directory exists for persistence"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Ensure journald directory exists for persistence"
   ansible.builtin.file:
     path: /var/log/journal
     state: directory
@@ -32,8 +33,9 @@
     - nist_au_2
     - logging
     - remediate
+    - action_840030
 
-- name: "CIS 4.2.1, 4.2.2 | STIG V-230330 | NIST AU-2, AU-3, AU-12 | ISO 27001 §12.4 | ISO 27037 | Action 840030 | Configure journald for forensic integrity and rate limiting"
+- name: "CIS 4.2.1, 4.2.2 | STIG V-230330 | NIST AU-2, AU-3, AU-12 | ISO 27001 §12.4 | ISO 27037 | Audit Code 840030 | Configure journald for forensic integrity and rate limiting"
   ansible.builtin.lineinfile:
     path: /etc/systemd/journald.conf
     regexp: "{{ item.regexp }}"
@@ -61,10 +63,11 @@
     - remediate
     - high_severity
     - logging
+    - action_840030
   when: ansible_facts['service_mgr'] == 'systemd'
   changed_when: (ansible_facts['virtualization_role'] | default('host') == 'guest') and false
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Ensure rsyslog is installed (Alpine)"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Ensure rsyslog is installed (Alpine)"
   ansible.builtin.package:
     name: rsyslog
     state: present
@@ -75,9 +78,10 @@
     - nist_au_2
     - logging
     - remediate
+    - action_840030
   when: ansible_facts['os_family'] == 'Alpine'
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Ensure rsyslog configuration directory exists (Generic)"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Ensure rsyslog configuration directory exists (Generic)"
   ansible.builtin.file:
     path: /etc/rsyslog.d
     state: directory
@@ -89,8 +93,9 @@
     - nist_au_2
     - logging
     - remediate
+    - action_840030
 
-- name: "CIS 4.2.2 | STIG V-230330 | NIST AU-2, AU-3 | ISO 27001 §12.4 | Action 840031 | Configure rsyslog for centralized log shipping (Generic)"
+- name: "CIS 4.2.2 | STIG V-230330 | NIST AU-2, AU-3 | ISO 27001 §12.4 | Audit Code 840031 | Configure rsyslog for centralized log shipping (Generic)"
   ansible.builtin.copy:
     dest: /etc/rsyslog.d/50-centralized-logging.conf
     content: |
@@ -106,10 +111,11 @@
     - iso_27001_12_4
     - remediate
     - logging
+    - action_840031
   when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Alpine']
   notify: restart_rsyslog
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Ensure rsyslog is running and enabled (Generic)"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Ensure rsyslog is running and enabled (Generic)"
   ansible.builtin.service:
     name: rsyslog
     state: started
@@ -124,8 +130,9 @@
     - nist_au_2
     - logging
     - remediate
+    - action_840030
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Determine log reload command"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Determine log reload command"
   ansible.builtin.set_fact:
     _log_reload_cmd: >-
       {{
@@ -139,8 +146,9 @@
     - nist_au_2
     - logging
     - configuration
+    - action_840030
 
-- name: "CIS 4.2.3 | STIG V-230330 | NIST AU-12 | ISO 27001 §12.4 | Create logrotate configuration for application logs"
+- name: "CIS 4.2.3 | STIG V-230330 | NIST AU-12 | ISO 27001 §12.4 | Audit Code 840030 | Create logrotate configuration for application logs"
   ansible.builtin.copy:
     dest: /etc/logrotate.d/applications
     content: |
@@ -166,8 +174,9 @@
     - iso_27001_12_4
     - logging
     - remediate
+    - action_840030
 
-- name: "ISO 27001 §12.4 | 840030 | Enact Forensic Boot Logging Service"
+- name: "ISO 27001 §12.4 | 840030 | Audit Code 300014 | Enact Forensic Boot Logging Service"
   ansible.builtin.copy:
     dest: /etc/systemd/system/dsu-boot-log.service
     content: |
@@ -187,16 +196,17 @@
   notify: reload_systemd
   tags: [logging, forensic, 300014]
 
-- name: "ISO 27001 §12.4 | 300014 | Enable Forensic Boot Logging"
+- name: "ISO 27001 §12.4 | 300014 | Audit Code 300014 | Enable Forensic Boot Logging"
   ansible.builtin.systemd:
     name: dsu-boot-log.service
     enabled: true
     state: started
+    daemon_reload: true
   become: true
-  ignore_errors: "{{ ansible_check_mode }}"
+  when: not ansible_check_mode
   tags: [logging, forensic, 300014]
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Validate journald configuration"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Validate journald configuration"
   ansible.builtin.command:
     cmd: journalctl --verify
   register: journal_verify
@@ -209,8 +219,9 @@
     - nist_au_2
     - logging
     - verify
+    - action_840030
 
-- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Warn about journald verification issues"
+- name: "CIS 4.2.1 | STIG V-230330 | NIST AU-2 | Audit Code 840030 | Warn about journald verification issues"
   ansible.builtin.debug:
     msg: "WARNING: Journald verification found issues: {{ journal_verify.stderr }}"
   when: journal_verify.rc != 0 and journal_verify.stderr | length > 0
@@ -220,3 +231,4 @@
     - nist_au_2
     - logging
     - warning
+    - action_840030

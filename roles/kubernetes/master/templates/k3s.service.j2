@@ -1,7 +1,14 @@
+{# =============================================================================
+# Audit Event Identifier: DSU-TPL-900030
+# Template Type: master Configuration
+# Last Updated: 2026-02-28
+# Version: 1.0
+# ============================================================================= #}
 [Unit]
 Description=Lightweight Kubernetes
 Documentation=https://k3s.io
 After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=notify
@@ -10,32 +17,36 @@ EnvironmentFile=-/etc/sysconfig/k3s
 EnvironmentFile=-/etc/systemd/system/k3s.service.env
 ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
-ExecStart=/usr/local/bin/k3s 
-    server 
-    --cluster-init 
-    --token-file={{ kubernetes_token_path }} 
-    --cluster-cidr={{ kubernetes_pod_cidr }} 
-    --service-cidr={{ kubernetes_service_cidr }} 
-    --cluster-dns={{ kubernetes_cluster_dns }} 
-    --cluster-domain={{ kubernetes_cluster_domain }} 
-    --https-listen-port={{ kubernetes_api_port }} 
+ExecStart=/usr/local/bin/k3s \
+    server \
+    --cluster-init \
+    --token-file={{ kubernetes_token_path }} \
+    --cluster-cidr={{ kubernetes_pod_cidr }} \
+    --service-cidr={{ kubernetes_service_cidr }} \
+    --cluster-dns={{ kubernetes_cluster_dns }} \
+    --cluster-domain={{ kubernetes_cluster_domain }} \
+    --https-listen-port={{ kubernetes_api_port }} \
+    --flannel-backend={{ kubernetes_flannel_backend }} \
+    --kube-proxy-arg="proxy-mode={{ kubernetes_proxy_mode }}" \
+    --disable-network-policy \
+    --write-kubeconfig-mode=644 \
     {% for san in kubernetes_tls_san %}
-    --tls-san={{ san }} 
+    --tls-san={{ san }} \
     {% endfor %}
     {% if kubernetes_disable_traefik %}
-    --disable=traefik 
+    --disable=traefik \
     {% endif %}
     {% if kubernetes_disable_servicelb %}
-    --disable=servicelb 
+    --disable=servicelb \
     {% endif %}
     {% if kubernetes_disable_agent %}
-    --disable-agent 
+    --disable-agent \
     {% endif %}
     --data-dir={{ kubernetes_data_dir }}
 
 KillMode=process
 Delegate=yes
-# LimitNOFILE=1048576
+LimitNOFILE=1048576
 LimitNPROC=infinity
 LimitCORE=infinity
 TasksMax=infinity

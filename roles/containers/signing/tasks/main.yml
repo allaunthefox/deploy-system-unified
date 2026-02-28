@@ -16,7 +16,7 @@
     cosign_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' }}"
   changed_when: false
 
-- name: "ISO 27001 §14.2 | NIST SI-3 | CIS 4.5 | Action 700014 | Install cosign binary for container image signing"
+- name: "ISO 27001 §14.2 | NIST SI-3 | CIS 4.5 | Audit Code 700014 | Install cosign binary for container image signing"
   ansible.builtin.unarchive:
     src: "https://github.com/sigstore/cosign/releases/download/v{{ cosign_version }}/cosign-linux-{{ cosign_arch }}.tar.gz"
     dest: /usr/local/bin
@@ -46,7 +46,7 @@
   become: true
   tags: [cosign, security, verification]
 
-- name: "ISO 27001 §14.2 | ISO 27001 §10.1 | Action 400011 | Create cosign directories for secure key storage"
+- name: "ISO 27001 §14.2 | ISO 27001 §10.1 | Audit Code 400011 | Create cosign directories for secure key storage"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -68,7 +68,7 @@
     - containers
     - security
 
-- name: "ISO 27001 §10.1 | NIST SC-13 | Action 400012 | Generate cosign key pair for image signing"
+- name: "ISO 27001 §10.1 | NIST SC-13 | Audit Code 400012 | Generate cosign key pair for image signing"
   ansible.builtin.command:
     cmd: >
       cosign generate-key-pair
@@ -87,7 +87,7 @@
     - keygen
     - cryptography
 
-- name: "ISO 27001 §14.2 | NIST SI-3 | Action 700014 | Deploy verification policy for container images"
+- name: "ISO 27001 §14.2 | NIST SI-3 | Audit Code 700014 | Deploy verification policy for container images"
   ansible.builtin.template:
     src: verification-policy.yaml.j2
     dest: /etc/cosign/policies/{{ cosign_policy_name }}.yaml
@@ -105,7 +105,7 @@
     - signing
     - supply_chain
 
-- name: "ISO 27001 §14.2 | NIST SI-3 | Action 700014 | Create keyless verification policy"
+- name: "ISO 27001 §14.2 | NIST SI-3 | Audit Code 700014 | Create keyless verification policy"
   ansible.builtin.copy:
     src: keyless-policy.yaml
     dest: /etc/cosign/policies/keyless-policy.yaml
@@ -122,7 +122,7 @@
     - keyless
     - policy
 
-- name: "ISO 27001 §14.2 | ISO 27001 §10.1 | Action 400013 | Deploy cosign environment configuration"
+- name: "ISO 27001 §14.2 | ISO 27001 §10.1 | Audit Code 400013 | Deploy cosign environment configuration"
   ansible.builtin.template:
     src: cosign.env.j2
     dest: /etc/cosign/cosign.env
@@ -138,7 +138,7 @@
     - config
     - signing
 
-- name: "ISO 27001 §10.1 | NIST SC-13 | Action 400013 | Store cosign root certificate"
+- name: "ISO 27001 §10.1 | NIST SC-13 | Audit Code 400013 | Store cosign root certificate"
   ansible.builtin.copy:
     content: "{{ cosign_root_cert }}"
     dest: /etc/cosign/cosign.crt
@@ -156,7 +156,7 @@
     - signing
     - cryptography
 
-- name: "ISO 27001 §14.2 | NIST SI-3 | Action 700014 | Configure cosignful verification"
+- name: "ISO 27001 §14.2 | NIST SI-3 | Audit Code 700014 | Configure cosignful verification"
   ansible.builtin.copy:
     content: |
       # Cosignful configuration
@@ -178,7 +178,7 @@
     - cosignful
     - signing
 
-- name: "ISO 27001 §14.2 | NIST SI-3 | Action 700014 | Verify image signature"
+- name: "ISO 27001 §14.2 | NIST SI-3 | Audit Code 700014 | Verify image signature"
   ansible.builtin.command:
     cmd: >
       cosign verify

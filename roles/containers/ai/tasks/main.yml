@@ -7,8 +7,8 @@
     path: "{{ item }}"
     state: directory
     mode: '0755'
-    owner: "1000"
-    group: "1000"
+    owner: "{{ containers_user_uid }}"
+    group: "{{ containers_user_gid }}"
   loop:
     - "{{ containers_ollama_config_dir }}"
     - "{{ containers_open_webui_config_dir }}"
@@ -29,6 +29,9 @@
       # Hardware Acceleration (Optional)
       {% if containers_media_hw_accel | default(false) %}
       Device=/dev/dri
+      # GPU Resource Limit Pattern (Avoids exhaustion across stacks)
+      Environment=NVIDIA_VISIBLE_DEVICES=all
+      Environment=NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
       {% endif %}
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-20

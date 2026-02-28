@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400020
+# Script Type: Wiki Synchronization
+# Description: Syncs wiki_pages/ to GitHub Wiki repository
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Wiki Sync Script - Sync wiki_pages/ to GitHub Wiki
 #
 # This script syncs the wiki_pages/ directory to the GitHub wiki repository.

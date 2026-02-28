@@ -104,7 +104,7 @@
     - ops
     - connection
 
-- name: "CIS 4.11.7 | STIG V-230776 | NIST SC-7 | ISO 9001 | Action 600013 | Check connectivity to target SSH port"
+- name: "CIS 4.11.7 | STIG V-230776 | NIST SC-7 | ISO 9001 | Audit Code 600013 | Check connectivity to target SSH port"
   ansible.builtin.wait_for:
     host: "{{ inventory_hostname }}"
     port: "{{ ssh_effective_port | default(22) }}"

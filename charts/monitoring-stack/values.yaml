@@ -1,4 +1,21 @@
 # Monitoring Stack Values
+# =============================================================================
+# Security-hardened monitoring with RBAC and Pod Security Standards
+# =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: ""  # Auto-generated if empty
+  annotations: {}
+  # Example annotation for EKS IRSA:
+  # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+
+# RBAC Configuration
+rbac:
+  create: true
+  podLogs: false  # Grant access to pod logs
+  services: false  # Grant access to services
 
 # Ingress Configuration
 ingress:

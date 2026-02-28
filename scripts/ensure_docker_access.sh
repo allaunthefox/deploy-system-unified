@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400015
+# Script Type: Access Configuration (Docker)
+# Description: Ensures Docker socket is accessible to user
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 set -eu
 
 USER="${SUDO_USER:-$USER}"

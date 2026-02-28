@@ -1,6 +1,6 @@
 ---
 # Main tasks for storage/filesystems/btrfs - Separated concerns
-- name: "ISO 27040 | Action 530001 | Ensure btrfs-progs is installed"
+- name: "ISO 27040 | Audit Code 530001 | Ensure btrfs-progs is installed"
   ansible.builtin.package:
     name: btrfs-progs
     state: present
@@ -10,6 +10,6 @@
 - name: Import subvolume tasks
   ansible.builtin.import_tasks: subvolumes.yml
   tags: [storage, btrfs, subvolumes, iso_27040]
-- name: "ISO 27040 | Action 500023 | Import maintenance tasks"
+- name: "ISO 27040 | Audit Code 500023 | Import maintenance tasks"
   ansible.builtin.import_tasks: maintenance.yml
   tags: [storage, btrfs, maintenance, iso_27040]

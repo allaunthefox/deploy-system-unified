@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-120001
+# File Type: Role Defaults (main.yml)
+# Role: sshd
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Defaults for security/sshd role
 security_sshd_backup_config: true

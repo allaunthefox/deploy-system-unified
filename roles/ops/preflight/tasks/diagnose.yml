@@ -1,6 +1,6 @@
 ---
 # Non-failing diagnostics for preflight: collects placeholder/secrets issues and writes a JSON report locally.
-- name: "ISO 9001 | Action 600013 | Initialize preflight diagnose report"
+- name: "ISO 9001 | Audit Code 600013 | Initialize preflight diagnose report"
   ansible.builtin.set_fact:
     preflight_diagnose_report: []
   changed_when: false
@@ -9,7 +9,7 @@
     - iso_9001
     - preflight
 
-- name: "ISO 9001 | Action 520010 | Collect change-me / placeholder secret status"
+- name: "ISO 9001 | Audit Code 520010 | Collect change-me / placeholder secret status"
   ansible.builtin.set_fact:
     preflight_diagnose_report: "{{ preflight_diagnose_report + [{'name': item.name, 'ok': (item.value not in item.bad_values), 'value': (item.value | default('')) }] }}"
   loop: "{{ preflight_secret_guards | default([]) }}"
@@ -37,7 +37,7 @@
   tags:
     - preflight
 
-- name: "ISO 9001 | Action 520013 | Write JSON report to local CI artifacts (non-failing)"
+- name: "ISO 9001 | Audit Code 520013 | Write JSON report to local CI artifacts (non-failing)"
   ansible.builtin.copy:
     content: "{{ preflight_diagnose_report | to_nice_json }}"
     dest: "{{ playbook_dir | default('.') }}/ci-artifacts/preflight_diagnose_{{ inventory_hostname }}.json"

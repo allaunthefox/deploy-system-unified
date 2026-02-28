@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000104
+# File Type: Python Test Script
+# Test Type: Molecule Configuration Validation
+# Description: Tests for Molecule default scenario configuration
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """
 Tests for Molecule default scenario configuration.
 

@@ -2,12 +2,10 @@
 # Tasks for core/memory - Intelligent Memory Compression
 # CIS 3.4.x | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20
 
-- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Detect Physical Swap"
+- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Audit Code 810300 | Detect Physical Swap"
   ansible.builtin.shell: swapon --show=NAME --noheadings | wc -l
   register: physical_swap_count
   changed_when: false
-  args:
-    
   become: true
   tags:
     - cis_3_4_1
@@ -15,8 +13,9 @@
     - nist_sc_4
     - memory
     - detect
+    - action_810300
 
-- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Determine Memory Strategy (Auto-Selection)"
+- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Audit Code 810300 | Determine Memory Strategy (Auto-Selection)"
   ansible.builtin.set_fact:
     active_memory_strategy: >-
       {{
@@ -39,8 +38,9 @@
     - nist_sc_4
     - memory
     - strategy
+    - action_810300
 
-- name: "CIS 3.4.1 | STIG V-230310 | Report Selected Strategy"
+- name: "CIS 3.4.1 | STIG V-230310 | Audit Code 840030 | Report Selected Strategy"
   ansible.builtin.debug:
     msg: "System Memory: {{ ansible_memtotal_mb }}MB. Strategy Selected: {{ active_memory_strategy | upper }}"
   tags:
@@ -48,18 +48,15 @@
     - stig_v_230310
     - memory
     - info
+    - action_840030
 
-- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Resolve Configuration Conflicts (Intelligent Resolution)"
+- name: "CIS 3.4.1 | STIG V-230310 | NIST SC-4 | Audit Code 810300 | Resolve Configuration Conflicts (Intelligent Resolution)"
   ansible.builtin.set_fact:
-    # Danger: ZRAM requires high swappiness to actually compress. If using database profile (swappiness=10),
-    # ZRAM becomes useless unless we bump it up. However, if physical swap exists, 10 is fine.
-    # Resolution: If ZRAM is sole swap, FORCE moderate swappiness (60) even for databases to prevent OOM.
     core_memory_swappiness: >-
       {{
         60 if (active_memory_strategy == 'zram' and physical_swap_count.stdout | int == 0 and core_memory_swappiness | int < 60)
         else core_memory_swappiness
       }}
-    # Danger: THP 'always' kills Redis latency.
     core_memory_thp_state: >-
       {{
         'madvise' if (core_memory_workload_profile == 'database' and core_memory_thp_state == 'always')
@@ -71,8 +68,9 @@
     - nist_sc_4
     - memory
     - configuration
+    - action_810300
 
-- name: "CIS 3.4.1 | STIG V-230310 | Validate Final Configuration"
+- name: "CIS 3.4.1 | STIG V-230310 | Audit Code 840030 | Validate Final Configuration"
   ansible.builtin.debug:
     msg: >-
       Conflict Resolution Applied:
@@ -83,13 +81,14 @@
     - stig_v_230310
     - memory
     - validate
+    - action_840030
 
-- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Action 450002 | Configure ZRAM (zram-generator)"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Configure ZRAM (zram-generator)"
   when:
     - active_memory_strategy == 'zram'
     - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
   block:
-    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Install zram-generator"
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Audit Code 530000 | Install zram-generator"
       ansible.builtin.package:
         name: zram-generator
         state: present
@@ -101,8 +100,9 @@
         - memory
         - zram
         - remediate
+        - action_530000
 
-    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-28 | ISO 27001 §8.20 | Configure zram-generator.conf"
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Configure zram-generator.conf"
       ansible.builtin.copy:
         content: |
           [zram0]
@@ -122,6 +122,7 @@
         - memory
         - zram
         - remediate
+        - action_450002
   tags:
     - cis_3_4_2
     - stig_v_230310
@@ -130,13 +131,14 @@
     - iso_27001_8_20
     - memory
     - remediate
+    - action_450002
 
-- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Action 450002 | Configure ZSwap (Kernel Modules)"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Configure ZSwap (Kernel Modules)"
   when:
     - active_memory_strategy == 'zswap'
     - (virt_type | default('container')) in ['bare-metal', 'virtual', 'vps']
   block:
-    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Enable ZSwap Kernel Parameters"
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Audit Code 810300 | Enable ZSwap Kernel Parameters"
       ansible.builtin.set_fact:
         core_grub_performance_params: >-
           {{
@@ -153,8 +155,9 @@
         - nist_sc_4
         - memory
         - zswap
+        - action_810300
 
-    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Disable ZRAM (Conflict Avoidance)"
+    - name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Audit Code 810300 | Disable ZRAM (Conflict Avoidance)"
       ansible.builtin.systemd:
         name: systemd-zram-setup@zram0.service
         state: stopped
@@ -167,6 +170,7 @@
         - nist_sc_4
         - memory
         - zram
+        - action_810300
   tags:
     - cis_3_4_2
     - stig_v_230310
@@ -175,8 +179,9 @@
     - iso_27001_8_20
     - memory
     - remediate
+    - action_450002
 
-- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Action 450002 | Tune Virtual Memory for Compression"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Tune Virtual Memory for Compression"
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
@@ -186,7 +191,7 @@
   loop:
     - { key: 'vm.swappiness', value: '{{ core_memory_swappiness }}' }
     - { key: 'vm.vfs_cache_pressure', value: '{{ core_memory_cache_pressure }}' }
-    - { key: 'vm.page-cluster', value: '0' } # Essential for ZRAM/ZSwap effectiveness
+    - { key: 'vm.page-cluster', value: '0' }
     - { key: 'vm.dirty_bytes', value: '{{ core_memory_dirty_bytes }}', condition: "{{ core_memory_dirty_bytes | int > 0 }}" }
     - { key: 'vm.dirty_background_bytes', value: '{{ core_memory_dirty_background_bytes }}', condition: "{{ core_memory_dirty_background_bytes | int > 0 }}" }
   when:
@@ -201,8 +206,9 @@
     - iso_27001_8_20
     - memory
     - remediate
+    - action_450002
 
-- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Configure Transparent Huge Pages (THP)"
+- name: "CIS 3.4.2 | STIG V-230310 | NIST SC-4 | Audit Code 810300 | Configure Transparent Huge Pages (THP)"
   ansible.builtin.shell: |
     if ! grep -q '\[{{ core_memory_thp_state }}\]' /sys/kernel/mm/transparent_hugepage/enabled; then
       echo {{ core_memory_thp_state }} > /sys/kernel/mm/transparent_hugepage/enabled
@@ -222,3 +228,4 @@
     - memory
     - thp
     - remediate
+    - action_810300

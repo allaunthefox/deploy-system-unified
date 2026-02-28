@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000010
+# File Type: Molecule Scenario Configuration
+# Role: shared
+# Scenario: default
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 dependency:
   name: galaxy

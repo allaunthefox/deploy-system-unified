@@ -1,4 +1,12 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400008
+# Script Type: Initial Setup
+# Description: POSIX-compliant setup for new deployment targets
+# Usage: sudo ./setup.sh [OPTIONS]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Deploy-System-Unified - Initial System Setup Script
 # POSIX-compliant setup for new deployment targets
 #
@@ -135,7 +143,9 @@ configure_init_paths() {
             log_warn "Unknown init system - service installation will be skipped"
             log_warn "You will need to manually configure auto-start"
             SERVICE_DIR=""
+            # shellcheck disable=SC2034
             SERVICE_CMD=""
+            # shellcheck disable=SC2034
             RELOAD_CMD=""
             ;;
     esac
@@ -477,9 +487,12 @@ main() {
                 ;;
             -d|--dry-run)
                 DRY_RUN="true"
+                # shellcheck disable=SC2034
+                FORCE="true"
                 shift
-                ;;
+            ;;
             -v|--verbose)
+                # shellcheck disable=SC2034
                 VERBOSE="true"
                 shift
                 ;;

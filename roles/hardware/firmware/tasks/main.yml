@@ -47,7 +47,7 @@
     - hardware
     - firmware
 
-- name: "CIS 3.5.5 | STIG V-230584 | NIST SC-39 | ISO 27001 §8.9 | Action 800500 | Detect Hardware TPM support"
+- name: "CIS 3.5.5 | STIG V-230584 | NIST SC-39 | ISO 27001 §8.9 | Audit Code 800500 | Detect Hardware TPM support"
   ansible.builtin.stat:
     path: /dev/tpmrm0
   register: hardware_tpm_stat
@@ -82,7 +82,7 @@
     - firmware
     - security
 
-- name: "CIS 3.5.8 | STIG V-230587 | NIST SC-43 | ISO 27001 §8.17 | Action 300007 | Configure Hardware Clock (RTC) to UTC"
+- name: "CIS 3.5.8 | STIG V-230587 | NIST SC-43 | ISO 27001 §8.17 | Audit Code 300007 | Configure Hardware Clock (RTC) to UTC"
   ansible.builtin.command: timedatectl set-local-rtc 0
   become: true
   changed_when: false
@@ -96,7 +96,7 @@
     - time
   when: not _hw_is_container
 
-- name: "CIS 3.5.9 | STIG V-230588 | NIST SC-43 | ISO 27001 §8.17 | Action 300007 | Enable NTP-based RTC synchronization"
+- name: "CIS 3.5.9 | STIG V-230588 | NIST SC-43 | ISO 27001 §8.17 | Audit Code 300007 | Enable NTP-based RTC synchronization"
   ansible.builtin.command: timedatectl set-ntp true
   become: true
   changed_when: false
@@ -133,7 +133,7 @@
   changed_when: false
   tags: [hardware, time, verification]
 
-- name: "CIS 3.5.11 | STIG V-230590 | NIST SC-43 | NIST SP 800-193 | Action 800510 | Verify Secure Boot Status"
+- name: "CIS 3.5.11 | STIG V-230590 | NIST SC-43 | NIST SP 800-193 | Audit Code 800510 | Verify Secure Boot Status"
   ansible.builtin.shell: |
     
     if command -v mokutil >/dev/null 2>&1; then
@@ -159,7 +159,7 @@
     - security
     - boot_integrity
 
-- name: "CIS 3.5.12 | STIG V-230591 | NIST SC-43 | Action 800511 | Enforce Boot Integrity (Hardened Profile)"
+- name: "CIS 3.5.12 | STIG V-230591 | NIST SC-43 | Audit Code 800511 | Enforce Boot Integrity (Hardened Profile)"
   ansible.builtin.assert:
     that:
       - not (deployment_profile == 'hardened' and 'SecureBoot enabled' not in hardware_secure_boot_status.stdout)

@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300008
+# Chart: proxy-stack (Caddy, Nginx)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: proxy-stack
 description: Caddy, Nginx for reverse proxy

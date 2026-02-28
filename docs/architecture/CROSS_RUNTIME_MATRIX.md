@@ -1,5 +1,11 @@
 # Cross-Runtime Network Interaction Matrix
 
+**Audit Event Identifier:** DSU-MMD-180006  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+**Compliance:** ISO 27001 §8.22 / NIST SC-7  
+
 This document maps the security boundaries, communication methods, and forensic risks for every combination of container and virtualization runtime supported by **Deploy-System-Unified**.
 
 ---

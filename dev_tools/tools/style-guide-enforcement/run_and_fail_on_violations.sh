@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400027
+# Script Type: CI Gate (Style Enforcement)
+# Description: Runs style enforcement and fails on violations
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 set -eu
 ENFORCE_SCRIPT="$(dirname "$0")/enforce_style_guide.sh"
 REPORT_DIR="$(dirname "$0")"

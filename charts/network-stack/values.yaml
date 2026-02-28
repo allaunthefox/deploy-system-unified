@@ -1,4 +1,11 @@
 # Network Stack Values
+# =============================================================================
+# Provides DNS (Pi-hole) and VPN (WireGuard) services
+# =============================================================================
+
+# Global settings
+global:
+  timezone: UTC
 
 ingress:
   enabled: true
@@ -11,28 +18,31 @@ pihole:
   image:
     repository: pihole/pihole
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   service:
-    type: LoadBalancer
+    type: ClusterIP  # Changed from LoadBalancer for most setups
     dnsPort: 53
     httpPort: 80
-  adminPassword: ""  # Set via PIHOLE_PASSWORD env var in production
+  adminPassword: ""  # Auto-generated if empty
   resources:
     limits:
       memory: 512Mi
+      cpu: 500m
     requests:
       memory: 256Mi
+      cpu: 100m
   persistence:
-    enabled: true
+    enabled: true  # Set to false for testing (uses emptyDir)
     size: 10Gi
+    storageClass: ""  # Use default storage class
 
 # WireGuard
 wireguard:
-  enabled: true
+  enabled: false  # Disabled by default
   image:
     repository: linuxserver/wireguard
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
     port: 51820
@@ -41,8 +51,11 @@ wireguard:
   resources:
     limits:
       memory: 256Mi
+      cpu: 200m
     requests:
       memory: 128Mi
+      cpu: 50m
   persistence:
     enabled: true
     size: 1Gi
+    storageClass: ""  # Use default storage class

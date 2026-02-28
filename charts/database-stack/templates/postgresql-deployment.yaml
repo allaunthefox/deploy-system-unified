@@ -26,23 +26,46 @@ spec:
       labels:
         app: postgresql
     spec:
+      serviceAccountName: {{ include "database-stack.serviceAccountName" . }}
+      {{- if not .Values.postgresql.persistence.enabled }}
+      # Init container to fix permissions when using emptyDir
+      initContainers:
+        - name: init-permissions
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          command:
+            - sh
+            - -c
+            - |
+              chown -R 999:999 /var/lib/postgresql/data
+              chmod 700 /var/lib/postgresql/data
+              echo "Permissions set successfully"
+          securityContext:
+            runAsUser: 0  # Run as root to set permissions
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      {{- end }}
       # Security Context - Run as non-root user
       securityContext:
         runAsNonRoot: true
         runAsUser: 999  # postgres user
         runAsGroup: 999
         fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: postgresql
           image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
           imagePullPolicy: IfNotPresent
-          # Security Context - Least privilege
+          {{- if .Values.postgresql.persistence.enabled }}
+          # Security Context - Least privilege (only with PVC)
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false  # PostgreSQL needs write access
             capabilities:
               drop:
                 - ALL
+          {{- end }}
           # Resource Limits - Prevent resource exhaustion
           resources:
             requests:

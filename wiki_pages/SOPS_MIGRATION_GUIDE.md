@@ -11,8 +11,8 @@ This guide defines a safe migration path from Vault-only secrets handling to SOP
 
 ## Current Enforcement Baseline
 
-1. `playbooks/preflight_assertions.yml` requires `inventory/group_vars/all/secrets.generated.yml` to be Vault-encrypted.
-2. `playbooks/preflight_assertions.yml` currently fails if a repository-root `.sops.yaml` exists.
+1. `playbooks/PREFLIGHT_ASSERTIONS.YML` requires `inventory/group_vars/all/secrets.generated.yml` to be Vault-encrypted.
+2. `playbooks/PREFLIGHT_ASSERTIONS.YML` currently fails if a repository-root `.sops.yaml` exists.
 3. `ansible.cfg` already enables the SOPS vars plugin (`community.sops.sops`) for future compatibility.
 
 Because of this, migration must be staged. Do not remove Vault guardrails before SOPS policy and key custody are validated.
@@ -109,7 +109,7 @@ Until cutover is approved:
 
 Example:
 ```bash
-ansible-playbook projects/deploy-system-unified/playbooks/preflight_assertions.yml -i projects/deploy-system-unified/inventory/local.ini
+ansible-playbook projects/deploy-system-unified/playbooks/PREFLIGHT_ASSERTIONS.YML -i projects/deploy-system-unified/inventory/local.ini
 ansible-playbook projects/deploy-system-unified/PRODUCTION_DEPLOY.yml -i projects/deploy-system-unified/inventory/local.ini --check
 ```
 

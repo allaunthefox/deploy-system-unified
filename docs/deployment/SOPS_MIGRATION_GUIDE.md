@@ -27,8 +27,8 @@ The following checklist must be completed before switching from Vault to SOPS mo
 ### Cutover Execution
 
 - [ ] **Set Provider Mode**: Set `secrets_provider_mode: 'sops'` in inventory
-- [ ] **Update Preflight**: Modify `playbooks/preflight_assertions.yml` to allow SOPS-only mode
-- [ ] **Run Preflight**: Execute `ansible-playbook playbooks/preflight_assertions.yml`
+- [ ] **Update Preflight**: Modify `playbooks/PREFLIGHT_ASSERTIONS.YML` to allow SOPS-only mode
+- [ ] **Run Preflight**: Execute `ansible-playbook playbooks/PREFLIGHT_ASSERTIONS.YML`
 - [ ] **Run Production Deploy**: Execute `ansible-playbook PRODUCTION_DEPLOY.yml` with SOPS mode
 
 ### Post-Cutover Verification
@@ -42,8 +42,8 @@ The following checklist must be completed before switching from Vault to SOPS mo
 
 ## Current Enforcement Baseline
 
-1. `playbooks/preflight_assertions.yml` requires `inventory/group_vars/all/secrets.generated.yml` to be Vault-encrypted.
-2. `playbooks/preflight_assertions.yml` currently fails if a repository-root `.sops.yaml` exists.
+1. `playbooks/PREFLIGHT_ASSERTIONS.YML` requires `inventory/group_vars/all/secrets.generated.yml` to be Vault-encrypted.
+2. `playbooks/PREFLIGHT_ASSERTIONS.YML` currently fails if a repository-root `.sops.yaml` exists.
 3. `ansible.cfg` already enables the SOPS vars plugin (`community.sops.sops`) for future compatibility.
 
 Because of this, migration must be staged. Do not remove Vault guardrails before SOPS policy and key custody are validated.
@@ -159,7 +159,7 @@ Until cutover is approved:
 
 Example:
 ```bash
-ansible-playbook projects/deploy-system-unified/playbooks/preflight_assertions.yml -i projects/deploy-system-unified/inventory/local.ini
+ansible-playbook projects/deploy-system-unified/playbooks/PREFLIGHT_ASSERTIONS.YML -i projects/deploy-system-unified/inventory/local.ini
 ansible-playbook projects/deploy-system-unified/PRODUCTION_DEPLOY.yml -i projects/deploy-system-unified/inventory/local.ini --check
 ```
 

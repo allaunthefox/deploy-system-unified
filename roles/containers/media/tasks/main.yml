@@ -259,7 +259,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=100%
       # Hardware Acceleration
       {% if media_hw_accel %}
       {% set target_name = 'jellyfin-' ~ media_instance_name %}
@@ -323,7 +322,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=25%
       Volume={{ containers_media_config_dir }}/radarr:/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
       Environment=PUID={{ media_puid }}
@@ -369,7 +367,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=25%
       Volume={{ containers_media_config_dir }}/sonarr:/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
       Environment=PUID={{ media_puid }}
@@ -415,7 +412,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=25%
       Volume={{ media_config_dir }}/prowlarr:/config:Z
       Environment=PUID={{ media_puid }}
       Environment=PGID={{ media_pgid }}
@@ -449,7 +445,7 @@
     - media
     - security
 - name: "CIS 7.11 | STIG V-230460 | NIST CM-6 | Enforce CHANGE_ME policy for media stack"
-  ansible.builtin.include_tasks: "{{ role_path }}/../tasks/policy_change_me.yml"
+  ansible.builtin.include_tasks: "{{ role_path }}/../common/tasks/policy_change_me.yml"
   vars:
     change_me_policy_items:
       - name: "transmission_user"
@@ -508,7 +504,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=75%
       Volume={{ media_config_dir }}/transmission:/config:Z
       Volume={{ containers_media_root_dir }}/downloads:/downloads:Z
       Environment=PUID={{ media_puid }}
@@ -556,7 +551,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=25%
       Volume={{ containers_media_config_dir }}/lidarr:/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
       Environment=PUID={{ media_puid }}
@@ -602,7 +596,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=25%
       Volume={{ containers_media_config_dir }}/readarr:/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
       Environment=PUID={{ media_puid }}
@@ -648,7 +641,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=50%
       Volume={{ media_config_dir }}/jellyseerr:/app/config:Z
       Environment=LOG_LEVEL=info
       Environment=TZ={{ media_timezone }}
@@ -692,7 +684,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=50%
       Volume={{ containers_media_config_dir }}/navidrome:/data:Z
       Volume={{ containers_media_root_dir }}/music:/music:ro,Z
       Environment=ND_SCANSCHEDULE=1h
@@ -739,7 +730,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=100%
       # Hardware Acceleration
       {% if media_hw_accel %}
       {% set target_name = 'plex-' ~ media_instance_name %}
@@ -800,7 +790,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=25%
       Volume={{ containers_media_config_dir }}/bazarr:/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
       Environment=TZ={{ media_timezone }}
@@ -846,7 +835,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=50%
       Volume={{ containers_media_config_dir }}/kavita:/kavita/config:Z
       Volume={{ containers_media_root_dir }}:/data:Z
       Environment=TZ={{ media_timezone }}
@@ -890,7 +878,6 @@
       HealthTimeout=10s
       HealthRetries=3
       HealthStartPeriod=40s
-      CPUQuota=50%
       Volume={{ containers_media_config_dir }}/audiobookshelf:/config:Z
       Volume={{ containers_media_root_dir }}/audiobooks:/audiobooks:Z
       Volume={{ containers_media_root_dir }}/podcasts:/podcasts:Z

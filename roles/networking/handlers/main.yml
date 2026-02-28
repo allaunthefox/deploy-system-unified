@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-130005
+# File Type: Role Handlers (main.yml)
+# Role: networking
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Handlers for networking role
 # ISO 9001 Structural Consistency - Handler definitions for network services

@@ -41,26 +41,60 @@ spec:
           image: "{{ .Values.pihole.image.repository }}:{{ .Values.pihole.image.tag }}"
           env:
             - name: TZ
-              value: "UTC"
+              value: "{{ .Values.global.timezone | default "UTC" }}"
             - name: WEBPASSWORD
-              value: {{ .Values.pihole.adminPassword }}
+              value: {{ .Values.pihole.adminPassword | default (randAlphaNum 16) | quote }}
+            # Skip Gravity on restarts (not on fresh install)
+            - name: SKIP_GRAVITY
+              value: "false"
+            # Allow DNSmasq to listen on all interfaces
+            - name: DNSMASQ_LISTENING
+              value: "all"
+            # Set upstream DNS servers (Cloudflare + Google as fallback)
+            - name: PIHOLE_DNS_1
+              value: "1.1.1.1"
+            - name: PIHOLE_DNS_2
+              value: "8.8.8.8"
+            # Set server IP to avoid detection issues
+            - name: SERVERIP
+              value: "0.0.0.0"
+            # Disable IPv6 to avoid resolution issues
+            - name: DISABLE_IPV6
+              value: "true"
           ports:
             - containerPort: 53
               name: dns
+              protocol: UDP
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
             - containerPort: 80
               name: http
-          livenessProbe:
-            httpGet:
-              path: /admin/
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
+          # Startup probe - gives Pi-hole time to initialize
+          startupProbe:
             httpGet:
               path: /admin/
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30  # Give it up to 150 seconds to start
+          livenessProbe:
+            httpGet:
+              path: /admin/
+              port: 80
+            initialDelaySeconds: 60  # Wait longer before checking
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /admin/
+              port: 80
+            initialDelaySeconds: 30  # Wait for startup
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.pihole.resources | nindent 10 }}
           volumeMounts:
@@ -78,6 +112,13 @@ spec:
           {{- end }}
         - name: dnsmasq-data
           emptyDir: {}
+      # Use host network for DNS during initial setup
+      # This allows Pi-hole to use the node's DNS resolver for Gravity
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1
+          - 8.8.8.8
+      dnsPolicy: ClusterFirst
 ---
 {{- if .Values.pihole.persistence.enabled }}
 apiVersion: v1

@@ -2,7 +2,7 @@
 # Core systemd role - Systemd configuration and hardening
 # CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26
 
-- name: "CIS 5.2.1 | STIG V-230260 | NIST CM-6 | Enforce systemd requirement when strict mode is enabled"
+- name: "CIS 5.2.1 | STIG V-230260 | NIST CM-6 | ISO 27001 §8.26 | Audit Code 810300 | Enforce systemd requirement when strict mode is enabled"
   ansible.builtin.assert:
     that:
       - ansible_service_mgr == 'systemd'
@@ -14,8 +14,9 @@
     - nist_cm_6
     - systemd
     - prerequisite
+    - action_810300
 
-- name: "CIS 5.2.1 | Skip core/systemd on non-systemd hosts"
+- name: "CIS 5.2.1 | Audit Code 810300 | Skip core/systemd on non-systemd hosts"
   ansible.builtin.debug:
     msg: "core/systemd skipped because ansible_service_mgr is {{ ansible_service_mgr }}"
   changed_when: false
@@ -24,11 +25,12 @@
     - cis_5_2_1
     - systemd
     - info
+    - action_810300
 
-- name: "CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26 | Action 840030 | Configure systemd settings"
+- name: "CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26 | Audit Code 840030 | Configure systemd settings"
   when: ansible_service_mgr == 'systemd'
   block:
-    - name: "CIS 5.2.4 | STIG V-230260 | NIST AU-3, AU-12 | ISO 27001 §12.4 | Action 840030 | Configure systemd journald"
+    - name: "CIS 5.2.4 | STIG V-230260 | NIST AU-3, AU-12 | ISO 27001 §12.4 | Audit Code 840030 | Configure systemd journald"
       ansible.builtin.lineinfile:
         path: /etc/systemd/journald.conf
         regexp: "{{ item.regexp }}"
@@ -49,8 +51,9 @@
         - systemd
         - journald
         - remediate
+        - action_840030
 
-    - name: "CIS 5.3.1 | STIG V-230261 | NIST CM-6 | ISO 27001 §8.26 | Action 810300 | Configure systemd resolved if available"
+    - name: "CIS 5.3.1 | STIG V-230261 | NIST CM-6 | ISO 27001 §8.26 | Audit Code 810300 | Configure systemd resolved if available"
       ansible.builtin.lineinfile:
         path: /etc/systemd/resolved.conf
         regexp: "{{ item.regexp }}"
@@ -71,8 +74,9 @@
         - systemd
         - resolved
         - remediate
+        - action_810300
 
-    - name: "CIS 5.2.4 | STIG V-230260 | NIST AU-2 | ISO 27001 §12.4 | Enable persistent journal storage"
+    - name: "CIS 5.2.4 | STIG V-230260 | NIST AU-2 | ISO 27001 §12.4 | Audit Code 840030 | Enable persistent journal storage"
       ansible.builtin.file:
         path: /var/log/journal
         state: directory
@@ -88,8 +92,9 @@
         - systemd
         - journald
         - remediate
+        - action_840030
 
-    - name: "CIS 5.2.1 | STIG V-230260 | NIST CM-6 | Reload systemd daemon"
+    - name: "CIS 5.2.1 | STIG V-230260 | NIST CM-6 | Audit Code 810300 | Reload systemd daemon"
       ansible.builtin.systemd:
         daemon_reload: true
       become: true
@@ -99,6 +104,7 @@
         - nist_cm_6
         - systemd
         - daemon
+        - action_810300
   tags:
     - cis_5_2_x
     - cis_5_3_x
@@ -113,10 +119,11 @@
     - systemd
     - remediate
 
-- name: "CIS 5.2.1 | Set core systemd completion flag"
+- name: "CIS 5.2.1 | Audit Code 810300 | Set core systemd completion flag"
   ansible.builtin.set_fact:
     core_systemd_complete: "{{ ansible_service_mgr == 'systemd' }}"
   tags:
     - cis_5_2_1
     - systemd
     - fact
+    - action_810300

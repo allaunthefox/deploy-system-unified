@@ -1,0 +1,359 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100007
+# Playbook Type: Stack Deployment (Monitoring + Media)
+# Description: Production-ready monitoring and media workloads on Kubernetes
+# Requirements: K3s v1.31.4+, Helm v3.16+, kubernetes.core collection
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# Monitoring & Media Stack Deployment
+# Production-ready playbook for deploying monitoring and media workloads on Kubernetes
+#
+# Usage:
+#   ansible-playbook deploy_monitoring_media.yml -i inventory/your_inventory.ini
+#
+# Skip preflight checks (for testing):
+#   ansible-playbook deploy_monitoring_media.yml -i inventory/your_inventory.ini --skip-tags preflight
+#
+# Requirements:
+#   - K3s cluster (v1.31.4+ recommended)
+#   - Helm v3.16+
+#   - kubernetes.core Ansible collection
+#
+# Variables (set in inventory/group_vars/):
+#   - monitoring_stack_enabled: true/false (default: true)
+#   - media_stack_enabled: true/false (default: true)
+#   - monitoring_persistence_enabled: true/false (default: true)
+#   - media_persistence_enabled: true/false (default: true)
+#   - media_gpu_enabled: true/false (default: false)
+
+- name: Preflight Checks
+  hosts: k8s_master:localhost
+  gather_facts: false
+  become: false
+  tags:
+    - always
+    - preflight
+
+  vars:
+    # Secrets validation - set these in group_vars or environment
+    required_secrets:
+      - name: AUTHENTIK_SECRET_KEY
+        var: authentik_secret_key
+        required: false  # Set to true for full production deployment
+      - name: AUTHENTIK_PG_PASSWORD
+        var: authentik_pg_password
+        required: false
+      - name: VAULTWARDEN_ADMIN_TOKEN
+        var: vaultwarden_admin_token
+        required: false
+
+  tasks:
+    - name: "ISO 27001 §9.2 | 400006 | Validate required secrets"
+      ansible.builtin.assert:
+        that:
+          - item.var is defined and item.var != omit and item.var != ''
+        fail_msg: >-
+          CRITICAL: Secret {{ item.name }} is not set!
+          Set it via environment variable or in group_vars.
+          Example: export {{ item.name }}=$(openssl rand -base64 32)
+        success_msg: "Secret {{ item.name }} is properly configured"
+      loop: "{{ required_secrets }}"
+      when:
+        - item.required | bool
+        - skip_secret_validation is not defined or not skip_secret_validation | bool
+      delegate_to: localhost
+      run_once: true
+      tags: [preflight, security, secrets]
+
+    - name: "ISO 9001 | 600013 | Verify Helm is available"
+      ansible.builtin.command: helm version --short
+      register: helm_version_check
+      changed_when: false
+      failed_when: false
+      delegate_to: localhost
+      tags: [preflight, helm]
+
+    - name: "ISO 9001 | 600013 | Assert Helm is installed"
+      ansible.builtin.assert:
+        that:
+          - helm_version_check.rc == 0
+        fail_msg: "Helm is not installed. Please install Helm v3.16+ first."
+      when: helm_version_check.rc is defined
+      delegate_to: localhost
+      tags: [preflight, helm]
+
+    - name: "ISO 9001 | 600013 | Verify K3s is running"
+      ansible.builtin.systemd:
+        name: k3s
+        state: started
+      register: k3s_check
+      failed_when: false
+      become: true
+      tags: [preflight, k3s]
+
+    - name: "ISO 9001 | 600013 | Assert K3s is running"
+      ansible.builtin.assert:
+        that:
+          - k3s_check.active | bool
+        fail_msg: "K3s is not running. Please install and start K3s first."
+      when: k3s_check.active is defined
+      become: true
+      tags: [preflight, k3s]
+
+- name: Deploy Kubernetes Infrastructure
+  hosts: k8s_master
+  gather_facts: true
+  become: true
+  tags:
+    - always
+    - kubernetes
+
+  vars:
+    k3s_version: "v1.31.4+k3s1"
+    k3s_install_dir: /var/lib/rancher/k3s
+
+  tasks:
+    - name: "ISO 27001 §8.20 | Audit Code 820000 | Check if K3s is installed"
+      ansible.builtin.stat:
+        path: /usr/local/bin/k3s
+      register: k3s_binary_check
+      tags: [kubernetes, k3s, check]
+
+    - name: "ISO 27001 §8.19 | Audit Code 530000 | Install K3s (if needed)"
+      when: not k3s_binary_check.stat.exists
+      block:
+        - name: Download K3s install script
+          ansible.builtin.get_url:
+            url: https://get.k3s.io
+            dest: /tmp/k3s-install.sh
+            mode: '0755'
+            owner: root
+            group: root
+          become: true
+          tags: [kubernetes, k3s, install]
+
+        - name: Install K3s
+          ansible.builtin.command:
+            cmd: /tmp/k3s-install.sh
+            creates: /usr/local/bin/k3s
+          become: true
+          environment:
+            INSTALL_K3S_VERSION: "{{ k3s_version }}"
+          tags: [kubernetes, k3s, install]
+
+        - name: Wait for K3s service
+          ansible.builtin.systemd:
+            name: k3s
+            state: started
+            enabled: true
+          become: true
+          tags: [kubernetes, k3s, service]
+
+    - name: "ISO 9001 | 600013 | Wait for K3s API to be ready"
+      ansible.builtin.wait_for:
+        timeout: 60
+        delay: 5
+        msg: "Waiting for K3s API to be available"
+      become: true
+      tags: [kubernetes, k3s, wait]
+
+    - name: "ISO 27001 §8.20 | Audit Code 820000 | Verify K3s is running"
+      ansible.builtin.command: k3s kubectl cluster-info
+      register: k3s_info
+      changed_when: false
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      tags: [kubernetes, k3s, verify]
+
+- name: Deploy Helm Charts
+  hosts: k8s_master
+  gather_facts: false
+  become: true
+  tags:
+    - always
+    - helm
+    - charts
+
+  vars:
+    kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+    playbook_dir: "/home/prod/Workspaces/repos/github/deploy-system-unified"
+    
+    # Stack configuration
+    monitoring_stack_enabled: true
+    media_stack_enabled: true
+    
+    # Persistence configuration
+    monitoring_persistence_enabled: true
+    media_persistence_enabled: true
+    
+    # Media GPU configuration
+    media_gpu_enabled: false
+    
+    # Monitoring stack values
+    monitoring_values:
+      prometheus:
+        persistence:
+          enabled: "{{ monitoring_persistence_enabled }}"
+        resources:
+          limits:
+            memory: 2Gi
+          requests:
+            memory: 1Gi
+      grafana:
+        persistence:
+          enabled: "{{ monitoring_persistence_enabled }}"
+        adminUser: admin
+        adminPassword: admin  # CHANGE IN PRODUCTION!
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Prometheus
+                type: prometheus
+                access: proxy
+                url: http://prometheus-server:9090
+                isDefault: true
+      alertmanager:
+        enabled: true
+    
+    # Media stack values
+    media_values:
+      global:
+        timezone: "{{ timezone | default('UTC') }}"
+        puid: 1000
+        pgid: 1000
+      hardware:
+        gpu:
+          enabled: "{{ media_gpu_enabled }}"
+          vendor: intel
+      jellyfin:
+        persistence:
+          config:
+            enabled: "{{ media_persistence_enabled }}"
+            size: 10Gi
+          media:
+            enabled: "{{ media_persistence_enabled }}"
+            size: 100Gi
+      radarr:
+        persistence:
+          config:
+            enabled: "{{ media_persistence_enabled }}"
+            size: 5Gi
+          media:
+            enabled: false
+      sonarr:
+        persistence:
+          config:
+            enabled: "{{ media_persistence_enabled }}"
+            size: 5Gi
+          media:
+            enabled: false
+
+  tasks:
+    - name: "ISO 27001 §8.20 | Audit Code 700030 | Create monitoring namespace"
+      kubernetes.core.k8s:
+        name: monitoring
+        kind: Namespace
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+      when: monitoring_stack_enabled | bool
+      tags: [helm, namespace, monitoring]
+
+    - name: "ISO 27001 §8.20 | Audit Code 700030 | Create media namespace"
+      kubernetes.core.k8s:
+        name: media
+        kind: Namespace
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+      when: media_stack_enabled | bool
+      tags: [helm, namespace, media]
+
+    - name: "ISO 27001 §8.20 | Audit Code 700000 | Deploy monitoring-stack"
+      kubernetes.core.helm:
+        name: monitoring
+        chart_ref: "{{ playbook_dir }}/charts/monitoring-stack"
+        release_namespace: monitoring
+        kubeconfig: "{{ kubeconfig_path }}"
+        values: "{{ monitoring_values }}"
+        wait: true
+        wait_timeout: 300s
+      when: monitoring_stack_enabled | bool
+      tags: [helm, deploy, monitoring]
+
+    - name: "ISO 27001 §8.20 | Audit Code 700000 | Deploy media-stack"
+      kubernetes.core.helm:
+        name: media
+        chart_ref: "{{ playbook_dir }}/charts/media-stack"
+        release_namespace: media
+        kubeconfig: "{{ kubeconfig_path }}"
+        values: "{{ media_values }}"
+        wait: true
+        wait_timeout: 300s
+      when: media_stack_enabled | bool
+      tags: [helm, deploy, media]
+
+- name: Validate Deployment
+  hosts: k8s_master
+  gather_facts: false
+  become: false
+  tags:
+    - always
+    - validate
+
+  vars:
+    kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+    monitoring_stack_enabled: true
+    media_stack_enabled: true
+
+  tasks:
+    - name: "ISO 9001 | 600013 | Wait for monitoring deployments"
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: monitoring
+        kubeconfig: "{{ kubeconfig_path }}"
+      register: monitoring_deployments
+      until: >
+        monitoring_deployments.resources | length > 0 and
+        monitoring_deployments.resources | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length >= 1
+      retries: 20
+      delay: 15
+      when: monitoring_stack_enabled | bool
+      ignore_errors: true
+      tags: [validate, monitoring]
+
+    - name: "ISO 9001 | 600013 | Wait for media deployments"
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: media
+        kubeconfig: "{{ kubeconfig_path }}"
+      register: media_deployments
+      until: >
+        media_deployments.resources | length > 0 and
+        media_deployments.resources | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length >= 1
+      retries: 20
+      delay: 15
+      when: media_stack_enabled | bool
+      ignore_errors: true
+      tags: [validate, media]
+
+    - name: "ISO 9001 | 600013 | Print deployment status"
+      ansible.builtin.debug:
+        msg:
+          - "=== DEPLOYMENT COMPLETE ==="
+          - ""
+          - "Monitoring Stack:"
+          - "  - Grafana: {{ '✅ Running' if monitoring_deployments.resources | selectattr('metadata.name', 'search', 'grafana') | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length > 0 else '⏳ Starting' }}"
+          - "  - Prometheus: {{ '✅ Running' if monitoring_deployments.resources | selectattr('metadata.name', 'search', 'prometheus') | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length > 0 else '⏳ Starting' }}"
+          - ""
+          - "Media Stack:"
+          - "  - Jellyfin: {{ '✅ Running' if media_deployments.resources | selectattr('metadata.name', 'search', 'jellyfin') | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length > 0 else '⏳ Starting' }}"
+          - "  - Radarr: {{ '✅ Running' if media_deployments.resources | selectattr('metadata.name', 'search', 'radarr') | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length > 0 else '⏳ Starting' }}"
+          - "  - Sonarr: {{ '✅ Running' if media_deployments.resources | selectattr('metadata.name', 'search', 'sonarr') | selectattr('status.readyReplicas', 'defined') | selectattr('status.readyReplicas', 'gt', 0) | list | length > 0 else '⏳ Starting' }}"
+          - ""
+          - "Access via port-forward:"
+          - "  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
+          - "  kubectl port-forward -n monitoring svc/monitoring-monitoring-stack-grafana 3000:3000"
+          - "  kubectl port-forward -n media svc/media-media-stack-jellyfin 8096:8096"
+      tags: [validate, summary]

@@ -1,8 +1,15 @@
 # COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN
 
-**Status:** Proposed (Q2 2026)
-**Priority:** High
-**Objective:** Map Deploy-System-Unified security controls to CIS, STIG, and NIST frameworks
+**Audit Event Identifier:** DSU-CMP-210003  
+**Document Type:** Compliance Integration Plan  
+**Status:** Proposed (Q2 2026)  
+**Priority:** High  
+**Objective:** Map Deploy-System-Unified security controls to CIS, STIG, and NIST frameworks  
+**Frameworks:** CIS Ubuntu 22.04, CIS RHEL 9, DISA STIG, NIST 800-53, NIST 800-171, PCI DSS 4.0  
+**Last Updated:** 2026-02-28  
+**Version:** 1.0  
+**Review Status:** Bi-annual  
+**Next Review:** 2026-08-28  
 
 ---
 
@@ -725,7 +732,7 @@ controls:
     
     - name: Gather CIS Level 1 compliance
       ansible.builtin.shell: |
-        ansible-playbook site.yml --tags cis,level_1 --check --diff
+        ansible-playbook SITE.YML --tags cis,level_1 --check --diff
       register: cis_level_1_result
       changed_when: false
     

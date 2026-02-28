@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400019
+# Script Type: Migration Staging
+# Description: Extracts backup assets to staging directory
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 set -eu
 
 WORKSPACES_ROOT="${WORKSPACES_ROOT:-$HOME/Workspaces}"

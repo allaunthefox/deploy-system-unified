@@ -14,9 +14,23 @@ spec:
       labels:
         app: sonarr
     spec:
+      serviceAccountName: {{ include "media-stack.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{ .Values.global.puid | default 1000 }}
+        runAsGroup: {{ .Values.global.pgid | default 1000 }}
+        fsGroup: {{ .Values.global.pgid | default 1000 }}
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: sonarr
           image: "{{ .Values.sonarr.image.repository }}:{{ .Values.sonarr.image.tag }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 8989
           env:
@@ -49,8 +63,16 @@ spec:
               mountPath: /data
       volumes:
         - name: config
+          {{- if .Values.sonarr.persistence.config.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "media-stack.fullname" . }}-sonarr-config
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: media
+          {{- if .Values.sonarr.persistence.media.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "media-stack.fullname" . }}-media-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

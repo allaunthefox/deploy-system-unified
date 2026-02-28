@@ -1,8 +1,15 @@
+{# =============================================================================
+# Audit Event Identifier: DSU-TPL-900008
+# Template Type: monitoring Configuration
+# Last Updated: 2026-02-28
+# Version: 1.0
+# ============================================================================= #}
 [Unit]
 Description=Monitoring Pod
 After=network-online.target
 
 [Pod]
+UserNS=host
 PodName={{ monitoring_pod_name }}
 {% if podman_rootless_enabled | bool %}
 Network={{ monitoring_network }}

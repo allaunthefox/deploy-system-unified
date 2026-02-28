@@ -1,7 +1,7 @@
 ---
 # Tasks for core/grub - Centralized Bootloader Management
 
-- name: Aggregate Kernel Parameters
+- name: "Audit Code 810300 | Aggregate Kernel Parameters"
   ansible.builtin.set_fact:
     _core_grub_all_params: >-
       {{
@@ -14,30 +14,34 @@
           (core_grub_extra_params | default([]))
         ) | select('string') | reject('equalto', '') | unique | list
       }}
+  tags: [grub, configuration, action_810300]
 
-- name: Construct GRUB_CMDLINE_LINUX_DEFAULT
+- name: "Audit Code 810300 | Construct GRUB_CMDLINE_LINUX_DEFAULT"
   ansible.builtin.set_fact:
     _core_grub_cmdline: "{{ _core_grub_all_params | join(' ') }}"
+  tags: [grub, configuration, action_810300]
 
-- name: Validate kernel parameters for conflicts
+- name: "Audit Code 840030 | Validate kernel parameters for conflicts"
   ansible.builtin.include_tasks: validate_params.yml
+  tags: [grub, validate, action_840030]
 
-- name: Ensure GRUB configuration exists
+- name: "Audit Code 810300 | Ensure GRUB configuration exists"
   ansible.builtin.stat:
     path: "{{ core_grub_config_path }}"
   register: grub_stat
+  tags: [grub, check, action_810300]
 
-- name: Warn when GRUB config is missing
+- name: "Audit Code 840030 | Warn when GRUB config is missing"
   ansible.builtin.debug:
     msg: >-
       core/grub: GRUB config file {{ core_grub_config_path }} not found;
       skipping GRUB_CMDLINE_LINUX_DEFAULT update.
-    warn: true
   when:
     - core_grub_enabled
     - not grub_stat.stat.exists
+  tags: [grub, warning, action_840030]
 
-- name: "CIS 1.4.1 | ISO 27001 §8.9 | NIST CM-2 | Action 450002 | Update GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub"
+- name: "CIS 1.4.1 | ISO 27001 §8.9 | NIST CM-2 | Audit Code 450002 | Update GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub"
   ansible.builtin.lineinfile:
     path: "{{ core_grub_config_path }}"
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
@@ -54,26 +58,28 @@
     - nist_cm_2
     - grub
     - remediate
+    - action_450002
   when:
     - core_grub_enabled
     - grub_stat.stat.exists
-  notify: update-grub
 
-- name: Manual GRUB Update Trigger
+- name: "Audit Code 810300 | Manual GRUB Update Trigger"
   ansible.builtin.debug:
     msg: "Triggering GRUB update due to force flag"
   changed_when: true
   notify: update-grub
   tags:
     - grub
+    - action_810300
   when:
     - core_grub_enabled
     - core_grub_force_update
     - grub_stat.stat.exists
 
-- name: "ISO 27040 | Action 900000 | Backup GRUB configuration"
+- name: "ISO 27040 | Audit Code 900000 | Backup GRUB configuration"
   ansible.builtin.include_tasks: backup.yml
   tags:
     - iso_27040
     - backup
     - grub
+    - action_900000

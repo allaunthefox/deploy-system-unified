@@ -172,7 +172,7 @@ containers_caddy_fail_secure: false
 - [ ] Add "configuration effective value" report at playbook start
 - [ ] Fail deployment if implicit settings conflict
 
-**Example Addition to `preflight_validate.yml`**:
+**Example Addition to `PREFLIGHT_VALIDATE.YML`**:
 ```yaml
 - name: Assert effective SSH port is explicitly known
   ansible.builtin.assert:
@@ -185,7 +185,7 @@ containers_caddy_fail_secure: false
       Check: system_ssh_port, advanced_security_hardening_random_ssh_port
 ```
 
-**Deliverable**: Enhanced `playbooks/preflight_validate.yml`
+**Deliverable**: Enhanced `playbooks/PREFLIGHT_VALIDATE.YML`
 
 #### 2.4 Checksum Population
 **Owner**: Security Team  
@@ -321,7 +321,7 @@ Container Runtime:
 - [`PLAN_DETERMINISM_ROADMAP.md`](PLAN_DETERMINISM_ROADMAP.md) - Overall determinism strategy
 - [`inventory/group_vars/all/hardened_supply_chain.yml`](inventory/group_vars/all/hardened_supply_chain.yml) - Checksum configuration
 - [`inventory/group_vars/all/os_settings.yml`](inventory/group_vars/all/os_settings.yml) - Profile definitions
-- [`playbooks/preflight_validate.yml`](playbooks/preflight_validate.yml) - Validation logic
+- [`playbooks/PREFLIGHT_VALIDATE.YML`](playbooks/PREFLIGHT_VALIDATE.YML) - Validation logic
 
 ---
 

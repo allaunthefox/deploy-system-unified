@@ -17,7 +17,7 @@
     - hardware
     - storage
 
-- name: "CIS 3.3.2 | STIG V-230561 | NIST SC-28 | ISO 27040 | Action 500024 | Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)"
+- name: "CIS 3.3.2 | STIG V-230561 | NIST SC-28 | ISO 27040 | Audit Code 500024 | Set I/O scheduler for disks (Physical, Virtual, Flash, RAM)"
   ansible.builtin.copy:
     content: |
       # Physical Flash (SSD/NVMe/SD/eMMC/USB-Flash) - Low Latency
@@ -41,7 +41,7 @@
     - storage
     - remediate
 
-- name: "CIS 3.3.3 | STIG V-230562 | NIST SC-12 | ISO 9001 | Action 500050 | Gather storage device facts (Robust & Aligned)"
+- name: "CIS 3.3.3 | STIG V-230562 | NIST SC-12 | ISO 9001 | Audit Code 500050 | Gather storage device facts (Robust & Aligned)"
   ansible.builtin.command: lsblk -d -o NAME,SIZE,ROTA,PHY-SEC,OPT-IO -n --bytes
   register: lsblk_output
   changed_when: false

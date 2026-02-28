@@ -1,6 +1,6 @@
 ---
 # Tasks for ops/forensics - Deployment Provenance and Metadata
-# ISO 27001 §12.4 | Action 840041 | Track 7: Forensic Metadata
+# ISO 27001 §12.4 | Audit Code 840041 | Track 7: Forensic Metadata
 
 - name: "FORENSIC | Initialize Deployment Provenance"
   ansible.builtin.set_fact:

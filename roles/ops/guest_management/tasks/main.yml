@@ -2,7 +2,7 @@
 # Tasks for ops/guest_management role
 # Compliance: CIS 4.x, STIG V-230540, NIST AU-2/CA-7/IR-4/SI-4, ISO 27001 §8.15/§8.16/§16.1
 
-- name: "CIS 4.10.1 | STIG V-230760 | NIST CM-6 | ISO 9001 | Action 600013 | placeholder task (no-op)"
+- name: "CIS 4.10.1 | STIG V-230760 | NIST CM-6 | ISO 9001 | Audit Code 600013 | placeholder task (no-op)"
   ansible.builtin.debug:
     msg: "Placeholder: no action"
   tags:

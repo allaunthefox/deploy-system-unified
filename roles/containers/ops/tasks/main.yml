@@ -66,8 +66,8 @@
     path: "{{ item }}"
     state: directory
     mode: '0755'
-    owner: "1000"
-    group: "1000"
+    owner: "{{ containers_user_uid }}"
+    group: "{{ containers_user_gid }}"
   loop:
     - "{{ ops_root_dir }}"
     - "{{ ops_config_dir }}"
@@ -155,7 +155,7 @@
     - containers
     - ops
 
-- name: "CIS 5.8 | STIG V-230440 | NIST SC-8 | ISO 27001 §9.4 | Action 540001 | Deploy Ops Caddy Configuration"
+- name: "CIS 5.8 | STIG V-230440 | NIST SC-8 | ISO 27001 §9.4 | Audit Code 540001 | Deploy Ops Caddy Configuration"
   ansible.builtin.copy:
     dest: "/srv/containers/caddy/conf.d/ops_stack.caddy"
     content: |
@@ -208,7 +208,7 @@
   when: ops_enable
   notify: restart_caddy
 
-- name: "CIS 5.9 | STIG V-230440 | NIST AC-3 | ISO 27001 §8.20 | Action 700000 | Create Homarr Container Quadlet"
+- name: "CIS 5.9 | STIG V-230440 | NIST AC-3 | ISO 27001 §8.20 | Audit Code 700000 | Create Homarr Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/homarr.container"
     content: |
@@ -275,7 +275,7 @@
   when: vaultwarden_enable
   notify: reload_systemd
 
-- name: "CIS 5.11 | STIG V-230440 | NIST IA-2 | ISO 27001 §8.20 | Action 700000 | Create Vaultwarden Container Quadlet"
+- name: "CIS 5.11 | STIG V-230440 | NIST IA-2 | ISO 27001 §8.20 | Audit Code 700000 | Create Vaultwarden Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/vaultwarden.container"
     content: |
@@ -630,8 +630,8 @@
       path: "{{ ops_config_dir }}/syncthing"
       state: directory
       mode: '0755'
-      owner: "1000"
-      group: "1000"
+      owner: "{{ containers_user_uid }}"
+      group: "{{ containers_user_gid }}"
     become: true
     tags: [ops, storage, 900000]
   

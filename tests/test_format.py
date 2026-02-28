@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000102
+# File Type: Python Test Script
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 import re
 from pathlib import Path
 

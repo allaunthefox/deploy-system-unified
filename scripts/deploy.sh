@@ -1,7 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400001
+# Script Type: Main Deployment Entry Point
+# Description: POSIX-compliant deployment entry point
+# Usage: ./deploy.sh [OPTIONS]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Deploy-System-Unified - Main Deployment Script
 # POSIX-compliant deployment entry point
-# 
+#
 # Usage: ./deploy.sh [OPTIONS]
 #   Options:
 #     -e, --environment ENV    Target environment (dev/staging/prod)
@@ -71,7 +79,8 @@ log_success() {
 }
 
 # Privilege check for operations requiring root
-check_euid() {
+# shellcheck disable=SC2329
+check_service() {
     if [ "$(id -u)" -ne 0 ]; then
         log_error "This operation requires root privileges"
         log_error "Re-run with: sudo %s" "$0"

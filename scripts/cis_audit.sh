@@ -1,4 +1,13 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400002
+# Script Type: Compliance Audit (CIS Benchmark)
+# Description: CIS Benchmark validation against Ubuntu 22.04 LTS
+# Usage: ./cis_audit.sh [--level 1|2] [--report] [--json]
+# Compliance: CIS Ubuntu Linux 22.04 LTS Benchmark v1.0.0
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 #
 # CIS Benchmark Audit Script
 # Validates system configuration against CIS Ubuntu Linux 22.04 LTS Benchmark
@@ -71,6 +80,7 @@ check_sysctl() {
     fi
 }
 
+# shellcheck disable=SC2329
 check_service() {
     service="$1"
     expected_state="$2"
