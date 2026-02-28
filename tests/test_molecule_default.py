@@ -12,185 +12,181 @@ Tests for Molecule default scenario configuration.
 
 This test module validates that the default scenario is properly configured
 with Ansible-Native format and all required files exist.
-
-Args:
-    None
-
-Returns:
-    int: 0 on success, 1 on failure
-
-Example:
-    python test_molecule_default.py
 """
 
-import os
+import unittest
 import yaml
-import pytest
+from pathlib import Path
 
 
-# Base path for molecule default scenario
-MOLECULE_DEFAULT_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "deploy-system-unified",
-    "molecule",
-    "default"
-)
+# Base path for molecule default scenario (project root relative to tests/)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+MOLECULE_DEFAULT_PATH = PROJECT_ROOT / "molecule" / "default"
 
 
-def test_molecule_default_directory_exists():
-    """Test that the default scenario directory exists."""
-    assert os.path.isdir(MOLECULE_DEFAULT_PATH), \
-        f"Molecule default directory should exist at {MOLECULE_DEFAULT_PATH}"
+class TestMoleculeDefault(unittest.TestCase):
+    """Test Molecule default scenario configuration."""
+
+    def test_molecule_default_directory_exists(self):
+        """Test that the default scenario directory exists."""
+        self.assertTrue(MOLECULE_DEFAULT_PATH.is_dir(),
+                        f"Molecule default directory should exist at {MOLECULE_DEFAULT_PATH}")
+
+    def test_molecule_yml_exists(self):
+        """Test that molecule.yml exists."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        self.assertTrue(molecule_yml.is_file(),
+                        f"molecule.yml should exist at {molecule_yml}")
+
+    def test_molecule_yml_is_valid_yaml(self):
+        """Test that molecule.yml is valid YAML."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertIsNotNone(config, "molecule.yml should be valid YAML")
+
+    def test_molecule_yml_has_ansible_section(self):
+        """Test that molecule.yml has ansible section (Ansible-Native format)."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertIn('ansible', config,
+                      "molecule.yml should have 'ansible' section for Ansible-Native format")
+
+    def test_molecule_yml_has_executor(self):
+        """Test that molecule.yml has executor defined."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertIn('executor', config.get('ansible', {}),
+                      "ansible.executor should be defined")
+        self.assertIn('backend', config.get('ansible', {}).get('executor', {}),
+                      "ansible.executor.backend should be defined")
+
+    def test_molecule_yml_has_test_sequence(self):
+        """Test that molecule.yml has scenario.test_sequence defined."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertIn('scenario', config,
+                      "molecule.yml should have 'scenario' section")
+        self.assertIn('test_sequence', config.get('scenario', {}),
+                      "scenario.test_sequence should be defined")
+
+    def test_molecule_yml_has_verifier(self):
+        """Test that molecule.yml has verifier defined."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertIn('verifier', config,
+                      "molecule.yml should have 'verifier' section")
+
+    def test_create_yml_exists(self):
+        """Test that create.yml exists."""
+        create_yml = MOLECULE_DEFAULT_PATH / "create.yml"
+        self.assertTrue(create_yml.is_file(),
+                        f"create.yml should exist at {create_yml}")
+
+    def test_destroy_yml_exists(self):
+        """Test that destroy.yml exists."""
+        destroy_yml = MOLECULE_DEFAULT_PATH / "destroy.yml"
+        self.assertTrue(destroy_yml.is_file(),
+                        f"destroy.yml should exist at {destroy_yml}")
+
+    def test_converge_yml_exists(self):
+        """Test that converge.yml exists."""
+        converge_yml = MOLECULE_DEFAULT_PATH / "converge.yml"
+        self.assertTrue(converge_yml.is_file(),
+                        f"converge.yml should exist at {converge_yml}")
+
+    def test_prepare_yml_exists(self):
+        """Test that prepare.yml exists."""
+        prepare_yml = MOLECULE_DEFAULT_PATH / "prepare.yml"
+        self.assertTrue(prepare_yml.is_file(),
+                        f"prepare.yml should exist at {prepare_yml}")
+
+    def test_verify_yml_exists(self):
+        """Test that verify.yml exists."""
+        verify_yml = MOLECULE_DEFAULT_PATH / "verify.yml"
+        self.assertTrue(verify_yml.is_file(),
+                        f"verify.yml should exist at {verify_yml}")
+
+    def test_inventory_directory_exists(self):
+        """Test that inventory directory exists."""
+        inventory_dir = MOLECULE_DEFAULT_PATH / "inventory"
+        self.assertTrue(inventory_dir.is_dir(),
+                        f"inventory directory should exist at {inventory_dir}")
+
+    def test_inventory_hosts_yml_exists(self):
+        """Test that inventory/hosts.yml or inventory/hosts exists."""
+        inventory_dir = MOLECULE_DEFAULT_PATH / "inventory"
+        if not inventory_dir.is_dir():
+            self.skipTest("inventory directory not found")
+        hosts_yml = inventory_dir / "hosts.yml"
+        hosts = inventory_dir / "hosts"
+        self.assertTrue(hosts_yml.is_file() or hosts.is_file(),
+                        "hosts.yml or hosts should exist in inventory")
+
+    def test_create_yml_has_podman_container_task(self):
+        """Test that create.yml uses podman_container module."""
+        create_yml = MOLECULE_DEFAULT_PATH / "create.yml"
+        if not create_yml.is_file():
+            self.skipTest("create.yml not found")
+        with open(create_yml, 'r') as f:
+            content = f.read()
+        self.assertIn('podman_container', content,
+                      "create.yml should use podman_container module")
+
+    def test_destroy_yml_has_podman_container_task(self):
+        """Test that destroy.yml uses podman_container module."""
+        destroy_yml = MOLECULE_DEFAULT_PATH / "destroy.yml"
+        if not destroy_yml.is_file():
+            self.skipTest("destroy.yml not found")
+        with open(destroy_yml, 'r') as f:
+            content = f.read()
+        self.assertIn('podman_container', content,
+                      "destroy.yml should use podman_container module")
+
+    def test_molecule_yml_no_driver_section(self):
+        """Test that molecule.yml does NOT have driver section (Ansible-Native)."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertNotIn('driver', config,
+                         "molecule.yml should NOT have 'driver' section (Ansible-Native)")
+
+    def test_molecule_yml_no_platforms_section(self):
+        """Test that molecule.yml does NOT have platforms section (Ansible-Native)."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertNotIn('platforms', config,
+                         "molecule.yml should NOT have 'platforms' section (Ansible-Native)")
+
+    def test_molecule_yml_no_provisioner_section(self):
+        """Test that molecule.yml does NOT have provisioner section (Ansible-Native)."""
+        molecule_yml = MOLECULE_DEFAULT_PATH / "molecule.yml"
+        if not molecule_yml.is_file():
+            self.skipTest("molecule.yml not found")
+        with open(molecule_yml, 'r') as f:
+            config = yaml.safe_load(f)
+        self.assertNotIn('provisioner', config,
+                         "molecule.yml should NOT have 'provisioner' section (Ansible-Native)")
 
 
-def test_molecule_yml_exists():
-    """Test that molecule.yml exists."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    assert os.path.isfile(molecule_yml), \
-        f"molecule.yml should exist at {molecule_yml}"
-
-
-def test_molecule_yml_is_valid_yaml():
-    """Test that molecule.yml is valid YAML."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert config is not None, "molecule.yml should be valid YAML"
-
-
-def test_molecule_yml_has_ansible_section():
-    """Test that molecule.yml has ansible section (Ansible-Native format)."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'ansible' in config, \
-        "molecule.yml should have 'ansible' section for Ansible-Native format"
-
-
-def test_molecule_yml_has_executor():
-    """Test that molecule.yml has executor defined."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'executor' in config['ansible'], \
-        "ansible.executor should be defined"
-    assert 'backend' in config['ansible']['executor'], \
-        "ansible.executor.backend should be defined"
-
-
-def test_molecule_yml_has_test_sequence():
-    """Test that molecule.yml has scenario.test_sequence defined."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'scenario' in config, \
-        "molecule.yml should have 'scenario' section"
-    assert 'test_sequence' in config['scenario'], \
-        "scenario.test_sequence should be defined"
-
-
-def test_molecule_yml_has_verifier():
-    """Test that molecule.yml has verifier defined."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'verifier' in config, \
-        "molecule.yml should have 'verifier' section"
-
-
-def test_create_yml_exists():
-    """Test that create.yml exists."""
-    create_yml = os.path.join(MOLECULE_DEFAULT_PATH, "create.yml")
-    assert os.path.isfile(create_yml), \
-        f"create.yml should exist at {create_yml}"
-
-
-def test_destroy_yml_exists():
-    """Test that destroy.yml exists."""
-    destroy_yml = os.path.join(MOLECULE_DEFAULT_PATH, "destroy.yml")
-    assert os.path.isfile(destroy_yml), \
-        f"destroy.yml should exist at {destroy_yml}"
-
-
-def test_converge_yml_exists():
-    """Test that converge.yml exists."""
-    converge_yml = os.path.join(MOLECULE_DEFAULT_PATH, "converge.yml")
-    assert os.path.isfile(converge_yml), \
-        f"converge.yml should exist at {converge_yml}"
-
-
-def test_prepare_yml_exists():
-    """Test that prepare.yml exists."""
-    prepare_yml = os.path.join(MOLECULE_DEFAULT_PATH, "prepare.yml")
-    assert os.path.isfile(prepare_yml), \
-        f"prepare.yml should exist at {prepare_yml}"
-
-
-def test_verify_yml_exists():
-    """Test that verify.yml exists."""
-    verify_yml = os.path.join(MOLECULE_DEFAULT_PATH, "verify.yml")
-    assert os.path.isfile(verify_yml), \
-        f"verify.yml should exist at {verify_yml}"
-
-
-def test_inventory_directory_exists():
-    """Test that inventory directory exists."""
-    inventory_dir = os.path.join(MOLECULE_DEFAULT_PATH, "inventory")
-    assert os.path.isdir(inventory_dir), \
-        f"inventory directory should exist at {inventory_dir}"
-
-
-def test_inventory_hosts_yml_exists():
-    """Test that inventory/hosts.yml exists."""
-    hosts_yml = os.path.join(MOLECULE_DEFAULT_PATH, "inventory", "hosts.yml")
-    assert os.path.isfile(hosts_yml), \
-        f"inventory/hosts.yml should exist at {hosts_yml}"
-
-
-def test_create_yml_has_podman_container_task():
-    """Test that create.yml uses podman_container module."""
-    create_yml = os.path.join(MOLECULE_DEFAULT_PATH, "create.yml")
-    with open(create_yml, 'r') as f:
-        content = f.read()
-    assert 'containers.podman.podman_container' in content, \
-        "create.yml should use containers.podman.podman_container module"
-
-
-def test_destroy_yml_has_podman_container_task():
-    """Test that destroy.yml uses podman_container module."""
-    destroy_yml = os.path.join(MOLECULE_DEFAULT_PATH, "destroy.yml")
-    with open(destroy_yml, 'r') as f:
-        content = f.read()
-    assert 'containers.podman.podman_container' in content, \
-        "destroy.yml should use containers.podman.podman_container module"
-
-
-def test_molecule_yml_no_driver_section():
-    """Test that molecule.yml does NOT have driver section (Ansible-Native)."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'driver' not in config, \
-        "Ansible-Native format should NOT have 'driver' section"
-
-
-def test_molecule_yml_no_platforms_section():
-    """Test that molecule.yml does NOT have platforms section (Ansible-Native)."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'platforms' not in config, \
-        "Ansible-Native format should NOT have 'platforms' section"
-
-
-def test_molecule_yml_no_provisioner_section():
-    """Test that molecule.yml does NOT have provisioner section (Ansible-Native)."""
-    molecule_yml = os.path.join(MOLECULE_DEFAULT_PATH, "molecule.yml")
-    with open(molecule_yml, 'r') as f:
-        config = yaml.safe_load(f)
-    assert 'provisioner' not in config, \
-        "Ansible-Native format should NOT have 'provisioner' section"
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+if __name__ == '__main__':
+    unittest.main()

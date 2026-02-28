@@ -1,0 +1,74 @@
+# Coverage Configuration
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000100
+# File Type: Coverage Configuration
+# Description: pytest-cov configuration for test coverage reporting
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+
+[run]
+# Source code to measure
+source = 
+    scripts/
+    dev_tools/
+    roles/
+    playbooks/
+
+# Files to omit from coverage
+omit =
+    */tests/*
+    */molecule/*
+    */venv/*
+    */.venv/*
+    */__pycache__/*
+    */*.pyc
+    */.git/*
+    */Offline_Research/*
+    */ci-artifacts/*
+
+# Measure branch coverage
+branch = True
+
+# Parallel mode for concurrent testing
+parallel = True
+
+[report]
+# Exclude patterns from reports
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    # Skip debug/test code
+    if self.skipTest
+    if not .*exists
+
+# Show missing lines
+show_missing = True
+
+# Precision for percentages
+precision = 2
+
+# Sort by coverage
+sort = Cover
+
+# Skip files with 100% coverage
+skip_covered = False
+
+# Skip empty files
+skip_empty = True
+
+[html]
+# HTML report directory
+directory = htmlcov
+
+[xml]
+# XML report output
+output = coverage.xml
+
+[json]
+# JSON report output
+output = coverage.json
