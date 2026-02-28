@@ -3,66 +3,101 @@
 # Audit Event Identifier: DSU-TST-1000107
 # File Type: Python Test Script
 # Test Type: Script Logic Validation
-# Description: Test the exact logic from the script
+# Description: Test the exact logic from the linter script
 # Last Updated: 2026-02-28
 # Version: 1.0
 # =============================================================================
-"""Test the exact logic from the script."""
+"""Test the exact logic from the linter script."""
 
 import os
-from pathlib import Path
 import re
+import unittest
+from pathlib import Path
 
-# Read the actual content from the file (portable: env WORKSPACES_WIKI or fallback to ~/Workspaces/wiki_pages)
-wiki_file = Path(os.environ.get("WORKSPACES_WIKI", Path.home() / "Workspaces" / "wiki_pages")) / "Variable_Reference_Containers.md"
-with open(wiki_file, 'r') as f:
-    content = f.read()
 
-lines = content.splitlines()
-current_role_file = None
-new_lines = []
+class TestScriptLogic(unittest.TestCase):
+    """Test linter script logic."""
 
-for line_num, line in enumerate(lines[:10]):  # Just first 10 lines for testing
-    print(f"Line {line_num}: {repr(line)}")
-    
-    # Match role header
-    m_role = re.match(r'^### `([^`]+)`', line)
-    if m_role:
-        role_name = m_role.group(1)
-        current_role_file = f"roles/{role_name.replace('/', '_')}.md"
-        print(f"  -> Found role: {role_name}, current_role_file: {current_role_file}")
-        new_lines.append(line)
-        continue
+    def setUp(self):
+        """Set up test fixtures."""
+        self.repo_root = Path(__file__).resolve().parent.parent
+        self.wiki_pages = self.repo_root / 'wiki_pages'
+        self.var_file = self.wiki_pages / 'Variable_Reference_Containers.md'
 
-    # Match variable line in format: - `[varname]`(path#anchor)
-    m_var = re.match(r'^(\s*-\s+`)(\[)([a-zA-Z0-9_]+)(\])(\].*#)([a-zA-Z0-9_]+)(\).*)$', line)
-    if m_var and current_role_file:
-        prefix, bracket_open, varname, bracket_close, mid, anchor, suffix = m_var.groups()
-        print(f"  -> Found variable: {varname}, anchor: {anchor}")
-        
-        # Link to the anchor in the role page (using slugified version)
-        # Use the same slugify function as the linter to match what it expects
+    def test_slugify_function(self):
+        """Test slugify function for anchor generation."""
         slug_re = re.compile(r'[^a-z0-9 -]')
+        
         def slugify(s):
             s = s.lower()
             s = slug_re.sub('', s)
             s = re.sub(r'\s+', '-', s)
             s = re.sub(r'-+', '-', s)
             return s.strip('-')
+        
+        # Test cases
+        self.assertEqual(slugify("Anubis Enabled"), "anubis-enabled")
+        self.assertEqual(slugify("anubis_enabled"), "anubisenabled")
+        self.assertEqual(slugify("GPU Settings"), "gpu-settings")
+        self.assertEqual(slugify("Test--Double--Dash"), "test-double-dash")
 
-        anchor_name = slugify(varname)
-        print(f"  -> Original anchor: {anchor}, slugified anchor: {anchor_name}")
-        new_line = f'{prefix}{bracket_open}{varname}{bracket_close}{mid}{anchor_name}{suffix}'
-        print(f"  -> New line: {new_line}")
-        new_lines.append(new_line)
-    else:
-        if m_var:
-            print(f"  -> Match found but no current_role_file: {bool(current_role_file)}")
-        else:
-            print(f"  -> No match for variable pattern")
-        new_lines.append(line)
+    def test_role_header_pattern(self):
+        """Test role header pattern matching."""
+        pattern = r'^###+ `([^`]+)`'
+        
+        # Valid role headers
+        self.assertIsNotNone(re.match(pattern, "### `containers/anubis`"))
+        self.assertIsNotNone(re.match(pattern, "### `security/vault`"))
+        
+        # Invalid patterns
+        self.assertIsNone(re.match(pattern, "## Regular Header"))
+        self.assertIsNone(re.match(pattern, "### No Backticks"))
 
-print("\nFirst few lines of result:")
-for i, line in enumerate(new_lines):
-    if i < 10:
-        print(f"{i}: {repr(line)}")
+    def test_variable_line_pattern(self):
+        """Test variable line pattern matching."""
+        # Pattern for: - `[varname](path#anchor)`
+        # Breaking down: whitespace-dash-backtick-bracket-varname-bracket-bracket-paren-hash-anchor-paren
+        pattern = r'^\s*-\s+`\[([a-zA-Z0-9_]+)\]\([^)]*#([a-zA-Z0-9_]+)\)`'
+        
+        # Valid variable line
+        line = "- `[anubis_enabled](roles/containers_anubis.md#anubis_enabled)`"
+        match = re.match(pattern, line)
+        self.assertIsNotNone(match, "Should match variable line format")
+        
+        if match:
+            varname, anchor = match.groups()
+            self.assertEqual(varname, "anubis_enabled")
+            self.assertEqual(anchor, "anubis_enabled")
+
+    def test_var_file_processing(self):
+        """Test processing of variable reference file."""
+        if not self.var_file.exists():
+            self.skipTest("Variable reference file not found")
+            
+        with open(self.var_file, 'r') as f:
+            content = f.read()
+        
+        lines = content.splitlines()
+        current_role_file = None
+        
+        # Process first 20 lines to verify logic
+        processed = 0
+        for line in lines[:20]:
+            # Match role header
+            m_role = re.match(r'^###+ `([^`]+)`', line)
+            if m_role:
+                role_name = m_role.group(1)
+                current_role_file = f"roles/{role_name.replace('/', '_')}.md"
+                processed += 1
+                continue
+                
+            # Match variable line
+            m_var = re.match(r'^(\s*-\s+`)(\[)([a-zA-Z0-9_]+)(\])(\].*#)([a-zA-Z0-9_]+)(\).*)$', line)
+            if m_var and current_role_file:
+                processed += 1
+                
+        self.assertGreater(processed, 0, "Should process at least some lines")
+
+
+if __name__ == '__main__':
+    unittest.main()
