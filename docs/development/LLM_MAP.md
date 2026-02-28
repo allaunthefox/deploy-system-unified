@@ -1,13 +1,15 @@
 # LLM_MAP
 
 **Project**: Deploy-System-Unified
-**Focus**: Infrastructure-as-Code (Ansible), Security Hardening, Ephemeral Workloads.
+**Focus**: Infrastructure-as-Code (Ansible), Security Hardening, Ephemeral Workloads, GPU Acceleration.
 
 ## 🧠 Architectural Constraints
 
-- **Anti-Comingling Rule**: No task should perform unrelated operations (e.g., firewalling and package installation must be separate).
+- **Separation of Concerns**: Each task performs a single, well-defined operation (e.g., firewall rules, package installation, and service configuration are separate tasks).
 - **Explicit Base**: All workloads must import a standard base layer (`BASE_HARDENED.yml` or `BASE_EPHEMERAL.yml`).
 - **Fail-Secure**: Firewall (default-deny) must be established before services are deployed.
+- **Audit Trail**: All operations must be idempotent and produce forensic logging.
+- **GPU-Native**: Full GPU passthrough, slicing (MIG, SR-IOV, time-slicing), and acceleration support.
 
 ## 🗺 Documentation Cross-Reference
 
