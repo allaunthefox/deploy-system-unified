@@ -116,7 +116,7 @@ RAM-disk (`tmpfs`), managed by `core/secrets` with TPM integrity attestation fro
 
 ### Separation of Concerns
 **Formal Term:** Separation of Concerns (SoC)  
-**DSU Shorthand:** None (historical: "non-comingling")
+**DSU Shorthand:** None (historical: "Separation of Concerns")
 
 **Definition:** The architectural principle that each software component addresses exactly one
 distinct concern, with no component managing responsibilities that belong to another. A concern
@@ -137,7 +137,7 @@ affecting other components.
 **In DSU:** Separation of Concerns is the primary term used throughout documentation. SoC is
 enforced at three levels: task (one module call, one action), role (one role, one technology
 concern), and playbook (one playbook, one infrastructure concern). See
-[NON_COMINGLING](NON_COMINGLING).
+[SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS).
 
 ---
 

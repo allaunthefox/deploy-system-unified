@@ -15,7 +15,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
 
 ### [1. Architecture](./architecture/README.md)
 
-* **[Core Philosophy](./architecture/NON_COMINGLING.md)**: Why we avoid comingled tasks.
+* **[Core Philosophy](./architecture/SEPARATION_OF_CONCERNS.md)**: Why we avoid comingled tasks.
 * **[Virtual Networking](./architecture/VIRTUAL_NETWORKING.md)**: VLANs, VXLANs, and L2/L3 isolation.
 * **[Backup Strategy](./architecture/BACKUP_STRATEGY.md)**: rclone, restic, and system snapshots.
 * **[GPU Slicing Architecture](./architecture/GPU_SLICING.md)**: Architectural overview of GPU slicing implementation.

@@ -15,7 +15,7 @@ auto-synced from this directory by the CI wiki-lint workflow. Do not edit the Gi
 
 See **[NAMING_CONVENTION_STANDARD](NAMING_CONVENTION_STANDARD)** for the complete naming standard.
 
-Examples: `ONTOLOGY.md`, `NON_COMINGLING.md`, `DEV_STYLE_YAML_STYLE_GUIDE.md`, `REF_VARS_CORE.md`.
+Examples: `ONTOLOGY.md`, `SEPARATION_OF_CONCERNS.md`, `DEV_STYLE_YAML_STYLE_GUIDE.md`, `REF_VARS_CORE.md`.
 
 **Internal links**: When linking to another wiki page from within a wiki page, use this format:
 
@@ -26,10 +26,10 @@ Examples: `ONTOLOGY.md`, `NON_COMINGLING.md`, `DEV_STYLE_YAML_STYLE_GUIDE.md`, `
 Where `PAGE_NAME` matches the filename without the `.md` extension. Example:
 
 ```markdown
-See [../wiki_pages/NON_COMINGLING](../wiki_pages/NON_COMINGLING) for the foundational rule (Separation of Concerns).
+See [../wiki_pages/SEPARATION_OF_CONCERNS](../wiki_pages/SEPARATION_OF_CONCERNS) for the foundational rule (Separation of Concerns).
 ```
 
-Do not use relative file paths (`../../wiki_pages/NON_COMINGLING.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
+Do not use relative file paths (`../../wiki_pages/SEPARATION_OF_CONCERNS.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
 
 **Terminology:** Use "Separation of Concerns (SoC)" as the primary term.
 
@@ -120,7 +120,7 @@ Use the **Formal Term** as the primary label in all documentation.
 
 | Formal Term (Primary) | Do Not Use (Legacy/Informal) |
 |---|---|
-| Separation of Concerns (SoC) | "Anti-Comingling Rule", "non-comingling", "task isolation" |
+| Separation of Concerns (SoC) | "task isolation" |
 | Audit Event Identifier | "audit event identifier", "audit code", "event ID" |
 | Audit Log Retention Class | Forensic Grade | "forensic grade", "log level" |
 | Security Observability | Forensic Intelligence | "forensic intelligence", "forensic stack" |

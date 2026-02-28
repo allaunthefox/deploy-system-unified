@@ -37,9 +37,9 @@
       },
       {
         "name": "role_auditor",
-        "description": "Audits roles for non-comingling, idempotency risks, and param registration drift",
+        "description": "Audits roles for Separation of Concerns, idempotency risks, and param registration drift",
         "model": "qwen-max",
-        "capabilities": ["role_audit", "idempotency_audit", "non_comingling_check", "drift_detection"]
+        "capabilities": ["role_audit", "idempotency_audit", "separation_of_concerns_check", "drift_detection"]
       },
       {
         "name": "pattern_auditor",

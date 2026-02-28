@@ -8,7 +8,7 @@
 - [Ontology & Profiles](ONTOLOGY)
 - [Modular Layers](MODULAR_LAYERS)
 - [Layered Security](LAYERED_SECURITY)
-- [Core Philosophy](NON_COMINGLING)
+- [Core Philosophy](SEPARATION_OF_CONCERNS)
 - [Arch: x86](ARCH_X86)
 - [Arch: ARM64](ARCH_ARM64)
 - [Arch: RISC-V](ARCH_RISCV64)
