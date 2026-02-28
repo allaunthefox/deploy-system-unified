@@ -118,10 +118,10 @@ invent new terms or use informal terminology as primary labels in documentation.
 
 Use the **Formal Term** as the primary label in all documentation.
 
-| Formal Term (Primary) | Do Not Use |
+| Formal Term (Primary) | Do Not Use (Legacy/Informal) |
 |---|---|
-| Separation of Concerns (SoC) | "non-comingling", "anti-comingling", "task isolation" |
-| Audit Event Identifier | Audit Event Identifier | "audit event identifier", "audit code", "event ID" |
+| Separation of Concerns (SoC) | "Anti-Comingling Rule", "non-comingling", "task isolation" |
+| Audit Event Identifier | "audit event identifier", "audit code", "event ID" |
 | Audit Log Retention Class | Forensic Grade | "forensic grade", "log level" |
 | Security Observability | Forensic Intelligence | "forensic intelligence", "forensic stack" |
 | Automated Recovery Verification | Autonomic Recovery | "autonomic recovery", "auto-restore" |
