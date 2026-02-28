@@ -21,7 +21,7 @@ class TestMarkdownFormat(unittest.TestCase):
         """Set up test fixtures."""
         self.repo_root = Path(__file__).resolve().parent.parent
         self.wiki_pages = self.repo_root / 'wiki_pages'
-        self.var_file = self.wiki_pages / 'Variable_Reference_Containers.md'
+        self.var_file = self.wiki_pages / 'REF_VARS_CONTAINERS.md'
 
     def test_link_format_parsing(self):
         """Test parsing of markdown link format."""
@@ -56,14 +56,19 @@ class TestMarkdownFormat(unittest.TestCase):
         """Test actual file content format."""
         if not self.var_file.exists():
             self.skipTest("Variable reference file not found")
-            
+        
         with open(self.var_file, 'r') as f:
             content = f.read()
-            
-        # Find lines with anubis references
-        pattern = r'\[anubis[a-z_]*\]\([^)]*containers_anubis\.md#[^)]+\)'
+        
+        # Find lines with anubis references (format: [`varname`](path#anchor))
+        pattern = r'\[`anubis[a-z_]*`\]\([^)]*containers_anubis\.md#[^)]+\)'
         matches = re.findall(pattern, content)
         self.assertGreater(len(matches), 0, "Should find anubis variable links")
+        
+        # Verify specific anubis anchors exist
+        anubis_anchors = ['anubisenabled', 'anubisport', 'anubisdifficulty']
+        for anchor in anubis_anchors:
+            self.assertIn(f'#{anchor}', content, f"Should have anchor #{anchor}")
 
 
 if __name__ == '__main__':

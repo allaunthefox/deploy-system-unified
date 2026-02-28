@@ -22,7 +22,7 @@ class TestScriptLogic(unittest.TestCase):
         """Set up test fixtures."""
         self.repo_root = Path(__file__).resolve().parent.parent
         self.wiki_pages = self.repo_root / 'wiki_pages'
-        self.var_file = self.wiki_pages / 'Variable_Reference_Containers.md'
+        self.var_file = self.wiki_pages / 'REF_VARS_CONTAINERS.md'
 
     def test_slugify_function(self):
         """Test slugify function for anchor generation."""
@@ -71,9 +71,6 @@ class TestScriptLogic(unittest.TestCase):
 
     def test_var_file_processing(self):
         """Test processing of variable reference file."""
-        if not self.var_file.exists():
-            self.skipTest("Variable reference file not found")
-            
         with open(self.var_file, 'r') as f:
             content = f.read()
         
