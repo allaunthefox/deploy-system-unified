@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100005
+# Playbook Type: Bootstrap
+# Description: Bootstrap SSH connectivity for all target hosts
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 - name: Bootstrap SSH connectivity (run on controller for all targets)
   hosts: localhost

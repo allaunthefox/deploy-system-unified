@@ -31,7 +31,7 @@
     - hardware
     - sas
 
-- name: "CIS 3.2.3 | STIG V-230542 | NIST SC-39 | ISO 27001 §8.9 | Action 800001 | Load SAS Kernel Modules"
+- name: "CIS 3.2.3 | STIG V-230542 | NIST SC-39 | ISO 27001 §8.9 | Audit Code 800001 | Load SAS Kernel Modules"
   community.general.modprobe:
     name: "{{ item }}"
     state: present
@@ -75,7 +75,7 @@
     - hardware_sas_load_drivers
     - (sas_modules_disabled.content | default('MA==') | b64decode | trim) == '1'
 
-- name: "CIS 3.2.6 | STIG V-230545 | NIST CM-6 | ISO 27001 §8.9 | Action 800001 | Ensure SAS modules are loaded on boot"
+- name: "CIS 3.2.6 | STIG V-230545 | NIST CM-6 | ISO 27001 §8.9 | Audit Code 800001 | Ensure SAS modules are loaded on boot"
   ansible.builtin.copy:
     content: |
       {% for driver in hardware_sas_drivers %}
@@ -173,7 +173,7 @@
     - hardware_sas_install_tools
     - hardware_sas_enable_write_cache | default(false)
 
-- name: "CIS 3.2.11 | STIG V-230550 | NIST SC-28 | ISO 27040 | Action 500051 | Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)"
+- name: "CIS 3.2.11 | STIG V-230550 | NIST SC-28 | ISO 27040 | Audit Code 500051 | Enable Write Caching (WCE) on SAS SSDs (Careful - Requires Battery/UPS)"
   ansible.builtin.command: "sdparm --set=WCE --save /dev/{{ item.item }}"
   loop: "{{ sas_wce_check.results }}"
   when:

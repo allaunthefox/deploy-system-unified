@@ -1,4 +1,12 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-CNT-850004
+# Script Type: Container Entrypoint
+# Description: POSIX-compliant entrypoint for deploy-system container
+# Usage: docker run deploy-system [OPTIONS]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Deploy-System-Unified - Container Entrypoint
 # POSIX-compliant entrypoint script
 #

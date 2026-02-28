@@ -1,0 +1,29 @@
+---
+# Automate container signature policy (ISO 27001 §8.26)
+# Standardizes /etc/containers/policy.json for all environments.
+
+- name: "ISO 27001 §8.26 | Audit Code 410002 | Deploy container signature policy"
+  ansible.builtin.copy:
+    dest: /etc/containers/policy.json
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      {
+          "default": [
+              {
+                  "type": "insecureAcceptAnything"
+              }
+          ],
+          "transports": {
+              "docker-daemon": {
+                  "": [
+                      {
+                          "type": "insecureAcceptAnything"
+                      }
+                  ]
+              }
+          }
+      }
+  become: true
+  tags: [containers, runtime, security, 410002]

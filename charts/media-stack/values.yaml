@@ -1,4 +1,21 @@
 ---
+# Media Stack Values
+# =============================================================================
+# Security-hardened media services with RBAC and Pod Security Standards
+# =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: ""  # Auto-generated if empty
+  annotations: {}
+
+# RBAC Configuration
+rbac:
+  create: true
+  # Media apps typically don't need cluster access
+  # Enable only if your media apps need to discover other services
+
 # Global settings
 global:
   timezone: UTC
@@ -10,7 +27,7 @@ global:
 # Hardware Acceleration
 hardware:
   gpu:
-    enabled: true
+    enabled: false
     # Using the same PCI ID pinning logic or Node Selectors
     pciId: ""
     vendor: intel
@@ -36,9 +53,11 @@ jellyfin:
       memory: 4Gi
   persistence:
     config:
+      enabled: true
       size: 10Gi
       storageClass: ""
     media:
+      enabled: true
       size: 100Gi
       storageClass: ""
 
@@ -52,6 +71,13 @@ radarr:
   service:
     type: ClusterIP
     port: 7878
+  persistence:
+    config:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+    media:
+      enabled: false
 
 # Sonarr
 sonarr:
@@ -63,3 +89,10 @@ sonarr:
   service:
     type: ClusterIP
     port: 8989
+  persistence:
+    config:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+    media:
+      enabled: false

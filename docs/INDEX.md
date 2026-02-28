@@ -79,7 +79,7 @@ Every role, task, and playbook is designed to be granular, single-purpose, and e
   * **ops-stack**: Homarr, Vaultwarden
   * **proxy-stack**: Caddy, Nginx (reverse proxy)
   * **security-stack**: Security tools
-* **K8s Deployment**: Use `playbooks/deploy_kubernetes.yml` to deploy the full stack on K3s
+* **K8s Deployment**: Use `playbooks/DEPLOY_KUBERNETES.YML` to deploy the full stack on K3s
 * **Benchmark**: [K8s vs Podman methodology](./benchmarks/k8s_vs_podman_methodology.md) for resource comparison.
 
 ### [4. GPU Slicing](./deployment/GPU_SLICING.md)

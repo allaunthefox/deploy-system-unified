@@ -17,7 +17,7 @@
     - name: "ISO 9001 | 600013 | Include Role: {{ current_role_name }}"
       ansible.builtin.include_role:
         name: "{{ current_role_name }}"
-      # vars param removed to unblock deployment.
+      # Inline vars disabled. Configure dynamic vars via group_vars/host_vars.
 
     - name: "ISO 27037 | 520000 | Checkpoint Phase: {{ current_role_name }}"
       ansible.builtin.include_tasks: save_checkpoint.yml

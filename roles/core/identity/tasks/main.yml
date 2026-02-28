@@ -2,7 +2,7 @@
 # Tasks for core/identity - Entropy-Backed UUID Generation
 # CIS 5.1.x | STIG V-230340 | NIST IA-2, IA-3 | ISO 27001 §9.2
 
-- name: "CIS 5.1.1 | STIG V-230340 | NIST IA-2 | ISO 27001 §9.2 | ISO 8000-110 | Action 400011 | Generate high-entropy UUID for virtualization object"
+- name: "CIS 5.1.1 | STIG V-230340 | NIST IA-2 | ISO 27001 §9.2 | ISO 8000-110 | Audit Code 400011 | Generate high-entropy UUID for virtualization object"
   ansible.builtin.shell: |
     cat /proc/sys/kernel/random/uuid
   register: generated_uuid_output

@@ -1,5 +1,10 @@
 # Forensic Deployment Flow
 
+**Audit Event Identifier:** DSU-MMD-180003  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+
 This diagram visualizes how the **Deploy-System-Unified** project enforces forensic traceability from the initial playbook execution to the final auditable log.
 
 ```mermaid
@@ -8,7 +13,7 @@ graph TD
     B -->|Imports| C[BASE_HARDENED.yml]
     
     subgraph "Forensic Enforcement Layer"
-        C -->|Runs Wrapper| D{tasks/run_role.yml}
+        C -->|Runs Wrapper| D{tasks/RUN_ROLE.YML}
         D -->|Standard Check| E[ISO 9001 | 600013 | Determine Role]
         E -->|Integrity Gate| F[ISO 27037 | 520000 | Checkpoint]
     end
@@ -36,7 +41,7 @@ graph TD
 ## 🧩 Components
 
 1.  **Entrypoint**: `PRODUCTION_DEPLOY.yml` serves as the compliant launchpad.
-2.  **Wrapper**: `run_role.yml` ensures that even role switches are forensically logged.
+2.  **Wrapper**: `RUN_ROLE.YML` ensures that even role switches are forensically logged.
 3.  **Audit Event Identifiers**: Unique 6-digit codes map actions to ISO standards.
 4.  **Loki/Grafana**: The destination for all forensic telemetry.
 

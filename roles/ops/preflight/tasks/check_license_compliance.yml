@@ -2,7 +2,7 @@
 # License Compliance Preflight Checks
 # Ensures license compliance before deployment proceeds
 
-- name: "ISO 9001 | Action 520010 | Check LICENSE file exists"
+- name: "ISO 9001 | Audit Code 520010 | Check LICENSE file exists"
   ansible.builtin.stat:
     path: "{{ preflight_repo_root }}/LICENSE"
   register: preflight_license_file
@@ -136,6 +136,7 @@
     - license
   when:
     - preflight_license_report.stdout is defined
+    - preflight_license_report.stdout | length > 0
     - preflight_check_license | default(true) | bool
 
 - name: Warn about potentially incompatible licenses
@@ -178,7 +179,7 @@
     - preflight_strict_license_check | default(false) | bool
     - preflight_check_license | default(true) | bool
 
-- name: "ISO 9001 | Action 520011 | Record license compliance status"
+- name: "ISO 9001 | Audit Code 520011 | Record license compliance status"
   ansible.builtin.set_fact:
     preflight_license_compliant: >-
       {{

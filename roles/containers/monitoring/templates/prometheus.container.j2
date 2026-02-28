@@ -1,3 +1,9 @@
+{# =============================================================================
+# Audit Event Identifier: DSU-TPL-900010
+# Template Type: monitoring Configuration
+# Last Updated: 2026-02-28
+# Version: 1.0
+# ============================================================================= #}
 [Unit]
 Description=Prometheus Container
 After=network-online.target
@@ -11,20 +17,17 @@ After=network-online.target
       HealthStartPeriod=40s
 
 ContainerName=prometheus-{{ monitoring_instance }}
-CPUQuota=25%
 Image={{ monitoring_prometheus_image }}
 # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
 Pull={{ monitoring_pull_policy | default('newer') }}
 # Retry backoff for image pulls (prevents registry rate-limit bans)
-PullRetry={{ monitoring_pull_retry | default(5) }}
-PullRetryDelay={{ monitoring_pull_retry_delay | default('30s') }}
 Label=DSU_UUID={{ object_uuid | default('unassigned') }}
 Label=DSU_ISO_CODE=ISO-27001-8-20
 Label=DSU_ACTION_CODE=700000
 Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
 Label=DSU_IMAGE_DIGEST={{ monitoring_prometheus_image.split('@')[1] | default('none') }}
-CapDrop=ALL
-Pod={{ monitoring_pod_name }}
+DropCapability=ALL
+Pod={{ monitoring_pod_name }}.pod
 # If running rootless, map the full subuid range so UIDs like 65534 (nobody) and image UIDs are valid
 {% if podman_rootless_enabled | bool %}
 UserNS=auto
@@ -32,8 +35,7 @@ UserNS=auto
 Volume={{ monitoring_config_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro,U
 Volume={{ monitoring_root_dir }}/prometheus:/prometheus:U,Z
 Exec=/bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
-ReadOnlyFilesystem=true
-ReadWritePaths=/prometheus /var /tmp
+
 
 [Service]
 ProtectSystem=strict
@@ -42,7 +44,6 @@ PrivateDevices=true
 ProtectHome=read-only
 NoNewPrivileges=true
 ReadOnlyPaths=/etc
-ReadWritePaths=/var /tmp /prometheus
 # Extended timeout for image pulls
 TimeoutStartSec={{ monitoring_timeout_start | default(600) }}
 TimeoutStopSec={{ monitoring_timeout_stop | default(70) }}

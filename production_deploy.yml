@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100002
+# Playbook Type: Production Deployment
+# Description: Production container host - base hardened + container workload
+# Compliance: ISO 27001 §9.2/10.1, PQC Hybrid
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Production Container Host - Secure Solution Stack
 # Solution: Base Hardened Infrastructure + Container Workload
@@ -7,47 +15,29 @@
 - name: Deploy Production Container Workload
   hosts: all
   become: true
-  vars:
-    # Define roles sequence in vars
-    production_roles:
-      # Container Infrastructure Workload
-      - hardware/sas
-      - hardware/gpu
-      - containers/runtime
-      - containers/config
-      - containers/quadlets
-      - containers/caddy
-      - containers/networking   # DNS & Network Services (AdGuard)
-      - containers/security     # Security Infra (Headscale)
-      - containers/media        # Media Stack (ARR Stack)
-      - containers/immich       # Photo Stack
-      - containers/home_assistant # Automation Stack
-      - containers/life         # Life Management Stack (Mealie, Firefly)
-      - containers/ai           # AI Stack (Ollama, WebUI)
-      - containers/archive      # Long-term Archive (YouTube, Wikipedia)
-      # Monitoring
-      - ops/monitoring          # Host Agent (Node Exporter)
-      - containers/monitoring   # Stack (Forensic Dashboards)
-      # Backup & Disaster Recovery
-      - storage/backup/restic
-      - storage/backup/rclone
-      # Final Solution Integrity Verification
-      - security/scanning
-      - security/sbom           # Supply Chain Integrity & SBOM Audit
-
   tasks:
     - name: Execute Production Roles with Granular Checkpoints
       ansible.builtin.include_tasks: tasks/run_role.yml
-      loop: "{{ production_roles }}"
+      loop: "{{ deploy_workload_roles | default([]) }}"
       loop_control:
         loop_var: role_item
+
+  post_tasks:
+    - name: Force systemd reload to pick up new Quadlets
+      ansible.builtin.systemd:
+        daemon_reload: true
+        scope: "{{ (podman_rootless_enabled | default(false) | bool) | ternary('user', 'system') }}"
+      environment: "{{ containers_systemd_env | default({}) }}"
+      become: true
+      become_user: "{{ (podman_rootless_enabled | default(false) | bool) | ternary(podman_rootless_user, 'root') }}"
+
+    - name: Ensure Caddy is running
+      ansible.builtin.systemd:
+        name: caddy
+        state: started
+        enabled: true
+      become: true
 
   handlers:
     - name: Import Global Handlers
       ansible.builtin.import_tasks: handlers/main.yml
-
-    - name: Restart caddy
-      ansible.builtin.systemd:
-        name: caddy
-        state: restarted
-      listen: "restart caddy"

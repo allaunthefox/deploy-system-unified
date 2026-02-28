@@ -725,7 +725,7 @@ controls:
     
     - name: Gather CIS Level 1 compliance
       ansible.builtin.shell: |
-        ansible-playbook site.yml --tags cis,level_1 --check --diff
+        ansible-playbook SITE.YML --tags cis,level_1 --check --diff
       register: cis_level_1_result
       changed_when: false
     

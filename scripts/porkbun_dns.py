@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500005
+# Script Type: DNS Automation (Porkbun)
+# Description: Idempotent Porkbun DNS utility for GitHub Pages
+# Usage: ./porkbun_dns.py [--domain DOMAIN] [--github-user USER] [--dry-run]
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """
 Idempotent Porkbun DNS utility for GitHub Pages
 Requires environment variables: PORKBUN_API_KEY, PORKBUN_SECRET

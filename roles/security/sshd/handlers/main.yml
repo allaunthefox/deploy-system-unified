@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-130010
+# File Type: Role Handlers (main.yml)
+# Role: sshd
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Handlers for security/sshd role
 - name: Restart SSHD

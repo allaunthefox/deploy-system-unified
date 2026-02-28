@@ -1,67 +1,94 @@
 # MODULAR_LAYERS
 
-Deploy-System-Unified utilizes a 7-layer architecture to ensure absolute isolation and "Strict Enforcement" security standards.
+**Audit Event Identifier:** DSU-MMD-190001  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+**Standard:** ISO 27001 §8.20 (Network Security)  
+
+Deploy-System-Unified utilizes a 5-layer security architecture to ensure absolute isolation and "Strict Enforcement" security standards.
 
 ```mermaid
-graph TD
-    L7[<b>Layer 7: Automated Threat Analysis</b><br/>AI-Assisted Anomaly Detection, SBOM, Security Observability] --> L6
-    L6[<b>Layer 6: Internal Socket Isolation</b><br/>Unix Socket Migration, Caddy, Media] --> L5
-    L5[<b>Layer 5: Runtime Execution Monitoring</b><br/>Audit Integrity, Falco, Logging] --> L4
-    L4[<b>Layer 4: Mandatory Access Control</b><br/>AppArmor, Firejail, Sandboxing] --> L3
-    L3[<b>Layer 3: OS Hardening</b><br/>Kernel Sysctl, SSHD, Firewall] --> L2
-    L2[<b>Layer 2: Hardware Root of Trust</b><br/>TPM Guard, Ephemeral Credentials] --> L1
-    L1[<b>Layer 1: Infrastructure Foundation</b><br/>Bootstrap, Repositories, Updates]
-    
-    style L1 fill:#f9f,stroke:#333,stroke-width:2px
-    style L2 fill:#bbf,stroke:#333,stroke-width:2px
-    style L3 fill:#bfb,stroke:#333,stroke-width:2px
-    style L4 fill:#fdb,stroke:#333,stroke-width:2px
-    style L5 fill:#fbb,stroke:#333,stroke-width:2px
-    style L6 fill:#bff,stroke:#333,stroke-width:2px
-    style L7 fill:#dfd,stroke:#333,stroke-width:2px
+graph TB
+    subgraph "Layer 1: Pod Security"
+        L1["🔒 Container Isolation<br/>Security Contexts<br/>Capabilities Drop<br/>Read-Only Root FS"]
+    end
+
+    subgraph "Layer 2: RBAC"
+        L2["👤 Identity & Access<br/>ServiceAccounts<br/>Role Bindings<br/>Least Privilege"]
+    end
+
+    subgraph "Layer 3: Network Security"
+        L3["🛡️ Network Isolation<br/>Network Policies<br/>TLS Encryption<br/>Ingress Control"]
+    end
+
+    subgraph "Layer 4: Secrets Management"
+        L4["🔐 Secrets Protection<br/>SOPS Encryption<br/>TPM Guard<br/>Runtime Secrets"]
+    end
+
+    subgraph "Layer 5: Monitoring & Audit"
+        L5["👁️ Forensic Traceability<br/>Audit Event Identifiers<br/>Prometheus/Grafana<br/>Loki Logging"]
+    end
+
+    L1 --> L2
+    L2 --> L3
+    L3 --> L4
+    L4 --> L5
+
+    style L1 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style L2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style L3 fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style L4 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style L5 fill:#ffebee,stroke:#c62828,stroke-width:2px
 ```
 
 ---
 
-## 🏗️ Layer 1: Infrastructure Foundation
-**Roles**: `core/bootstrap`, `core/repositories`, `core/updates`
-- **Purpose**: Establishes identity and package provenance.
-- **Enforcement**: Mandatory GPG/SHA256 verification for all sources.
+## 🏗️ Layer 1: Pod Security
+**Roles**: `containers/runtime`, `containers/quadlets`, `containers/config`
+- **Purpose**: Container isolation through Kubernetes security contexts
+- **Enforcement**: `runAsNonRoot: true`, `capabilities.drop: ALL`, `readOnlyRootFilesystem: true`
+- **Audit Code**: `70xxxx` series
 
-## 🔒 Layer 2: Hardware Root of Trust (HRoT)
+## 🔐 Layer 2: RBAC (Role-Based Access Control)
+**Roles**: `core/identity`, `kubernetes/rbac`
+- **Purpose**: Least-privilege access control for all workloads
+- **Enforcement**: Per-stack ServiceAccounts with minimal Role bindings
+- **Audit Code**: `30xxxx` series
+
+## 🛡️ Layer 3: Network Security
+**Roles**: `networking/firewall`, `containers/caddy`, `kubernetes/network`
+- **Purpose**: Traffic isolation and encryption
+- **Enforcement**: NetworkPolicies, TLS termination, ingress class control
+- **Audit Code**: `54xxxx` series
+
+## 🔒 Layer 4: Secrets Management
 **Roles**: `core/secrets`, `security/tpm_guard`
-- **Purpose**: Binds logical security to physical hardware states.
-- **Enforcement**: **Volatile Secret Infrastructure** protected by a **TPM Integrity Watchdog**.
+- **Purpose**: Encrypted secrets at rest and in transit
+- **Enforcement**: SOPS/Age encryption, TPM-backed key protection
+- **Audit Code**: `45xxxx` series
 
-## 🛡️ Layer 3: Operating System Hardening
-**Roles**: `networking/firewall`, `security/kernel`, `security/hardening`, `security/sshd`
-- **Purpose**: Attack surface reduction and kernel self-protection.
-- **Enforcement**: **Verified Configuration** for sysctl and protocol blacklisting.
-
-## 🧪 Layer 4: Mandatory Access Control (MAC)
-**Roles**: `security/mac_apparmor`, `security/firejail`, `security/sandboxing`
-- **Purpose**: Process containment and lateral movement prevention.
-- **Enforcement**: Strict enforcement of **AppArmor/SELinux** for all containerized workloads.
-
-## 👁️ Layer 5: Runtime Execution Monitoring
-**Roles**: `core/logging`, `security/audit_integrity`, `security/falco`
-- **Purpose**: Real-time behavioral tracing and log immutability.
-- **Enforcement**: **eBPF-based Policy Enforcement** for unauthorized syscalls.
-
-## 👻 Layer 6: Internal Socket Isolation
-**Roles**: `containers/runtime`, `containers/caddy`, `containers/media`
-- **Purpose**: Zero-Trust network exposure via IPC.
-- **Enforcement**: **Unix Socket Migration** for internal service communication.
-
-## 🧠 Layer 7: Automated Threat Analysis & Provenance
-**Roles**: `security/cognitive_sentinel`, `ops/forensics`, `security/sbom`
-- **Purpose**: AI-driven log auditing and signed deployment metadata.
-- **Enforcement**: **Local LLM Anomaly Detection** and signed **Deployment Provenance**.
+## 👁️ Layer 5: Monitoring & Audit
+**Roles**: `core/logging`, `security/audit_integrity`, `containers/monitoring`
+- **Purpose**: Forensic traceability and real-time alerting
+- **Enforcement**: Audit Event Identifiers mapped to ISO 27001, Loki aggregation
+- **Audit Code**: `84xxxx` series
 
 ---
 
 ## 💡 Architectural Principle: The Validated Chain
 
-Each layer depends on the integrity of the layer below it. If any verification task in Layer 1-4 fails, the deployment **immediately terminates** before Layer 5-7 (the application workloads) are initialized. This ensures no system enters a production state without full security certification.
+Each layer depends on the integrity of the layer below it. If any verification task in Layers 1-4 fails, the deployment **immediately terminates** before Layer 5 (the monitoring workloads) are initialized. This ensures no system enters a production state without full security certification.
 
+---
 
+## 🔗 Related Documentation
+
+- [Security Architecture Overview](../docs/deployment/mermaid/07_security_architecture.md) - Detailed security diagram
+- [Security Layers](../docs/architecture/SECURITY_LAYERS.md) - Alternative visualization
+- [Forensic Flow](../docs/architecture/FORENSIC_FLOW.md) - Audit event flow to Loki
+
+---
+
+*Standard: ISO 27001 §8.20 (Network Security)*
+*Last Updated: 2026-02-28*

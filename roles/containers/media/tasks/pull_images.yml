@@ -8,7 +8,7 @@
   vars:
     image_to_verify: "{{ item.image }}"
   loop:
-    - { image: "{{ jellyfin_image }}", enable: "{{ jellyfin_enable }}" }
+    - { image: "{{ containers_jellyfin_image }}", enable: "{{ containers_jellyfin_enable }}" }
     - { image: "{{ plex_image }}", enable: "{{ plex_enable }}" }
     - { image: "{{ radarr_image }}", enable: "{{ radarr_enable }}" }
     - { image: "{{ sonarr_image }}", enable: "{{ sonarr_enable }}" }
@@ -35,7 +35,7 @@
   retries: "{{ containers_pull_retries | default(5) }}"
   delay: "{{ containers_pull_delay | default(30) }}"
   loop:
-    - { image: "{{ jellyfin_image }}", enable: "{{ jellyfin_enable }}" }
+    - { image: "{{ containers_jellyfin_image }}", enable: "{{ containers_jellyfin_enable }}" }
     - { image: "{{ plex_image }}", enable: "{{ plex_enable }}" }
     - { image: "{{ radarr_image }}", enable: "{{ radarr_enable }}" }
     - { image: "{{ sonarr_image }}", enable: "{{ sonarr_enable }}" }

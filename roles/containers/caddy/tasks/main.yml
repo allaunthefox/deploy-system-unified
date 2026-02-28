@@ -149,7 +149,7 @@
     that:
       - quadlet_gpu_capabilities | default([]) | reject('match', '^CAP_') | list | length == 0
     fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
-  when: quadlet_enable_gpu_support | default(false)
+  when: containers_quadlet_enable_gpu_support | default(false)
   tags:
     - cis_3_8
     - stg_v230480
@@ -158,7 +158,19 @@
     - caddy
     - security
 
-- name: "CIS 3.9 | STIG V-230480 | NIST SC-8 | ISO 27001 §8.24 | Action 700000 | Create Caddy container quadlet"
+- name: "Forensic Chain of Trust | Rule [B-03] (The Ingress Lock) | Wait for Authentik readiness"
+  ansible.builtin.wait_for:
+    host: "localhost"
+    port: 9000
+    timeout: 60
+    msg: "Mandatory Identity Provider (Authentik) not reachable. Ingress deployment locked to prevent unauthorized access."
+  when:
+    - authentik_enabled | default(true) | bool
+    - not ansible_check_mode
+  become: true
+  tags: [forensic, security, caddy, audit, 540000]
+
+- name: "CIS 3.9 | STIG V-230480 | NIST SC-8 | ISO 27001 §8.24 | Audit Code 700000 | Create Caddy container quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/caddy.container"
     content: |
@@ -181,13 +193,11 @@
       # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
       Pull={{ caddy_pull_policy | default('newer') }}
       # Retry backoff for image pulls (prevents registry rate-limit bans)
-      PullRetry={{ caddy_pull_retry | default(5) }}
-      PullRetryDelay={{ caddy_pull_retry_delay | default('30s') }}
       {% if podman_rootless_enabled | bool %}
       # Rootless user namespace mapping for proper subuid/subgid handling
       UserNS=auto
       {% endif %}
-      CapDrop=ALL
+      DropCapability=ALL
       CapAdd=NET_BIND_SERVICE
       # Override default command to ensure static Caddyfile usage
       Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
@@ -196,19 +206,18 @@
       EnvironmentFile={{ containers_secrets_dir }}/caddy.env
 
       ContainerName=caddy
-      CPUQuota=50%
-      {% if caddy_network == 'host' or (not podman_rootless_enabled | bool) %}
+      {% if containers_caddy_network == 'host' or (not podman_rootless_enabled | bool) %}
       # Primary Gateway Network (Host Mode for VPS compatibility)
       Network=host
       {% else %}
       # Rootless networking uses user-defined networks + published ports
-      Network={{ caddy_network }}.network
-      {% for net in caddy_extra_networks | default([]) %}
+      Network={{ containers_caddy_network }}.network
+      {% for net in containers_caddy_extra_networks | default([]) %}
       Network={{ net }}.network
       {% endfor %}
-      PublishPort={{ caddy_http_port }}:80
-      PublishPort={{ caddy_https_port }}:443
-      PublishPort={{ caddy_https_port_udp }}:443/udp
+      PublishPort={{ containers_caddy_http_port }}:80
+      PublishPort={{ containers_caddy_https_port }}:443
+      PublishPort={{ containers_containers_caddy_https_port_udp }}:443/udp
       {% endif %}
       # :U for rootless namespace ownership, :Z for SELinux, :ro for read-only
       Volume=/srv/containers/caddy/Caddyfile:/etc/caddy/Caddyfile:ro,U
@@ -216,7 +225,7 @@
       Volume=/srv/containers/caddy/config:/config:U,Z
       Volume=/srv/containers/caddy/logs:/var/log/caddy:U,Z
       Volume=/srv/containers/caddy/conf.d:/etc/caddy/conf.d:ro,U
-      {% if quadlet_enable_gpu_support %}
+      {% if containers_quadlet_enable_gpu_support %}
       # GPU support configuration
       {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
       {% if caps | length > 0 %}
@@ -229,7 +238,7 @@
       Volume={{ mount }}
       {% endfor %}
       {% endif %}
-      ReadOnlyFilesystem=true
+      ReadOnly=true
       ReadWritePaths=/data /config /var/log/caddy /var /tmp
       [Service]
       ProtectSystem=strict
@@ -295,7 +304,7 @@
     - caddy
     - crowdsec
 
-- name: "CIS 3.12 | STIG V-230480 | NIST SC-8 | ISO 27001 §16.1 | Action 460002 | Create Crowdsec Container Quadlet"
+- name: "CIS 3.12 | STIG V-230480 | NIST SC-8 | ISO 27001 §16.1 | Audit Code 460002 | Create Crowdsec Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/crowdsec.container"
     content: |
@@ -315,15 +324,12 @@
       # Pull policy: only pull if missing or newer (prevents rate-limit hammering)
       Pull={{ crowdsec_pull_policy | default('newer') }}
       # Retry backoff for image pulls (prevents registry rate-limit bans)
-      PullRetry={{ crowdsec_pull_retry | default(5) }}
-      PullRetryDelay={{ crowdsec_pull_retry_delay | default('30s') }}
-      CapDrop=ALL
+      DropCapability=ALL
       ContainerName=crowdsec
-      CPUQuota=25%
 
       # Networking
       {% if podman_rootless_enabled | bool %}
-      Network={{ caddy_network }}.network
+      Network={{ containers_caddy_network }}.network
       {% else %}
       Network=host
       {% endif %}
@@ -337,7 +343,7 @@
       # Persistent Data
       Volume=/srv/containers/caddy/crowdsec/config:/etc/crowdsec:Z
       Volume=/srv/containers/caddy/crowdsec/data:/var/lib/crowdsec/data:Z
-      ReadOnlyFilesystem=true
+      ReadOnly=true
       ReadWritePaths=/etc/crowdsec /var/lib/crowdsec/data /var /tmp
 
       [Service]

@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000108
+# File Type: Python Test Script
+# Test Type: Style Enforcement Test
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 import os
 import subprocess
 import textwrap

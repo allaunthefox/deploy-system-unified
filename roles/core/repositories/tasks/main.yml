@@ -42,7 +42,7 @@
     - repositories
     - detect
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Enable Contrib and Non-Free repositories (Legacy Debian)"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Enable Contrib and Non-Free repositories (Legacy Debian)"
   ansible.builtin.replace:
     path: /etc/apt/sources.list
     regexp: '^(deb(?:-src)?\s+http://\S+\s+\w+)((\s+main)(?:\s+contrib)?(?:\s+non-free)?(?:\s+non-free-firmware)?)$'
@@ -59,7 +59,7 @@
     - ansible_distribution == 'Debian'
     - legacy_sources_list.stat.exists
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Import Ubuntu Archive GPG Keys"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Import Ubuntu Archive GPG Keys"
   ansible.builtin.get_url:
     url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C"
     dest: /etc/apt/keyrings/ubuntu-archive.asc
@@ -67,7 +67,7 @@
   become: true
   when: ansible_distribution == 'Ubuntu'
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Enable Ubuntu Universe/Multiverse"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Enable Ubuntu Universe/Multiverse"
   ansible.builtin.apt_repository:
     repo: "deb [signed-by=/etc/apt/keyrings/ubuntu-archive.asc] http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} {{ item }}"
     state: present
@@ -99,7 +99,7 @@
     - verify
   when: ansible_os_family == 'RedHat'
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Securely download RPMFusion Free Release (Fedora)"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Securely download RPMFusion Free Release (Fedora)"
   ansible.builtin.get_url:
     url: "{{ rpmfusion_free_url }}"
     dest: "/tmp/rpmfusion-free-release.rpm"
@@ -118,7 +118,7 @@
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-free' not in dnf_repolist.stdout"
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Securely download RPMFusion NonFree Release (Fedora)"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Securely download RPMFusion NonFree Release (Fedora)"
   ansible.builtin.get_url:
     url: "{{ rpmfusion_nonfree_url }}"
     dest: "/tmp/rpmfusion-nonfree-release.rpm"
@@ -137,7 +137,7 @@
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Install RPMFusion Free/NonFree from verified local files (Fedora)"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Install RPMFusion Free/NonFree from verified local files (Fedora)"
   ansible.builtin.dnf:
     name:
       - "/tmp/rpmfusion-free-release.rpm"
@@ -157,7 +157,7 @@
     - ansible_distribution == 'Fedora'
     - "'rpmfusion-nonfree' not in dnf_repolist.stdout"
 
-- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Action 530010 | Enable Community Repository (Alpine)"
+- name: "CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Enable Community Repository (Alpine)"
   ansible.builtin.replace:
     path: /etc/apk/repositories
     regexp: '^#\s*(http.*/community)$'
@@ -172,7 +172,7 @@
     - remediate
   when: ansible_os_family == 'Alpine'
 
-- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Action 530012 | Update package cache (Debian/Ubuntu)"
+- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Audit Code 530012 | Update package cache (Debian/Ubuntu)"
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
@@ -186,7 +186,7 @@
     - repositories
     - update
 
-- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Action 530012 | Update package cache (RedHat/Fedora)"
+- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Audit Code 530012 | Update package cache (RedHat/Fedora)"
   ansible.builtin.dnf:
     update_cache: true
   when: ansible_os_family == 'RedHat'
@@ -199,7 +199,7 @@
     - repositories
     - update
 
-- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Action 530012 | Update package cache (Arch)"
+- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Audit Code 530012 | Update package cache (Arch)"
   community.general.pacman:
     update_cache: true
   when:
@@ -214,7 +214,7 @@
     - repositories
     - update
 
-- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Action 530012 | Update package cache (Alpine)"
+- name: "CIS 3.3.1 | STIG V-230320 | NIST SI-2 | ISO 27001 §8.9 | Audit Code 530012 | Update package cache (Alpine)"
   community.general.apk:
     update_cache: true
   when: ansible_os_family == 'Alpine'

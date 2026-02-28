@@ -47,3 +47,14 @@ Selector labels
 app.kubernetes.io/name: {{ include "monitoring-stack.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Create a ServiceAccount for monitoring components
+*/}}
+{{- define "monitoring-stack.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+{{- default (include "monitoring-stack.fullname" .) .Values.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.serviceAccount.name -}}
+{{- end -}}
+{{- end -}}

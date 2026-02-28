@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300005
+# Chart: auth-stack (Authentik SSO)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: auth-stack
 description: Authentik for SSO authentication

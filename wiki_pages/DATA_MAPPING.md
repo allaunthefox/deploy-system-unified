@@ -6,7 +6,7 @@ This document details exactly where legacy backup data moves during the migratio
 
 1. **Source**: `/home/prod/Workspaces/Offline_Research/system-backup-2026-01-13.tar.xz` (Legacy Backup)
 2. **Staging**: `projects/deploy-system-unified/migration_assets/` (Extracted by `stage_migration_assets.sh`)
-3. **Final**: `/srv/containers/` (Injected by `restore_data.yml`)
+3. **Final**: `/srv/containers/` (Injected by `RESTORE_DATA.YML`)
 
 ## 2. Detailed Mapping Table
 
@@ -24,7 +24,7 @@ This document details exactly where legacy backup data moves during the migratio
 ## 3. Configuration Notes
 
 - **Passwords**: Database passwords in the restored files (`config.xml` etc.) usually point to the *old* database.
-- **Action**: The `restore_data.yml` playbook does *not* automatically patch XML/Config files yet. This must be done manually or via a `sed` task if the database password in `secrets.generated.yml` differs from the old backup.
+- **Action**: The `RESTORE_DATA.YML` playbook does *not* automatically patch XML/Config files yet. This must be done manually or via a `sed` task if the database password in `secrets.generated.yml` differs from the old backup.
 - **Connectivity**:
     - Old Hostnames: `authentik-postgresql`, `radarr`
     - New Hostnames: `authentik-db-default`, `radarr-default`
@@ -32,7 +32,7 @@ This document details exactly where legacy backup data moves during the migratio
 
 ## 4. Verification
 
-After running `playbooks/restore_data.yml`, verify mapping with:
+After running `playbooks/RESTORE_DATA.YML`, verify mapping with:
 
 ```bash
 ls -l /srv/containers/media_config/default/jellyfin/data/jellyfin.db

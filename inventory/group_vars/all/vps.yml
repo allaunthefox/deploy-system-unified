@@ -1,3 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-INV-700010
+# Inventory Type: Group Variables
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # VPS-specific configuration for Deploy-System-Unified
 # Force Contabo provider detection for Proxmox/KVM instances

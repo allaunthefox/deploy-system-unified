@@ -1,6 +1,6 @@
 ---
 # Enhanced security scanning for Deploy-System-Unified
-- name: "ISO 27001 §12.2 | Action 520010 | Run comprehensive security scan (idempotent)"
+- name: "ISO 27001 §12.2 | Audit Code 520010 | Run comprehensive security scan (idempotent)"
   ansible.builtin.shell: |
     
     scan_results=""
@@ -55,7 +55,7 @@
     - security
     - scanning
 
-- name: "ISO 27001 §12.2 | Action 520011 | Validate security scan results (idempotent)"
+- name: "ISO 27001 §12.2 | Audit Code 520011 | Validate security scan results (idempotent)"
   ansible.builtin.assert:
     that:
       - trivy_critical_vulns == 0
@@ -63,7 +63,7 @@
       - trufflehog_secrets_found == 0
       - clamav_viruses_found == 0
 
-- name: "ISO 27001 §5.37 | Action 520046 | Check for SBOM-driven Vulnerabilities"
+- name: "ISO 27001 §5.37 | Audit Code 520046 | Check for SBOM-driven Vulnerabilities"
   ansible.builtin.shell: |
     if [ -f "{{ playbook_dir }}/ci-artifacts/sbom/sbom.json" ]; then
       if command -v trivy >/dev/null 2>&1; then

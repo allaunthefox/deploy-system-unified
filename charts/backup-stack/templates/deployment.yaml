@@ -1,4 +1,35 @@
 {{- if .Values.restic.enabled }}
+{{- if .Values.restic.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "backup-stack.fullname" . }}-backup-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.restic.persistence.size | default "10Gi" }}
+  {{- if .Values.restic.persistence.storageClass }}
+  storageClassName: {{ .Values.restic.persistence.storageClass }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "backup-stack.fullname" . }}-secrets
+type: Opaque
+stringData:
+  restic-password: {{ .Values.restic.password | default (randAlphaNum 32) | quote }}
+  {{- if .Values.restic.repository }}
+  {{- if hasPrefix "s3:" .Values.restic.repository }}
+  s3-access-key: {{ .Values.restic.s3AccessKey | default (randAlphaNum 20) | quote }}
+  s3-secret-key: {{ .Values.restic.s3SecretKey | default (randAlphaNum 40) | quote }}
+  {{- end }}
+  {{- end }}
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -17,14 +48,18 @@ spec:
           containers:
             - name: restic
               image: "{{ .Values.restic.image.repository }}:{{ .Values.restic.image.tag }}"
-              command: ["restic", "backup", "/data", "--repo", "{{ .Values.restic.repository }}"]
+              command: ["restic", "backup", "/data", "--repo", "{{ .Values.restic.repository | default "local:/backups" }}"]
+              args:
+                {{- if not .Values.restic.repository }}
+                - "--repo"
+                - "local:/backups"
+                {{- end }}
               env:
                 - name: RESTIC_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: {{ include "backup-stack.fullname" . }}-secrets
                       key: restic-password
-                      optional: true
               {{- if .Values.restic.repository }}
               {{- if hasPrefix "s3:" .Values.restic.repository }}
                 - name: AWS_ACCESS_KEY_ID
@@ -32,18 +67,20 @@ spec:
                     secretKeyRef:
                       name: {{ include "backup-stack.fullname" . }}-secrets
                       key: s3-access-key
-                      optional: true
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
                       name: {{ include "backup-stack.fullname" . }}-secrets
                       key: s3-secret-key
-                      optional: true
               {{- end }}
               {{- end }}
               volumeMounts:
                 - name: backup-data
                   mountPath: /data
+                {{- if not .Values.restic.repository }}
+                - name: backups
+                  mountPath: /backups
+                {{- end }}
               resources:
                 requests:
                   cpu: 100m
@@ -53,19 +90,16 @@ spec:
                   memory: 512Mi
           volumes:
             - name: backup-data
+              {{- if .Values.restic.persistence.enabled }}
               persistentVolumeClaim:
                 claimName: {{ include "backup-stack.fullname" . }}-backup-data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ include "backup-stack.fullname" . }}-backup-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+            {{- if not .Values.restic.repository }}
+            - name: backups
+              emptyDir: {}
+            {{- end }}
 {{- end }}
 
 {{- if .Values.rclone.enabled }}

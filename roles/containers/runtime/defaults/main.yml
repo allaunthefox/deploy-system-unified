@@ -11,6 +11,11 @@ podman_rootless_network_mode: "slirp4netns"
 podman_rootless_allow_privileged_ports: false
 podman_rootless_privileged_port_start: 1024
 
+# Centralized Container Ownership (Audit Code 450002)
+containers_user_name: "containers"
+containers_user_uid: "1000000"
+containers_user_gid: "1000000"
+
 containers_systemd_dir: >-
   {{ podman_rootless_enabled | bool
      | ternary(podman_rootless_user_home ~ '/.config/containers/systemd',

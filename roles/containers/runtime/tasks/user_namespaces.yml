@@ -1,0 +1,34 @@
+---
+# Automate user namespace and subuid/subgid management
+# Compliance: CIS 2.1 | NIST AC-6 | ISO 27001 §8.20
+
+- name: "CIS 2.1 | Audit Code 300010 | Ensure container management user exists"
+  ansible.builtin.user:
+    name: "{{ containers_user_name }}"
+    system: true
+    shell: /usr/bin/nologin
+    create_home: false
+    state: present
+  become: true
+  tags: [containers, runtime, security, 300010]
+
+- name: "CIS 2.1 | Audit Code 450002 | Configure subuid/subgid ranges (Non-Conflicting Pattern)"
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: "^{{ item.user }}:"
+    line: "{{ item.user }}:{{ item.start }}:65536"
+    state: present
+  loop:
+    # Podman standardized range
+    - { path: /etc/subuid, user: "{{ containers_user_name }}", start: "{{ containers_user_uid }}" }
+    - { path: /etc/subgid, user: "{{ containers_user_name }}", start: "{{ containers_user_gid }}" }
+    # LXC reserved range (Conflict Avoidance Pattern)
+    - { path: /etc/subuid, user: "lxc", start: "2000000" }
+    - { path: /etc/subgid, user: "lxc", start: "2000000" }
+  become: true
+  notify: migrate_podman_system
+  tags: [containers, runtime, security, 450002]
+
+- name: "Audit Code 810303 | Ensure podman system migration"
+  ansible.builtin.meta: flush_handlers
+  tags: [containers, runtime, internal]

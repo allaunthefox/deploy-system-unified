@@ -1,8 +1,8 @@
 ---
 # Configure K3s Master
 
-- name: Create required directories
-  tags: [kubernetes, master, remediate]
+- name: "Audit Code 600013 | Create required directories"
+  tags: [kubernetes, master, remediate, 600013]
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -14,21 +14,21 @@
     - "/etc/rancher/k3s"
   become: true
 
-- name: Check if k3s token exists
-  tags: [kubernetes, master, remediate]
+- name: "Audit Code 810300 | Check if k3s token exists"
+  tags: [kubernetes, master, remediate, 810300]
   ansible.builtin.stat:
     path: "{{ kubernetes_token_path }}"
   register: _k3s_token_stat
   become: true
 
-- name: Generate k3s token
-  tags: [kubernetes, master, remediate]
+- name: "Audit Code 810300 | Generate k3s token"
+  tags: [kubernetes, master, remediate, 810300]
   ansible.builtin.set_fact:
     _new_k3s_token: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
   when: not _k3s_token_stat.stat.exists
 
-- name: Save k3s token
-  tags: [kubernetes, master, remediate]
+- name: "Audit Code 810300 | Save k3s token"
+  tags: [kubernetes, master, remediate, 810300]
   ansible.builtin.copy:
     content: "{{ _new_k3s_token }}"
     dest: "{{ kubernetes_token_path }}"
@@ -38,11 +38,66 @@
   become: true
   when: not _k3s_token_stat.stat.exists
 
-- name: Deploy k3s systemd unit
-  tags: [kubernetes, master, remediate]
+- name: "Audit Code 810303 | Deploy k3s systemd unit"
+  tags: [kubernetes, master, remediate, 810303]
   ansible.builtin.template:
     src: k3s.service.j2
     dest: /etc/systemd/system/k3s.service
     mode: '0644'
   become: true
   notify: reload_systemd
+
+- name: "Audit Code 810302 | Deploy K3s API Gateway (Restricted Kernel Workaround)"
+  become: true
+  block:
+    - name: "Audit Code 810302 | Create API Gateway script"
+      ansible.builtin.copy:
+        dest: /usr/local/bin/k3s-api-gateway.py
+        mode: '0755'
+        content: |
+          import socket, threading
+          def p(c):
+           r=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+           r.connect(("127.0.0.1",6443))
+           def f(s,d):
+            try:
+             while 1:
+              data=s.recv(4096)
+              if not data:break
+              d.sendall(data)
+            except:pass
+            finally:s.close();d.close()
+           threading.Thread(target=f,args=(c,r)).start()
+           threading.Thread(target=f,args=(r,c)).start()
+          s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+          s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+          s.bind(("{{ kubernetes_service_cidr | ipaddr('address') }}",443))
+          s.listen(100)
+          while 1:
+           c,a=s.accept()
+           p(c)
+
+    - name: "Audit Code 810302 | Create API Gateway systemd service"
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/k3s-api-gateway.service
+        content: |
+          [Unit]
+          Description=K3s API Gateway (ClusterIP Passthrough)
+          Before=k3s.service
+
+          [Service]
+          ExecStartPre=-/usr/bin/ip addr add {{ kubernetes_service_cidr | ipaddr('address') }}/32 dev lo
+          ExecStart=/usr/bin/python3 /usr/local/bin/k3s-api-gateway.py
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: "Audit Code 810302 | Enable and start K3s API Gateway"
+      ansible.builtin.systemd:
+        name: k3s-api-gateway
+        enabled: true
+        state: started
+        daemon_reload: true
+  tags: [kubernetes, gateway, restricted_kernel, 810302]

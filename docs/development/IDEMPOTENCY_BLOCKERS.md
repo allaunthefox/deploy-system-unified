@@ -206,7 +206,7 @@ CURRENT_PORT="$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')"
 
 **Files:**
 
-1. `tasks/save_checkpoint.yml`
+1. `tasks/SAVE_CHECKPOINT.YML`
 2. `roles/containers/quadlets/tasks/main.yml`
 
 **Problem:** Timestamp fields guarantee file content changes every run.

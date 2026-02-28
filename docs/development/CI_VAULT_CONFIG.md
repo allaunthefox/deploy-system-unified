@@ -52,7 +52,7 @@ Ansible vault password file resolution follows this order:
     ANSIBLE_VAULT_PASSWORD_FILE: /dev/null
 
 - name: Deploy with vault
-  run: ansible-playbook site.yml
+  run: ansible-playbook SITE.YML
   env:
     ANSIBLE_VAULT_PASSWORD_FILE: ${{ secrets.VAULT_PASSWORD }}
 ```
@@ -66,7 +66,7 @@ ansible-lint
 
 # Deploy with vault
 export ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass
-ansible-playbook site.yml
+ansible-playbook SITE.YML
 ```
 
 ## Security Considerations
@@ -85,7 +85,7 @@ ansible-playbook site.yml
 export ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass
 
 # Solution 2: Use command-line argument
-ansible-playbook site.yml --vault-password-file .vault_pass
+ansible-playbook SITE.YML --vault-password-file .vault_pass
 
 # Solution 3: For lint-only, disable vault
 export ANSIBLE_VAULT_PASSWORD_FILE=/dev/null

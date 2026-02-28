@@ -1,0 +1,46 @@
+# =============================================================================
+# Audit Event Identifier: DSU-INV-700010
+# Inventory Type: Group Variables
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# Centralized definition of container workloads to deploy for this inventory.
+# Modify this list to enable/disable specific application stacks.
+# Handled by production_deploy.yml and site.yml
+
+deploy_workload_roles:
+  # 1. Monitoring & Operations (Forensic Intelligence FIRST)
+  # Compliance: Rule [B-02] (The Aggregator Wait)
+  - ops/monitoring         # Host Agent (Node Exporter)
+  - containers/monitoring  # Stack (Forensic Dashboards - Loki/Promtail/Grafana)
+
+  # 2. Base Container Infrastructure Workload
+  - hardware/sas
+  - hardware/gpu
+  - containers/runtime
+  - containers/config
+  - containers/quadlets
+  - containers/caddy
+  
+  # 3. Core Network and Security
+  - containers/networking  # DNS & Network Services (AdGuard)
+  - containers/security    # Security Infra (Headscale)
+  - containers/anubis      # AI Firewall
+  
+  # 4. Application Stacks
+  - containers/media       # Media Stack (Jellyfin, ARR Stack)
+  - containers/immich      # Photo Stack
+  - containers/home_assistant # Automation Stack
+  - containers/life        # Life Management Stack (Mealie, Firefly)
+  - containers/ai          # AI Stack (Ollama, WebUI)
+  - containers/archive     # Long-term Archive (YouTube, Wikipedia)
+  - containers/ops         # Ops Stack (Homarr, Vaultwarden, Filebrowser)
+  
+  # 5. Backup & Disaster Recovery
+  - storage/backup/restic
+  - storage/backup/rclone
+  
+  # 6. Final Solution Integrity Verification
+  - security/scanning
+  - security/sbom          # Supply Chain Integrity & SBOM Audit

@@ -1,14 +1,14 @@
 ---
 # Tasks for security/tpm_guard - Hardware Root of Trust Watchdog
-# NIST SI-7 | ISO 27001 §8.15 | Action 800510
+# NIST SI-7 | ISO 27001 §8.15 | Audit Code 800510
 
-- name: "NIST SI-7 | Action 800510 | Check for TPM device"
+- name: "NIST SI-7 | Audit Code 800510 | Check for TPM device"
   ansible.builtin.stat:
     path: /dev/tpm0
   register: tpm_device
   tags: [security, tpm, hardware]
 
-- name: "NIST SI-7 | Action 800510 | Install TPM tools"
+- name: "NIST SI-7 | Audit Code 800510 | Install TPM tools"
   ansible.builtin.package:
     name: tpm2-tools
     state: present
@@ -16,7 +16,7 @@
   when: tpm_device.stat.exists
   tags: [security, tpm, hardware]
 
-- name: "NIST SI-7 | Action 800510 | Create Integrity Purge Script"
+- name: "NIST SI-7 | Audit Code 800510 | Create Integrity Purge Script"
   ansible.builtin.copy:
     dest: /usr/local/bin/dsu-integrity-purge
     mode: '0700'
@@ -52,7 +52,7 @@
   when: tpm_guard_enabled | bool
   tags: [security, tpm, purge]
 
-- name: "NIST SI-7 | Action 800510 | Create TPM Integrity Watchdog Script"
+- name: "NIST SI-7 | Audit Code 800510 | Create TPM Integrity Watchdog Script"
   ansible.builtin.copy:
     dest: /usr/local/bin/dsu-tpm-watchdog
     mode: '0700'
@@ -70,7 +70,7 @@
   when: tpm_guard_enabled | bool
   tags: [security, tpm, watchdog]
 
-- name: "NIST SI-7 | Action 800510 | Create TPM Watchdog Service"
+- name: "NIST SI-7 | Audit Code 800510 | Create TPM Watchdog Service"
   ansible.builtin.copy:
     dest: /etc/systemd/system/dsu-tpm-watchdog.service
     content: |
@@ -84,7 +84,7 @@
   when: tpm_guard_enabled | bool
   tags: [security, tpm, watchdog]
 
-- name: "NIST SI-7 | Action 800510 | Create TPM Watchdog Timer"
+- name: "NIST SI-7 | Audit Code 800510 | Create TPM Watchdog Timer"
   ansible.builtin.copy:
     dest: /etc/systemd/system/dsu-tpm-watchdog.timer
     content: |
@@ -101,7 +101,7 @@
   when: tpm_guard_enabled | bool
   tags: [security, tpm, watchdog]
 
-- name: "NIST SI-7 | Action 800510 | Enable TPM Watchdog"
+- name: "NIST SI-7 | Audit Code 800510 | Enable TPM Watchdog"
   ansible.builtin.systemd:
     name: dsu-tpm-watchdog.timer
     enabled: true

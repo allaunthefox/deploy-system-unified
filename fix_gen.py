@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500014
+# Script Type: Repository Maintenance
+# Description: Fixes generate_role_pages.py anchor format
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 
 with open('.scripts/generate_role_pages.py', 'r') as f:
     content = f.read()

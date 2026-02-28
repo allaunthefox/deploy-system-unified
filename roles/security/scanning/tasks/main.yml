@@ -1,7 +1,7 @@
 ---
 # Security/Scanning role - Focused on system validation and vulnerability scanning
 
-- name: "CIS 3.3.1 | STIG V-230340 | NIST RA-5 | NIST SI-2 | ISO 27001 §8.15 | Action 600030 | Validate Scanning Eligibility (Ephemeral Guard)"
+- name: "CIS 3.3.1 | STIG V-230340 | NIST RA-5 | NIST SI-2 | ISO 27001 §8.15 | Audit Code 600030 | Validate Scanning Eligibility (Ephemeral Guard)"
   ansible.builtin.assert:
     that:
       - not security_scanning_ephemeral_skip | bool
@@ -9,7 +9,7 @@
   tags: [cis_3_3_1, stig_v_230340, nist_ra_5, nist_si_2, iso_27001_8_15, security, scanning, profile_guard]
   when: security_scanning_enable | bool and (deployment_profile | default('') == 'ephemeral')
 
-- name: "CIS 3.3.1 | STIG V-230340 | NIST RA-5 | NIST SI-2 | NIST SI-5 | ISO 27001 §8.15 | Action 520001 | Validate preflight requirements (idempotent)"
+- name: "CIS 3.3.1 | STIG V-230340 | NIST RA-5 | NIST SI-2 | NIST SI-5 | ISO 27001 §8.15 | Audit Code 520001 | Validate preflight requirements (idempotent)"
   ansible.builtin.include_role:
     name: ops/preflight
   loop: [1]
@@ -26,7 +26,7 @@
     - security
     - scanning
 
-- name: "CIS 3.3.2 | STIG V-230340 | NIST RA-5 | NIST SI-2 | NIST SI-6 | ISO 27001 §8.15 | Action 520003 | Verify directory structure (idempotent)"
+- name: "CIS 3.3.2 | STIG V-230340 | NIST RA-5 | NIST SI-2 | NIST SI-6 | ISO 27001 §8.15 | Audit Code 520003 | Verify directory structure (idempotent)"
   ansible.builtin.include_tasks: directory_verification.yml
   loop: [1]
   loop_control:
@@ -42,7 +42,7 @@
     - security
     - scanning
 
-- name: "CIS 3.3.3 | STIG V-230341 | NIST SI-2 | NIST SI-3 | NIST SI-6 | ISO 27001 §8.8 | Action 520010 | Configure security tools (idempotent)"
+- name: "CIS 3.3.3 | STIG V-230341 | NIST SI-2 | NIST SI-3 | NIST SI-6 | ISO 27001 §8.8 | Audit Code 520010 | Configure security tools (idempotent)"
   ansible.builtin.include_tasks: enhanced_security_with_required_tools.yml
   loop: [1]
   loop_control:
@@ -70,7 +70,7 @@
     - security
     - scanning
 
-- name: "CIS 3.3.4 | STIG V-230340 | NIST AU-2 | NIST AU-8 | ISO 27001 §8.15 | Action 520013 | Verify Forensic Clock Synchronization (Chrony)"
+- name: "CIS 3.3.4 | STIG V-230340 | NIST AU-2 | NIST AU-8 | ISO 27001 §8.15 | Audit Code 520013 | Verify Forensic Clock Synchronization (Chrony)"
   ansible.builtin.shell: |
     
     chronyc tracking | grep -q "System time.*slow\|System time.*fast\|Reference ID"
@@ -90,7 +90,7 @@
     - scanning
     - time
 
-- name: "CIS 3.3.4 | STIG V-230340 | NIST AU-2 | NIST AU-8 | ISO 27001 §8.15 | Action 520014 | Validate clock precision"
+- name: "CIS 3.3.4 | STIG V-230340 | NIST AU-2 | NIST AU-8 | ISO 27001 §8.15 | Audit Code 520014 | Validate clock precision"
   ansible.builtin.assert:
     that:
       - chrony_sync_check.rc == 0
@@ -106,7 +106,7 @@
     - scanning
     - time
 
-- name: "CIS 3.3.5 | STIG V-230341 | NIST SI-2 | NIST SI-3 | NIST SI-6 | NIST SI-8 | ISO 27001 §8.8 | Action 520010 | Run enhanced security scanning (idempotent)"
+- name: "CIS 3.3.5 | STIG V-230341 | NIST SI-2 | NIST SI-3 | NIST SI-6 | NIST SI-8 | ISO 27001 §8.8 | Audit Code 520010 | Run enhanced security scanning (idempotent)"
   ansible.builtin.include_tasks: enhanced_scanning.yml
   loop: [1]
   loop_control:
@@ -136,7 +136,7 @@
     - security
     - scanning
 
-- name: "CIS 3.3.6 | STIG V-230341 | NIST SI-2 | NIST SI-6 | NIST SI-10 | ISO 27001 §8.8 | Action 520011 | Validate final security state (idempotent)"
+- name: "CIS 3.3.6 | STIG V-230341 | NIST SI-2 | NIST SI-6 | NIST SI-10 | ISO 27001 §8.8 | Audit Code 520011 | Validate final security state (idempotent)"
   ansible.builtin.include_tasks: validation.yml
   loop: [1]
   loop_control:

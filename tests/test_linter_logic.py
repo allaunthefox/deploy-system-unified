@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000103
+# File Type: Python Test Script
+# Test Type: Linter Logic Validation
+# Description: Test script to replicate exact linter logic
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """Test script to replicate the exact linter logic."""
 
 import re

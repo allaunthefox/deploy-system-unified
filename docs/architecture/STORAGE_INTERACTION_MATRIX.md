@@ -1,5 +1,11 @@
 # Storage Interaction & Directory Access Matrix
 
+**Audit Event Identifier:** DSU-MMD-180007  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+**Compliance:** ISO 27040 / NIST SP 800-193  
+
 This document maps how different container and virtualization runtimes interact with the host filesystem and shared data locations in **Deploy-System-Unified**.
 
 ---
@@ -58,7 +64,7 @@ graph TD
 
 ### 1. SELinux/AppArmor Labeling
 - **Rule**: All volumes mounted to Podman/LXC MUST use the `:Z` suffix (e.g., `/data:/data:Z`).
-- **Forensic Code**: `ISO 27001 §8.20 | Action 700000`
+- **Forensic Code**: `ISO 27001 §8.20 | Audit Code 700000`
 
 ### 2. UID/GID Mapping (UserNS)
 - **Standard**: The project standardizes on **UID 1000** for the `media` user across all runtimes.

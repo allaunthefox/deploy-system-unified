@@ -70,9 +70,8 @@ rules:
   key-duplicates:
     level: error
 
-  # Quoted strings - be lenient
-  quoted-strings:
-    level: ignore
+  # Quoted strings - disabled (too noisy for Ansible)
+  quoted-strings: disable
 
   # Octal values - warning only
   octal-values:

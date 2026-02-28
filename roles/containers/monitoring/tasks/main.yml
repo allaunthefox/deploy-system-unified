@@ -41,22 +41,30 @@
     - security
 
 - name: "CIS 6.4 | STIG V-230450 | NIST CM-6 | Enforce CHANGE_ME policy for monitoring stack"
-  ansible.builtin.include_tasks: "{{ role_path }}/../tasks/policy_change_me.yml"
+  ansible.builtin.include_tasks: "{{ role_path }}/../common/tasks/policy_change_me.yml"
   vars:
     change_me_policy_items:
       - name: "monitoring_grafana_admin_password"
         value: "{{ monitoring_grafana_admin_password | default('') }}"
         bad_values: ["CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
   when: monitoring_enable | bool
+
+- name: "Audit Code 450002 | Fix | Clear Podman Storage Lock"
+  ansible.builtin.file:
+    path: /var/lib/containers/storage/storage.lock
+    state: absent
+  become: true
   tags:
+    - monitoring
+    - security
+    - storage
+    - audit_code_450002
     - cis_6_4
     - stg_v230450
     - nist_cm_6
     - containers
-    - monitoring
-    - security
 
-- name: "CIS 6.5 | STIG V-230450 | NIST SC-8 | ISO 27001 §8.20 | Action 700030 | Create Monitoring Network Quadlet"
+- name: "CIS 6.5 | STIG V-230450 | NIST SC-8 | ISO 27001 §8.20 | Audit Code 700030 | Create Monitoring Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ monitoring_network }}.network"
     content: |
@@ -85,8 +93,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "1000"
-    group: "1000"
+    owner: "{{ containers_user_uid }}"
+    group: "{{ containers_user_gid }}"
     mode: '0755'
   loop:
     - "{{ monitoring_root_dir }}"
@@ -152,7 +160,7 @@
   notify: reload_systemd
   tags: [monitoring, gatus, 700000]
 
-- name: "CIS 6.7 | STIG V-230450 | NIST IA-2 | ISO 27001 §10.1 | Action 400011 | Create Grafana secrets file"
+- name: "CIS 6.7 | STIG V-230450 | NIST IA-2 | ISO 27001 §10.1 | Audit Code 400011 | Create Grafana secrets file"
   ansible.builtin.template:
     src: grafana.env.j2
     dest: "{{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env"
@@ -170,7 +178,7 @@
     - remediate
   when: monitoring_enable | bool
 
-- name: "CIS 6.8 | STIG V-230450 | NIST AU-6 | ISO 27001 §12.4 | Action 840000 | Deploy Prometheus Config"
+- name: "CIS 6.8 | STIG V-230450 | NIST AU-6 | ISO 27001 §12.4 | Audit Code 840000 | Deploy Prometheus Config"
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: "{{ monitoring_config_dir }}/prometheus/prometheus.yml"
@@ -187,7 +195,7 @@
   notify: restart_monitoring_pod
   when: monitoring_enable | bool
 
-- name: "CIS 6.9 | STIG V-230450 | NIST CA-7 | ISO 27001 §8.20 | Action 700000 | Deploy Monitoring Pod Quadlet"
+- name: "CIS 6.9 | STIG V-230450 | NIST CA-7 | ISO 27001 §8.20 | Audit Code 700000 | Deploy Monitoring Pod Quadlet"
   ansible.builtin.template:
     src: mon_pod.pod.j2
     dest: "{{ containers_systemd_dir }}/{{ monitoring_pod_name }}.pod"
@@ -207,7 +215,7 @@
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: "CIS 6.10 | STIG V-230450 | NIST AU-2 | ISO 27001 §8.20 | Action 700000 | Deploy Prometheus Container Quadlet"
+- name: "CIS 6.10 | STIG V-230450 | NIST AU-2 | ISO 27001 §8.20 | Audit Code 700000 | Deploy Prometheus Container Quadlet"
   ansible.builtin.template:
     src: prometheus.container.j2
     dest: "{{ containers_systemd_dir }}/prometheus-{{ monitoring_instance }}.container"
@@ -227,7 +235,7 @@
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: "CIS 6.11 | STIG V-230450 | NIST AU-6 | ISO 27001 §8.20 | Action 700000 | Deploy Grafana Container Quadlet"
+- name: "CIS 6.11 | STIG V-230450 | NIST AU-6 | ISO 27001 §8.20 | Audit Code 700000 | Deploy Grafana Container Quadlet"
   ansible.builtin.template:
     src: grafana.container.j2
     dest: "{{ containers_systemd_dir }}/grafana-{{ monitoring_instance }}.container"
@@ -308,18 +316,17 @@
     - monitoring_enable | bool
     - not ansible_check_mode
 
-- name: "CIS 6.16 | STIG V-230450 | NIST CA-7 | ISO 27001 §12.4 | Action 840000 | Start monitoring pod and services (quadlet units)"
-  ansible.builtin.systemd:
+- name: "CIS 6.16 | STIG V-230450 | NIST CA-7 | ISO 27001 §12.4 | Audit Code 840000 | Start monitoring pod and services (quadlet units)"
+  ansible.builtin.service:
     name: "{{ item }}"
     state: started
-    scope: "{{ containers_systemd_scope }}"
   loop:
-    - "{{ monitoring_pod_name }}-pod"
-    - "prometheus-{{ monitoring_instance }}"
-    - "grafana-{{ monitoring_instance }}"
-  environment: "{{ containers_systemd_env }}"
-  become: true
-  become_user: "{{ containers_systemd_owner }}"
+    - "{{ monitoring_pod_name }}-pod.service"
+    - "prometheus-{{ monitoring_instance }}.service"
+    - "grafana-{{ monitoring_instance }}.service"
+    - "loki-{{ monitoring_instance }}.service"
+    - "promtail-{{ monitoring_instance }}.service"
+  ignore_errors: true
   tags:
     - cis_6_16
     - stg_v230450

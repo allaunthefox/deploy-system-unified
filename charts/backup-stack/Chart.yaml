@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300006
+# Chart: backup-stack (Restic, Rclone)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: backup-stack
 description: Restic, Rclone for backups

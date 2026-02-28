@@ -1,4 +1,12 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400021
+# Script Type: Podman Setup
+# Description: Enables Docker socket compatibility for Podman
+# Usage: sudo ./setup-podman-docker-compat.sh
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Podman Docker Compatibility Setup Script
 # Enables Docker socket compatibility for seamless Docker CLI usage with Podman
 #

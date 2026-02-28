@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300009
+# Chart: ops-stack (Homarr, Vaultwarden)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: ops-stack
 description: A Helm chart for Deploy-System-Unified Ops Stack

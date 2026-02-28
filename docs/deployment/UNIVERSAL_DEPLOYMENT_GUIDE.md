@@ -20,7 +20,7 @@ This guide outlines the standard operating procedure (SOP) for deploying the **D
 
 ## 2. Infrastructure Profile Selection
 
-The system uses a "Template" architecture. Do not edit `site.yml` directly. Instead, select a **Branch Template** that matches your hardware/use-case and customize for your specific goal.
+The system uses a "Template" architecture. Do not edit `SITE.YML` directly. Instead, select a **Branch Template** that matches your hardware/use-case and customize for your specific goal.
 
 **Available Templates (`branch_templates/`)**:
 

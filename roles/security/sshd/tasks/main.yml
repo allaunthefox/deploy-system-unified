@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110001
+# File Type: Role Tasks (main.yml)
+# Role: sshd
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # SSHD configuration role - Enhanced SSH daemon configuration
 
@@ -8,6 +15,21 @@
     mode: '0755'
     owner: root
     group: root
+  become: true
+  tags:
+    - security
+    - sshd
+    - 600013
+
+- name: "ISO 27001 §12.4 | 600013 | Ensure hardened SSH config file exists"
+  ansible.builtin.file:
+    path: "{{ security_sshd_config_path }}"
+    state: touch
+    mode: '0600'
+    owner: root
+    group: root
+    modification_time: preserve
+    access_time: preserve
   become: true
   tags:
     - security
@@ -47,8 +69,9 @@
     force: false
   become: true
   when:
-    - security_sshd_backup_config.stat.exists is not defined or not security_sshd_config_backup.stat.exists
+    - not (security_sshd_config_backup.stat.exists | default(false))
     - security_sshd_backup_config | default(true)
+    - not ansible_check_mode
   tags:
     - security
     - sshd
@@ -70,7 +93,7 @@
   register: security_sshd_version_raw
   changed_when: false
   become: true
-  ignore_errors: true
+  failed_when: false
   tags:
     - security
     - sshd

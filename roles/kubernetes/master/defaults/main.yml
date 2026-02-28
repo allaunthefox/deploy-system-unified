@@ -1,36 +1,16 @@
----
-# Defaults for kubernetes/master
-kubernetes_k3s_enable: true
-kubernetes_k3s_version: "v1.31.2+k3s1"
-
-# Network Configuration
-kubernetes_pod_cidr: "10.42.0.0/16"
-kubernetes_service_cidr: "10.43.0.0/16"
-kubernetes_cluster_dns: "10.43.0.10"
+# Network Configuration (Industry Standard for Restricted Kernels)
+# Use 172.16.x.x to avoid conflicts with 10.x.x.x VPS management networks
+kubernetes_pod_cidr: "172.16.0.0/16"
+kubernetes_service_cidr: "172.17.0.0/16"
+kubernetes_cluster_dns: "172.17.0.10"
 kubernetes_cluster_domain: "cluster.local"
 
-# API Server Configuration
-kubernetes_api_port: 6443
-# CRITICAL: TLS SANs MUST be populated for non-localhost setups
-# Empty list causes certificate errors when connecting via LB VIP or custom hostname
-# Example: kubernetes_tls_san: ["192.168.1.100", "k8s.example.com", "kubernetes.default"]
-kubernetes_tls_san: []  # MUST override with your API server endpoints
+# CNI Backend: host-gw is the standard for single-node/L2 to avoid VXLAN dependencies
+kubernetes_flannel_backend: "host-gw"
 
-# K3s Feature Flags
-kubernetes_disable_traefik: false
-kubernetes_disable_servicelb: false
-kubernetes_disable_agent: false
+# Proxy Mode: nftables is the standard modern replacement when iptables-comment is missing
+kubernetes_proxy_mode: "nftables"
 
-# Storage
-kubernetes_data_dir: "/var/lib/rancher/k3s"
-
-# Architecture Binary Mapping
-# Experimental RISC-V support uses community-maintained binaries
-kubernetes_k3s_bin_url:
-  x86_64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s"
-  aarch64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s-arm64"
-  riscv64: "https://github.com/k3s-io/k3s/releases/download/{{ kubernetes_k3s_version }}/k3s-riscv64" # Placeholder for experimental
-
-# Security
-kubernetes_token_path: "/var/lib/deploy-system/kubernetes/token"
-kubernetes_encryption_enabled: true
+# Performance/Stability Flags
+kubernetes_disable_network_policy: true # Avoids ipset dependency on restricted kernels
+kubernetes_prefer_bundled_bin: true     # Ensures K3s uses its own validated toolchain

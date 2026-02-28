@@ -31,7 +31,7 @@
     - rclone
   when: rclone_enable | bool
 
-- name: "CIS 3.7.3 | STIG V-230622 | NIST SC-12 | ISO 27040 | ISO 27001 §10.1 | Action 400011 | Deploy Rclone Configuration"
+- name: "CIS 3.7.3 | STIG V-230622 | NIST SC-12 | ISO 27040 | ISO 27001 §10.1 | Audit Code 400011 | Deploy Rclone Configuration"
   ansible.builtin.copy:
     content: "{{ rclone_config_content }}"
     dest: "{{ rclone_conf_file }}"

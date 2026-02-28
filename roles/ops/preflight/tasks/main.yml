@@ -6,7 +6,7 @@
 # noqa DSU003
 # Package installation has been moved to core/bootstrap
 
-- name: "CIS 4.5.1 | STIG V-230670 | NIST AU-2 | ISO 9001 | Action 600013 | Gather minimum facts for preflight checks"
+- name: "CIS 4.5.1 | STIG V-230670 | NIST AU-2 | ISO 9001 | Audit Code 600013 | Gather minimum facts for preflight checks"
   ansible.builtin.setup:
     gather_subset:
       - '!all'
@@ -76,7 +76,7 @@
     - nist_cm_6
     - preflight
 
-- name: "CIS 4.5.5 | STIG V-230674 | NIST CM-6 | ISO 9001 | Action 520010 | Validate distribution is supported"
+- name: "CIS 4.5.5 | STIG V-230674 | NIST CM-6 | ISO 9001 | Audit Code 520010 | Validate distribution is supported"
   ansible.builtin.assert:
     that:
       - ansible_facts['distribution'] | lower in ['archlinux', 'debian', 'ubuntu', 'fedora', 'alpine', 'centos', 'rocky', 'almalinux']

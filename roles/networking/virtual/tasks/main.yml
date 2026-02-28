@@ -11,7 +11,7 @@
     - networking
     - virtual
 
-- name: "CIS 3.3.2 | STIG V-230400 | ISO 27001 §9.4 | Action 810205 | Import VLAN tasks"
+- name: "CIS 3.3.2 | STIG V-230400 | ISO 27001 §9.4 | Audit Code 810205 | Import VLAN tasks"
   ansible.builtin.import_tasks: vlan.yml
   tags:
     - cis_3_3_2
@@ -22,7 +22,7 @@
     - networking
     - vlan
 
-- name: "CIS 3.3.3 | STIG V-230400 | ISO 27001 §9.4 | Action 810205 | Import VXLAN tasks"
+- name: "CIS 3.3.3 | STIG V-230400 | ISO 27001 §9.4 | Audit Code 810205 | Import VXLAN tasks"
   ansible.builtin.import_tasks: vxlan.yml
   tags:
     - cis_3_3_3

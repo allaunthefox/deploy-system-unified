@@ -1,4 +1,12 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400018
+# Script Type: Deployment Session Management
+# Description: Provides resilient execution environment using TMUX
+# Architecture: Agnostic (x86_64, aarch64, riscv64)
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 set -eu
 
 # =================================================================================================

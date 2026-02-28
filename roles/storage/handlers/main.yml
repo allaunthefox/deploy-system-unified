@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-130011
+# File Type: Role Handlers (main.yml)
+# Role: storage
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Handlers for storage role
 # Parent role handlers for storage services

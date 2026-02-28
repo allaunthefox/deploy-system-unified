@@ -1,8 +1,19 @@
+---
 # Database Stack Values
 # =============================================================================
-# SECURITY WARNING: Passwords MUST be set via secrets management
-# Do NOT commit passwords to version control
+# SECURITY: Passwords are auto-generated if not provided (for testing only)
+# For production, set passwords via secrets management or helm --set
 # =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: ""  # Auto-generated if empty
+  annotations: {}
+
+# RBAC Configuration
+rbac:
+  create: true
 
 # PostgreSQL
 postgresql:
@@ -14,18 +25,13 @@ postgresql:
     port: 5432
   database: app
   username: appuser
-  # CRITICAL: Set password via secrets or helm --set postgresql.password=<secure>
-  # Example: helm install ... --set postgresql.password=$(openssl rand -base64 32)
-  password: ""  # MUST be overridden - deployment will fail if empty
+  # Password will be auto-generated if empty
+  # For production: helm install ... --set postgresql.password=$(openssl rand -base64 32)
+  password: ""  # Auto-generated if empty
   persistence:
-    enabled: true
+    enabled: true  # Set to false for testing (uses emptyDir)
     size: 10Gi
-    # Optional: Specify storage class (default: cluster default)
-    # storageClass: "-"  # Use empty string for default, "-" for no storage class
-    # Optional: PVC annotations
-    # annotations: {}
-    # Optional: PVC selector for existing PVs
-    # selector: {}
+    storageClass: ""  # Use default storage class
 
 # Redis
 redis:
@@ -35,15 +41,10 @@ redis:
     tag: "7"
   service:
     port: 6379
-  # CRITICAL: Set password via secrets or helm --set redis.password=<secure>
-  # Example: helm install ... --set redis.password=$(openssl rand -base64 32)
-  password: ""  # MUST be overridden - deployment will fail if empty
+  # Password will be auto-generated if empty
+  # For production: helm install ... --set redis.password=$(openssl rand -base64 32)
+  password: ""  # Auto-generated if empty
   persistence:
-    enabled: true
+    enabled: true  # Set to false for testing (uses emptyDir)
     size: 5Gi
-    # Optional: Specify storage class (default: cluster default)
-    # storageClass: "-"
-    # Optional: PVC annotations
-    # annotations: {}
-    # Optional: PVC selector for existing PVs
-    # selector: {}
+    storageClass: ""  # Use default storage class

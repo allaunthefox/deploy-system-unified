@@ -48,7 +48,7 @@ projects/deploy-system-unified/ ├── roles/ │ ├── core/ │ │ ├
 ### Phase 5: Integration and Deployment (DONE)
 1. Aligned CI/CD configuration paths (Woodpecker, GitHub Actions).
 2. Performed full system linting with `ansible-lint` (0 failures).
-3. Verified entrypoint orchestration in `site.yml` and `tasks/run_role.yml`.
+3. Verified entrypoint orchestration in `SITE.YML` and `tasks/RUN_ROLE.YML`.
 4. Documented breaking changes and migration guide.
 ## Benefits
 - **Maintainability**: Clear separation of architecture and vendor-specific code

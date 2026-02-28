@@ -2,7 +2,7 @@
 # Core bootstrap role - System initialization and base configuration
 # CIS 1.1.x | STIG V-230240 | NIST CM-2, SC-12 | ISO 27001 §8.9 | ISO 9001 | ISO 8000-110
 
-- name: "CIS 1.1.1 | STIG V-230240 | NIST CM-2 | ISO 9001 | Action 300010 | Gather system facts"
+- name: "CIS 1.1.1 | STIG V-230240 | NIST CM-2 | ISO 9001 | Audit Code 300010 | Gather system facts"
   ansible.builtin.setup:
     gather_subset:
       - '!all'
@@ -58,7 +58,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (Debian/Ubuntu)"
+- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530000 | Ensure base packages are installed (Debian/Ubuntu)"
   ansible.builtin.apt:
     name: "{{ _bootstrap_packages }}"
     state: present
@@ -78,7 +78,7 @@
     - packages
     - remediate
 
-- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (RedHat/CentOS)"
+- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530000 | Ensure base packages are installed (RedHat/CentOS)"
   ansible.builtin.dnf:
     name: "{{ _bootstrap_packages }}"
     state: present
@@ -97,7 +97,7 @@
     - packages
     - remediate
 
-- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (Arch)"
+- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530000 | Ensure base packages are installed (Arch)"
   community.general.pacman:
     name: "{{ _bootstrap_packages }}"
     state: present
@@ -112,7 +112,7 @@
     - packages
     - remediate
 
-- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Action 530000 | Ensure base packages are installed (Alpine)"
+- name: "CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530000 | Ensure base packages are installed (Alpine)"
   community.general.apk:
     name: "{{ _bootstrap_packages }}"
     state: present
@@ -127,7 +127,7 @@
     - packages
     - remediate
 
-- name: "CIS 1.1.5 | STIG V-230240 | NIST CM-2 | Action 600113 | Create standard system directories"
+- name: "CIS 1.1.5 | STIG V-230240 | NIST CM-2 | Audit Code 600113 | Create standard system directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -142,7 +142,7 @@
     - initialization
     - remediate
 
-- name: "CIS 1.1.6 | STIG V-230240 | NIST SC-12 | Action 800000 | Detect Virtualization Environment"
+- name: "CIS 1.1.6 | STIG V-230240 | NIST SC-12 | Audit Code 800000 | Detect Virtualization Environment"
   ansible.builtin.set_fact:
     detected_virtualization_role: "{{ ansible_facts['virtualization_role'] | default('host') | lower }}"
     detected_virtualization_type: "{{ ansible_facts['virtualization_type'] | default('none') | lower }}"
@@ -198,7 +198,7 @@
     - bootstrap
     - initialization
 
-- name: "Action 800001 | Report Virtualization Profile"
+- name: "Audit Code 800001 | Report Virtualization Profile"
   ansible.builtin.debug:
     msg: >-
       Environment detected as {{ virt_type | upper }}
@@ -207,7 +207,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.1.9 | STIG V-230240 | NIST SC-12 | ISO 8000-110 | Action 300011 | Generate high-entropy Deployment ID (Forensic Primary Key)"
+- name: "CIS 1.1.9 | STIG V-230240 | NIST SC-12 | ISO 8000-110 | Audit Code 300011 | Generate high-entropy Deployment ID (Forensic Primary Key)"
   ansible.builtin.set_fact:
     deployment_id: "{{ ansible_facts['date_time'].iso8601_micro | hash('sha256') | truncate(16, True, '') }}"
   tags:
@@ -218,7 +218,7 @@
     - bootstrap
     - forensics
 
-- name: "Action 300011 | Set bootstrap completion flag"
+- name: "Audit Code 300011 | Set bootstrap completion flag"
   ansible.builtin.set_fact:
     core_bootstrap_complete: true
   tags:

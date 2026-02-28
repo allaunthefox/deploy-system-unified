@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400026
+# Script Type: YAML Remediation
+# Description: Fixes YAML formatting violations using ripgrep and awk
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 
 # Script to fix YAML formatting violations using ripgrep and awk
 

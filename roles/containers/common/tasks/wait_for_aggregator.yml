@@ -1,0 +1,15 @@
+---
+# Enforce Rule [B-02] (The Aggregator Wait)
+# NIST SP 800-193 | ISO 27001 §12.4 | Audit Code 840020
+
+- name: "Forensic Wait | Audit Code 840020 | Wait for Forensic Aggregator (Loki) readiness"
+  ansible.builtin.wait_for:
+    host: "localhost"
+    port: 3100
+    timeout: 30
+    msg: "Mandatory Forensic Aggregator (Loki) not reachable on port 3100. Deployment halted to maintain chain of trust."
+  when:
+    - system_monitoring_loki_enabled | default(true) | bool
+    - not ansible_check_mode
+  become: true
+  tags: [forensic, security, audit, 840020]

@@ -28,7 +28,7 @@
     - time
     - remediate
 
-- name: "CIS 5.4.1 | STIG V-230270 | NIST AU-8, SC-12 | ISO 27001 §8.17 | Action 300001 | Configure secure time synchronization (idempotent)"
+- name: "CIS 5.4.1 | STIG V-230270 | NIST AU-8, SC-12 | ISO 27001 §8.17 | Audit Code 300001 | Configure secure time synchronization (idempotent)"
   ansible.builtin.template:
     src: chrony.conf.j2
     dest: "{{ core_time_service_mapping[ansible_distribution | lower].conf_dir }}/chrony.conf"
@@ -49,7 +49,7 @@
     - ansible_distribution | lower in core_time_service_mapping.keys()
     - (virt_type | default('container')) != "container" # Containers typically share host clock
 
-- name: "CIS 5.4.2 | STIG V-230270 | NIST AU-8 | ISO 27001 §8.17 | Action 300006 | Enable and start time synchronization service (idempotent)"
+- name: "CIS 5.4.2 | STIG V-230270 | NIST AU-8 | ISO 27001 §8.17 | Audit Code 300006 | Enable and start time synchronization service (idempotent)"
   ansible.builtin.service:
     name: "{{ core_time_service_mapping[ansible_distribution | lower].service }}"
     enabled: true

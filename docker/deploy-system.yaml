@@ -1,3 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CNT-850003
+# File Type: Podman Kubernetes YAML
+# Description: Kubernetes-style Podman deployment via podman play kube
+# Usage: podman play kube deploy-system.yaml
+# Compliance: Resource limits, read-only rootfs, restart policy, health checks
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Deploy-System-Unified - Podman Kubernetes YAML
 # For use with: podman play kube deploy-system.yaml

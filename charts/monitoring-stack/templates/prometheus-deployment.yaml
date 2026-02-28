@@ -32,9 +32,23 @@ spec:
       labels:
         app: prometheus
     spec:
+      serviceAccountName: {{ include "monitoring-stack.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534  # nobody user
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: prometheus
           image: "{{ .Values.prometheus.image.repository }}:{{ .Values.prometheus.image.tag }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
           args:
             - '--storage.tsdb.path=/prometheus'
             - '--storage.tsdb.retention.time=15d'
@@ -62,7 +76,8 @@ spec:
               mountPath: /prometheus
       volumes:
         - name: config
-          emptyDir: {}
+          configMap:
+            name: {{ include "monitoring-stack.fullname" . }}-prometheus-config
         - name: data
           {{- if .Values.prometheus.persistence.enabled }}
           persistentVolumeClaim:

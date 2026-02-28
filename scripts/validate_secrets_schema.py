@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500002
+# Script Type: Secret Validation
+# Description: Verifies secrets file contains all required keys for migration
+# Usage: ./validate_secrets_schema.py <path_to_secrets.yml>
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """
 Secrets Schema Validator
 Verifies that a secrets file contains all required keys for the migration.

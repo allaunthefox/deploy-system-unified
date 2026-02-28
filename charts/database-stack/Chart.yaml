@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300004
+# Chart: database-stack (PostgreSQL, Redis)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: database-stack
 description: PostgreSQL and Redis for persistent data

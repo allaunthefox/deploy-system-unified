@@ -2,7 +2,7 @@ groups:
   - name: ForensicAlerts
     rules:
       - alert: SecurityBreakoutAttempt
-        expr: count_over_time({job="varlogs"} |= "Action 410101" [5m]) > 0
+        expr: count_over_time({job="varlogs"} |= "Audit Code 410101" [5m]) > 0
         for: 0m
         labels:
           severity: critical
@@ -12,7 +12,7 @@ groups:
           description: "Audit Event Identifier 410101 (Unauthorized breakout) detected in system logs on {{ $labels.instance }}."
 
       - alert: UnauthorizedAuditClear
-        expr: count_over_time({job="varlogs"} |= "Action 520003" [5m]) > 0
+        expr: count_over_time({job="varlogs"} |= "Audit Code 520003" [5m]) > 0
         for: 0m
         labels:
           severity: critical
@@ -22,7 +22,7 @@ groups:
           description: "Audit Event Identifier 520003 (LOG CLEARED) detected. Potential anti-forensic activity."
 
       - alert: SupplyChainViolation
-        expr: count_over_time({job="varlogs"} |= "Action 700015" [5m]) > 0
+        expr: count_over_time({job="varlogs"} |= "Audit Code 700015" [5m]) > 0
         for: 0m
         labels:
           severity: critical

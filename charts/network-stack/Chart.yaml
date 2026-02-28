@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300007
+# Chart: network-stack (Pi-hole, WireGuard, DNS)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: network-stack
 description: DNS, ad-blocking, and VPN services

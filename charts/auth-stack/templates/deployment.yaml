@@ -1,3 +1,19 @@
+---
+# Auto-generated secrets for Authentik
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "auth-stack.fullname" . }}-secrets
+type: Opaque
+stringData:
+  # Auto-generate secret key if not provided
+  secretKey: {{ .Values.authentik.secretKey | default (randAlphaNum 64) | quote }}
+  # Auto-generate admin password if not provided
+  adminPassword: {{ .Values.authentik.adminPassword | default (randAlphaNum 32) | quote }}
+  {{- if .Values.authentik.email.password }}
+  emailPassword: {{ .Values.authentik.email.password | quote }}
+  {{- end }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,13 +43,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "auth-stack.fullname" . }}-secrets
                   key: secretKey
-                  optional: true
             - name: AUTHENTIK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "auth-stack.fullname" . }}-secrets
                   key: adminPassword
-                  optional: true
           {{- if .Values.authentik.email.host }}
             - name: AUTHENTIK_EMAIL_HOST
               value: {{ .Values.authentik.email.host }}
@@ -46,7 +60,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "auth-stack.fullname" . }}-secrets
                   key: emailPassword
-                  optional: true
             - name: AUTHENTIK_EMAIL_USE_TLS
               value: {{ .Values.authentik.email.useTls | quote }}
           {{- end }}

@@ -84,7 +84,7 @@ web2.example.com http_port=80
 ### At Runtime
 
 ```bash
-ansible-playbook site.yml -e "http_port=8080"
+ansible-playbook SITE.YML -e "http_port=8080"
 ```
 
 ## Variable Types

@@ -1,0 +1,216 @@
+# Media Stack - Production Values
+# =============================================================================
+# For production deployment with security hardening and proper resource limits
+# =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: "media-sa"
+  annotations: {}
+
+# RBAC Configuration
+rbac:
+  create: true
+
+# Global Settings
+global:
+  timezone: "America/New_York"  # CHANGE ME
+  puid: 1000
+  pgid: 1000
+  mediaRoot: /data
+  configRoot: /config
+
+# Hardware Acceleration (Production)
+hardware:
+  gpu:
+    enabled: false  # Set to true if GPU device plugin is installed
+    pciId: ""  # Specify PCI ID for GPU passthrough
+    vendor: intel  # intel, nvidia, or amd
+
+# Ingress Configuration (Production)
+ingress:
+  enabled: true
+  className: caddy  # or nginx, traefik
+  host: media.example.com  # CHANGE ME
+  tls: true  # Enable TLS
+  # Subdomain routing
+  jellyfin:
+    host: jellyfin.example.com  # CHANGE ME
+  radarr:
+    host: radarr.example.com  # CHANGE ME
+  sonarr:
+    host: sonarr.example.com  # CHANGE ME
+
+# Jellyfin (Production Settings)
+jellyfin:
+  enabled: true
+  image:
+    repository: jellyfin/jellyfin
+    tag: "10.10.3"  # Pin specific version
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8096
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1000m"
+    limits:
+      memory: "8Gi"
+      cpu: "4000m"  # Increase for transcoding
+  persistence:
+    config:
+      enabled: true
+      size: "20Gi"
+      storageClass: ""
+    media:
+      enabled: true
+      size: "500Gi"  # Adjust based on media library size
+      storageClass: ""
+      # For existing PVC:
+      # existingClaim: media-storage-pvc
+  # Hardware acceleration
+  hardwareAcceleration:
+    enabled: false  # Set to true with GPU
+    # VA-API for Intel
+    # vaapi: true
+    # NVIDIA NVENC
+    # nvenc: true
+  # Network settings
+  network:
+    hostNetwork: false  # Set to true for DLNA/SSDP
+  # Transcoding settings
+  transcoding:
+    threads: 0  # 0 = auto
+    hardwareAcceleration: false
+    # Enable for hardware transcoding:
+    # hardwareAcceleration: true
+    # hardwareAccelerationDevice: /dev/dri/renderD128
+
+# Radarr (Production Settings)
+radarr:
+  enabled: true
+  image:
+    repository: linuxserver/radarr
+    tag: "5.17.2"  # Pin specific version
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 7878
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  persistence:
+    config:
+      enabled: true
+      size: "10Gi"
+      storageClass: ""
+    media:
+      enabled: true
+      size: "100Gi"
+      storageClass: ""
+  # Download client integration
+  downloadClient:
+    enabled: false
+    # Configure your download client
+    # host: download-client.example.com
+    # port: 8080
+
+# Sonarr (Production Settings)
+sonarr:
+  enabled: true
+  image:
+    repository: linuxserver/sonarr
+    tag: "4.0.11"  # Pin specific version
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8989
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  persistence:
+    config:
+      enabled: true
+      size: "10Gi"
+      storageClass: ""
+    media:
+      enabled: true
+      size: "100Gi"
+      storageClass: ""
+  # Download client integration
+  downloadClient:
+    enabled: false
+    # Configure your download client
+    # host: download-client.example.com
+    # port: 8080
+
+# Shared Media Storage (Production)
+sharedStorage:
+  enabled: true
+  # Use NFS or other shared storage for media
+  type: nfs  # nfs, ceph, local
+  # NFS configuration:
+  # nfs:
+  #   server: nfs-server.example.com
+  #   path: /export/media
+  #   readOnly: false
+  # Ceph RBD configuration:
+  # ceph:
+  #   monitors:
+  #     - ceph-mon1:6789
+  #     - ceph-mon2:6789
+  #   pool: media
+  #   user: admin
+
+# Backup Configuration (Production)
+backup:
+  enabled: false  # Enable with backup-stack
+  # Schedule for config backups
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention:
+    daily: 7
+    weekly: 4
+    monthly: 12
+
+# Security Settings (Production)
+security:
+  # Network policies
+  networkPolicy:
+    enabled: true
+    # Allow ingress from specific namespaces
+    allowedNamespaces:
+      - ingress-nginx
+      - caddy-system
+  # Pod security
+  podSecurity:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false  # Media apps need write access
+  # Authentication (optional - integrate with auth-stack)
+  authentication:
+    enabled: false
+    # provider: authentik
+    # authentikUrl: http://authentik:9000
+
+# Monitoring Integration
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: "30s"
+  # Prometheus alerts
+  alerts:
+    enabled: true
+    # Alert on service down
+    serviceDown: true
+    # Alert on high resource usage
+    highResourceUsage: true

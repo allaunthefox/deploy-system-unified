@@ -92,7 +92,7 @@
     - hardware
     - gpu
 
-- name: "CIS 3.1.9 | STIG V-230518 | NIST SC-39 | ISO 9001 | Action 800400 | Run Video Hardware Detection"
+- name: "CIS 3.1.9 | STIG V-230518 | NIST SC-39 | ISO 9001 | Audit Code 800400 | Run Video Hardware Detection"
   ansible.builtin.include_tasks: detect_video.yml
   tags:
     - cis_3_1_9
@@ -144,7 +144,7 @@
     - hardware
     - gpu
 
-- name: "CIS 3.1.13 | STIG V-230522 | NIST SC-28 | ISO 27001 §8.9 | Action 800410 | Iterate over defined vendors"
+- name: "CIS 3.1.13 | STIG V-230522 | NIST SC-28 | ISO 27001 §8.9 | Audit Code 800410 | Iterate over defined vendors"
   ansible.builtin.include_tasks: vendor_setup.yml
   loop: "{{ _gpu_vendor_list }}"
   loop_control:
@@ -188,7 +188,7 @@
     - hardware
     - gpu
 
-- name: "CIS 3.1.17 | STIG V-230526 | NIST SC-28 | ISO 27001 §8.26 | Action 800420 | Optional - Configure GPU Slicing Support"
+- name: "CIS 3.1.17 | STIG V-230526 | NIST SC-28 | ISO 27001 §8.26 | Audit Code 800420 | Optional - Configure GPU Slicing Support"
   ansible.builtin.include_tasks: features/gpu_slicing.yml
   when: gpu_stack_enable_slicing | default(false) or gpu_stack_slicing_strategy | default('none') != 'none'
   tags:

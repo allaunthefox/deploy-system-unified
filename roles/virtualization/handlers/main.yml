@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-130012
+# File Type: Role Handlers (main.yml)
+# Role: virtualization
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Handlers for virtualization role
 # Parent role handlers for virtualization services

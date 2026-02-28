@@ -1,7 +1,7 @@
 ---
 # Tasks for core/hardware_support
 
-- name: "ISO 9001 | Action 800000 | Load Architecture Specific Hardware Tasks"
+- name: "ISO 9001 | Audit Code 800000 | Load Architecture Specific Hardware Tasks"
   ansible.builtin.include_tasks: "arch/{{ ansible_architecture }}.yml"
   ignore_errors: true
   tags:
@@ -61,7 +61,7 @@
     - hardware
     - time
 
-- name: "ISO 27001 §8.17 | Action 300007 | Configure Hardware Clock (RTC) to UTC"
+- name: "ISO 27001 §8.17 | Audit Code 300007 | Configure Hardware Clock (RTC) to UTC"
   ansible.builtin.command: timedatectl set-local-rtc 0
   become: true
   failed_when: false
@@ -73,7 +73,7 @@
     - ansible_service_mgr == 'systemd'
     - "'LocalRTC=yes' in timedatectl_show.stdout_lines"
 
-- name: "ISO 27001 §8.17 | Action 300007 | Enable NTP-based RTC synchronization"
+- name: "ISO 27001 §8.17 | Audit Code 300007 | Enable NTP-based RTC synchronization"
   ansible.builtin.command: timedatectl set-ntp true
   become: true
   failed_when: false
@@ -85,7 +85,7 @@
     - ansible_service_mgr == 'systemd'
     - "'NTP=no' in timedatectl_show.stdout_lines"
 
-- name: "ISO 27001 §10.1 | Action 800001 | Validate Crypto Acceleration (Secure Nodes)"
+- name: "ISO 27001 §10.1 | Audit Code 800001 | Validate Crypto Acceleration (Secure Nodes)"
   ansible.builtin.fail:
     msg: "Host CPU lacks critical Crypto Extensions (AES-NI or SHA)."
   when: (require_crypto_extensions | default(false)) and (not host_cpu_has_aes)

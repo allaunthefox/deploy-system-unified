@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100011
+# Playbook Type: Restore Operations
+# Description: Forensic data restoration with integrity verification
+# Compliance: ISO 27040 §10.2
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 - ansible.builtin.import_playbook: bootstrap_ssh.yml
 

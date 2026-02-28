@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500012
+# Script Type: YAML Validation
+# Description: Checks that main.yml playbooks don't contain role definitions
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 import sys
 import os
 

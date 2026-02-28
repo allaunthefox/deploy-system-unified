@@ -1,4 +1,12 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400006
+# Script Type: Production Smoke Test
+# Description: Verifies production deployment can be parsed and run in check-mode
+# Compliance: Stability 2026 Gate
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # Stability 2026 - Production Smoke Test
 # Verifies that production_deploy.yml can be parsed and run in check-mode.
 

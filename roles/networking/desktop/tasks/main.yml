@@ -47,7 +47,7 @@
     - networking
     - desktop
 
-- name: "CIS 3.6.4 | STIG V-230380 | ISO 27001 §9.4 | Action 810202 | Enable NetworkManager Service"
+- name: "CIS 3.6.4 | STIG V-230380 | ISO 27001 §9.4 | Audit Code 810202 | Enable NetworkManager Service"
   ansible.builtin.service:
     name: "{{ _net_service_name }}"
     enabled: true
@@ -61,7 +61,7 @@
     - networking
     - desktop
 
-- name: "CIS 3.6.5 | STIG V-230380 | ISO 27001 §9.4 | Action 810201 | Configure Wi-Fi Backend (NetworkManager.conf)"
+- name: "CIS 3.6.5 | STIG V-230380 | ISO 27001 §9.4 | Audit Code 810201 | Configure Wi-Fi Backend (NetworkManager.conf)"
   ansible.builtin.ini_file:
     path: /etc/NetworkManager/NetworkManager.conf
     section: device

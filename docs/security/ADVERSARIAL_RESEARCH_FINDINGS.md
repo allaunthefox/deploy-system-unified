@@ -85,7 +85,7 @@ The `lookup('pipe', ...)` pattern was only found in documentation (`SECURITY_REM
 | **Total** | 81 | In github repository (codeberg has 85, includes docs) |
 
 **HIGH Risk Locations:**
-1. `/home/prod/Workspaces/repos/github/playbooks/preflight_assertions.yml` - Environment variable lookup
+1. `/home/prod/Workspaces/repos/github/playbooks/PREFLIGHT_ASSERTIONS.YML` - Environment variable lookup
 2. `/home/prod/Workspaces/repos/github/roles/ops/preflight/tasks/check_license_compliance.yml` - 18 occurrences with file paths
 3. `/home/prod/Workspaces/repos/github/roles/security/sbom/tasks/main.yml` - Shell execution
 4. `/home/prod/Workspaces/repos/github/roles/hardware/gpu/tasks/vendor_setup.yml` - GPU setup
@@ -191,7 +191,7 @@ pipeline:
     commands:
       - apt-get update && apt-get install -y git python3 python3-pip
       - pip3 install ansible-lint
-      - cd deploy-system-unified && ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules site.yml
+      - cd deploy-system-unified && ansible-lint -v -c .ansible-lint.yml -r ansiblelint/rules SITE.YML
 
 branches: [main, 'ci/**']
 ```
@@ -298,7 +298,7 @@ defaults:
 - `/home/prod/Workspaces/repos/codeberg/Deploy-System-Unified/` - Codeberg mirror
 
 ### Key Files Reviewed
-- `playbooks/preflight_assertions.yml`
+- `playbooks/PREFLIGHT_ASSERTIONS.YML`
 - `roles/ops/preflight/tasks/check_license_compliance.yml`
 - `roles/security/sbom/tasks/main.yml`
 - `roles/ops/connection_info/tasks/main.yml`

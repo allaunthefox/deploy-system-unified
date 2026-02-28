@@ -24,8 +24,8 @@
 
 | File | Line | Module | Risk Factor |
 |------|------|--------|-------------|
-| `/home/prod/Workspaces/repos/github/playbooks/preflight_assertions.yml` | 31 | `ansible.builtin.command` | Uses `lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')` - environment variable injection |
-| `/home/prod/Workspaces/repos/github/playbooks/preflight_assertions.yml` | 57 | `ansible.builtin.command` | Uses `lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')` - environment variable injection |
+| `/home/prod/Workspaces/repos/github/playbooks/PREFLIGHT_ASSERTIONS.YML` | 31 | `ansible.builtin.command` | Uses `lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')` - environment variable injection |
+| `/home/prod/Workspaces/repos/github/playbooks/PREFLIGHT_ASSERTIONS.YML` | 57 | `ansible.builtin.command` | Uses `lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')` - environment variable injection |
 | `/home/prod/Workspaces/repos/github/roles/ops/preflight/tasks/check_license_compliance.yml` | 9-189 | Various | License compliance checks with file path variables |
 | `/home/prod/Workspaces/repos/github/roles/security/sbom/tasks/main.yml` | 42 | `ansible.builtin.shell` | Executes Python script with `delegate_to: localhost` |
 | `/home/prod/Workspaces/repos/github/roles/security/sbom/tasks/main.yml` | 55 | `ansible.builtin.shell` | SHA256 checksum operation with dynamic paths |
@@ -62,7 +62,7 @@
 
 ### Critical Files Analysis
 
-#### 1. playbooks/preflight_assertions.yml (23 occurrences)
+#### 1. playbooks/PREFLIGHT_ASSERTIONS.YML (23 occurrences)
 - **Risk Level:** HIGH (for env lookup), MEDIUM (for command modules)
 - **Issues:**
   - Lines 17, 57: Uses `lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')` which could be manipulated

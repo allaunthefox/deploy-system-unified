@@ -1,4 +1,25 @@
 # Logging Stack Values
+# =============================================================================
+# Security-hardened logging with RBAC and Pod Security Standards
+# =============================================================================
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  name: ""  # Auto-generated if empty
+  annotations: {}
+
+# RBAC Configuration
+rbac:
+  create: true
+  # Loki needs to discover services for scraping
+  services: false
+  # Promtail needs pod logs access
+  podLogs: true
+
+# Global settings
+global:
+  timezone: UTC
 
 # Loki
 loki:
@@ -8,9 +29,11 @@ loki:
     tag: 3.2.0
   service:
     port: 3100
+  # Persistence configuration
   persistence:
-    enabled: true
+    enabled: true  # Set to false for testing (uses emptyDir)
     size: 10Gi
+    storageClass: ""  # Use default storage class
 
 # Promtail
 promtail:
@@ -18,3 +41,4 @@ promtail:
   image:
     repository: grafana/promtail
     tag: 3.2.0
+  # Promtail reads from host paths, no persistence needed

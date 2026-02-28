@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-130003
+# File Type: Role Handlers (main.yml)
+# Role: hardware
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Handlers for hardware role
 

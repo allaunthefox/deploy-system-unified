@@ -71,7 +71,7 @@ ansible --version
 Use the canonical entrypoint for production deployments:
 
 ```bash
-ansible-playbook production_deploy.yml -i inventory/your_inventory.ini
+ansible-playbook PRODUCTION_DEPLOY.YML -i inventory/your_inventory.ini
 ```
 
 ### Architecture Support
@@ -108,24 +108,30 @@ Standard architecture patterns are available in `branch_templates/` for referenc
 
 ## 📁 Project Structure
 
-```
-Deploy-System-Unified/
-├── site.yml                    # Main playbook
-├── production_deploy.yml       # Production entrypoint
-├── base_hardened.yml           # Base hardening playbook
-├── branch_templates/           # Architecture-specific templates
-├── roles/                      # Ansible roles (categorized)
-│   ├── core/                   # Core system roles
-│   ├── containers/             # Container runtime & services
-│   ├── hardware/               # Hardware-specific roles
-│   ├── networking/             # Network configuration
-│   ├── security/               # Security hardening
-│   └── ...
-├── playbooks/                  # Supporting playbooks
-├── inventory/                  # Inventory files
-├── docs/                       # Documentation
-├── dev_tools/                  # Development tooling
-└── molecule/                   # Test scenarios
+**Audit Event Identifier:** DSU-MMD-100000  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+
+```mermaid
+graph TD
+    ROOT[Deploy-System-Unified]
+    ROOT --> PB[Playbooks & Entrypoints]
+    ROOT --> ROLES[roles/]
+    ROOT --> INV[inventory/]
+    ROOT --> DOCS[docs/ & wiki_pages/]
+    ROOT --> TOOLS[dev_tools/ & scripts/]
+    ROOT --> TEST[molecule/ & tests/]
+
+    PB -.->|Includes| ROLES
+
+    ROLES --> R_CORE[core/]
+    ROLES --> R_SEC[security/]
+    ROLES --> R_CONT[containers/]
+    ROLES --> R_HW[hardware/]
+    ROLES --> R_NET[networking/]
+
+    classDef dir fill:#f9f,stroke:#333,stroke-width:2px;
+    class ROLES,INV,DOCS,TOOLS,TEST dir;
 ```
 
 ---

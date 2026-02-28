@@ -1,3 +1,6 @@
+# Audit Event Identifier: DSU-HLM-300003
+# Chart: logging-stack (Loki, Promtail)
+# Last Updated: 2026-02-28
 apiVersion: v2
 name: logging-stack
 description: Loki and Promtail for log aggregation

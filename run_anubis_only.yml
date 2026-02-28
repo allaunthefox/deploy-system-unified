@@ -1,3 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100010
+# Playbook Type: Targeted Deployment (Anubis only)
+# Description: Deploy Anubis AI firewall only
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 - hosts: localhost
   connection: local

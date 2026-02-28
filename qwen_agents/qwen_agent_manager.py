@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500010
+# File Type: Python Module
+# Description: Qwen Sub-Agent Manager - loads and manages specialized agents
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """
 Qwen Sub-Agent Manager
 

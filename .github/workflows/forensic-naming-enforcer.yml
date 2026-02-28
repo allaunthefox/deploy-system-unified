@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-CIC-600003
+# Pipeline Type: Forensic Naming Enforcement
+# Description: Validates Ansible forensic naming conventions
+# Trigger: pull_request (roles/**/*.yml, playbooks/**/*.yml)
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 name: "Forensic Naming Enforcer"
 
 on:
@@ -23,8 +31,11 @@ jobs:
           errors=0
           while IFS= read -r file; do
             # Find task names that don't follow forensic pattern: "Standard | CODE | Description"
-            # Only check lines that start with "- name:"
-            non_compliant=$(grep -E "^[[:space:]]*-[[:space:]]*name:" "$file" | grep -v -E "^[[:space:]]*-[[:space:]]*name:[[:space:]]*[\"'][^|]*[|][[:space:]]*[0-9]{6}[[:space:]]*[|]" || true)
+            # Only check lines that start with "- name:" (not comments)
+            # Include file name and line number for easy location
+            non_compliant=$(grep -n -E "^[[:space:]]*-[[:space:]]*name:" "$file" | \
+              grep -v '^[[:space:]]*#' | \
+              grep -v -E "^[[:space:]]*[0-9]+:[[:space:]]*-[[:space:]]*name:[[:space:]]*[\"'][^|]*[|][[:space:]]*[0-9]{6}[[:space:]]*[|]" || true)
             if [ -n "$non_compliant" ]; then
               echo "Non-compliant task names found in $file:"
               echo "$non_compliant"

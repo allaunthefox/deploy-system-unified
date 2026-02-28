@@ -32,7 +32,7 @@
       register: stored_hw_fingerprint
       when: prev_hw_fingerprint_file.stat.exists
 
-    - name: "Action 460000 | ALERT: Hardware Configuration Change Detected"
+    - name: "Audit Code 460000 | ALERT: Hardware Configuration Change Detected"
       ansible.builtin.debug:
         msg: |
           🚨 CRITICAL FORENSIC ALERT: Hardware configuration has changed since last deployment!

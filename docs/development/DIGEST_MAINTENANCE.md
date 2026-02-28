@@ -36,7 +36,7 @@ I have enacted a new utility in `dev_tools/scripts/check_image_updates.sh`.
 
 ```bash
 #!/bin/bash
-# ISO 27001 §14.2 | Action 520040 | DSU Image Update Checker
+# ISO 27001 §14.2 | Audit Code 520040 | DSU Image Update Checker
 
 # Loop through all defaults/main.yml files
 find roles/containers -name "main.yml" | grep "defaults" | while read -r file; do
@@ -77,7 +77,7 @@ Every container role defines its "Max" limits in its `defaults/main.yml`:
 ### 2. Preflight System Audit
 The `ops/preflight` role performs the **Min** support check:
 - **Memory Check**: `CIS 4.5.7` asserts the host has at least **512MB** (configurable via `preflight_min_memory_mb`).
-- **Disk Check**: `Action 800000` verifies the availability of `/srv`.
+- **Disk Check**: `Audit Code 800000` verifies the availability of `/srv`.
 
 ### 3. Forensic Matrix
 You can view the **Capability Matrix** (`docs/architecture/CROSS_RUNTIME_MATRIX.md`) to see which architecture combinations are supported (Stable vs. Experimental).

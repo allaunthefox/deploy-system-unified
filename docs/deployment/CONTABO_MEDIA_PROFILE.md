@@ -131,5 +131,5 @@ The stack integrates with Caddy (deployed via `containers/caddy`) for SSL termin
 To redeploy or update this stack:
 
 ```bash
-ansible-playbook site.yml --tags "containers/media"
+ansible-playbook SITE.YML --tags "containers/media"
 ```

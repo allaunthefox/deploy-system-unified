@@ -1,3 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100008
+# Playbook Type: Ephemeral Edge Deployment
+# Description: Secure, volatile ingress for temporary workloads (Caddy + Anubis)
+# Profile: Ephemeral with volatile secrets
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Ephemeral Edge Deployment - Caddy + Anubis
 # Scenario: Secure, volatile ingress for temporary workloads

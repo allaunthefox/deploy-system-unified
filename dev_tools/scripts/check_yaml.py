@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500013
+# Script Type: YAML Validation
+# Description: Validates YAML file syntax
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 import yaml
 import sys
 import os

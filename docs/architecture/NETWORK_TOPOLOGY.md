@@ -1,5 +1,10 @@
 # Network Topology: Data Flow & Isolation
 
+**Audit Event Identifier:** DSU-MMD-180002  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-02-28  
+
 This diagram visualizes the traffic flow from the public internet through the **Deploy-System-Unified** security layers to the backend services.
 
 ```mermaid

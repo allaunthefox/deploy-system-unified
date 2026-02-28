@@ -1,0 +1,22 @@
+---
+# Enforce policy against "CHANGE_ME" placeholders in container variables.
+# CIS 6.x | NIST CM-6 | Audit Code 520011
+
+- name: Detect CHANGE_ME placeholders in host variables
+  ansible.builtin.set_fact:
+    _change_me_placeholders: >-
+      {{
+        hostvars[inventory_hostname]
+        | dict2items
+        | selectattr('value', 'string')
+        | selectattr('value', 'search', 'CHANGE_ME')
+        | map(attribute='key')
+        | list
+      }}
+  tags: [security, policy, audit, 520011]
+
+- name: "Audit Code 520011 | Warn if CHANGE_ME placeholders are present"
+  ansible.builtin.debug:
+    msg: "WARNING: Found CHANGE_ME placeholders in variables: {{ _change_me_placeholders | join(', ') }}. Ensure these are replaced before production."
+  when: _change_me_placeholders | length > 0
+  tags: [security, policy, audit, 520011]

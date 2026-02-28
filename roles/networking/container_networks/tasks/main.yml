@@ -2,7 +2,7 @@
 # Tasks for networking/container_networks - Container Isolation
 # Compliance: CIS 3.7.x | STIG V-230370 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.21
 
-- name: "CIS 3.7.1 | STIG V-230370 | ISO 27001 §8.26 | Action 420002 | Apply Kernel Networking Prerequisites"
+- name: "CIS 3.7.1 | STIG V-230370 | ISO 27001 §8.26 | Audit Code 420002 | Apply Kernel Networking Prerequisites"
   ansible.builtin.include_tasks: kernel_prerequisites.yml
   tags:
     - cis_3_7_1
@@ -26,7 +26,7 @@
     - networking
     - containers
 
-- name: "CIS 3.7.3 | STIG V-230370 | ISO 27001 §8.26 | Action 700030 | Deploy Container Networks"
+- name: "CIS 3.7.3 | STIG V-230370 | ISO 27001 §8.26 | Audit Code 700030 | Deploy Container Networks"
   ansible.builtin.template:
     src: network.network.j2
     dest: "{{ containers_systemd_dir }}/{{ item.name }}.network"
@@ -58,7 +58,7 @@
     - networking
     - containers
 
-- name: "CIS 3.7.5 | STIG V-230370 | ISO 27001 §8.21 | Action 700030 | Create Backend Network Segment (Application Layer)"
+- name: "CIS 3.7.5 | STIG V-230370 | ISO 27001 §8.21 | Audit Code 700030 | Create Backend Network Segment (Application Layer)"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/backend.network"
     content: |
@@ -81,7 +81,7 @@
   when: container_networks_enable | bool
   notify: reload_systemd
 
-- name: "CIS 3.7.6 | STIG V-230370 | ISO 27001 §8.21 | Action 700030 | Create Management Network Segment (Logging/Forensics)"
+- name: "CIS 3.7.6 | STIG V-230370 | ISO 27001 §8.21 | Audit Code 700030 | Create Management Network Segment (Logging/Forensics)"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/management.network"
     content: |

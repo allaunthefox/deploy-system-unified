@@ -1,6 +1,6 @@
 # Branch Templates Directory
 
-This directory contains reference Ansible playbooks for different deployment scenarios. Each file represents a use case and can be used as a template when you create a separate deployment directory. For production deployments from this repository, use `production_deploy.yml` in the repo root and treat `branch_templates/` as reference-only to avoid drift and preserve determinism.
+This directory contains reference Ansible playbooks for different deployment scenarios. Each file represents a use case and can be used as a template when you create a separate deployment directory. For production deployments from this repository, use `PRODUCTION_DEPLOY.YML` in the repo root and treat `branch_templates/` as reference-only to avoid drift and preserve determinism.
 
 ## Available Templates
 
@@ -23,11 +23,11 @@ This directory contains reference Ansible playbooks for different deployment sce
 
 ## Usage
 
-If you are deploying directly from this repository, run `production_deploy.yml` instead of copying a template. Use the templates below only when creating a custom deployment directory.
+If you are deploying directly from this repository, run `PRODUCTION_DEPLOY.YML` instead of copying a template. Use the templates below only when creating a custom deployment directory.
 
 Guidelines:
 
-- `production_deploy.yml` is the canonical entrypoint for real deployments.
+- `PRODUCTION_DEPLOY.YML` is the canonical entrypoint for real deployments.
 - Templates may diverge (tags, optional role ordering) and are not guaranteed to stay in lockstep.
 - When you copy a template out-of-tree, treat it as a fork and document your deltas.
 
@@ -45,11 +45,11 @@ Example (reference-only):
 mkdir my-production-deployment && cd my-production-deployment
 
 # Copy the template to your deployment directory
-cp /path/to/deploy-system-unified/branch_templates/production_servers.yml site.yml
-# Customize site.yml for your specific needs
+cp /path/to/deploy-system-unified/branch_templates/production_servers.yml SITE.YML
+# Customize SITE.YML for your specific needs
 
 # Run the deployment with access to the roles from the main repository
-ansible-playbook -i inventory/your-server.ini site.yml --extra-vars "ansible_roles_path=/path/to/deploy-system-unified/roles"
+ansible-playbook -i inventory/your-server.ini SITE.YML --extra-vars "ansible_roles_path=/path/to/deploy-system-unified/roles"
 ```
 
 Each template includes:

@@ -1,8 +1,14 @@
 # RESTORE RUNBOOK: Forensic Data Restoration (ISO 27040)
 
-**Reference Code**: 900010 (Restore start)  
-**Playbook**: `playbooks/restore_data.yml`  
-**Standard**: ISO/IEC 27040:2024 (Storage Security)
+**Audit Event Identifier:** DSU-RUN-200002  
+**Document Type:** Restore Runbook  
+**Playbook:** `playbooks/RESTORE_DATA.YML`  
+**Standard:** ISO/IEC 27040:2024 (Storage Security)  
+**Reference Codes:** 900010 (Restore start), 520030 (Preflight), 560000 (Forensic checkpoint)  
+**Last Updated:** 2026-02-28  
+**Version:** 1.1  
+**Review Status:** Quarterly  
+**Next Review:** 2026-05-28  
 
 ---
 
@@ -26,21 +32,21 @@ This runbook describes the procedure for restoring critical service data (Jellyf
 Run the playbook in check mode first to verify hash integrity without making changes:
 
 ```bash
-ansible-playbook playbooks/restore_data.yml --check
+ansible-playbook playbooks/RESTORE_DATA.YML --check
 ```
 
 ### 2. Full Restoration (Code 900010)
 Execute the restoration on the target host:
 
 ```bash
-ansible-playbook playbooks/restore_data.yml -i inventory/your_host.ini
+ansible-playbook playbooks/RESTORE_DATA.YML -i inventory/your_host.ini
 ```
 
 ### 3. Targeted Database Restore
 To only restore the PostgreSQL databases (Authentik):
 
 ```bash
-ansible-playbook playbooks/restore_data.yml --tags database
+ansible-playbook playbooks/RESTORE_DATA.YML --tags database
 ```
 
 ---

@@ -1,4 +1,11 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400017
+# Script Type: Collection Cleanup
+# Description: Resolves Ansible collection version conflicts
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 # CI Gate Fixes - Collection Cleanup
 # This script resolves collection version conflicts
 

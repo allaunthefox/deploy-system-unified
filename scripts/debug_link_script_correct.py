@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500008
+# Script Type: Debug/Testing
+# Description: Debug script to test link variable reference functionality (corrected)
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 """Debug script to test the link variable reference functionality."""
 
 import re
