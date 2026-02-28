@@ -127,17 +127,19 @@ def update_config(api_key):
         if not os.path.exists(BOUNCER_CONFIG):
             print("Config file not found. It should have been created by Ansible.")
             return False
-            
+
         with open(BOUNCER_CONFIG, 'r') as f:
             lines = f.readlines()
-            
+
         with open(BOUNCER_CONFIG, 'w') as f:
             for line in lines:
                 if line.strip().startswith("api_key:"):
                     f.write(f"api_key: {api_key}\n")
                 else:
                     f.write(line)
-        print("Config updated successfully.")
+        # Set restrictive permissions on config file containing sensitive data
+        os.chmod(BOUNCER_CONFIG, 0o600)
+        print("Config updated successfully (permissions set to 600).")
         return True
     except Exception as e:
         print(f"Error updating config: {e}")

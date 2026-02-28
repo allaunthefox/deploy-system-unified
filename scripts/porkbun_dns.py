@@ -51,7 +51,11 @@ def create_record(domain, apikey, secret, name, typ, content, ttl=3600, dry_run=
         "ttl": ttl,
     }
     if dry_run:
-        print("DRY-RUN create:", payload)
+        # Redact sensitive fields before logging
+        safe_payload = payload.copy()
+        safe_payload["apikey"] = "***REDACTED***"
+        safe_payload["secretapikey"] = "***REDACTED***"
+        print("DRY-RUN create:", safe_payload)
         return None
     resp = api_post(f"/dns/create/{domain}", payload)
     if resp.get("status") != "SUCCESS":
@@ -69,7 +73,11 @@ def update_record(domain, record_id, apikey, secret, name, typ, content, ttl=360
         "ttl": ttl,
     }
     if dry_run:
-        print("DRY-RUN update:", record_id, payload)
+        # Redact sensitive fields before logging
+        safe_payload = payload.copy()
+        safe_payload["apikey"] = "***REDACTED***"
+        safe_payload["secretapikey"] = "***REDACTED***"
+        print("DRY-RUN update:", record_id, safe_payload)
         return None
     resp = api_post(f"/dns/update/{domain}/{record_id}", payload)
     if resp.get("status") != "SUCCESS":
