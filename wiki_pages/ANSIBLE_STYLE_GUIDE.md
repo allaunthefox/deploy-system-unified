@@ -176,7 +176,7 @@ roles/category/rolename/
 
 Roles must not cross category boundaries. A role in `security/` does not install packages that
 belong to `core/`. A role in `containers/` does not configure the firewall. See
-[NON_COMINGLING](NON_COMINGLING).
+[SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS).
 
 ---
 

@@ -29,7 +29,7 @@ All documentation changes have been prepared and pushed to a pull request branch
 
 1. **TERMINOLOGY.md** (new) - Formal definitions with ISO/NIST citations
 2. **ONTOLOGY.md** - Updated to use formal terms
-3. **NON_COMINGLING.md** - Updated to reference SoC as primary term
+3. **SEPARATION_OF_CONCERNS.md** - Updated to reference SoC as primary term
 4. **DOCUMENTATION_STYLE_GUIDE.md** (new) - Documentation standards
 5. **ANSIBLE_STYLE_GUIDE.md** (new) - Ansible code standards
 6. **DSU_6767_REGISTRY.md** (new) - Internal standard registry
@@ -88,7 +88,7 @@ Where `PAGE_NAME` matches the filename without `.md` extension.
 
 Example:
 ```markdown
-See [NON_COMINGLING](NON_COMINGLING) for the foundational rule.
+See [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS) for the foundational rule.
 ```
 
 ## Files Deleted (Stub Consolidation)
@@ -116,7 +116,7 @@ Content from these pages has been merged into:
 | Forensic Intelligence | Security Observability |
 | Autonomic Recovery | Automated Recovery Verification |
 | Volatile Secrets | Ephemeral Credentials |
-| Non-Comingling | Separation of Concerns (SoC) |
+| Separation of Concerns | Separation of Concerns (SoC) |
 | Base Import Rule | Configuration Baseline Inheritance |
 
 ## Next Steps

@@ -2,7 +2,7 @@
   "agent": {
     "name": "role_auditor",
     "type": "specialized",
-    "description": "Audits roles for non-comingling, idempotency risks, and category-fact parameter registration drift",
+    "description": "Audits roles for Separation of Concerns, idempotency risks, and category-fact parameter registration drift",
     "primary_model": "qwen-max",
     "fallback_models": ["qwen-plus"],
     "max_tokens": 8192,
@@ -10,7 +10,7 @@
     "capabilities": [
       "role_audit",
       "idempotency_audit",
-      "non_comingling_check",
+      "separation_of_concerns_check",
       "drift_detection",
       "risk_reporting"
     ],

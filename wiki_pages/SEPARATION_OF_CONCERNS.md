@@ -1,4 +1,4 @@
-# NON_COMINGLING
+# SEPARATION_OF_CONCERNS
 
 > **Formal standard:** This document describes the project's implementation of the **Separation
 > of Concerns (SoC)** principle, as defined in ISO/IEC 25010:2011 §4.2.7 (Modularity) and

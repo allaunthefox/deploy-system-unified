@@ -23,7 +23,7 @@
     ],
     "personality": "conservative, system-aware, detail-oriented",
     "constraints": [
-      "preserve non-comingling of boot logic",
+      "preserve Separation of Concerns of boot logic",
       "validate aggregation is idempotent and deterministic",
       "respect virt_type constraints for kernel params",
       "avoid modifying unrelated roles"
