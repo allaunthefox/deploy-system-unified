@@ -1,0 +1,53 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100811
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Main tasks for security/tailscale
+# Compliance: NIST SC-7, ISO 27001 §13.1
+
+- name: "ISO 27001 §13.1 | 800111 | Check Tailscale enablement"
+  ansible.builtin.debug:
+    msg: "Initializing Tailscale Zero Trust Client"
+  when: tailscale_enabled | bool
+  tags: [security, tailscale, initialization, 800111]
+
+- name: "ISO 27001 §12.1 | 800112 | Create Tailscale State Directory"
+  ansible.builtin.file:
+    path: "{{ tailscale_state_dir }}"
+    state: directory
+    mode: '0750'
+    owner: root
+    group: root
+  become: true
+  when: tailscale_enabled | bool
+  tags: [security, tailscale, storage, 800112]
+
+- name: "ISO 27001 §12.6 | 800113 | Install Tailscale via Package"
+  ansible.builtin.package:
+    name: tailscale
+    state: present
+  become: true
+  when: tailscale_enabled | bool
+  tags: [security, tailscale, deploy, 800113]
+
+- name: "ISO 27001 §12.1 | 800114 | Enable and Start Tailscale Service"
+  ansible.builtin.systemd:
+    name: tailscaled
+    state: started
+    enabled: true
+  become: true
+  when: tailscale_enabled | bool
+  tags: [security, tailscale, deploy, 800114]
+
+- name: "ISO 27001 §13.1 | 800115 | Register Node with Headscale"
+  ansible.builtin.command:
+    cmd: "tailscale up --login-server {{ tailscale_login_server }} --authkey {{ tailscale_auth_key }} {{ tailscale_args }}"
+  become: true
+  register: _tailscale_up
+  changed_when: "'already' not in _tailscale_up.stdout"
+  when:
+    - tailscale_enabled | bool
+    - tailscale_auth_key | length > 0
+  no_log: true
+  tags: [security, tailscale, deploy, 800115]

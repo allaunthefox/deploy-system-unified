@@ -426,6 +426,11 @@ This role provides a comprehensive security framework for the Deploy-System-Unif
 
 
 
+### `security/tailscale`
+**tailscale**
+
+
+
 ### `security/tpm_guard`
 **tpm_guard**
 

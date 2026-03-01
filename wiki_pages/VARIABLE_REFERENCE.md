@@ -946,6 +946,16 @@
 - `security_sshd_trusted_groups`
 - `security_sshd_kex_algorithms_pqc`
 
+### `security/tailscale`
+- `tailscale_enabled`
+- `tailscale_version`
+- `tailscale_image_digest`
+- `tailscale_image`
+- `tailscale_login_server`
+- `tailscale_auth_key`
+- `tailscale_args`
+- `tailscale_state_dir`
+
 ### `security/tpm_guard`
 - `tpm_guard_enabled`
 - `tpm_guard_interval`

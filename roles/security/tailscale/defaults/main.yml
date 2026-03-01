@@ -1,0 +1,20 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100810
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/tailscale (Client)
+# Compliance: NIST SC-7, ISO 27001 §13.1
+
+tailscale_enabled: false
+tailscale_version: "1.60.0"
+tailscale_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example placeholder
+tailscale_image: "docker.io/tailscale/tailscale:v{{ tailscale_version }}@{{ tailscale_image_digest }}"
+
+# Headscale / Tailnet Configuration
+tailscale_login_server: "https://headscale.{{ ops_domain | default('example.com') }}"
+tailscale_auth_key: "" # Pre-auth key from Headscale/Vault
+tailscale_args: "--accept-routes --accept-dns=false"
+
+# Systemd Integration
+tailscale_state_dir: "/var/lib/tailscale"
