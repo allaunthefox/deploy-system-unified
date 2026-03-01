@@ -30,6 +30,9 @@
   ansible.builtin.script: gpu_discovery.py
   environment:
     DSU_MOCK_LSPCI_OUTPUT: "{{ gpu_mock_lspci_output | default(omit) }}"
+    DSU_MOCK_NVIDIA_SMI_OUTPUT: "{{ gpu_mock_nvidia_smi_output | default(omit) }}"
+    DSU_MOCK_ROCM_SMI_OUTPUT: "{{ gpu_mock_rocm_smi_output | default(omit) }}"
+    DSU_MOCK_INTEL_GPU_TOP_OUTPUT: "{{ gpu_mock_intel_gpu_top_output | default(omit) }}"
   register: gpu_discovery_raw
   changed_when: false
 

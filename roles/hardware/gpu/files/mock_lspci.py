@@ -6,17 +6,19 @@
 """
 Mock lspci for GPU Hardware Simulation
 Used by Molecule to verify discovery logic without physical GPUs.
+Standardized using real-world data from RTX 4090, RX 7900 XTX, and Arc A770.
 """
 import os
 import sys
 
-# Simulation Data
+# Real-world PCI Simulation Data
 MOCK_OUTPUTS = {
-    "NVIDIA": "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA102 [GeForce RTX 3090] [10de:2204] (rev a1)",
-    "INTEL": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation Alder Lake-S GT1 [UHD Graphics 770] [8086:4680] (rev 0c)",
-    "AMD": "0000:03:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 21 [Radeon RX 6800/6800 XT / 6900 XT] [1002:73bf] (rev c1)",
-    "MULTI": "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA102 [10de:2204]
-0000:00:02.0 VGA compatible controller [0300]: Intel Corporation Alder Lake [8086:4680]"
+    "NVIDIA_RTX_4090": "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD102 [GeForce RTX 4090] [10de:2684] (rev a1)",
+    "AMD_RX_7900_XTX": "0000:03:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX] [1002:744c] (rev c8)",
+    "INTEL_ARC_A770": "0000:03:00.0 VGA compatible controller [0300]: Intel Corporation DG2 [Arc A770] [8086:56a0] (rev 08)",
+    "INTEL_BATTLEMAGE": "0000:03:00.0 VGA compatible controller [0300]: Intel Corporation [8086:e20b] (rev 01)", # Simulated Battlemage
+    "MULTI_NV_INTEL": "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD102 [GeForce RTX 4090] [10de:2684] (rev a1)\n0000:00:02.0 VGA compatible controller [0300]: Intel Corporation [8086:56a0]",
+    "LEGACY_NVIDIA": "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA102 [GeForce RTX 3090] [10de:2204] (rev a1)"
 }
 
 def main():
@@ -26,13 +28,18 @@ def main():
     if "-d" in sys.argv:
         if gpu_type == "NONE":
             sys.exit(0)
-        print(MOCK_OUTPUTS.get(gpu_type, ""))
+        # Use first match or default to GA102 if not found
+        print(MOCK_OUTPUTS.get(gpu_type, MOCK_OUTPUTS["LEGACY_NVIDIA"]))
     else:
         # Default behavior: pass through to real lspci if available, or return nothing
         try:
             import subprocess
-            subprocess.run(["/usr/bin/lspci"] + sys.argv[1:])
-        except FileNotFoundError:
+            # Look for real lspci in common paths
+            real_lspci = "/usr/bin/lspci"
+            if not os.path.exists(real_lspci):
+                real_lspci = "lspci"
+            subprocess.run([real_lspci] + sys.argv[1:])
+        except (FileNotFoundError, PermissionError):
             sys.exit(0)
 
 if __name__ == "__main__":
