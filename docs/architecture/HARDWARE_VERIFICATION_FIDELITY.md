@@ -29,6 +29,21 @@ This document defines the fidelity levels for hardware verification within the *
 
 ---
 
+## 🧬 Verified Hardware Signatures (Simulation Database)
+
+The following real-world hardware signatures are maintained in the simulation database to surface edge cases and logic bugs:
+
+| Category | Representative Model | PCI ID | Verified Status |
+| :--- | :--- | :--- | :--- |
+| **Consumer High-End** | NVIDIA GeForce RTX 4090 | `10de:2684` | ✅ Logic Verified |
+| **AI/Deep Learning** | NVIDIA H100 SXM5 | `10de:2321` | ✅ Logic Verified |
+| **Data Center (AMD)** | AMD Instinct MI250X | `1002:740c` | ✅ Logic Verified |
+| **Data Center (Intel)** | Intel Flex 170 | `8086:56c0` | ✅ Logic Verified |
+| **Laptop Hybrid** | Intel iGPU + NVIDIA dGPU | `8086:7d55 / 10de:28a0` | ✅ Logic Verified |
+| **Legacy/Embedded** | Intel UHD Graphics 770 | `8086:4680` | ✅ Logic Verified |
+
+---
+
 ## 🛡️ Compliance Alignment
 
 *   **ISO 26262-6**: Supports early-stage verification using SiL (Software-in-the-Loop) methods.
