@@ -1,62 +1,81 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100226
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100230
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
-# ISO 27001 §12.4 | System Monitoring
 argument_specs:
   main:
-    short_description: Pre-deployment validation role
+    short_description: Pre-deployment system validation and compliance checking
     description:
-      - Validates system requirements (OS, memory, binaries)
-      - Verifies inventory for "CHANGE_ME" placeholders and insecure defaults
-      - Enforces least-privilege policies for NFS and Rsync
+      - This role performs a suite of pre-deployment checks to ensure the target system meets all hardware, software, and compliance requirements.
     options:
       preflight_require_systemd:
         type: bool
-        description: Require systemd as the service manager
         default: true
+        description: Whether to strictly require a systemd-based environment.
       preflight_check_memory:
         type: bool
-        description: Whether to check minimum memory requirements
         default: false
+        description: Whether to validate the available physical memory.
       preflight_min_memory_mb:
         type: int
-        description: Minimum required memory in MB
         default: 512
+        description: The minimum required RAM in megabytes.
       preflight_check_network:
         type: bool
-        description: Whether to check network connectivity
         default: false
+        description: Whether to perform outbound connectivity checks.
+      preflight_connectivity_check_url:
+        type: str
+        default: "https://1.1.1.1"
+        description: The URL used for network connectivity validation.
+      preflight_required_binaries:
+        type: list
+        elements: str
+        default: []
+        description: List of mandatory binaries that must be present in the system PATH.
       preflight_check_license:
         type: bool
-        description: Whether to run license compliance checks
         default: true
+        description: Whether to perform dependency license compliance checks.
+      preflight_strict_license_check:
+        type: bool
+        default: false
+        description: If true, fails the play on any non-compliant license.
+      preflight_install_license_tools:
+        type: bool
+        default: false
+        description: Whether to automatically install required license scanning tools.
+      preflight_become_pip:
+        type: bool
+        default: false
+        description: Whether to use privilege escalation for pip operations.
       preflight_check_gpu_vendor:
         type: bool
-        description: Whether to validate GPU vendor matches configuration
         default: false
+        description: Whether to validate the configured GPU vendor against detected hardware.
       preflight_strict_gpu_vendor:
         type: bool
-        description: Fail on GPU vendor mismatch (vs warning)
         default: true
+        description: If true, fails the play if the configured GPU vendor is not detected.
       preflight_check_container_runtime:
         type: bool
-        description: Whether to validate container runtime availability
         default: false
+        description: Whether to validate the presence of a container runtime.
       preflight_required_container_runtime:
         type: str
-        description: Required container runtime (podman or docker)
-        default: podman
+        default: "podman"
+        choices: ["podman", "docker"]
+        description: The expected container runtime.
       preflight_check_kubernetes:
         type: bool
-        description: Whether to validate kubectl and K8s connectivity
         default: false
+        description: Whether to perform Kubernetes-specific connectivity and tooling checks.
       preflight_require_kubectl:
         type: bool
-        description: Require kubectl to be installed
         default: true
+        description: Whether to require the kubectl binary to be present.
       preflight_require_cluster_connectivity:
         type: bool
-        description: Require Kubernetes cluster to be accessible
         default: false
+        description: Whether to verify actual connectivity to a Kubernetes cluster API.

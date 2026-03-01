@@ -1,33 +1,31 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100320
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100345
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core system security hardening role
+    short_description: Core system security hardening
     description:
-      - Implements comprehensive system security hardening
-      - Configures file permissions, user accounts, and PAM
-      - Aligns with CIS Level 1 and ISO 27001 benchmarks
+      - This role applies baseline security hardening to the target host, including firewall, fail2ban, and kernel-level restrictions.
     options:
       security_hardening_enabled:
         type: bool
-        description: Enable or disable security hardening
         default: true
+        description: Master toggle for the hardening role.
       security_enable_ufw:
         type: bool
-        description: "Enable UFW firewall management (Note: mostly handled by networking/firewall)"
         default: true
+        description: Whether to enable and configure the Uncomplicated Firewall (UFW).
       security_enable_fail2ban:
         type: bool
-        description: Enable Fail2Ban intrusion prevention
         default: true
+        description: Whether to enable and configure Fail2Ban for brute-force protection.
       security_enable_auto_updates:
         type: bool
-        description: Enable automatic security updates
         default: true
+        description: Whether to enable automatic security updates (legacy toggle).
       security_kernel_hardening:
         type: bool
-        description: Enable kernel-level hardening (sysctl, etc.)
         default: true
+        description: Whether to apply sysctl-based kernel hardening parameters.

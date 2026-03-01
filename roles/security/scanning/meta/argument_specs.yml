@@ -1,21 +1,53 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100374
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100375
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Security scanning and validation role
+    short_description: Comprehensive vulnerability and configuration scanning suite
     description:
-      - Performs system validation, vulnerability scanning, and forensic clock checks
-      - Supports Trivy, Checkov, and TruffleHog integration
-      - Aligns with ISO 27001 §12.2 and §12.4
+      - This role installs and executes a comprehensive suite of security scanning tools (Trivy, Lynis, Checkov, ClamAV) to ensure system and workload integrity.
     options:
       security_scanning_enable:
         type: bool
-        description: Enable security scanning
         default: true
+        description: Master toggle for the scanning role.
       security_scanning_install_tools:
         type: bool
-        description: Install security tools automatically
         default: true
+        description: Whether to ensure all required security tools are installed.
+      security_scanning_ephemeral_skip:
+        type: bool
+        description: Whether to skip heavy scans in ephemeral environments.
+      security_package_mapping:
+        type: dict
+        description: Dictionary mapping OS families to their specific security packages.
+      security_scanning_extra_packages:
+        type: list
+        elements: str
+        description: Additional utility packages required for scanning orchestration.
+      security_scanning_optional_tools:
+        type: list
+        elements: str
+        description: List of optional advanced scanners (Trivy, Checkov, etc.).
+      security_scanning_critical_tools:
+        type: list
+        elements: str
+        description: List of critical security enforcement tools.
+      security_scanning_rkhunter_warning_threshold:
+        type: int
+        default: 5
+        description: Maximum allowed RKHunter warnings before triggering an audit alert.
+      security_scanning_aide_change_threshold:
+        type: int
+        default: 10
+        description: Maximum allowed file integrity changes before triggering an alert.
+      security_scanning_lynis_issue_threshold:
+        type: int
+        default: 10
+        description: Maximum allowed Lynis issues/suggestions before alerting.
+      security_scanning_checkov_issue_threshold:
+        type: int
+        default: 0
+        description: Maximum allowed Checkov IaC violations.

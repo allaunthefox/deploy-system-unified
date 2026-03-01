@@ -1,45 +1,41 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100622
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100200
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Multi-distro firewall management role
+    short_description: Host-level firewall management and boundary protection
     description:
-      - Unified interface for UFW, Firewalld, and Nftables
-      - Implements forensic logging for blocked traffic
-      - Aligns with ISO 27001 §9.4 and NIST AC-3
+      - This role manages the system firewall (UFW or NFTables) to enforce network boundary protection and port isolation.
     options:
       networking_firewall_enabled:
         type: bool
-        description: Enable or disable the firewall service
         default: true
+        description: Master toggle for the firewall role.
       networking_firewall_allowed_tcp_ports:
         type: list
-        elements: str
-        description: List of TCP ports to allow
-        default: ["22", "80", "443"]
+        elements: int
+        description: List of TCP ports to allow through the firewall.
       networking_firewall_allow_endlessh:
         type: bool
-        description: Automatically open port for Endlessh tarpit
-        default: false
+        description: Whether to explicitly open the port for the Endlessh honeytrap.
       networking_firewall_endlessh_port:
         type: int
-        description: Port number used by Endlessh
         default: 22
+        description: The port used by Endlessh.
       networking_firewall_allowed_udp_ports:
         type: list
-        elements: str
-        description: List of UDP ports to allow
+        elements: int
         default: []
+        description: List of UDP ports to allow through the firewall.
       networking_firewall_additional_rules:
         type: list
         elements: dict
-        description: Granular firewall rules (port, proto, src, comment)
         default: []
+        description: Granular rules defining port, protocol, source CIDR, and comments.
       networking_firewall_forward_policy:
         type: str
-        description: Default forward policy (DROP, ACCEPT)
-        choices: ["DROP", "ACCEPT"]
         default: "DROP"
+        choices: ["DROP", "ACCEPT", "REJECT"]
+        description: Default policy for forwarded traffic.
