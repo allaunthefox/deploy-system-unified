@@ -958,8 +958,12 @@
 - `tailscale_image`
 - `tailscale_login_server`
 - `tailscale_auth_key`
+- `tailscale_tags`
+- `tailscale_operator`
+- `tailscale_auto_update`
 - `tailscale_args`
 - `tailscale_state_dir`
+- `tailscale_hold_package`
 
 ### `security/tpm_guard`
 - `tpm_guard_enabled`

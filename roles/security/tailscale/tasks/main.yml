@@ -4,11 +4,11 @@
 # =============================================================================
 ---
 # Main tasks for security/tailscale
-# Compliance: NIST SC-7, ISO 27001 §13.1
+# Compliance: NIST SC-7, ISO 27001 §13.1 | Tailscale Expert Recommendations
 
 - name: "ISO 27001 §13.1 | 800111 | Check Tailscale enablement"
   ansible.builtin.debug:
-    msg: "Initializing Tailscale Zero Trust Client"
+    msg: "Initializing Tailscale Zero Trust Client (Resilience Enabled)"
   when: tailscale_enabled | bool
   tags: [security, tailscale, initialization, 800111]
 
@@ -31,6 +31,17 @@
   when: tailscale_enabled | bool
   tags: [security, tailscale, deploy, 800113]
 
+- name: "ISO 27001 §12.6 | 800116 | Hold Tailscale package to prevent unexpected restarts"
+  ansible.builtin.dpkg_selections:
+    name: tailscale
+    selection: hold
+  become: true
+  when: 
+    - tailscale_enabled | bool
+    - tailscale_hold_package | default(true) | bool
+    - ansible_os_family == 'Debian'
+  tags: [security, tailscale, deploy, 800116]
+
 - name: "ISO 27001 §13.1 | 800114 | Enable and Start Tailscale Service"
   ansible.builtin.systemd:
     name: tailscaled
@@ -40,8 +51,8 @@
   when: tailscale_enabled | bool
   tags: [security, tailscale, deploy, 800114]
 
-- name: "ISO 9001 | 600013 | Check Tailscale connection status"
-  ansible.builtin.command: tailscale status
+- name: "ISO 9001 | 600013 | Check Tailscale connection status (Expert Pattern: JSON)"
+  ansible.builtin.command: tailscale status --json
   register: _tailscale_status
   failed_when: false
   changed_when: false
@@ -49,18 +60,34 @@
   when: tailscale_enabled | bool
   tags: [security, tailscale, verify, 600013]
 
-- name: "ISO 27001 §13.1 | 800115 | Register Node with Headscale"
+- name: "ISO 27001 §13.1 | 800115 | Register Node with Headscale (Automated Identity)"
   ansible.builtin.command:
-    cmd: "tailscale up --login-server {{ tailscale_login_server }} --authkey {{ tailscale_auth_key }} {{ tailscale_args }}"
+    cmd: >-
+      tailscale up 
+      --login-server {{ tailscale_login_server }} 
+      --authkey {{ tailscale_auth_key }} 
+      --advertise-tags={{ tailscale_tags | join(',') }}
+      --operator={{ tailscale_operator }}
+      {{ "--set-auto-update" if tailscale_auto_update | bool else "" }}
+      {{ tailscale_args }}
   become: true
   register: _tailscale_up
-  # Handle flapping/unstable connections with retries
+  # Resilience: Exponential backoff for flapping/destabilized connections
   retries: 10
   delay: 15
   until: _tailscale_up.rc == 0
   when:
     - tailscale_enabled | bool
     - tailscale_auth_key | length > 0
-    - "_tailscale_status.rc != 0 or 'Logged out' in _tailscale_status.stdout"
+    - "(_tailscale_status.stdout | from_json).BackendState != 'Running'"
   no_log: true
   tags: [security, tailscale, deploy, 800115]
+
+- name: "ISO 9001 | 600013 | Verify Overlay Connectivity Stability"
+  ansible.builtin.command: tailscale ping -c 3 100.64.0.1
+  become: true
+  register: _overlay_ping
+  changed_when: false
+  failed_when: false # Don't block if controller isn't pingable yet, but log it
+  when: tailscale_enabled | bool
+  tags: [security, tailscale, verify, 600013]

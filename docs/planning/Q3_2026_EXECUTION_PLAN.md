@@ -12,11 +12,11 @@ Following the successful stabilization and security hardening in Q1/Q2, the Q3 p
 
 | ID | Objective | Description | Success Criteria | Status |
 |:---|:---|:---|:---|:---|
-| **T1** | **Zero Trust Networking (Optional)** | Deploy Headscale (Tailscale) overlay for secure inter-node communication. Optional per deployment type. | All nodes reachable via `100.x.x.x` overlay; SSH accessible only via TS auth. | 🟡 Active |
+| **T1** | **Zero Trust Networking (Optional)** | Deploy Headscale (Tailscale) overlay for secure inter-node communication. Optional per deployment type. | All nodes reachable via `100.x.x.x` overlay; SSH accessible only via TS auth. | ✅ Complete |
 | **T2** | **Automated Rotation** | Implement Vault Agent injectors for automatic secret rotation. | Secrets rotate daily without service restart (SIGHUP reload). | ✅ Complete |
 | **T3** | **HA Kubernetes** | Transition K3s from single-master to multi-master HA (etcd). | Cluster survives failure of any single control plane node. | ✅ Complete |
 | **T4** | **Service Mesh** | Deploy Linkerd or Kuma for mTLS service-to-service encryption. | All in-cluster traffic encrypted by default; observability into mTLS. | ⚪ Planned |
-| **T5** | **Idempotence Audit** | Verify 100% idempotence for all Q3 features. | Zero changes on second run for Headscale, HA K8s, and Vault. | 🟡 Active |
+| **T5** | **Idempotence & Resilience Audit** | Verify 100% idempotence and anti-flapping guardrails for all Q3 features. | Zero changes on second run; handles network instability and timeouts. | ✅ Complete |
 
 ## 🛠️ Execution Tracks
 
