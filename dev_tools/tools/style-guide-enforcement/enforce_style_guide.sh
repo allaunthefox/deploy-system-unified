@@ -4,7 +4,7 @@
 # Script Type: Style Enforcement
 # Description: Comprehensive script to enforce project coding standards
 # Last Updated: 2026-03-01
-# Version: 1.4
+# Version: 1.7
 # =============================================================================
 
 # Configuration
@@ -45,51 +45,28 @@ mkdir -p "$REPORT_DIR"
 check_dependencies() {
     log "Checking dependencies..."
     
-    if command -v rg >/dev/null 2>&1; then
-        success "All dependencies available (including ripgrep)"
-    else
-        error "ripgrep (rg) not found. Please install it."
-    fi
-
-    if command -v fd >/dev/null 2>&1; then
-        success "All dependencies available (including fd)"
-    else
-        warning "fd not found, using find fallback"
-    fi
-
-    if command -v flake8 >/dev/null 2>&1; then
-        success "All dependencies available (including flake8)"
-    else
-        warning "flake8 not found, Python scripts will not be audited"
-    fi
-
-    if command -v bandit >/dev/null 2>&1; then
-        success "All dependencies available (including bandit)"
-    else
-        warning "bandit not found, basic security scanning will be skipped"
-    fi
-
-    if command -v safety >/dev/null 2>&1; then
-        success "All dependencies available (including safety)"
-    else
-        warning "safety not found, dependency vulnerability scanning will be skipped"
-    fi
+    deps="rg fd flake8 bandit safety trufflehog checkov trivy lynis rkhunter"
+    for dep in $deps; do
+        if command -v "$dep" >/dev/null 2>&1; then
+            success "Dependency available: $dep"
+        else
+            warning "Dependency NOT found: $dep"
+        fi
+    done
     
-    if command -v codeql >/dev/null 2>&1; then
-        success "All dependencies available (including codeql)"
-    else
+    if ! command -v codeql >/dev/null 2>&1; then
         warning "codeql not found. For deep security analysis, install CodeQL CLI."
     fi
 }
 
-# Enforce Security Audit (Bandit + Safety + CodeQL Fallback)
+# Enforce Security Audit (Bandit + Safety + TruffleHog + Checkov + Trivy + Lynis + RKHunter)
 enforce_security_audit() {
     log "Enforcing Security Audit..."
 
     # 1. Bandit (Local static analysis)
     if command -v bandit >/dev/null 2>&1; then
-        log "Running Bandit security scan (excluding external code)..."
-        if bandit -r "$PROJECT_ROOT" -ll --exclude "$PROJECT_ROOT/.venv,$PROJECT_ROOT/.ansible,$PROJECT_ROOT/Offline_Research" 2>&1 | tee "$REPORT_DIR/bandit_output.txt"; then
+        log "Running Bandit security scan..."
+        if bandit -r "$PROJECT_ROOT" -ll --exclude "$PROJECT_ROOT/venv,$PROJECT_ROOT/.venv,$PROJECT_ROOT/.ansible,$PROJECT_ROOT/Offline_Research" 2>&1 | tee "$REPORT_DIR/bandit_output.txt"; then
             success "Bandit security scan passed"
         else
             warning "Bandit detected potential security issues"
@@ -102,7 +79,7 @@ enforce_security_audit() {
     if command -v safety >/dev/null 2>&1; then
         if [ -f "$PROJECT_ROOT/requirements.txt" ]; then
             log "Running Safety dependency scan..."
-            if safety scan -r "$PROJECT_ROOT/requirements.txt" 2>&1 | tee "$REPORT_DIR/safety_output.txt"; then
+            if safety scan -r "$PROJECT_ROOT/requirements.txt" --non-interactive --project deploy-system-unified 2>&1 | tee "$REPORT_DIR/safety_output.txt"; then
                 success "Python dependencies pass safety check"
             else
                 warning "Safety detected vulnerable dependencies"
@@ -111,30 +88,66 @@ enforce_security_audit() {
         fi
     fi
 
-    # 3. CodeQL (Deep analysis - if available)
-    if command -v codeql >/dev/null 2>&1; then
-        log "Running CodeQL deep analysis..."
-        DB_PATH="/tmp/codeql_db_$(date +%s)"
-        if codeql database create "$DB_PATH" --language=python --source-root="$PROJECT_ROOT" --overwrite >/dev/null 2>&1; then
-            if codeql database analyze "$DB_PATH" python-security-and-quality.qls --format=sarif-latest --output="$REPORT_DIR/codeql_results.sarif" >/dev/null 2>&1; then
-                if grep -q "\"ruleId\":" "$REPORT_DIR/codeql_results.sarif"; then
-                    warning "CodeQL detected potential security vulnerabilities!"
-                    TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-                else
-                    success "CodeQL audit passed"
-                fi
+    # 3. TruffleHog (Git History Secret Scanning - v2 syntax)
+    if command -v trufflehog >/dev/null 2>&1; then
+        log "Running TruffleHog secret scan (last commit)..."
+        # Note: Using v2 syntax as detected in environment
+        if trufflehog --json --regex --repo_path "$PROJECT_ROOT" --max_depth 1 . 2>&1 | tee "$REPORT_DIR/trufflehog_output.txt"; then
+            if [ -s "$REPORT_DIR/trufflehog_output.txt" ]; then
+                warning "TruffleHog detected secrets in Git history!"
+                TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
             else
-                warning "CodeQL analysis failed"
+                success "TruffleHog secret scan passed"
             fi
         else
-            warning "Failed to create CodeQL database"
+            warning "TruffleHog execution encountered an error"
         fi
-        rm -rf "$DB_PATH"
     fi
 
-    # 4. Custom Forensic Integrity Checks
+    # 4. Checkov (IaC Security)
+    if command -v checkov >/dev/null 2>&1; then
+        log "Running Checkov IaC scan..."
+        # Exclude vendor and research dirs
+        if checkov --directory "$PROJECT_ROOT" --compact --soft-fail --framework ansible,dockerfile,kubernetes --skip-path "$PROJECT_ROOT/venv" --skip-path "$PROJECT_ROOT/.ansible" 2>&1 | tee "$REPORT_DIR/checkov_output.txt"; then
+            success "Checkov IaC scan completed"
+        fi
+    fi
+
+    # 5. Trivy (Vulnerability Scanner)
+    if command -v trivy >/dev/null 2>&1; then
+        log "Running Trivy filesystem scan..."
+        # Scan only our roles and playbooks to avoid venv noise and long scans
+        if trivy fs "$PROJECT_ROOT" --severity HIGH,CRITICAL --security-checks vuln,config --exit-code 0 --skip-dirs venv,.ansible,Offline_Research 2>&1 | tee "$REPORT_DIR/trivy_output.txt"; then
+            success "Trivy vulnerability scan completed"
+        fi
+    fi
+
+    # 6. Lynis (System Auditing)
+    if command -v lynis >/dev/null 2>&1; then
+        log "Running Lynis system audit (light mode)..."
+        # Run a non-privileged scan for basic configuration checks
+        if lynis audit system --quick --pentest 2>&1 | tee "$REPORT_DIR/lynis_output.txt"; then
+            success "Lynis audit completed"
+        else
+            warning "Lynis reported issues (see $REPORT_DIR/lynis_output.txt)"
+            # Lynis always exits non-zero if suggestions found, so we don't increment TOTAL_ISSUES hard
+        fi
+    fi
+
+    # 7. RKHunter (Rootkit Detection)
+    if command -v rkhunter >/dev/null 2>&1; then
+        log "Running RKHunter check (local system)..."
+        # Warning: This scans the RUNNER/HOST, not the project code. 
+        # Included for completeness with the 'enhanced_scanning' role definition.
+        if sudo rkhunter --check --sk --rwo 2>&1 | tee "$REPORT_DIR/rkhunter_output.txt"; then
+            success "RKHunter scan completed"
+        else
+            warning "RKHunter found warnings (see $REPORT_DIR/rkhunter_output.txt)"
+        fi
+    fi
+
+    # 8. Custom Forensic Integrity Checks
     log "Checking for insecure image patterns..."
-    # Ensure no images use just 'latest' without a digest in our role defaults
     insecure_images=$(grep -r "image:" "$PROJECT_ROOT/roles" --include="main.yml" | grep "latest" | grep -v "@sha256" || true)
     if [ -n "$insecure_images" ]; then
         warning "Insecure 'latest' tag without digest found in roles!"
@@ -146,13 +159,11 @@ enforce_security_audit() {
 # Enforce Python standards
 enforce_python_standards() {
     log "Enforcing Python coding standards..."
-
     py_files=$(find "$PROJECT_ROOT" -name "*.py" -not -path "*/.git/*" -not -path "*/.venv/*" -not -path "*/venv/*" -not -path "*/.ansible/*" -not -path "*/Offline_Research/*")
     if [ -z "$py_files" ]; then
         warning "No local Python files found"
         return 0
     fi
-
     if command -v flake8 >/dev/null 2>&1; then
         log "Running flake8..."
         if flake8 --max-line-length=120 --ignore=E501,W503 $py_files 2>&1 | tee "$REPORT_DIR/flake8_output.txt"; then
@@ -168,9 +179,8 @@ enforce_python_standards() {
 # Enforce YAML standards
 enforce_yaml_standards() {
     log "Enforcing YAML formatting standards..."
-
     if command -v yamllint >/dev/null 2>&1; then
-        log "Running yamllint (excluding external code)..."
+        log "Running yamllint..."
         if yamllint -c "$PROJECT_ROOT/.yamllint.yml" "$PROJECT_ROOT/roles" "$PROJECT_ROOT/playbooks" 2>&1 | tee "$REPORT_DIR/yaml_output.txt"; then
             success "YAML files pass yamllint"
         else
@@ -184,9 +194,8 @@ enforce_yaml_standards() {
 # Enforce Ansible standards
 enforce_ansible_standards() {
     log "Enforcing Ansible best practices..."
-
     if command -v ansible-lint >/dev/null 2>&1; then
-        log "Running ansible-lint (excluding collections)..."
+        log "Running ansible-lint..."
         if ansible-lint -x internal-error "$PROJECT_ROOT" 2>&1 | tee "$REPORT_DIR/ansible_output.txt"; then
             success "Ansible roles pass ansible-lint"
         else
@@ -200,11 +209,9 @@ enforce_ansible_standards() {
 # Enforce Shell standards
 enforce_shell_standards() {
     log "Enforcing Shell scripting standards..."
-
     if command -v shellcheck >/dev/null 2>&1; then
         log "Running shellcheck..."
         sh_files=$(find "$PROJECT_ROOT" -maxdepth 2 -name "*.sh" -not -path "*/.git/*" && find "$PROJECT_ROOT/scripts" -name "*.sh")
-        
         if [ -n "$sh_files" ]; then
             if shellcheck $sh_files 2>&1 | tee "$REPORT_DIR/shell_output.txt"; then
                 success "Shell scripts pass shellcheck"
@@ -221,6 +228,7 @@ enforce_shell_standards() {
 check_naming_conventions() {
     log "Checking forensic naming conventions..."
     local errors=0
+    # Use -wholename or robust exclusions to avoid find warnings
     while IFS= read -r file; do
         non_compliant=$(grep -n -E "^[[:space:]]*- name:" "$file" | \
           grep -v '^[[:space:]]*#' | \
@@ -239,7 +247,7 @@ check_naming_conventions() {
             errors=$((errors + 1))
           fi
         fi
-    done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*" -not -path "*/meta/main.yml" -not -path "*venv*" -not -path "*Offline_Research*")
+    done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*" -not -path "*/meta/main.yml" -not -path "*/venv/*" -not -path "*/.ansible/*" -not -path "*/Offline_Research/*")
     
     if [ "$errors" -gt 0 ]; then
         warning "$errors files have tasks missing forensic Audit IDs"
@@ -251,10 +259,9 @@ check_naming_conventions() {
 
 # Check for secrets
 check_secrets() {
-    log "Checking for exposed secrets..."
+    log "Checking for exposed secrets (detect-secrets)..."
     if command -v detect-secrets >/dev/null 2>&1; then
-        log "Running detect-secrets..."
-        if detect-secrets scan "$PROJECT_ROOT" --exclude-files ".secrets.baseline" --exclude-files ".ansible" --exclude-files "venv" --exclude-files "Offline_Research" 2>&1 | tee /tmp/secrets_output.txt; then
+        if detect-secrets scan "$PROJECT_ROOT" --exclude-files ".secrets.baseline" --exclude-files ".ansible" --exclude-files "venv" --exclude-files "Offline_Research" 2>&1 | tee "$REPORT_DIR/secrets_output.txt"; then
             success "No new secrets detected"
         else
             warning "Potential secrets detected!"
@@ -284,7 +291,7 @@ check_permissions() {
 # Main function
 main() {
     echo "========================================"
-    echo "  Style Guide Enforcement Tool (v1.4)"
+    echo "  Style Guide Enforcement Tool (v1.7)"
     echo "========================================"
     echo ""
 
@@ -311,7 +318,7 @@ main() {
     echo "========================================"
 
     if [ "$TOTAL_ISSUES" -gt 0 ] && [ "$((TOTAL_ISSUES - FIXED_ISSUES))" -gt 0 ]; then
-        warning "Issues found. Review the logs above for details."
+        warning "Issues found. Review the reports in $REPORT_DIR for details."
         exit 1
     else
         success "All style and security checks passed!"

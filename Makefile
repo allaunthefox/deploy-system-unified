@@ -7,6 +7,10 @@ codeql:
 	@echo "Running local CodeQL security audit..."
 	@./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
 
+security-scan:
+	@echo "Running comprehensive local security scan (Bandit, Safety, TruffleHog, Checkov, Trivy, Lynis, RKHunter)..."
+	@./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+
 lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
 

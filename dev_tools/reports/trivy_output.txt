@@ -1,0 +1,647 @@
+2026-03-01T05:41:19+01:00	WARN	'--security-checks' is deprecated. Use '--scanners' instead.
+2026-03-01T05:41:19+01:00	WARN	'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.
+2026-03-01T05:41:19+01:00	INFO	[vuln] Vulnerability scanning is enabled
+2026-03-01T05:41:19+01:00	INFO	[misconfig] Misconfiguration scanning is enabled
+2026-03-01T05:41:25+01:00	INFO	[python] Licenses acquired from one or more METADATA files may be subject to additional terms. Use `--debug` flag to see all affected packages.
+2026-03-01T05:41:25+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/database-stack" err="release name \"charts/database-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:41:26+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/monitoring-stack" err="release name \"charts/monitoring-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:41:26+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/network-stack" err="release name \"charts/network-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:41:26+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/security-stack" err="release name \"charts/security-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:41:27+01:00	INFO	Number of language-specific files	num=1
+2026-03-01T05:41:27+01:00	INFO	[pip] Detecting vulnerabilities...
+2026-03-01T05:41:27+01:00	INFO	Detected config files	num=24
+
+Report Summary
+
+┌────────────────────────────────────────────────────────┬────────────┬─────────────────┬───────────────────┐
+│                         Target                         │    Type    │ Vulnerabilities │ Misconfigurations │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ requirements.txt                                       │    pip     │        0        │         -         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/auth-stack/templates/deployment.yaml            │    helm    │        -        │         3         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/backup-stack/templates/deployment.yaml          │    helm    │        -        │         3         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/logging-stack/templates/configmap.yaml          │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/logging-stack/templates/deployment.yaml         │    helm    │        -        │         2         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/logging-stack/templates/rbac.yaml               │    helm    │        -        │         2         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/ingress.yaml              │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/jellyfin-deployment.yaml  │    helm    │        -        │         1         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/pvc.yaml                  │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/radarr-deployment.yaml    │    helm    │        -        │         1         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/rbac.yaml                 │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/services.yaml             │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/media-stack/templates/sonarr-deployment.yaml    │    helm    │        -        │         1         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/ops-stack/templates/homarr-deployment.yaml      │    helm    │        -        │         3         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/ops-stack/templates/ingress.yaml                │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/ops-stack/templates/pvc.yaml                    │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/ops-stack/templates/secret.yaml                 │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/ops-stack/templates/services.yaml               │    helm    │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/ops-stack/templates/vaultwarden-deployment.yaml │    helm    │        -        │         3         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ charts/proxy-stack/templates/deployment.yaml           │    helm    │        -        │         3         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ docker/Containerfile                                   │ dockerfile │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ docker/deploy-system.yaml                              │ kubernetes │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ inventory/group_vars/all/secrets.sops.template.yaml    │ kubernetes │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ roles/containers/signing/files/keyless-policy.yaml     │ kubernetes │        -        │         0         │
+├────────────────────────────────────────────────────────┼────────────┼─────────────────┼───────────────────┤
+│ scripts/benchmark/k3s_benchmark_pod.yaml               │ kubernetes │        -        │         3         │
+└────────────────────────────────────────────────────────┴────────────┴─────────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+charts/auth-stack/templates/deployment.yaml (helm)
+==================================================
+Tests: 24 (SUCCESSES: 21, FAILURES: 3)
+Failures: 3 (HIGH: 3, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'authentik' of Deployment 'auth-stack-authentik' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/auth-stack/templates/deployment.yaml:19-61
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  19 ┌         - name: authentik
+  20 │           image: "authentik/server:2025.12"
+  21 │           ports:
+  22 │             - containerPort: 9000
+  23 │           env:
+  24 │             - name: TZ
+  25 │               value: UTC
+  26 │             - name: AUTHENTIK_SECRET_KEY
+  27 └               valueFrom:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): container auth-stack-authentik in default namespace is using the default security context
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/auth-stack/templates/deployment.yaml:19-61
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  19 ┌         - name: authentik
+  20 │           image: "authentik/server:2025.12"
+  21 │           ports:
+  22 │             - containerPort: 9000
+  23 │           env:
+  24 │             - name: TZ
+  25 │               value: UTC
+  26 │             - name: AUTHENTIK_SECRET_KEY
+  27 └               valueFrom:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): deployment auth-stack-authentik in default namespace is using the default security context, which allows root privileges
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/auth-stack/templates/deployment.yaml:17-65
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  17 ┌     spec:
+  18 │       containers:
+  19 │         - name: authentik
+  20 │           image: "authentik/server:2025.12"
+  21 │           ports:
+  22 │             - containerPort: 9000
+  23 │           env:
+  24 │             - name: TZ
+  25 └               value: UTC
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/backup-stack/templates/deployment.yaml (helm)
+====================================================
+Tests: 23 (SUCCESSES: 20, FAILURES: 3)
+Failures: 3 (HIGH: 3, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'restic' of CronJob 'backup-stack-restic' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/backup-stack/templates/deployment.yaml:18-41
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  18 ┌             - name: restic
+  19 │               image: "restic/restic:0.17.0"
+  20 │               command: ["restic", "backup", "/data", "--repo", "local:/backups"]
+  21 │               args:
+  22 │                 - "--repo"
+  23 │                 - "local:/backups"
+  24 │               env:
+  25 │                 - name: RESTIC_PASSWORD
+  26 └                   valueFrom:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): container backup-stack-restic in default namespace is using the default security context
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/backup-stack/templates/deployment.yaml:18-41
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  18 ┌             - name: restic
+  19 │               image: "restic/restic:0.17.0"
+  20 │               command: ["restic", "backup", "/data", "--repo", "local:/backups"]
+  21 │               args:
+  22 │                 - "--repo"
+  23 │                 - "local:/backups"
+  24 │               env:
+  25 │                 - name: RESTIC_PASSWORD
+  26 └                   valueFrom:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): cronjob backup-stack-restic in default namespace is using the default security context, which allows root privileges
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/backup-stack/templates/deployment.yaml:15-47
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  15 ┌         spec:
+  16 │           restartPolicy: OnFailure
+  17 │           containers:
+  18 │             - name: restic
+  19 │               image: "restic/restic:0.17.0"
+  20 │               command: ["restic", "backup", "/data", "--repo", "local:/backups"]
+  21 │               args:
+  22 │                 - "--repo"
+  23 └                 - "local:/backups"
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/logging-stack/templates/deployment.yaml (helm)
+=====================================================
+Tests: 23 (SUCCESSES: 21, FAILURES: 2)
+Failures: 2 (HIGH: 2, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'loki' of Deployment 'logging-stack-loki' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/logging-stack/templates/deployment.yaml:31-71
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  31 ┌         - name: loki
+  32 │           image: "grafana/loki:3.2.0"
+  33 │           securityContext:
+  34 │             allowPrivilegeEscalation: false
+  35 │             readOnlyRootFilesystem: false
+  36 │             capabilities:
+  37 │               drop:
+  38 │                 - ALL
+  39 └           ports:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0014 (HIGH): Container 'promtail' of DaemonSet 'logging-stack-promtail' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/logging-stack/templates/deployment.yaml:41-64
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  41 ┌         - name: promtail
+  42 │           image: "grafana/promtail:3.2.0"
+  43 │           securityContext:
+  44 │             allowPrivilegeEscalation: false
+  45 │             readOnlyRootFilesystem: false
+  46 │             capabilities:
+  47 │               drop:
+  48 │                 - ALL
+  49 └               add:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/logging-stack/templates/rbac.yaml (helm)
+===============================================
+Tests: 21 (SUCCESSES: 19, FAILURES: 2)
+Failures: 2 (HIGH: 1, CRITICAL: 1)
+
+AVD-KSV-0041 (CRITICAL): ClusterRole 'logging-stack' shouldn't have access to manage resource 'secrets'
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Viewing secrets at the cluster-scope is akin to cluster-admin in most clusters as there are typically at least one service accounts (their token stored in a secret) bound to cluster-admin directly or a role/clusterrole that gives similar permissions.
+
+See https://avd.aquasec.com/misconfig/ksv041
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/logging-stack/templates/rbac.yaml:10-12
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10 ┌   - apiGroups: [""]
+  11 │     resources: ["configmaps", "secrets"]
+  12 └     verbs: ["get", "list", "watch"]
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0047 (HIGH): Role permits privilege escalation from node proxy
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Check whether role permits privilege escalation from node proxy
+
+See https://avd.aquasec.com/misconfig/ksv047
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/logging-stack/templates/rbac.yaml:22-24
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  22 ┌   - apiGroups: [""]
+  23 │     resources: ["nodes/proxy"]
+  24 └     verbs: ["get"]
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/media-stack/templates/jellyfin-deployment.yaml (helm)
+============================================================
+Tests: 22 (SUCCESSES: 21, FAILURES: 1)
+Failures: 1 (HIGH: 1, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'jellyfin' of Deployment 'media-stack-jellyfin' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/media-stack/templates/jellyfin-deployment.yaml:31-64
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  31 ┌         - name: jellyfin
+  32 │           image: "jellyfin/jellyfin:latest"
+  33 │           securityContext:
+  34 │             allowPrivilegeEscalation: false
+  35 │             readOnlyRootFilesystem: false
+  36 │             capabilities:
+  37 │               drop:
+  38 │                 - ALL
+  39 └           ports:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/media-stack/templates/radarr-deployment.yaml (helm)
+==========================================================
+Tests: 22 (SUCCESSES: 21, FAILURES: 1)
+Failures: 1 (HIGH: 1, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'radarr' of Deployment 'media-stack-radarr' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/media-stack/templates/radarr-deployment.yaml:31-68
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  31 ┌         - name: radarr
+  32 │           image: "binhex/arch-radarr:latest"
+  33 │           securityContext:
+  34 │             allowPrivilegeEscalation: false
+  35 │             readOnlyRootFilesystem: false
+  36 │             capabilities:
+  37 │               drop:
+  38 │                 - ALL
+  39 └           ports:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/media-stack/templates/sonarr-deployment.yaml (helm)
+==========================================================
+Tests: 22 (SUCCESSES: 21, FAILURES: 1)
+Failures: 1 (HIGH: 1, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'sonarr' of Deployment 'media-stack-sonarr' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/media-stack/templates/sonarr-deployment.yaml:31-68
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  31 ┌         - name: sonarr
+  32 │           image: "binhex/arch-sonarr:latest"
+  33 │           securityContext:
+  34 │             allowPrivilegeEscalation: false
+  35 │             readOnlyRootFilesystem: false
+  36 │             capabilities:
+  37 │               drop:
+  38 │                 - ALL
+  39 └           ports:
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/ops-stack/templates/homarr-deployment.yaml (helm)
+========================================================
+Tests: 23 (SUCCESSES: 20, FAILURES: 3)
+Failures: 3 (HIGH: 3, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'homarr' of Deployment 'ops-stack-homarr' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/ops-stack/templates/homarr-deployment.yaml:23-47
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌         - name: homarr
+  24 │           image: "ghcr.io/ajnart/homarr:latest"
+  25 │           ports:
+  26 │             - containerPort: 7575
+  27 │           livenessProbe:
+  28 │             tcpSocket:
+  29 │               port: 7575
+  30 │             initialDelaySeconds: 30
+  31 └             periodSeconds: 10
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): container ops-stack-homarr in default namespace is using the default security context
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/ops-stack/templates/homarr-deployment.yaml:23-47
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌         - name: homarr
+  24 │           image: "ghcr.io/ajnart/homarr:latest"
+  25 │           ports:
+  26 │             - containerPort: 7575
+  27 │           livenessProbe:
+  28 │             tcpSocket:
+  29 │               port: 7575
+  30 │             initialDelaySeconds: 30
+  31 └             periodSeconds: 10
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): deployment ops-stack-homarr in default namespace is using the default security context, which allows root privileges
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/ops-stack/templates/homarr-deployment.yaml:21-57
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  21 ┌     spec:
+  22 │       containers:
+  23 │         - name: homarr
+  24 │           image: "ghcr.io/ajnart/homarr:latest"
+  25 │           ports:
+  26 │             - containerPort: 7575
+  27 │           livenessProbe:
+  28 │             tcpSocket:
+  29 └               port: 7575
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/ops-stack/templates/vaultwarden-deployment.yaml (helm)
+=============================================================
+Tests: 23 (SUCCESSES: 20, FAILURES: 3)
+Failures: 3 (HIGH: 3, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'vaultwarden' of Deployment 'ops-stack-vaultwarden' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/ops-stack/templates/vaultwarden-deployment.yaml:23-58
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌         - name: vaultwarden
+  24 │           image: "vaultwarden/server:latest"
+  25 │           ports:
+  26 │             - containerPort: 8081
+  27 │             - containerPort: 3012
+  28 │           env:
+  29 │             - name: SIGNUPS_ALLOWED
+  30 │               value: "false"
+  31 └             - name: WEBSOCKET_ENABLED
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): container ops-stack-vaultwarden in default namespace is using the default security context
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/ops-stack/templates/vaultwarden-deployment.yaml:23-58
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌         - name: vaultwarden
+  24 │           image: "vaultwarden/server:latest"
+  25 │           ports:
+  26 │             - containerPort: 8081
+  27 │             - containerPort: 3012
+  28 │           env:
+  29 │             - name: SIGNUPS_ALLOWED
+  30 │               value: "false"
+  31 └             - name: WEBSOCKET_ENABLED
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): deployment ops-stack-vaultwarden in default namespace is using the default security context, which allows root privileges
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/ops-stack/templates/vaultwarden-deployment.yaml:21-62
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  21 ┌     spec:
+  22 │       containers:
+  23 │         - name: vaultwarden
+  24 │           image: "vaultwarden/server:latest"
+  25 │           ports:
+  26 │             - containerPort: 8081
+  27 │             - containerPort: 3012
+  28 │           env:
+  29 └             - name: SIGNUPS_ALLOWED
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+charts/proxy-stack/templates/deployment.yaml (helm)
+===================================================
+Tests: 24 (SUCCESSES: 21, FAILURES: 3)
+Failures: 3 (HIGH: 3, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'caddy' of Deployment 'proxy-stack-caddy' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/proxy-stack/templates/deployment.yaml:23-64
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌         - name: caddy
+  24 │           image: "caddy:2.9.0"
+  25 │           ports:
+  26 │             - containerPort: 80
+  27 │               name: http
+  28 │             - containerPort: 443
+  29 │               name: https
+  30 │           env:
+  31 └             - name: CADDY_CONFIG_HASH
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): container proxy-stack-caddy in default namespace is using the default security context
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/proxy-stack/templates/deployment.yaml:23-64
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌         - name: caddy
+  24 │           image: "caddy:2.9.0"
+  25 │           ports:
+  26 │             - containerPort: 80
+  27 │               name: http
+  28 │             - containerPort: 443
+  29 │               name: https
+  30 │           env:
+  31 └             - name: CADDY_CONFIG_HASH
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): deployment proxy-stack-caddy in default namespace is using the default security context, which allows root privileges
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ charts/proxy-stack/templates/deployment.yaml:21-71
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  21 ┌     spec:
+  22 │       containers:
+  23 │         - name: caddy
+  24 │           image: "caddy:2.9.0"
+  25 │           ports:
+  26 │             - containerPort: 80
+  27 │               name: http
+  28 │             - containerPort: 443
+  29 └               name: https
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+scripts/benchmark/k3s_benchmark_pod.yaml (kubernetes)
+=====================================================
+Tests: 24 (SUCCESSES: 21, FAILURES: 3)
+Failures: 3 (HIGH: 3, CRITICAL: 0)
+
+AVD-KSV-0014 (HIGH): Container 'ubuntu' of Pod 'benchmark-pod' should set 'securityContext.readOnlyRootFilesystem' to true
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv014
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ scripts/benchmark/k3s_benchmark_pod.yaml:13-18
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  13 ┌   - name: ubuntu
+  14 │     image: ubuntu:22.04
+  15 │     command: ["sleep", "infinity"]
+  16 │     volumeMounts:
+  17 │     - name: scripts-vol
+  18 └       mountPath: /workspace/scripts
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): container benchmark-pod in default namespace is using the default security context
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ scripts/benchmark/k3s_benchmark_pod.yaml:13-18
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  13 ┌   - name: ubuntu
+  14 │     image: ubuntu:22.04
+  15 │     command: ["sleep", "infinity"]
+  16 │     volumeMounts:
+  17 │     - name: scripts-vol
+  18 └       mountPath: /workspace/scripts
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-KSV-0118 (HIGH): pod benchmark-pod in default namespace is using the default security context, which allows root privileges
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv118
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ scripts/benchmark/k3s_benchmark_pod.yaml:10-23
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10 ┌ spec:
+  11 │   nodeName: vmi2997710
+  12 │   containers:
+  13 │   - name: ubuntu
+  14 │     image: ubuntu:22.04
+  15 │     command: ["sleep", "infinity"]
+  16 │     volumeMounts:
+  17 │     - name: scripts-vol
+  18 └       mountPath: /workspace/scripts
+  ..   
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+📣 [34mNotices:[0m
+  - Version 0.69.1 of Trivy is now available, current version is 0.68.2
+
+To suppress version checks, run Trivy scans with the --skip-version-check flag
+

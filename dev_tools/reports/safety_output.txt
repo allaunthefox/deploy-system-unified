@@ -1,63 +1,28 @@
+Safety 3.7.0 scanning /home/prod/Workspaces/repos/github/deploy-system-unified
+2026-03-01 04:39:59 UTC
 
+Account: Allaun Silverfox, bigdataiscoming+9i37y6j2@protonmail.com 
+Project: deploy-system-unified
+ Git branch: ci/harden-and-wiki-orchestration
+ Environment: Stage.development
+ Scan policy: fetched from Safety Platform, ignoring any local Safety CLI policy files
 
-[33m[1m+===========================================================================================================================================================================================+[0m
+Python detected. Found 4 Python requirements files and 2 Python environments
 
+✅ .ansible/collections/ansible_collections/ansible/posix/test-requirements.txt: No issues found.
 
-[31m[1mDEPRECATED: [0m[33m[1mthis command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.[0m
+✅ qwen_agents/requirements.txt: No issues found.
 
+✅ .ansible/collections/ansible_collections/ansible/posix/requirements.txt: No issues found.
 
-[32mWe highly encourage switching to the new [0m[32m[1m`scan`[0m[32m command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.[0m
+✅ requirements.txt: No issues found.
 
+✅ venv/pyvenv.cfg: No issues found.
 
-[33m[1m+===========================================================================================================================================================================================+[0m
+✅ .venv/pyvenv.cfg: No issues found.
 
+Tested 35 dependencies for security issues using policy fetched from Safety Platform
+8 vulnerabilities found, 8 ignored due to policy.
+0 fixes suggested, resolving 0 vulnerabilities.
 
-+==============================================================================+
-
-                               /$$$$$$            /$$
-                              /$$__  $$          | $$
-           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$
-          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$
-         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$
-          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$
-          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$
-         |_______/  \_______/|__/     \_______/   \___/   \____  $$
-                                                          /$$  | $$
-                                                         |  $$$$$$/
-  by safetycli.com                                        \______/
-
-+==============================================================================+
-
- [1mREPORT[0m 
-
-  Safety [1mv3.7.0[0m is scanning for [1mVulnerabilities[0m[1m...[0m
-[1m  Scanning dependencies[0m in your [1mfiles:[0m
-
-  -> /home/prod/Workspaces/repos/github/deploy-system-unified/requirements.txt
-
-  Using [1mthe account bigdataiscoming+9i37y6j2@protonmail.com[0m and the
-  [1mSafety Commercial database[0m
-[1m  Found and scanned 5 packages[0m
-  Timestamp [1m2026-03-01 05:12:17[0m
-[1m  0[0m[1m vulnerabilities reported[0m
-[1m  0[0m[1m vulnerabilities ignored[0m
-[1m  0[0m[1m remediations recommended[0m
-+==============================================================================+
-
- [32m[1mNo known security vulnerabilities reported.[0m 
-
-+==============================================================================+[0m
-
-
-[33m[1m+===========================================================================================================================================================================================+[0m
-
-
-[31m[1mDEPRECATED: [0m[33m[1mthis command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.[0m
-
-
-[32mWe highly encourage switching to the new [0m[32m[1m`scan`[0m[32m command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.[0m
-
-
-[33m[1m+===========================================================================================================================================================================================+[0m
-
-
+Project dashboard: https://platform.safetycli.com/codebases/deploy-system-unified/findings?branch=ci/harden-and-wiki-orchestration
