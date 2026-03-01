@@ -1,0 +1,25 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100351
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/secret_rotation role
+secret_rotation_enable: true
+secret_rotation_schedule: "monthly"  # Choices: weekly, monthly, quarterly
+secret_rotation_notify_enable: true
+secret_rotation_notify_days_before: 7
+
+# Emergency rotation
+secret_emergency_rotation_enable: true
+secret_emergency_rotation_webhook: ""
+
+# Target Secrets for Rotation
+# - { type: "ssh_host_keys", frequency: "quarterly" }
+# - { type: "api_keys", frequency: "monthly" }
+# - { type: "database_credentials", frequency: "monthly" }
+secret_rotation_items: []
+
+# Configuration
+secret_rotation_log_dir: "/var/log/security/rotation"
+secret_rotation_owner: "root"
+secret_rotation_group: "root"
