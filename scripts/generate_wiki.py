@@ -25,7 +25,9 @@ STATUS_MAPS = {
     'GPU_SLICING.md': '⚠️ **UNTESTABLE**: This feature is postponed indefinitely until hardware access is secured.',
     'INTEL_GPU_GUIDE.md': '⚠️ **UNTESTABLE**: Intel Battlemage support is currently unverified and untestable.',
     'GPU_ENHANCED_PLAN.md': '⚠️ **UNTESTABLE**: Active development and testing are suspended.',
-    'GPU_STACK_SETUP.md': '⚠️ **UNTESTABLE**: Hardware verification gates are currently blocked.'
+    'GPU_STACK_SETUP.md': '⚠️ **UNTESTABLE**: Hardware verification gates are currently blocked.',
+    'ARCH_ARM64.md': '🧪 **EXPERIMENTAL**: Deployment on aarch64 is currently in early-stage testing.',
+    'ARCH_RISCV64.md': '⚠️ **UNVERIFIED**: Deployment on riscv64 is theoretical and lacks physical hardware verification.'
 }
 
 # Regex Patterns

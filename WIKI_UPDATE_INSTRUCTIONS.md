@@ -39,9 +39,28 @@ All documentation changes have been prepared and pushed to a pull request branch
 
 ## GitHub Wiki Sync
 
-The `wiki_pages/` directory contains all wiki content. To sync to GitHub Wiki:
+The `wiki_pages/` directory contains all wiki content. 
 
-### Option 1: Manual Sync (Recommended)
+### Step 1: Generate Wiki Content
+
+Before syncing, ensure the wiki content is freshly generated from the source documentation and role metadata:
+
+```bash
+make wiki
+```
+
+This runs `scripts/generate_wiki.py`, which:
+- Syncs documentation from `docs/` to `wiki_pages/`.
+- Standardizes links for GitHub Wiki compatibility.
+- Generates `ROLE_REFERENCE.md` and `VARIABLE_REFERENCE.md`.
+- Appends "UNTESTABLE" status warnings to hardware-dependent features.
+- Dynamically generates `_Sidebar.md`.
+
+### Step 2: Sync to GitHub Wiki
+
+To sync to GitHub Wiki:
+
+#### Option 1: Manual Sync (Recommended)
 
 ```bash
 # Clone the wiki repository
@@ -68,12 +87,14 @@ Date: $(date -Iseconds)
 git push origin master
 ```
 
-### Option 2: Use Sync Script
+### Option 2: Use Makefile (Integrated)
 
 ```bash
 cd /home/prod/Workspaces/repos/github/deploy-system-unified
-./scripts/sync_wiki.sh
+make sync-wiki
 ```
+
+This will automatically run the generation step and then push the changes to the GitHub Wiki repository.
 
 **Note:** Requires SSH key configured for GitHub wiki repository access.
 

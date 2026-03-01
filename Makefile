@@ -1,10 +1,18 @@
-.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies
+.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies wiki sync-wiki
 
 lint:
 	ansible-lint -x internal-error .
 
 lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
+
+wiki:
+	@echo "Generating wiki pages..."
+	@./scripts/generate_wiki.py
+
+sync-wiki: wiki
+	@echo "Syncing wiki to GitHub..."
+	@./scripts/sync_wiki.sh
 
 molecule-precheck:
 	@./scripts/ensure_podman_access.sh || true

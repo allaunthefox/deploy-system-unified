@@ -1,3 +1,5 @@
+> ⚠️ **UNVERIFIED**: Deployment on riscv64 is theoretical and lacks physical hardware verification.
+
 # ARCH_GUIDE_RISCV64
 
 ## Overview
