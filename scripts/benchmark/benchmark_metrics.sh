@@ -4,15 +4,9 @@
 # Script Type: Metrics Collection Benchmark
 # Description: Collects resource utilization metrics for K8s vs Podman
 # Usage: ./benchmark_metrics.sh [podman|k8s] [duration_minutes]
-# Last Updated: 2026-02-28
-# Version: 1.0
+# Last Updated: 2026-03-01
+# Version: 1.1
 # =============================================================================
-#===============================================================================
-# benchmark_metrics.sh - Container Runtime Benchmark Metrics Collection
-#===============================================================================
-# Collects resource utilization metrics for Kubernetes vs Podman workloads
-# Usage: ./benchmark_metrics.sh [podman|k8s] [duration_minutes]
-#===============================================================================
 
 set -eu
 
@@ -82,108 +76,37 @@ check_dependencies() {
 #===============================================================================
 # Unit Conversion Helpers
 #===============================================================================
-# Convert K8s CPU millicores to percentage (assuming 1 core = 100%)
 convert_cpu_to_percent() {
-    cpu_value="$1"
+    local cpu_value="$1"
+    local num_cores
     num_cores=$(nproc 2>/dev/null || echo "1")
 
-    # If value ends in 'm', it's in millicores
     case "$cpu_value" in
         *m)
-            millicores="${cpu_value%m}"
+            local millicores="${cpu_value%m}"
             echo "scale=2; $millicores / (100 * $num_cores)" | bc
             ;;
         *)
-            # Assume cores, convert to percentage
             echo "scale=2; $cpu_value * 100 / $num_cores" | bc
             ;;
     esac
 }
 
-# Convert K8s memory (Mi/Gi) to percentage
 convert_mem_to_percent() {
-    mem_value="$1"
+    local mem_value="$1"
+    local total_mem
     total_mem=$(free -m | awk 'NR==2{print $2}')
 
-    # Extract numeric value and unit using sed
+    local mem_num
     mem_num=$(echo "$mem_value" | sed 's/[^0-9.]//g')
+    local mem_unit
     mem_unit=$(echo "$mem_value" | sed 's/[0-9.]//g')
 
-    # Convert to Mi
     if [ "$mem_unit" = "Gi" ]; then
         mem_num=$(echo "scale=2; $mem_num * 1024" | bc)
     fi
 
-    # Calculate percentage
     echo "scale=2; $mem_num * 100 / $total_mem" | bc
-}
-
-# Create output directory, timestamp, and log file are set up inside main()
-
-# Check dependencies before starting
-# (moved inside main to avoid running on --help)
-
-#===============================================================================
-# CPU Metrics Collection
-#===============================================================================
-collect_cpu() {
-    timestamp=$(date +%s)
-
-    if [ "$RUNTIME" = "podman" ]; then
-        # Podman: use podman stats
-        podman stats --no-stream --format json 2>/dev/null || echo "[]"
-    else
-        # K8s: use kubectl top
-        kubectl top pods --no-headers 2>/dev/null || echo ""
-    fi
-
-    # System CPU
-    top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'
-}
-
-#===============================================================================
-# Memory Metrics Collection
-#===============================================================================
-collect_memory() {
-    if [ "$RUNTIME" = "podman" ]; then
-        podman stats --no-stream --format json 2>/dev/null || echo "[]"
-    else
-        kubectl top pods --no-headers 2>/dev/null || echo ""
-    fi
-
-    # System memory
-    free -m | awk 'NR==2{printf "%.2f", $3*100/$2}'
-}
-
-#===============================================================================
-# Disk I/O Metrics
-#===============================================================================
-collect_disk() {
-    iostat -dx 1 1 2>/dev/null | tail -n +4 | awk '{print $1,$4,$5}' || echo ""
-}
-
-#===============================================================================
-# Network Metrics
-#===============================================================================
-collect_network() {
-    cat /proc/net/dev | grep -v "lo:" | awk '{print $1,$2,$10}' || echo ""
-}
-
-#===============================================================================
-# Startup Time Measurement
-#===============================================================================
-measure_startup() {
-    container="$1"
-    start_time=$(date +%s%N)
-
-    if [ "$RUNTIME" = "podman" ]; then
-        podman start "$container" >/dev/null 2>&1
-    else
-        kubectl rollout status deployment/"$container" --timeout=300s >/dev/null 2>&1
-    fi
-
-    end_time=$(date +%s%N)
-    echo "scale=3; ($end_time - $start_time) / 1000000000" | bc
 }
 
 #===============================================================================
@@ -200,52 +123,71 @@ main() {
 
     check_dependencies
 
-    iterations=$((DURATION * 60 / INTERVAL))
-    count=0
+    local iterations=$((DURATION * 60 / INTERVAL))
+    local count=0
 
     echo "timestamp,cpu_percent,mem_percent,container,cpu_usage,mem_usage" > "$LOG_FILE"
 
-    while [ $count -lt "$iterations" ]; do
+    while [ "$count" -lt "$iterations" ]; do
+        local timestamp
         timestamp=$(date +%Y-%m-%dT%H:%M:%S)
 
        if [ "$OUTPUT_FORMAT" = "json" ]; then
-        # CPU Usage via /proc/stat
-        CPU_STATS=($(grep '^cpu ' /proc/stat))
-        IDLE_BEFORE=${CPU_STATS[4]}
-        TOTAL_BEFORE=0
-        for i in "${CPU_STATS[@]:1}"; do TOTAL_BEFORE=$((TOTAL_BEFORE + i)); done
-        sleep 0.1
-        CPU_STATS=($(grep '^cpu ' /proc/stat))
-        IDLE_AFTER=${CPU_STATS[4]}
-        TOTAL_AFTER=0
-        for i in "${CPU_STATS[@]:1}"; do TOTAL_AFTER=$((TOTAL_AFTER + i)); done
+        local CPU_STATS
+        mapfile -t CPU_STATS < <(grep '^cpu ' /proc/stat)
+        # Process first line of CPU stats
+        local cpu_line="${CPU_STATS[0]}"
+        local fields
+        read -r -a fields <<< "$cpu_line"
         
+        local IDLE_BEFORE=${fields[4]}
+        local TOTAL_BEFORE=0
+        for i in "${fields[@]:1}"; do TOTAL_BEFORE=$((TOTAL_BEFORE + i)); done
+        
+        sleep 0.1
+        
+        mapfile -t CPU_STATS < <(grep '^cpu ' /proc/stat)
+        cpu_line="${CPU_STATS[0]}"
+        read -r -a fields <<< "$cpu_line"
+        
+        local IDLE_AFTER=${fields[4]}
+        local TOTAL_AFTER=0
+        for i in "${fields[@]:1}"; do TOTAL_AFTER=$((TOTAL_AFTER + i)); done
+        
+        local CPU_USAGE
         CPU_USAGE=$(awk "BEGIN {print (1 - ($IDLE_AFTER - $IDLE_BEFORE) / ($TOTAL_AFTER - $TOTAL_BEFORE)) * 100}")
         
-        # Memory Usage via /proc/meminfo
+        local MEM_TOTAL
         MEM_TOTAL=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+        local MEM_FREE
         MEM_FREE=$(grep MemFree /proc/meminfo | awk '{print $2}')
+        local MEM_BUFFERS
         MEM_BUFFERS=$(grep Buffers /proc/meminfo | awk '{print $2}')
+        local MEM_CACHED
         MEM_CACHED=$(grep "^Cached" /proc/meminfo | awk '{print $2}')
-        MEM_USED=$((MEM_TOTAL - MEM_FREE - MEM_BUFFERS - MEM_CACHED))
+        local MEM_USED=$((MEM_TOTAL - MEM_FREE - MEM_BUFFERS - MEM_CACHED))
+        local MEM_USAGE_PERC
         MEM_USAGE_PERC=$(awk "BEGIN {print ($MEM_USED / $MEM_TOTAL) * 100}")
         
         echo "{ \"cpu_load_percent\": $CPU_USAGE, \"mem_usage_percent\": $MEM_USAGE_PERC }"
         exit 0
     fi
-        # Collect system metrics
+        local cpu_usage
         cpu_usage=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
 
+        local mem_usage
         mem_usage=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2}' )
 
         echo "$timestamp,$cpu_usage,$mem_usage,system,0,0" >> "$LOG_FILE"
 
-        # Collect container metrics
         if [ "$RUNTIME" = "podman" ]; then
             podman stats --no-stream --format json 2>/dev/null | while IFS= read -r line; do
                 if [ -n "$line" ] && [ "$line" != "[]" ]; then
+                    local cname
                     cname=$(echo "$line" | jq -r '.name // .id' 2>/dev/null || echo "unknown")
+                    local cpu
                     cpu=$(echo "$line" | jq -r '.cpu_percent // 0' 2>/dev/null || echo "0")
+                    local mem
                     mem=$(echo "$line" | jq -r '.mem_percent // 0' 2>/dev/null || echo "0")
                     echo "$timestamp,$cpu_usage,$mem_usage,$cname,$cpu,$mem" >> "$LOG_FILE"
                 fi
@@ -253,12 +195,16 @@ main() {
         else
             kubectl top pods --no-headers 2>/dev/null | while IFS= read -r line; do
                 if [ -n "$line" ]; then
+                    local cname
                     cname=$(echo "$line" | awk '{print $1}')
+                    local cpu_raw
                     cpu_raw=$(echo "$line" | awk '{print $2}')
+                    local mem_raw
                     mem_raw=$(echo "$line" | awk '{print $3}')
 
-                    # Convert K8s units to percentages for consistency with Podman
+                    local cpu
                     cpu=$(convert_cpu_to_percent "$cpu_raw")
+                    local mem
                     mem=$(convert_mem_to_percent "$mem_raw")
 
                     echo "$timestamp,$cpu_usage,$mem_usage,$cname,$cpu,$mem" >> "$LOG_FILE"
@@ -272,9 +218,10 @@ main() {
 
     log_info "Benchmark complete. Results saved in $OUTPUT_DIR"
 
-
-    avg_cpu=$(awk -F',' 'NR>1 {sum+=$2; count++} END {print sum/count}' "$LOG_FILE")
-    avg_mem=$(awk -F',' 'NR>1 {sum+=$3; count++} END {print sum/count}' "$LOG_FILE")
+    local avg_cpu
+    avg_cpu=$(awk -F',' 'NR>1 {sum+=$2; count++} END {if (count > 0) print sum/count; else print 0}' "$LOG_FILE")
+    local avg_mem
+    avg_mem=$(awk -F',' 'NR>1 {sum+=$3; count++} END {if (count > 0) print sum/count; else print 0}' "$LOG_FILE")
 
     log_info "Summary:"
     log_info "  Average CPU: ${avg_cpu}%"
@@ -282,9 +229,6 @@ main() {
     log_info "  Samples collected: $iterations"
 }
 
-#===============================================================================
-# CLI Arguments
-#===============================================================================
 show_usage() {
     echo "Usage: $0 [podman|k8s] [duration_minutes]"
     echo ""
@@ -295,9 +239,6 @@ show_usage() {
     echo ""
     echo "Environment Variables:"
     echo "  OUTPUT_DIR       - Output directory (default: /var/lib/deploy-system/evidence/benchmark)"
-    echo ""
-    echo "Example:"
-    echo "  OUTPUT_DIR=/tmp/bench $0 podman 30"
 }
 
 case "${1:-}" in

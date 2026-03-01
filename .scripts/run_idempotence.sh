@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # =============================================================================
 # Audit Event Identifier: DSU-SHS-400029
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 # Helper script to perform the same steps executed by the CI workflows
 # so that developers can run the check locally and be confident the
@@ -34,8 +34,8 @@ export ANSIBLE_CONFIG="$PROJECT_ROOT/ci-ansible.cfg"
 # install minimal dependencies on the host
 if ! command -v ansible-playbook >/dev/null 2>&1; then
   echo "ansible-playbook not found; installing via pip"
-  python3 -m pip install --upgrade pip
-  python3 -m pip install --upgrade "ansible-core>=2.15,<2.16"
+  python3 -m pip install --upgrade pip >/dev/null
+  python3 -m pip install --upgrade "ansible-core>=2.15,<2.16" >/dev/null
 fi
 
 # Locate the idempotence playbook anywhere under the workspace

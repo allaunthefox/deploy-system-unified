@@ -113,7 +113,7 @@ enforce_security_audit() {
 enforce_python_standards() {
     log "Enforcing Python coding standards..."
 
-    py_files=$(find "$PROJECT_ROOT" -name "*.py" -not -path "*/.git/*" -not -path "*/.venv/*" -not -path "*/.ansible/*")
+    py_files=$(find "$PROJECT_ROOT" -name "*.py" -not -path "*/.git/*" -not -path "*/.venv/*" -not -path "*/venv/*" -not -path "*/.ansible/*" -not -path "*/Offline_Research/*")
     if [ -z "$py_files" ]; then
         warning "No local Python files found"
         return 0

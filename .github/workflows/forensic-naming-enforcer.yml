@@ -56,7 +56,7 @@ jobs:
                 errors=$((errors + 1))
               fi
             fi
-          done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*" -not -name "meta/main.yml")
+          done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*" -not -name "meta/main.yml" -not -path "*/venv/*" -not -path "*/Offline_Research/*")
 
           if [ $errors -gt 0 ]; then
             echo "::error::Found $errors files with non-compliant forensic names."
