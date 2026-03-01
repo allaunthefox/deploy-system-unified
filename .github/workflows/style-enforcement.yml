@@ -59,6 +59,8 @@ jobs:
           # Ensure style tools are available in the runner
           python -m pip install --upgrade pip || true
           python -m pip install --upgrade ansible-lint yamllint flake8 black || true
+          # codeql is usually pre-installed on GitHub-hosted runners
+          make wiki
           SCRIPT=dev_tools/tools/style-guide-enforcement
           ./$SCRIPT/enforce_style_guide.sh --report || echo $? > .enforce_status
         continue-on-error: true

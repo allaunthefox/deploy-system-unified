@@ -169,11 +169,44 @@ check_dependencies() {
         warning "flake8 not found, Python scripts will not be audited"
     fi
 
-    if command -v black >/dev/null 2>&1; then
-        success "All dependencies available (including black)"
+    if command -v codeql >/dev/null 2>&1; then
+        success "All dependencies available (including codeql)"
     else
-        warning "black not found, Python formatting will not be verified"
+        warning "codeql not found, deep security analysis will be skipped"
     fi
+}
+
+# Enforce Security Audit (CodeQL)
+enforce_security_audit() {
+    log "Enforcing Security Audit (CodeQL)..."
+
+    if ! command -v codeql >/dev/null 2>&1; then
+        warning "CodeQL CLI not found in PATH. Skipping local security audit."
+        return 0
+    fi
+
+    # Create CodeQL database
+    DB_PATH="/tmp/codeql_db_$(date +%s)"
+    log "Creating CodeQL database at $DB_PATH..."
+    if codeql database create "$DB_PATH" --language=python --source-root="$PROJECT_ROOT" --overwrite >/dev/null 2>&1; then
+        log "Running CodeQL analysis..."
+        if codeql database analyze "$DB_PATH" python-security-and-quality.qls --format=sarif-latest --output=/tmp/codeql_results.sarif >/dev/null 2>&1; then
+            # Simple check for any alerts in the SARIF output
+            if grep -q "\"ruleId\":" /tmp/codeql_results.sarif; then
+                warning "CodeQL detected potential security vulnerabilities!"
+                TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+            else
+                success "CodeQL audit passed (No high-severity alerts)"
+            fi
+        else
+            warning "CodeQL analysis failed to run"
+        fi
+    else
+        warning "Failed to create CodeQL database"
+    fi
+    
+    # Cleanup
+    rm -rf "$DB_PATH"
 }
 
 # Enforce Python standards
@@ -517,6 +550,7 @@ main() {
     check_dependencies
 
     if [ "$REPORT_ONLY" = false ]; then
+        enforce_security_audit
         enforce_python_standards
         enforce_yaml_standards
         enforce_ansible_standards

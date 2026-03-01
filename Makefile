@@ -1,7 +1,11 @@
-.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies wiki sync-wiki
+.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies wiki sync-wiki codeql
 
 lint:
 	ansible-lint -x internal-error .
+
+codeql:
+	@echo "Running local CodeQL security audit..."
+	@./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
 
 lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
