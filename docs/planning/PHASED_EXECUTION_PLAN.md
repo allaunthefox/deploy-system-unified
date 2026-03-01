@@ -33,4 +33,5 @@
 - [x] **Zero Trust Foundation**: Implement `security/headscale` role with pinned image digests.
 - [x] **HA Kubernetes Implementation**: Implement shared tokens and Kube-VIP HA logic in `kubernetes/master`.
 - [x] **Automated Rotation Logic**: Implement Vault rotation policies and AppRole lifecycle in `security/vault_integration`.
+- [x] **Service Mesh Foundation**: Implement `kubernetes/service_mesh` role with Linkerd mTLS automation.
 - [x] **Idempotence & Resilience Audit**: Verify 100% idempotence and implement anti-flapping guardrails for Q3 features.

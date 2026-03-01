@@ -642,6 +642,19 @@
 - `kubernetes_data_dir`
 - `kubernetes_k3s_bin_url`
 
+### `kubernetes/service_mesh`
+- `service_mesh_enabled`
+- `service_mesh_provider`
+- `linkerd_version`
+- `linkerd_image_digest`
+- `linkerd_image`
+- `linkerd_identity_trust_anchors_pem`
+- `linkerd_identity_issuer_cert_pem`
+- `linkerd_identity_issuer_key_pem`
+- `linkerd_proxy_cpu_request`
+- `linkerd_proxy_memory_request`
+- `linkerd_proxy_memory_limit`
+
 ## Networking Variables
 
 ### `networking/container_networks`

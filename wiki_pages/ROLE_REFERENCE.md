@@ -208,6 +208,11 @@ This role provides support for Serial Attached SCSI (SAS) infrastructure, spanni
 
 
 
+### `kubernetes/service_mesh`
+**service_mesh**
+
+
+
 ## Networking Roles
 
 ### `networking/container_networks`
