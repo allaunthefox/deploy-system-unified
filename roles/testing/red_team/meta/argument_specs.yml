@@ -1,0 +1,54 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100357
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: "Automated red team simulation"
+    description: "Executes red team simulations using Atomic Red Team and MITRE ATT&CK."
+    author: "deploy-system-unified"
+    options:
+      red_team_enable:
+        type: "bool"
+        default: false
+        description: "Whether to enable red team simulation."
+      red_team_framework:
+        type: "str"
+        default: "atomic-red-team"
+        choices: ["atomic-red-team"]
+        description: "The red team framework to use."
+      red_team_mitre_mapping_enable:
+        type: "bool"
+        default: true
+        description: "Whether to map simulations to MITRE ATT&CK."
+      red_team_atomic_repo:
+        type: "str"
+        default: "https://github.com/redcanaryco/atomic-red-team.git"
+        description: "The repository for Atomic Red Team tests."
+      red_team_atomic_dir:
+        type: "str"
+        default: "/opt/atomic-red-team"
+        description: "The directory for storing Atomic Red Team tests."
+      red_team_test_ids:
+        type: "list"
+        elements: "str"
+        default: []
+        description: "The list of Atomic test IDs to execute."
+      red_team_simulation_mode:
+        type: "str"
+        default: "dry-run"
+        choices: ["dry-run", "execute"]
+        description: "Whether to run simulations in dry-run or execute mode."
+      red_team_report_dir:
+        type: "str"
+        default: "/var/log/security/red_team"
+        description: "Directory for simulation reports."
+      red_team_owner:
+        type: "str"
+        default: "root"
+        description: "Owner of the report files."
+      red_team_group:
+        type: "str"
+        default: "root"
+        description: "Group of the report files."
