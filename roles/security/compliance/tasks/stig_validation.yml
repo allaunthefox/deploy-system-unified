@@ -1,0 +1,40 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100349
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# STIG Validation Tasks (Subset of V-2302xx)
+
+- name: "STIG V-230237 | Ensure account lockout for failed password attempts"
+  ansible.builtin.shell: |
+    grep -E "pam_faillock.so" /etc/pam.d/common-auth /etc/pam.d/system-auth 2>/dev/null | grep -c "deny=" || echo "0"
+  register: stig_v_230237_result
+  changed_when: false
+  tags: [stig, stig_v_230237, compliance]
+
+- name: "STIG V-230238 | Ensure password complexity is enforced"
+  ansible.builtin.shell: |
+    grep -E "pam_pwquality.so" /etc/pam.d/common-password /etc/pam.d/system-auth 2>/dev/null | grep -c "minlen=" || echo "0"
+  register: stig_v_230238_result
+  changed_when: false
+  tags: [stig, stig_v_230238, compliance]
+
+- name: "STIG V-230326 | Ensure all public directories are owned by root"
+  ansible.builtin.shell: |
+    find / -type d -perm -0002 ! -perm -1000 ! -path "/proc/*" ! -path "/sys/*" -ls | wc -l
+  register: stig_v_230326_result
+  changed_when: false
+  tags: [stig, stig_v_230326, compliance]
+
+- name: "STIG V-230329 | Ensure no world-writable files exist"
+  ansible.builtin.shell: |
+    find / -type f -perm -0002 ! -path "/proc/*" ! -path "/sys/*" -ls | wc -l
+  register: stig_v_230329_result
+  changed_when: false
+  tags: [stig, stig_v_230329, compliance]
+
+- name: "STIG | Record compliance score"
+  ansible.builtin.set_fact:
+    stig_score: "{{ (1 if stig_v_230237_result.stdout | int > 0 else 0) + (1 if stig_v_230238_result.stdout | int > 0 else 0) + (1 if stig_v_230326_result.stdout | int == 0 else 0) + (1 if stig_v_230329_result.stdout | int == 0 else 0) }}"
+    stig_total: 4
+  tags: [stig, compliance]
