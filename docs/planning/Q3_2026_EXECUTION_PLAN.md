@@ -12,15 +12,19 @@ Following the successful stabilization and security hardening in Q1/Q2, the Q3 p
 
 | ID | Objective | Description | Success Criteria | Status |
 |:---|:---|:---|:---|:---|
-| **T1** | **Zero Trust Networking** | Deploy Headscale (Tailscale) overlay for secure inter-node communication. | All nodes reachable via `100.x.x.x` overlay; SSH accessible only via TS auth. | 🟡 Active |
+| **T1** | **Zero Trust Networking (Optional)** | Deploy Headscale (Tailscale) overlay for secure inter-node communication. Optional per deployment type. | All nodes reachable via `100.x.x.x` overlay; SSH accessible only via TS auth. | 🟡 Active |
 | **T2** | **Automated Rotation** | Implement Vault Agent injectors for automatic secret rotation. | Secrets rotate daily without service restart (SIGHUP reload). | ⚪ Planned |
 | **T3** | **HA Kubernetes** | Transition K3s from single-master to multi-master HA (etcd). | Cluster survives failure of any single control plane node. | ⚪ Planned |
 | **T4** | **Service Mesh** | Deploy Linkerd or Kuma for mTLS service-to-service encryption. | All in-cluster traffic encrypted by default; observability into mTLS. | ⚪ Planned |
 
 ## 🛠️ Execution Tracks
 
-### Track 1: Zero Trust (Headscale)
+### Track 1: Zero Trust (Headscale) - *Optional*
 *   **Role**: `security/headscale`
+*   **Deployment Logic**: 
+    *   **Recommended**: Distributed Cloud/VPS targets where public IP isolation is required.
+    *   **Optional**: Bare Metal / LAN-only environments (disabled by default).
+    *   **Disabled**: Minimalist/Ephemeral targets to maintain lowest possible footprint.
 *   **Tasks**:
     *   Deploy Headscale controller.
     *   Register nodes via pre-auth keys during bootstrap.
