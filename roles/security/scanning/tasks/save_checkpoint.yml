@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100376
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # Shim to forward includes to the repository-level tasks/save_checkpoint.yml
 # This file exists so static analyzers and ansible-lint can resolve the include
 # without modifying the existing role logic.

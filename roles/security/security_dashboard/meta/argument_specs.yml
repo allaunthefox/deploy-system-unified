@@ -1,0 +1,31 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100325
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: Forensic security dashboard orchestration
+    description:
+      - This role deploys Grafana dashboards tailored for security monitoring, CIS compliance tracking, and vulnerability visualization.
+    options:
+      security_dashboard_enable:
+        type: bool
+        default: true
+        description: Master toggle for the security dashboard role.
+      security_dashboard_grafana_url:
+        type: str
+        default: "http://localhost:3000"
+        description: The endpoint URL for the Grafana instance.
+      security_dashboard_datasource:
+        type: str
+        default: "Loki"
+        description: The primary data source name in Grafana.
+      security_dashboard_collect_cis:
+        type: bool
+        default: true
+        description: Whether to include CIS compliance metrics.
+      security_dashboard_report_enable:
+        type: bool
+        default: true
+        description: Whether to enable automated daily security reports.

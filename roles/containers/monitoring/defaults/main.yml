@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100103
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Defaults for containers/monitoring (Standardized 2026 Structure)
 
 monitoring_enable: true

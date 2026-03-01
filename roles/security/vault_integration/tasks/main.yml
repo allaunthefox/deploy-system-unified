@@ -1,20 +1,29 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110056
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # Security - HashiCorp Vault Integration Role
 # Supports: Vault agent injector, Kubernetes auth, dynamic secrets
+# Note: HashiCorp Vault is governed by the Business Source License (BSL 1.1) / MPL.
+# Copyright HashiCorp, Inc.
 
-- name: Check if Vault is already configured
+- name: "ISO 9001 | 600013 | Check if Vault is already configured"
   ansible.builtin.stat:
     path: /etc/vault/config.hcl
   register: vault_config_check
   changed_when: false
+  tags: [security, vault, verification, 600013]
 
-- name: Check for Kubernetes environment
+- name: "ISO 9001 | 600013 | Check for Kubernetes environment"
   ansible.builtin.set_fact:
     is_kubernetes: "{{ true if (ansible_facts['distribution'] == 'Ubuntu' and lookup('env', 'KUBERNETES_SERVICE_HOST') | default('', true) != '') or (lookup('file', '/var/run/secrets/kubernetes.io/serviceaccount/namespace') | default('', true) != '') else false }}"
   changed_when: false
   failed_when: false
+  tags: [security, vault, initialization, 600013]
 
-- name: Install Vault binary (standalone mode)
+- name: "ISO 27001 §8.19 | 530000 | Install Vault binary (standalone mode)"
   ansible.builtin.unarchive:
     src: >-
       {{
@@ -30,21 +39,18 @@
   when:
     - vault_install_mode == 'standalone'
     - not vault_config_check.stat.exists
-  tags:
-    - vault
-    - security
-    - secrets
+  tags: [security, vault, deploy, 530000]
 
-- name: VERIFY | Vault binary is functional (Zero-Tolerance)
+- name: "ISO 9001 | 600013 | VERIFY | Vault binary is functional"
   ansible.builtin.command:
     cmd: /usr/local/bin/vault --version
   register: _vault_ver
   failed_when: "_vault_ver.rc != 0"
   changed_when: false
   become: true
-  tags: [vault, security, verification]
+  tags: [security, vault, verification, 600013]
 
-- name: Create Vault user and group
+- name: "ISO 27001 §9.2 | 510003 | Create Vault system user and group"
   ansible.builtin.group:
     name: vault
     system: true
@@ -52,12 +58,9 @@
   when:
     - vault_install_mode == 'standalone'
     - not vault_config_check.stat.exists
-  tags:
-    - vault
-    - security
-    - secrets
+  tags: [security, vault, initialization, 510003]
 
-- name: Create Vault directories
+- name: "ISO 9001 | 600013 | Create Vault system directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -72,12 +75,9 @@
   when:
     - vault_install_mode == 'standalone'
     - not vault_config_check.stat.exists
-  tags:
-    - vault
-    - security
-    - secrets
+  tags: [security, vault, initialization, 600013]
 
-- name: Deploy Vault configuration file
+- name: "ISO 27001 §8.9 | 600111 | Deploy Vault configuration file"
   ansible.builtin.template:
     src: vault.hcl.j2
     dest: /etc/vault/config.hcl
@@ -89,12 +89,20 @@
   notify: restart_vault
   when:
     - vault_install_mode == 'standalone'
-  tags:
-    - vault
-    - security
-    - secrets
+  tags: [security, vault, config, 600111]
   no_log: true
 
-- name: Set Vault integration complete flag
+- name: "ISO 27001 §14.2 | 800750 | VAULT | Configure Dynamic Secrets"
+  ansible.builtin.include_tasks: dynamic_secrets.yml
+  when: vault_enable_dynamic_secrets | bool
+  tags: [security, vault, dynamic-secrets, 800750]
+
+- name: "ISO 27001 §9.3 | 800700 | VAULT | Configure Automated Rotation Lifecycle"
+  ansible.builtin.include_tasks: rotation_policy.yml
+  when: vault_enable_rotation | bool
+  tags: [security, vault, rotation, 800700]
+
+- name: "ISO 9001 | 600013 | Set Vault integration completion flag"
   ansible.builtin.set_fact:
     vault_integration_complete: true
+  tags: [security, vault, internal, 600013]

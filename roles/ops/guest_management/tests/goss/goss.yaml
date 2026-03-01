@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100200
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss tests for ops/guest_management role
 # This role is a placeholder for guest management operations

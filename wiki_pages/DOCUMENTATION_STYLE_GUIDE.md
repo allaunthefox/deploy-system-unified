@@ -20,16 +20,16 @@ Examples: `ONTOLOGY.md`, `SEPARATION_OF_CONCERNS.md`, `DEV_STYLE_YAML_STYLE_GUID
 **Internal links**: When linking to another wiki page from within a wiki page, use this format:
 
 ```markdown
-[Page Title](wiki/PAGE_NAME)
+[Page Title](PAGE_NAME)
 ```
 
 Where `PAGE_NAME` matches the filename without the `.md` extension. Example:
 
 ```markdown
-See [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS) for the foundational rule (Separation of Concerns).
+See [../wiki_pages/SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS) for the foundational rule (Separation of Concerns).
 ```
 
-Do not use relative file paths (`../SEPARATION_OF_CONCERNS.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
+Do not use relative file paths (`../../wiki_pages/SEPARATION_OF_CONCERNS.md`) or bare page names — only the `wiki/PAGE_NAME` format renders correctly in the GitHub wiki.
 
 **Terminology:** Use "Separation of Concerns (SoC)" as the primary term.
 
@@ -113,7 +113,7 @@ for implementation; the wiki page is the operator's reference.
 ## Terminology
 
 The canonical definition of every term in this project — with its governing ISO or NIST citation
-— is in [TERMINOLOGY](TERMINOLOGY). That document is the authoritative reference. Do not
+— is in [../wiki_pages/TERMINOLOGY](TERMINOLOGY). That document is the authoritative reference. Do not
 invent new terms or use informal terminology as primary labels in documentation.
 
 Use the **Formal Term** as the primary label in all documentation.

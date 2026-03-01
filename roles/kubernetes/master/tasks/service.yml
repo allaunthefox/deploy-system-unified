@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100588
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Kubernetes Benchmark | ISO 27001 §14.2
 # Manage K3s Service
 
 - name: Enable and start K3s service

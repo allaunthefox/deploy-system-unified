@@ -1,5 +1,9 @@
 #!/bin/bash
 # =============================================================================
+# Audit Event Identifier: DSU-SHS-400030
+# Last Updated: 2026-02-28
+# =============================================================================
+# =============================================================================
 # Script: rename_uppercase_to_lowercase.sh
 # Description: Rename files with uppercase letters to lowercase
 # Usage: ./rename_uppercase_to_lowercase.sh [--dry-run]

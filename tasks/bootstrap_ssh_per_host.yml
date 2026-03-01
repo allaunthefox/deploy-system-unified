@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100842
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Bootstrap SSH for a single target host (called from bootstrap_ssh.yml)
 # This task probes SSH ports for remote hosts, not just localhost

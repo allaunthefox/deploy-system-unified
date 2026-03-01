@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100059
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Enforce policy against "CHANGE_ME" placeholders in container variables.
 # CIS 6.x | NIST CM-6 | Audit Code 520011

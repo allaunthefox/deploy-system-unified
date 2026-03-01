@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500053
+# Last Updated: 2026-02-28
+# =============================================================================
 """
 Testinfra tests for security/vault_integration role.
 Tests HashiCorp Vault installation and configuration.

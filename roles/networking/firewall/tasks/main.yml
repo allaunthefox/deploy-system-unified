@@ -1,56 +1,38 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100626
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 # Tasks for networking/firewall role
 # Multi-distro support: UFW (Debian/Arch) | Firewalld (RedHat)
 # Compliance: CIS 4.4.x | STIG V-230270, V-230271 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.23
 
-- name: "CIS 4.4.1 | STIG V-230270 | NIST SC-7 | ISO 27001 §8.20 | Audit Code 530001 | Install UFW (Debian/Ubuntu/Arch)"
+- name: "ISO 27001 §8.20 | 530001 | CIS 4.4.1 | STIG V-230270 | NIST SC-7 | Install UFW (Debian/Ubuntu/Arch)"
   ansible.builtin.package:
     name: ufw
     state: present
   when: ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
   become: true
-  tags:
-    - cis_4_4_1
-    - stig_v_230270
-    - nist_sc_7
-    - nist_ac_4
-    - nist_ia_3
-    - iso_27001_8_20
-    - networking
-    - firewall
+  tags: [cis_4_4_1, stig_v_230270, nist_sc_7, networking, firewall, deploy, 530001]
 
-- name: "CIS 4.4.1 | STIG V-230270 | NIST SC-7 | ISO 27001 §8.20 | Audit Code 530001 | Install Firewalld (RedHat/CentOS)"
+- name: "ISO 27001 §8.20 | 530001 | CIS 4.4.1 | STIG V-230270 | NIST SC-7 | Install Firewalld (RedHat/CentOS)"
   ansible.builtin.package:
     name: firewalld
     state: present
   when: ansible_os_family == 'RedHat'
   become: true
-  tags:
-    - cis_4_4_1
-    - stig_v_230270
-    - nist_sc_7
-    - nist_ac_4
-    - nist_ia_3
-    - iso_27001_8_20
-    - networking
-    - firewall
+  tags: [cis_4_4_1, stig_v_230270, nist_sc_7, networking, firewall, deploy, 530001]
 
-- name: "ISO 27001 §9.4 | 540001 | Build effective firewall TCP port list"
+- name: "ISO 27001 §9.4 | 540001 | CIS 4.4.2 | NIST SC-7 | Build effective firewall TCP port list"
   ansible.builtin.set_fact:
     networking_networking_firewall_allowed_tcp_ports_effective: >-
       {{ (networking_firewall_allowed_tcp_ports
           + ([networking_firewall_endlessh_port] if networking_firewall_allow_endlessh | bool else []))
           | map('string') | unique | list }}
   changed_when: false
-  tags:
-    - cis_4_4_2
-    - nist_sc_7
-    - nist_ac_4
-    - networking
-    - firewall
-    - 540001
+  tags: [cis_4_4_2, nist_sc_7, networking, firewall, initialization, 540001]
 
-- name: "ISO 27001 §9.4 | 540001 | Set UFW Default Forward Policy"
+- name: "ISO 27001 §9.4 | 540001 | CIS 4.4.1.2 | STIG V-230271 | NIST AC-4 | Set UFW Default Forward Policy"
   ansible.builtin.lineinfile:
     path: /etc/default/ufw
     regexp: '^DEFAULT_FORWARD_POLICY='
@@ -58,30 +40,16 @@
   when: ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
   become: true
   notify: reload_ufw
-  tags:
-    - cis_4_4_1_2
-    - stig_v_230271
-    - nist_ac_4
-    - nist_sc_7
-    - iso_27001_9_4
-    - networking
-    - firewall
-    - 540001
+  tags: [cis_4_4_1_2, stig_v_230271, nist_ac_4, iso_27001_9_4, networking, firewall, config, 540001]
 
-- name: "CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | NIST AC-14 | Import UFW Rules"
+- name: "ISO 27001 §9.4 | 540001 | CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | Import UFW Rules"
   ansible.builtin.include_tasks: rules_ufw.yml
   when:
     - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
     - not (is_virtualized | default(false))
-  tags:
-    - cis_4_4_1_3
-    - stig_v_230271
-    - nist_sc_7
-    - nist_ac_14
-    - networking
-    - firewall
+  tags: [cis_4_4_1_3, stig_v_230271, nist_sc_7, networking, firewall, deploy, 540001]
 
-- name: "ISO 27001 §9.4 | 540001 | Configure UFW defaults"
+- name: "ISO 27001 §9.4 | 540001 | CIS 4.4.1.1 | STIG V-230271 | NIST AC-4 | Configure UFW defaults"
   community.general.ufw:
     direction: "{{ item.direction }}"
     policy: "{{ 'allow' if item.policy == 'allow' else 'deny' if item.policy == 'deny' else 'reject' }}"
@@ -92,49 +60,23 @@
     - ansible_os_family == 'Debian' or ansible_distribution == 'Archlinux'
     - not (is_virtualized | default(false))
   become: true
-  tags:
-    - cis_4_4_1_1
-    - cis_4_4_1_2
-    - stig_v_230271
-    - nist_ac_4
-    - nist_sc_7
-    - iso_27001_9_4
-    - networking
-    - firewall
-    - forensic
-    - 540001
+  tags: [cis_4_4_1_1, stig_v_230271, nist_ac_4, iso_27001_9_4, networking, firewall, config, 540001]
 
-- name: "CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | Import Firewalld Rules"
+- name: "ISO 27001 §9.4 | 540001 | CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | Import Firewalld Rules"
   ansible.builtin.include_tasks: rules_firewalld.yml
   when:
     - ansible_os_family == 'RedHat'
     - not (is_virtualized | default(false))
-  tags:
-    - cis_4_4_1_3
-    - stig_v_230271
-    - nist_sc_7
-    - nist_ac_14
-    - iso_27001_9_4
-    - networking
-    - firewall
-    - forensic
+  tags: [cis_4_4_1_3, stig_v_230271, nist_sc_7, networking, firewall, deploy, 540001]
 
-- name: "CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | Import Nftables Rules (Alpine)"
+- name: "ISO 27001 §9.4 | 540001 | CIS 4.4.1.3 | STIG V-230271 | NIST SC-7 | Import Nftables Rules (Alpine)"
   ansible.builtin.include_tasks: rules_nftables.yml
   when:
     - ansible_os_family == 'Alpine'
     - not (is_virtualized | default(false))
-  tags:
-    - cis_4_4_1_3
-    - stig_v_230271
-    - nist_sc_7
-    - nist_ac_14
-    - iso_27001_9_4
-    - networking
-    - firewall
-    - forensic
+  tags: [cis_4_4_1_3, stig_v_230271, nist_sc_7, networking, firewall, deploy, 540001]
 
-- name: "ISO 27001 §9.4 | 540000 | Enable UFW Final State"
+- name: "ISO 27001 §9.4 | 540000 | CIS 4.4.1.4 | STIG V-230271 | NIST SC-7 | Enable UFW Final State"
   community.general.ufw:
     state: enabled
   when:
@@ -142,27 +84,12 @@
     - networking_firewall_enabled | bool
     - not (is_virtualized | default(false))
   become: true
-  tags:
-    - cis_4_4_1_4
-    - stig_v_230271
-    - nist_sc_7
-    - nist_ac_14
-    - iso_27001_9_4
-    - networking
-    - firewall
-    - forensic
-    - 540000
+  tags: [cis_4_4_1_4, stig_v_230271, nist_sc_7, iso_27001_9_4, networking, firewall, deploy, 540000]
 
-- name: "CIS 4.4.3 | NIST SC-7 | Fail on unsupported OS Family"
+- name: "ISO 9001 | 600013 | CIS 4.4.3 | NIST SC-7 | Fail on unsupported OS Family"
   ansible.builtin.fail:
     msg: "Firewall configuration not supported for this OS Family: {{ ansible_os_family }}"
   when:
-    - ansible_os_family != 'Debian'
-    - ansible_os_family != 'RedHat'
-    - ansible_os_family != 'Alpine'
+    - ansible_os_family not in ['Debian', 'RedHat', 'Alpine']
     - ansible_distribution != 'Archlinux'
-  tags:
-    - cis_4_4_3
-    - nist_sc_7
-    - networking
-    - firewall
+  tags: [cis_4_4_3, nist_sc_7, networking, firewall, verification, 600013]

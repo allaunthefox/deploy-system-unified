@@ -170,9 +170,9 @@ find . -name "*.md" -exec sed -i 's|old_filename|NEW_FILENAME|g' {} \;
 
 ## Related Documents
 
-- **[DOCUMENTATION_STYLE_GUIDE](DOCUMENTATION_STYLE_GUIDE)** - General documentation standards
-- **[TERMINOLOGY](TERMINOLOGY)** - Formal terminology definitions
-- **[STYLE_GUIDE](STYLE_GUIDE)** - Overall project style guide
+- **[DOCUMENTATION_STYLE_GUIDE](DOCUMENTATION_STYLE_GUIDE.md)** - General documentation standards
+- **[TERMINOLOGY](TERMINOLOGY.md)** - Formal terminology definitions
+- **[STYLE_GUIDE](STYLE_GUIDE.md)** - Overall project style guide
 
 ---
 

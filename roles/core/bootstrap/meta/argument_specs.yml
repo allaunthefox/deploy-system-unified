@@ -1,20 +1,22 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100405
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core system bootstrap role
+    short_description: System initialization and base configuration
     description:
-      - Initializes the system with base packages and directories
-      - Detects virtualization environment and determines ontology-driven virt_type
-      - Generates a unique deployment ID for forensic traceability
+      - This role initializes the target host by installing base packages, creating standard directories, and setting virtualization facts.
     options:
       core_install_base_packages:
         type: bool
-        description: Whether to install the base package set
         default: true
+        description: Whether to install the project's baseline package set.
       system_base_packages:
         type: dict
-        description: Mapping of OS families to lists of essential packages
+        description: Dictionary mapping OS families to lists of required packages.
       system_standard_directories:
         type: list
         elements: str
-        description: List of standard directories to ensure exist
+        description: List of absolute paths to ensure exist on the target system.

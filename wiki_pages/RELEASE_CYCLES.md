@@ -76,4 +76,4 @@ We follow Semantic Versioning (SemVer):
 
 ## Changelog
 
-See [CHANGELOG.md](../CHANGELOG.md) for historical releases.
+See [CHANGELOG.md](CHANGELOG) for historical releases.

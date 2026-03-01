@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100501
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for core/updates role
 # Automatic security patching configuration

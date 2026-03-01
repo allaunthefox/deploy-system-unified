@@ -1,25 +1,26 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100534
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # DisplayPort Alt Mode Support
 # Ensures USB-C and display diagnostics tools are available
 
 - name: Install USB and Display Diagnostics
-  tags: [hardware, gpu, remediate]
   ansible.builtin.package:
     name:
-  tags: [hardware, gpu, remediate]
       - usbutils
       - hwinfo
     state: present
   become: true
 
 - name: Check for USB Type-C Class support in kernel
-  tags: [hardware, gpu, remediate]
   ansible.builtin.stat:
     path: /sys/class/typec
   register: typec_sysfs
 
 - name: Log Type-C Support Status
-  tags: [hardware, gpu, remediate]
   ansible.builtin.debug:
     msg: >-
       USB Type-C subsystem detected: {{ typec_sysfs.stat.exists }}.
@@ -27,13 +28,12 @@
       If missing, ensure 'typec' and 'typec_displayport' modules are loaded.
 
 - name: Load Type-C DisplayPort modules (if available)
-  tags: [hardware, gpu, remediate]
   community.general.modprobe:
     name: typec_displayport
-  tags: [hardware, gpu, remediate]
     state: present
   become: true
   failed_when: false
   when:
     - typec_sysfs.stat.exists
     - not _gpu_is_container | default(false)
+  tags: [hardware,gpu,remediate]

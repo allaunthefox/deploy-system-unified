@@ -1,34 +1,48 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100392
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: vault_integration
-  author: deploysystemunified
-  description: HashiCorp Vault integration for secrets management
+  author: deploy-system-unified
+  description: Enterprise secret management and rotation orchestration via HashiCorp Vault
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
-    - name: Alpine
-      versions: [all]
+      versions:
+        - all
   galaxy_tags:
     - security
     - secrets
     - vault
     - hashicorp
-    - encryption
-    - iso27001
-    - iso27002
+    - rotation
     - compliance
-    - ansible
+    - enterprise
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
     - automation
 
 collections:
   - ansible.builtin
+  - community.general
 
 dependencies: []

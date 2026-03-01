@@ -1,8 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100385
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: sshd
-  author: deploysystemunified
-  description: "POL-SEC | SSH daemon hardening with strong cryptography and access control"
+  author: deploy-system-unified
+  description: SSH daemon hardening with strong cryptography and access control
   company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
@@ -27,32 +31,22 @@ galaxy_info:
       versions:
         - '3.18'
         - '3.19'
-    - name: RockyLinux
-      versions:
-        - '9'
-    - name: AlmaLinux
-      versions:
-        - '9'
   galaxy_tags:
     - security
     - ssh
     - sshd
     - hardening
-    - accesscontrol
+    - access_control
     - cryptography
-    - cis
-    - cislevel1
-    - cislevel2
-    - iso27001
-    - nist80053
-    - identification
-    - authentication
-    - pqc
+    - linux
     - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - cis
+    - compliance
 
 collections:
   - ansible.builtin
   - community.general
-  - community.crypto
 
 dependencies: []

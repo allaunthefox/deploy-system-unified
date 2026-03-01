@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100330
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/hardware_isolation role
 security_hardware_iommu_enabled: true

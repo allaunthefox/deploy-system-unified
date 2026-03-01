@@ -1,0 +1,16 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100016
+# Playbook Type: Unified Preflight Gate
+# Description: Combined preflight assertions and ontological validation
+# Last Updated: 2026-03-01
+# Version: 1.0
+# =============================================================================
+---
+# Unified Preflight Gate
+# This playbook imports all necessary preflight checks to ensure system readiness.
+
+- name: "ISO 9001 | 600013 | Import Preflight Assertions"
+  ansible.builtin.import_playbook: preflight_assertions.yml
+
+- name: "ISO 9001 | 600013 | Import Preflight Validation"
+  ansible.builtin.import_playbook: preflight_validate.yml

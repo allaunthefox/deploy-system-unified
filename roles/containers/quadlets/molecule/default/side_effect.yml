@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000123
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Side Effect
   hosts: localhost
   connection: local

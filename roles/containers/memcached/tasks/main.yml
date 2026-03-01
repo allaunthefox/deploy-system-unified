@@ -1,7 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100100
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 # Memcached Container Role using Podman Quadlets
+# Compliance: ISO 27001 §8.26 / ISO 27040
 
-- name: Create Memcached directories
+- name: "ISO 27040 | 900000 | Create Memcached directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -14,8 +19,10 @@
   tags:
     - containers
     - memcached
+    - storage
+    - 900000
 
-- name: "ISO 27001 §8.26 | Audit Code 700000 | Create Memcached Quadlet"
+- name: "ISO 27001 §8.26 | 700000 | Create Memcached Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/memcached.container"
     content: |
@@ -28,6 +35,12 @@
       Image={{ memcached_image }}
       ContainerName=memcached
       PublishPort={{ memcached_port }}:11211
+      
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-26
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
+      Label=DSU_IMAGE_DIGEST={{ memcached_image.split('@')[1] | default('none') }}
 
       # Pass memory limit to executable (-m <MB>)
       Exec=memcached -m {{ memcached_memory_mb }} -o modern
@@ -52,5 +65,6 @@
     - iso_27001_8_26
     - containers
     - memcached
-    - remediate
+    - deploy
+    - 700000
   notify: reload_systemd

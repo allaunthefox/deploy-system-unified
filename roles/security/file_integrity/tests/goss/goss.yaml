@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100296
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for security/file_integrity role
 # AIDE Configuration, File Monitoring
 # CIS Benchmark: 4.x - Logging and Auditing (File Integrity)

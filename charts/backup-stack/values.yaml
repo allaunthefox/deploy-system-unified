@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300014
+# Last Updated: 2026-02-28
+# =============================================================================
 # Backup Stack Values
 # SECURITY: Do not store credentials here. Use SOPS or external secrets management.
 # NOTE: If no credentials are provided, the chart will generate random defaults for testing.

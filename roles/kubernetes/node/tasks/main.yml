@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100601
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Main entry point for kubernetes/node
 # Compliance: CIS Kubernetes Benchmark 1.x-5.x, STIG V-230500, NIST SC-7/SC-8/AC-3/CM-6, ISO 27001 §8.20/§8.23

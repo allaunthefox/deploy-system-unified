@@ -1,0 +1,34 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100801
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Main tasks for security/headscale
+# Compliance: NIST SC-7, ISO 27001 §13.1
+
+- name: "ISO 27001 §13.1 | 800100 | Check Headscale enablement"
+  ansible.builtin.debug:
+    msg: "Headscale Zero Trust Overlay is {{ 'enabled' if headscale_enabled else 'disabled' }}"
+  tags:
+    - security
+    - headscale
+    - zero_trust
+    - initialization
+
+- name: "ISO 27001 §12.6 | 800106 | Install Headscale"
+  ansible.builtin.include_tasks: install.yml
+  when: headscale_enabled | bool
+  tags:
+    - security
+    - headscale
+    - deploy
+    - 800106
+
+- name: "ISO 27001 §12.1 | 800107 | Configure Headscale"
+  ansible.builtin.include_tasks: configure.yml
+  when: headscale_enabled | bool
+  tags:
+    - security
+    - headscale
+    - config
+    - 800107

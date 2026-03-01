@@ -1,9 +1,13 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100058
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 # Common container utilities and handlers
 # WI-CONT | Work Instructions for Containers
 # ISO 27001 §8.26 - Application Security Controls
 
-- name: "CIS 5.1.1 | Audit Code 700000 | Container Common - Ensure container-specific sysctls are restricted"
+- name: "ISO 27001 §8.26 | 700000 | CIS 5.1.1 | Container Common - Ensure container-specific sysctls are restricted"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -15,9 +19,9 @@
     - { name: 'user.max_user_namespaces', value: '0' }
   become: true
   when: ansible_system == 'Linux'
-  tags: [security, containers, sysctl, audit_code_700000]
+  tags: [security, containers, sysctl, deploy, 700000]
 
-- name: "ISO 27040 | Audit Code 450002 | Storage Pattern - Enforce NOCOW for database directories (Btrfs)"
+- name: "ISO 27040 | 450002 | Storage Pattern - Enforce NOCOW for database directories (Btrfs)"
   ansible.builtin.shell: |
     if [ -d "{{ item }}" ]; then
       if findmnt -n -o FSTYPE -T "{{ item }}" | grep -q "btrfs"; then
@@ -30,16 +34,16 @@
   loop: "{{ containers_nocow_paths | default(['/srv/containers/database', '/srv/containers/immich/db', '/srv/containers/postgres']) }}"
   become: true
   when: ansible_system == 'Linux'
-  tags: [storage, database, performance, audit_code_450002]
+  tags: [storage, database, performance, deploy, 450002]
 
-- name: "Audit Code 450002 | Fix | Clear Podman Storage Lock (Restricted Kernel Fix)"
+- name: "ISO 27001 §8.26 | 450002 | Fix | Clear Podman Storage Lock (Restricted Kernel Fix)"
   ansible.builtin.file:
     path: /var/lib/containers/storage/storage.lock
     state: absent
   become: true
-  tags: [containers, runtime, storage, audit_code_450002]
+  tags: [containers, runtime, storage, deploy, 450002]
 
-- name: "Audit Code 450002 | Ensure Podman Storage Directory Permissions"
+- name: "ISO 27040 | 450002 | Ensure Podman Storage Directory Permissions"
   ansible.builtin.file:
     path: /var/lib/containers/storage
     state: directory
@@ -47,18 +51,18 @@
     group: root
     mode: '0700'
   become: true
-  tags: [containers, runtime, storage, audit_code_450002]
+  tags: [containers, runtime, storage, deploy, 450002]
 
-- name: "ISO 27001 §8.26 | Audit Code 700001 | Container Runtime - Ensure seccomp profile is set"
+- name: "ISO 27001 §8.26 | 700001 | Container Runtime - Ensure seccomp profile is set"
   block:
-    - name: Create container seccomp profile directory
+    - name: "ISO 9001 | 600013 | Create container seccomp profile directory"
       ansible.builtin.file:
         path: /etc/seccomp.d
         state: directory
         mode: '0755'
       become: true
 
-    - name: Deploy container seccomp restrictions
+    - name: "ISO 27001 §8.26 | 700001 | Deploy container seccomp restrictions"
       ansible.builtin.copy:
         dest: /etc/seccomp.d/container-default.json
         content: |
@@ -72,9 +76,9 @@
           }
         mode: '0644'
       become: true
-  tags: [security, containers, audit_code_700001]
+  tags: [security, containers, deploy, 700001]
 
-- name: "ISO 27001 §8.26 | Audit Code 700011 | Container Network - Standardize MTU for Restricted Kernels"
+- name: "ISO 27001 §8.26 | 700011 | Container Network - Standardize MTU for Restricted Kernels"
   ansible.builtin.set_fact:
     containers_standard_mtu: 1400
-  tags: [networking, internal, audit_code_700011]
+  tags: [networking, internal, initialization, 700011]

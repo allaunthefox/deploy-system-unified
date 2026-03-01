@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100503
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Defaults for hardware/firmware
 hardware_cpu_tier: "unknown"
 hardware_is_server_cpu: false

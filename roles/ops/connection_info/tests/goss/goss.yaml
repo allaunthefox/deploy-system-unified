@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100193
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss tests for ops/connection_info role
 # This role handles SSH connection information management

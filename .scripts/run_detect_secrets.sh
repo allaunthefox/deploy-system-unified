@@ -1,11 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400000
+# Last Updated: 2026-03-01
+# =============================================================================
 # Run detect-secrets with the same options used by CI.  This allows
 # developers to reproduce the scan locally and understand failures.
 
 set -euo pipefail
 
-python3 -m pip install --upgrade pip
-python3 -m pip install --upgrade detect-secrets
+python3 -m pip install --upgrade pip >/dev/null
+python3 -m pip install --upgrade detect-secrets >/dev/null
 
 # compute baseline path if present
 if [ -f ".secrets.baseline" ]; then
@@ -37,7 +41,7 @@ if [ -n "$BASELINE" ]; then
   cp "$BASELINE" "$tmp_baseline"
   # run scan against copy and diff results exactly like CI
   (
-    cd "$base_dir"
+    cd "$base_dir" || exit 1
     detect-secrets scan "${EXCLUDES[@]}" --baseline "$tmp_baseline" 1>/dev/null 2> .secrets_scan.err
   )
   cp "$tmp_baseline" .secrets_scan.json
@@ -52,9 +56,11 @@ if [ -n "$BASELINE" ]; then
   if [ -n "$new_secrets" ]; then
     echo "New potential secrets detected (not present in baseline):"
     echo "$new_secrets"
+    rm -f "$baseline_fps" "$tmp_fps" "$tmp_baseline"
     exit 1
   fi
   echo "No new secrets detected."
+  rm -f "$baseline_fps" "$tmp_fps" "$tmp_baseline"
 else
   echo "No baseline found, running fresh scan..."
   detect-secrets scan --all-files "${EXCLUDES[@]}" > .secrets_scan.json 2> .secrets_scan.err

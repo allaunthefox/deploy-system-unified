@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100749
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-125 | Virtualization Security
 # Internal variables for virtualization/kvm role
 # These are NOT user-overridable and define internal state
 

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100078
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Set Intel variables
   tags: [containers, lxc, gpu, intel]
   ansible.builtin.set_fact:

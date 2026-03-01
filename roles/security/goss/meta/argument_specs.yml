@@ -1,33 +1,54 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100313
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: goss role for server validation and testing
+    short_description: Goss-based continuous security monitoring
     description:
-      - Deploys and configures Goss for server validation
-      - Manages health checks and compliance testing
-      - Aligns with ISO 27001 requirements
+      - This role installs and configures Goss for real-time security state validation, drift detection, and automated remediation.
     options:
-      goss_enable:
+      goss_version:
+        type: str
+        default: "v0.4.4"
+        description: The version of Goss to install.
+      goss_install_type:
+        type: str
+        default: "static"
+        choices: ["static", "go"]
+        description: The method used to install Goss.
+      goss_output_format:
+        type: str
+        default: "json"
+        choices: ["json", "rspecish", "documentation", "junit", "tap", "nagios"]
+        description: The format used for Goss validation results.
+      goss_enable_drift_detection:
         type: bool
-        required: false
         default: true
-        description:
-          - Enable or disable goss role execution
-      goss_install_dir:
+        description: Whether to enable periodic drift detection.
+      goss_enable_auto_remediation:
+        type: bool
+        default: false
+        description: Whether to automatically attempt to remediate detected drift.
+      goss_enable_cron:
+        type: bool
+        default: true
+        description: Whether to schedule periodic Goss validation via cron.
+      goss_cron_minute:
         type: str
-        required: false
-        default: "/usr/local/bin"
-        description:
-          - Installation directory for goss binary
-      goss_port:
-        type: int
-        required: false
-        default: 8080
-        description:
-          - Port for goss server to listen on
-      goss_test_file:
+        default: "0"
+        description: Minute for the Goss cron job.
+      goss_cron_hour:
         type: str
-        required: false
-        default: ""
-        description:
-          - Path to goss test definition file
+        default: "*/6"
+        description: Hour for the Goss cron job.
+      goss_log_dir:
+        type: str
+        default: "/var/log/goss"
+        description: Directory to store Goss validation logs.
+      goss_tags:
+        type: list
+        elements: str
+        default: ["security", "monitoring", "goss", "testing"]
+        description: Tags assigned to the Goss role for metadata tracking.

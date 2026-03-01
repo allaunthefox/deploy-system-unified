@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100357
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for security/resource_protection role
 # DoS and Resource Exhaustion Mitigation (ulimits, systemd limits)
 # ISO 27001 §8.26 | CIS 1.7 | NIST AC-6

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100249
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # Defaults for security/ima_enforcement - Runtime Binary Integrity
 
 ima_enabled: true
@@ -13,6 +18,17 @@ ima_policy: "tcb"
 # log: Audit only (Mirage mode - avoid in production)
 ima_appraise_mode: "enforce"
 
-# IMA Template
 # template=ima-sig: Includes cryptographic signatures in measurements
 ima_template: "ima-sig"
+
+# IMA Key Locations (NIST SP 800-53 SC-13)
+ima_key_dir: "/etc/keys"
+ima_private_key: "{{ ima_key_dir }}/ima.key"
+ima_public_key: "{{ ima_key_dir }}/ima.crt"
+ima_x509_cert: "{{ ima_key_dir }}/x509_ima.der"
+
+# Key Rotation Settings
+ima_key_rotation_enabled: true
+ima_key_rotation_interval: "yearly" # Options: monthly, quarterly, yearly
+ima_key_rotation_script: "/usr/local/bin/ima-rotate-keys.sh"
+ima_key_rotation_log: "/var/log/ima-rotation.log"

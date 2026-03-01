@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100845
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # SELinux State Normalization
 # Ensures consistent SELinux policy across RHEL-family systems

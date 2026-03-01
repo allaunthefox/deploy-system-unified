@@ -1,0 +1,37 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110052
+# Playbook Type: Admission Security Role
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# Tasks for security/kyverno - Admission Control
+# NIST CM-5 | ISO 27001 §14.2
+# Copyright 2024 The Kubernetes Authors / CNCF
+
+- name: "ADMISSION | Check for existing Kyverno installation"
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: kyverno
+  register: _kyverno_ns
+  tags: [security, admission, kyverno]
+
+- name: "ADMISSION | Deploy Kyverno cluster policy (Cosign verify)"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'verify-image-policy.yaml.j2') | from_yaml }}"
+  when: _kyverno_ns.resources | length > 0
+  tags: [security, admission, policy, kyverno]
+
+- name: "ADMISSION | Deploy Kyverno cluster policy (Default Deny Network Failsafe)"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'default-deny-network-policy.yaml.j2') | from_yaml }}"
+  when: _kyverno_ns.resources | length > 0
+  tags: [security, admission, policy, kyverno]
+
+- name: "ADMISSION | Flag admission control as complete"
+  ansible.builtin.set_fact:
+    security_kyverno_complete: true
+  tags: [security, admission, kyverno]

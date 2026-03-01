@@ -1,40 +1,66 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100458
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core memory optimization role
+    short_description: Intelligent memory optimization and compression
     description:
-      - Automatically selects and configures memory compression (ZRAM or ZSwap)
-      - Tunes virtual memory parameters (swappiness, cache pressure)
-      - Manages Transparent Huge Pages (THP) for database workloads
+      - This role optimizes system memory usage through ZRAM, ZSwap, and sysctl tuning based on hardware capabilities and workload profiles.
     options:
       core_memory_compression_strategy:
         type: str
-        description: Optimization strategy (auto, zram, zswap, none)
-        choices: [auto, zram, zswap, none]
-        default: auto
+        default: "auto"
+        choices: ["auto", "zram", "zswap", "none"]
+        description: The strategy used for memory compression.
       core_memory_shared_vram:
         type: str
-        description: Handle systems with shared video memory
-        default: auto
+        default: "auto"
+        description: How to handle shared video memory detection and optimization.
       core_memory_workload_profile:
         type: str
-        description: Performance profile (standard, database, latency-sensitive)
-        choices: [standard, database, latency-sensitive]
-        default: standard
+        default: "standard"
+        choices: ["standard", "database", "latency-sensitive"]
+        description: The system workload profile used to select tuning parameters.
       core_memory_thp_state:
         type: str
-        description: Transparent Huge Pages state (always, madvise, never)
-        choices: [always, madvise, never]
-        default: always
+        default: "always"
+        choices: ["always", "madvise", "never"]
+        description: The state of Transparent Huge Pages (THP).
       core_memory_zram_size_percent:
         type: int
-        description: Percentage of RAM to use for ZRAM
         default: 50
+        description: Percentage of total RAM to allocate to ZRAM.
       core_memory_zram_algorithm:
         type: str
-        description: ZRAM compression algorithm
-        default: zstd
+        default: "zstd"
+        description: Compression algorithm for ZRAM.
+      core_memory_zram_priority:
+        type: int
+        default: 100
+        description: Priority of the ZRAM swap device.
       core_memory_zswap_compressor:
         type: str
-        description: ZSwap compression algorithm
-        default: zstd
+        default: "zstd"
+        description: Compressor for ZSwap.
+      core_memory_zswap_zpool:
+        type: str
+        default: "zsmalloc"
+        description: Zpool type for ZSwap.
+      core_memory_zswap_max_pool_percent:
+        type: int
+        default: 20
+        description: Maximum size of the ZSwap pool as a percentage of total RAM.
+      core_memory_swappiness:
+        type: int
+        description: The kernel swappiness value.
+      core_memory_cache_pressure:
+        type: int
+        description: The kernel vfs_cache_pressure value.
+      core_memory_dirty_bytes:
+        type: int
+        description: Fixed amount of dirty memory before writeback begins.
+      core_memory_dirty_background_bytes:
+        type: int
+        description: Amount of dirty memory before background writeback begins.

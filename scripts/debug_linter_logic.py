@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500120
+# Last Updated: 2026-02-28
+# =============================================================================
 """Debug script to test the linter logic directly."""
 
 import re

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100843
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # IPv6 Policy Enforcement
 # Explicitly asserts IPv6 policy (disable or harden)

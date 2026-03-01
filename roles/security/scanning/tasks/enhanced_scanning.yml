@@ -1,25 +1,42 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100378
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 # Enhanced security scanning for Deploy-System-Unified
-- name: "ISO 27001 §12.2 | Audit Code 520010 | Run comprehensive security scan (idempotent)"
+# Compliance: ISO 27001 §12.2, §5.37 | NIST RA-5 | CIS Docker 4.x
+
+- name: "ISO 27001 §12.2 | 520010 | Run comprehensive security scan"
   ansible.builtin.shell: |
-    
     scan_results=""
     
-    # REQUIRE Trivy
-    trivy_results=$(trivy filesystem /srv /etc/containers --security-checks vuln,config,secret --format json 2>/dev/null)
-    trivy_critical=$(echo "$trivy_results" | jq -r '.Results[] | select(.Severity == "CRITICAL")' | wc -l)
+    # REQUIRE Trivy: Filesystem Scan
+    trivy_fs=$(trivy filesystem /srv /etc/containers --security-checks vuln,config,secret --severity CRITICAL --format json 2>/dev/null)
+    trivy_critical=$(echo "$trivy_fs" | jq -r 'if .Results then [.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length else 0 end' 2>/dev/null || echo "0")
     scan_results="$scan_results TRIVY_CRITICAL:$trivy_critical"
     
-    # REQUIRE Checkov
+    # REQUIRE Trivy: Image Scan (Top 5 active containers)
+    if command -v podman >/dev/null 2>&1; then
+      image_vulns=0
+      for img in $(podman images --format "{% raw %}{{.Repository}}:{{.Tag}}{% endraw %}" | head -n 5); do
+        count=$(trivy image --severity CRITICAL --format json "$img" 2>/dev/null | jq -r 'if .Results then [.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length else 0 end' 2>/dev/null || echo "0")
+        image_vulns=$((image_vulns + count))
+      done
+      scan_results="$scan_results IMAGE_CRITICAL:$image_vulns"
+    else
+      scan_results="$scan_results IMAGE_CRITICAL:0"
+    fi
+
+    # REQUIRE Checkov: IaC Scan
     checkov_results=$(checkov --directory /etc/containers --compact --output json 2>/dev/null)
     checkov_critical=$(echo "$checkov_results" | jq -r '.results.failed_checks[] | select(.severity=="HIGH" or .severity=="CRITICAL")' | wc -l)
     scan_results="$scan_results CHECKOV_CRITICAL:$checkov_critical"
     
-    # REQUIRE TruffleHog
-    secret_results=$(trufflehog git . --since-commit HEAD~1 --only-verified 2>&1 | grep -i "found" | wc -l)
+    # REQUIRE TruffleHog: Secret Scan
+    secret_results=$(trufflehog git file:///srv/containers --since-commit HEAD~1 --only-verified 2>&1 | grep -i "found" | wc -l)
     scan_results="$scan_results TRUFFLEHOG_SECRETS:$secret_results"
 
-    # REQUIRE ClamAV
+    # REQUIRE ClamAV: Malware Scan
     clamav_output=$(clamscan -r --no-summary /srv /etc/containers 2>/dev/null | grep -c "FOUND")
     scan_results="$scan_results CLAMAV_VIRUSES:$clamav_output"
 
@@ -27,43 +44,40 @@
   register: comprehensive_scan
   changed_when: false
   no_log: true
-  tags:
-    - iso_27001_12_2
-    - security
-    - scanning
-    - audit
   args:
     executable: /bin/sh
-    
   when: not security_scanning_ephemeral_skip | bool
+  tags: [iso_27001_12_2, nist_ra_5, security, scanning, audit, 520010]
 
-- name: Parse security scan results (idempotent)
+- name: "ISO 9001 | 600013 | Parse security scan results"
   ansible.builtin.set_fact:
-    trivy_critical_vulns: >-
-      {{ comprehensive_scan.stdout | regex_search('TRIVY_CRITICAL:([0-9]+)', '\1') | first | default('0') | int
-         if 'TRIVY_CRITICAL:' in (comprehensive_scan.stdout | default('')) else 0 }}
-    checkov_critical_issues: >-
-      {{ comprehensive_scan.stdout | regex_search('CHECKOV_CRITICAL:([0-9]+)', '\1') | first | default('0') | int
-         if 'CHECKOV_CRITICAL:' in (comprehensive_scan.stdout | default('')) else 0 }}
-    trufflehog_secrets_found: >-
-      {{ comprehensive_scan.stdout | regex_search('TRUFFLEHOG_SECRETS:([0-9]+)', '\1') | first | default('0') | int
-         if 'TRUFFLEHOG_SECRETS:' in (comprehensive_scan.stdout | default('')) else 0 }}
-    clamav_viruses_found: >-
-      {{ comprehensive_scan.stdout | regex_search('CLAMAV_VIRUSES:([0-9]+)', '\1') | first | default('0') | int
-         if 'CLAMAV_VIRUSES:' in (comprehensive_scan.stdout | default('')) else 0 }}
-  tags:
-    - security
-    - scanning
+    trivy_critical_vulns: "{{ comprehensive_scan.stdout | regex_search('TRIVY_CRITICAL:([0-9]+)', '\\1') | first | default('0') | int }}"
+    image_critical_vulns: "{{ comprehensive_scan.stdout | regex_search('IMAGE_CRITICAL:([0-9]+)', '\\1') | first | default('0') | int }}"
+    checkov_critical_issues: "{{ comprehensive_scan.stdout | regex_search('CHECKOV_CRITICAL:([0-9]+)', '\\1') | first | default('0') | int }}"
+    trufflehog_secrets_found: "{{ comprehensive_scan.stdout | regex_search('TRUFFLEHOG_SECRETS:([0-9]+)', '\\1') | first | default('0') | int }}"
+    clamav_viruses_found: "{{ comprehensive_scan.stdout | regex_search('CLAMAV_VIRUSES:([0-9]+)', '\\1') | first | default('0') | int }}"
+  when: not security_scanning_ephemeral_skip | bool
+  tags: [security, scanning, internal, 600013]
 
-- name: "ISO 27001 §12.2 | Audit Code 520011 | Validate security scan results (idempotent)"
+- name: "ISO 27001 §12.2 | 520011 | Validate security scan thresholds"
   ansible.builtin.assert:
     that:
       - trivy_critical_vulns == 0
-      - checkov_critical_issues == 0
+      - image_critical_vulns == 0
+      - checkov_critical_issues <= security_scanning_checkov_issue_threshold | default(0)
       - trufflehog_secrets_found == 0
       - clamav_viruses_found == 0
+    fail_msg: >-
+      Critical security issues detected! 
+      Trivy FS: {{ trivy_critical_vulns }}, 
+      Trivy Image: {{ image_critical_vulns }}, 
+      Checkov: {{ checkov_critical_issues }}, 
+      Secrets: {{ trufflehog_secrets_found }}, 
+      Malware: {{ clamav_viruses_found }}
+  when: not security_scanning_ephemeral_skip | bool
+  tags: [iso_27001_12_2, security, scanning, verification, 520011]
 
-- name: "ISO 27001 §5.37 | Audit Code 520046 | Check for SBOM-driven Vulnerabilities"
+- name: "ISO 27001 §5.37 | 520046 | Check for SBOM-driven Vulnerabilities"
   ansible.builtin.shell: |
     if [ -f "{{ playbook_dir }}/ci-artifacts/sbom/sbom.json" ]; then
       if command -v trivy >/dev/null 2>&1; then
@@ -73,4 +87,4 @@
   delegate_to: localhost
   run_once: true
   changed_when: false
-  tags: [security, scanning, sbom, audit]
+  tags: [security, scanning, sbom, audit, 520046]

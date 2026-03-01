@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100329
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for security/hardware_isolation role
 # IOMMU, DMA Protection, Hardware Security
 # CIS Benchmark: 1.x, 3.x - System and Network Hardening

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100147
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Set passthrough devices based on vendor
   tags: [containers, runtime, gpu, passthrough]
   ansible.builtin.set_fact:

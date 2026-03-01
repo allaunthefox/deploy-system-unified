@@ -1,0 +1,48 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100340
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+galaxy_info:
+  role_name: penetration_testing
+  author: deploy-system-unified
+  description: Automated penetration testing and security auditing framework
+  company: Deploy-System-Unified Project
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Fedora
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+  galaxy_tags:
+    - security
+    - testing
+    - pentest
+    - compliance
+    - auditing
+    - lynis
+    - nmap
+    - linux
+    - automation
+    - redteam
+    - blue-team
+    - verification
+
+collections:
+  - ansible.builtin
+  - community.general
+
+dependencies: []

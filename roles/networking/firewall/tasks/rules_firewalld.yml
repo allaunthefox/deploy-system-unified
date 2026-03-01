@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100624
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Firewalld-specific rules (RedHat/CentOS/Fedora)
 # Compliance: CIS 4.4.x | STIG V-230271 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.23

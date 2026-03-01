@@ -1,2 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100102
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # vars file for containers/memcached

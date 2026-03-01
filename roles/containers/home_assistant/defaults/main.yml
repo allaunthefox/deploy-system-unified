@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100166
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Defaults for containers/home_assistant - Privacy-first Automation
 # CVE-DSU-028: Image Digest Pinned
 

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100019
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Deploy-System-Unified - Docker Compose (Podman Docker Compatibility Mode)
 #

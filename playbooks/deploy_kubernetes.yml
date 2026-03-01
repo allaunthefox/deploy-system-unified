@@ -2,21 +2,21 @@
 # Audit Event Identifier: DSU-PLY-100004
 # Playbook Type: Kubernetes Deployment
 # Description: Deploys the stack using K3s and Helm charts
-# Last Updated: 2026-02-28
-# Version: 1.0
+# Last Updated: 2026-03-01
+# Version: 1.1
 # =============================================================================
 ---
 # Kubernetes Deployment Playbook
 # Deploys the stack using K3s and Helm charts
 
-- name: Setup Kubernetes Infrastructure
+- name: "ISO 27001 §14.2 | 100004 | Setup Kubernetes Infrastructure"
   hosts: k8s_master
   become: true
   roles:
     - role: kubernetes/master
       tags: [kubernetes, master]
 
-- name: Join Kubernetes Nodes
+- name: "ISO 27001 §14.2 | 100004 | Join Kubernetes Nodes"
   hosts: k8s_nodes
   become: true
   vars:
@@ -34,10 +34,10 @@
       ignore_errors: true
       tags: [kubernetes, internal, 600013]
 
-    - name: "ISO 27001 §8.20 | Audit Code 820000 | Join node to cluster"
+    - name: "ISO 27001 §8.20 | 820000 | Join node to cluster"
       when: k3s_server_url and k3s_node_token and not k3s_agent.failed
       block:
-        - name: "ISO 27001 §8.19 | Audit Code 530000 | Download K3s install script"
+        - name: "ISO 27001 §8.19 | 530000 | Download K3s install script"
           ansible.builtin.get_url:
             url: https://get.k3s.io
             dest: /tmp/k3s-install.sh
@@ -48,7 +48,7 @@
           become: true
           tags: [kubernetes, security, 530000]
 
-        - name: "ISO 27001 §8.20 | Audit Code 820000 | Execute K3s installer for node join"
+        - name: "ISO 27001 §8.20 | 820000 | Execute K3s installer for node join"
           ansible.builtin.command:
             cmd: /bin/bash /tmp/k3s-install.sh
             creates: /var/lib/rancher/k3s/agent/etc/k3s-agent.yaml
@@ -61,7 +61,7 @@
             ansible_no_log: true
           tags: [kubernetes, deploy, 820000]
 
-- name: Deploy Helm Charts
+- name: "ISO 27001 §14.2 | 100004 | Deploy Helm Charts"
   hosts: k8s_master
   become: true
   vars:
@@ -104,9 +104,9 @@
         state: present
 
   tasks:
-    - name: "ISO 27001 §8.19 | Audit Code 530000 | Install Helm if not present"
+    - name: "ISO 27001 §8.19 | 530000 | Install Helm if not present"
       block:
-        - name: "ISO 9001 | Audit Code 600013 | Check if Helm is installed"
+        - name: "ISO 9001 | 600013 | Check if Helm is installed"
           ansible.builtin.command:
             cmd: which helm
           register: helm_check
@@ -114,7 +114,7 @@
           changed_when: false
           tags: [helm, internal, 600013]
 
-        - name: "ISO 27001 §8.19 | Audit Code 530000 | Download Helm install script"
+        - name: "ISO 27001 §8.19 | 530000 | Download Helm install script"
           ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
             dest: /tmp/get-helm-3.sh
@@ -125,7 +125,7 @@
           become: true
           tags: [helm, security, 530000]
 
-        - name: "ISO 27001 §8.19 | Audit Code 530000 | Execute Helm installer"
+        - name: "ISO 27001 §8.19 | 530000 | Execute Helm installer"
           ansible.builtin.command:
             cmd: /bin/bash /tmp/get-helm-3.sh
             creates: /usr/local/bin/helm
@@ -135,7 +135,7 @@
             ansible_no_log: true
           tags: [helm, deploy, 530000]
 
-    - name: "ISO 27001 §8.22 | Audit Code 700030 | Create Kubernetes namespaces"
+    - name: "ISO 27001 §8.22 | 700030 | Create Kubernetes namespaces"
       kubernetes.core.k8s:
         name: "{{ item.namespace }}"
         kind: Namespace
@@ -144,7 +144,7 @@
       ignore_errors: true
       tags: [kubernetes, deploy, 700030]
 
-    - name: "ISO 27001 §8.20 | Audit Code 700000 | Deploy Helm charts"
+    - name: "ISO 27001 §8.20 | 700000 | Deploy Helm charts"
       kubernetes.core.helm:
         name: "{{ item.name }}"
         chart_ref: "{{ item.chart }}"
@@ -154,11 +154,11 @@
       when: item.state == 'present'
       tags: [helm, deploy, 700000]
 
-- name: Validate Helm Deployments
+- name: "ISO 27001 §14.2 | 100004 | Validate Helm Deployments"
   hosts: k8s_master
   become: true
   tasks:
-    - name: "ISO 9001 | Audit Code 600013 | Wait for all deployments to be ready"
+    - name: "ISO 9001 | 600013 | Wait for all deployments to be ready"
       kubernetes.core.k8s_info:
         kind: Deployment
         namespace: "{{ item }}"

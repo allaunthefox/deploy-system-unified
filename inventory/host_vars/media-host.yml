@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-INV-700009
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Media Stack Custom Configuration
 # Scenario: Deploy ARR stack with external shared data access

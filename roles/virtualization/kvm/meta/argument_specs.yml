@@ -1,13 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100280
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Virtualization KVM role
+    short_description: KVM hypervisor management and virtual machine orchestration
     description:
-      - Installs KVM, QEMU, and libvirt stack
-      - Configures restrictive security settings for the hypervisor
-      - Ensures necessary kernel modules are loaded for virtualization
-    options:
-      virtualization_kvm_enabled:
-        type: bool
-        description: Enable or disable the KVM role
-        default: true
+      - This role installs and configures the KVM/QEMU virtualization stack, including libvirt management and security hardening.
+    options: {} # Role uses internal fact-based detection and standard service defaults

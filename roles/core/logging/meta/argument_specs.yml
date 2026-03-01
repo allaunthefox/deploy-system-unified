@@ -1,32 +1,30 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100451
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core system logging role
+    short_description: Forensic logging and centralized log management
     description:
-      - Configures journald for persistent, high-integrity logging
-      - Implements log shipping via rsyslog
-      - Aligns with ISO 27001 §12.4 and ISO 27037 standards
+      - This role configures systemd-journald and other logging facilities for forensic integrity and retention.
     options:
       logging_journal_remote_packages:
         type: dict
-        description: Package mapping for journal remote capabilities
+        description: Dictionary mapping OS distributions to the correct systemd-journal-remote package names.
       logging_rate_limit_interval:
         type: str
-        description: journald rate limit interval
-        default: 30s
+        default: "30s"
+        description: The time interval for journald rate limiting.
       logging_rate_limit_burst:
         type: str
-        description: journald rate limit burst
         default: "1000"
+        description: The maximum number of messages allowed within the interval.
       logging_max_file_sec:
         type: str
-        description: Maximum time before log rotation
-        default: 1day
+        default: "1day"
+        description: The maximum time a single log file is kept before rotating.
       logging_max_retention_sec:
         type: str
-        description: Maximum log retention time
-        default: 30day
-      logging_central_server:
-        type: str
-        description: Central rsyslog server address
-        default: logs.example.com
+        default: "30day"
+        description: The maximum overall retention period for logs.

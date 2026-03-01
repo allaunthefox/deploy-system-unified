@@ -1,4 +1,8 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400031
+# Last Updated: 2026-02-28
+# =============================================================================
 # Stability 2026 - Idempotence Verification Tool
 # This script runs a playbook and ensures that a subsequent run produces zero changes.
 

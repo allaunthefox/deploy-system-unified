@@ -1,6 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100446
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for core/identity role
-# CIS 5.1.1 | STIG V-230340 | NIST IA-2 | ISO 27001 §9.2 | ISO 8000-110
 ---
+# CIS 5.1.1 | STIG V-230340 | NIST IA-2 | ISO 27001 §9.2 | ISO 8000-110
 command:
   # Verify UUID generation works
   cat /proc/sys/kernel/random/uuid:

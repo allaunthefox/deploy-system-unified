@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100427
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for core/grub role
 # Centralized bootloader management

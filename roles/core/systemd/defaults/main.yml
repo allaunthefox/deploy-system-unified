@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100480
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 CM-5 | ISO 27001 §12.1
 # Defaults for core/systemd role
 systemd_configure_journald: true
 systemd_configure_resolved: true

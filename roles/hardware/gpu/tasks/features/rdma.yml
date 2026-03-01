@@ -1,9 +1,13 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100537
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # RDMA (Remote Direct Memory Access) Support
 # Installs core userspace verbs and diagnostic tools
 
 - name: Define RDMA packages (Debian/Ubuntu)
-  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     rdma_packages:
       - rdma-core
@@ -13,7 +17,6 @@
   when: ansible_facts['os_family'] == 'Debian'
 
 - name: Define RDMA packages (RedHat/Fedora)
-  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     rdma_packages:
       - rdma-core
@@ -23,7 +26,6 @@
   when: ansible_facts['os_family'] == 'RedHat'
 
 - name: Define RDMA packages (Alpine)
-  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     rdma_packages:
       - rdma-core
@@ -31,19 +33,15 @@
   when: ansible_facts['os_family'] == 'Alpine'
 
 - name: Install RDMA Core Stack
-  tags: [hardware, gpu, remediate]
   ansible.builtin.package:
     name: "{{ rdma_packages }}"
-  tags: [hardware, gpu, remediate]
     state: present
   become: true
   when: rdma_packages is defined
 
 - name: Load essential RDMA kernel modules
-  tags: [hardware, gpu, remediate]
   community.general.modprobe:
     name: "{{ item }}"
-  tags: [hardware, gpu, remediate]
     state: present
   loop:
     - ib_core
@@ -54,12 +52,11 @@
   failed_when: false # Kernel might not support RDMA modules
 
 - name: Enable RDMA service (RedHat/Debian)
-  tags: [hardware, gpu, remediate]
   ansible.builtin.systemd:
     name: rdma
-  tags: [hardware, gpu, remediate]
     enabled: true
     state: started
   become: true
   when: ansible_facts['os_family'] == 'RedHat'
   failed_when: false
+  tags: [hardware,gpu,remediate]

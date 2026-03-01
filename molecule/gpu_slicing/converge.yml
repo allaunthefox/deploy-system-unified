@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000734
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 - name: Converge GPU Slicing
   hosts: all
@@ -59,6 +63,13 @@
     - role: ops/monitoring
       vars:
         monitoring_enable_smartmon: false
+
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "nvidia"
+        gpu_mock_lspci_output: "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD102 [GeForce RTX 4090] [10de:2684] (rev a1)"
+        gpu_mock_nvidia_smi_output: "NVIDIA-SMI 535.113.01 Driver Version: 535.113.01 CUDA Version: 12.2"
 
     # GPU-specific configuration with slicing
     - role: containers/runtime

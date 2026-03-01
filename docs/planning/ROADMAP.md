@@ -14,9 +14,9 @@ This roadmap provides a high-level view of project direction. For detailed execu
 
 | Horizon | Timeframe | Focus |
 |---------|-----------|-------|
-| **Current** | Q1 2026 (Jan-Mar) | ✅ Complete - Stability, idempotence, GPU orchestration |
-| **Near-Term** | Q2 2026 (Apr-Jun) | Enterprise features, compliance, secrets |
-| **Mid-Term** | Q3-Q4 2026 (Jul-Dec) | Community growth, advanced features |
+| **Current** | Q1 2026 (Jan-Mar) | ✅ Complete - Stability, Wiki, Security Hardening |
+| **Near-Term** | Q2 2026 (Apr-Jun) | Enterprise features, HA Kubernetes, Zero Trust |
+| **Mid-Term** | Q3-Q4 2026 (Jul-Dec) | Community growth, Advanced GPU (pending HW) |
 | **Long-Term** | 2027+ | Ecosystem expansion |
 
 ---
@@ -27,10 +27,8 @@ This roadmap provides a high-level view of project direction. For detailed execu
 |------|--------|-------|------------|
 | **[Phase 3: Secrets & K8s Plan](PHASE3_SECRETS_K8S_PLAN.md)** | ✅ Complete | SOPS migration, Kubernetes scaling | Feb 2026 |
 | **[Stability Execution Plan](STABILITY_EXECUTION_PLAN_2026.md)** | ✅ Complete | Idempotence, GPU orchestration | Feb 2026 |
-| **[Phased Execution Plan](PHASED_EXECUTION_PLAN.md)** | ✅ Complete | Task breakdown | Feb 2026 |
-| **[Role Enhancement Execution Plan](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md)** | ✅ Complete | Role metadata, compliance | Feb 2026 |
-| **[Compliance Framework Integration Plan](COMPLIANCE_FRAMEWORK_INTEGRATION_PLAN.md)** | ✅ Complete | CIS/STIG/NIST mapping | Feb 2026 |
-| **[Security Enhancement Plan 2026](SECURITY_ENHANCEMENT_PLAN_2026.md)** | ✅ Complete | Security hardening, monitoring | Feb 2026 |
+| **Wiki Orchestration Plan** | ✅ Complete | Automated wiki generation & maintenance | Mar 2026 |
+| **Security Hardening Phase** | ✅ Complete | Local CodeQL, Bandit, Safety integration | Mar 2026 |
 
 ---
 
@@ -82,12 +80,15 @@ This roadmap provides a high-level view of project direction. For detailed execu
 **Theme:** Advanced Networking & Orchestration
 
 **Goals:**
+- ✅ Local Security Audit Suite (Bandit, Safety, CodeQL)
+- ✅ Automated Wiki Orchestration (scripts/generate_wiki.py)
 - 🟡 Headscale/Tailscale Zero Trust integration
 - 🟡 Automated Secret Rotation (Vault)
 - 🟡 Service Mesh (Linkerd/Kuma)
 - 🟡 High-Availability Kubernetes (HA Master)
 
-**Status:** **Active**
+**Status:** **Active** (March 2026)
+**Execution Plan:** [Q3_2026_EXECUTION_PLAN.md](Q3_2026_EXECUTION_PLAN.md)
 
 **Documentation:**
 - [ROLE_ENHANCEMENT_EXECUTION_PLAN_2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026.md)
@@ -193,5 +194,5 @@ This roadmap provides a high-level view of project direction. For detailed execu
 
 ---
 
-*Last updated: February 2026*
-*Next review: Q2 2026 (April 2026)*
+*Last updated: March 2026*
+*Next review: Q2 2026 (June 2026)*

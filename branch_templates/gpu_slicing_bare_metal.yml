@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100767
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # WARNING: THIS IS A REFERENCE TEMPLATE ONLY.
 # DO NOT RUN THIS PLAYBOOK DIRECTLY FOR PRODUCTION DEPLOYMENTS.

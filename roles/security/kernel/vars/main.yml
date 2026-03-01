@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100344
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/kernel role
 security_kernel_sysctl_path: "/etc/sysctl.d/99-security-hardening.conf"

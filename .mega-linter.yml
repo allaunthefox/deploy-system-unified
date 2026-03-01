@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100000
+# Last Updated: 2026-02-28
+# =============================================================================
 # MegaLinter configuration - disable failure on warnings
 DISABLE_ERRORS: true
 DISABLE_LINTERS:

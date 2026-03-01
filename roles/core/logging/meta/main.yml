@@ -1,34 +1,50 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100451
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: logging
-  author: deploysystemunified
-  description: "STD-CORE | Forensic logging and centralized log management (journald, rsyslog)"
+  author: deploy-system-unified
+  description: Forensic logging and centralized log management (journald, rsyslog)
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - core
     - logging
     - forensic
-    - journald
-    - rsyslog
     - audit
     - monitoring
-    - iso27001
-    - iso27037
-    - nist80053
-    - security
+    - journald
+    - rsyslog
+    - linux
     - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - security
+    - automation
 
 collections:
   - ansible.builtin

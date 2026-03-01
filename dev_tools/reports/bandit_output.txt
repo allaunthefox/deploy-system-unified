@@ -1,0 +1,196 @@
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	running on Python 3.14.3
+[manager]	WARNING	Test in comment: shell is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: True is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: is is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: required is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: here is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: to is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: source is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: and is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: execute is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: shell is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: functions is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: in is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: a is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: controlled is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: test is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: environment is not a test name or id, ignoring
+Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:02
+Run started:2026-03-01 04:46:41.335985+00:00
+
+Test results:
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/bootstrap/tests/testinfra/test_bootstrap.py:143:22
+142	        """Verify /tmp directory exists."""
+143	        d = host.file("/tmp")
+144	        assert d.exists, "/tmp directory should exist"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/bootstrap/tests/testinfra/test_bootstrap.py:144:25
+143	        d = host.file("/tmp")
+144	        assert d.exists, "/tmp directory should exist"
+145	        assert d.is_directory, "/tmp should be a directory"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/bootstrap/tests/testinfra/test_bootstrap.py:145:31
+144	        assert d.exists, "/tmp directory should exist"
+145	        assert d.is_directory, "/tmp should be a directory"
+146	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:68:23
+67	        # Tmux uses /tmp for sockets by default
+68	        socket_dirs = ["/tmp/tmux", "/var/run/tmux"]
+69	        has_socket_dir = False
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:182:22
+181	        """Verify sticky bit is set on /tmp."""
+182	        d = host.file("/tmp")
+183	        if d.exists:
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:187:49
+186	            has_sticky = (mode & 0o1000) != 0
+187	            assert has_sticky or mode == 0o1777, "/tmp should have sticky bit set"
+188	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:191:22
+190	        """Verify sticky bit is set on /var/tmp."""
+191	        d = host.file("/var/tmp")
+192	        if d.exists:
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:195:49
+194	            has_sticky = (mode & 0o1000) != 0
+195	            assert has_sticky or mode == 0o1777, "/var/tmp should have sticky bit set"
+196	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sandboxing/tests/testinfra/test_sandboxing.py:265:22
+264	        """Verify /tmp is available for sandboxing."""
+265	        d = host.file("/tmp")
+266	        assert d.exists, "/tmp should exist"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sandboxing/tests/testinfra/test_sandboxing.py:266:25
+265	        d = host.file("/tmp")
+266	        assert d.exists, "/tmp should exist"
+267	        assert d.is_directory, "/tmp should be a directory"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sandboxing/tests/testinfra/test_sandboxing.py:267:31
+266	        assert d.exists, "/tmp should exist"
+267	        assert d.is_directory, "/tmp should be a directory"
+268	
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:18:13
+17	        req = urllib.request.Request(url)
+18	        with urllib.request.urlopen(req) as response:
+19	            data = json.load(response)
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:27:13
+26	    try:
+27	        with urllib.request.urlopen(auth_url) as response:
+28	            token_data = json.load(response)
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:34:13
+33	        req.add_header("Authorization", f"Bearer {token}")
+34	        with urllib.request.urlopen(req) as response:
+35	            data = json.load(response)
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:22:21
+21	        if shell:
+22	            result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+23	        else:
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 15670
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 1564
+		Medium: 14
+		High: 1
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 14
+		High: 1565
+Files skipped (3):
+	/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_handler_name_convention.py (syntax error while parsing AST from file)
+	/home/prod/Workspaces/repos/github/deploy-system-unified/fix_gen.py (syntax error while parsing AST from file)
+	/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/connection_info/tests/testinfra/test_connection_info.py (syntax error while parsing AST from file)

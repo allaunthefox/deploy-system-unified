@@ -1,0 +1,14 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900250
+# Template Type: Kernel Security Policy
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+# IMA Appraisal Policy - Strict Enforcement
+# Note: The Linux Kernel Integrity Measurement Architecture (IMA) subsystem 
+# is governed by the GPLv2 License. 
+# See: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/security/integrity/ima
+# Appraise all executables
+appraise func=BPRM_CHECK appraise_type=imasig
+# Appraise all mmap'd files
+appraise func=MMAP_CHECK appraise_type=imasig

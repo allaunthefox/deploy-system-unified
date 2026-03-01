@@ -1,21 +1,36 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100458
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: memory
-  author: deploysystemunified
-  description: "STD-CORE | Intelligent memory optimization and compression (ZRAM, ZSwap, THP)"
+  author: deploy-system-unified
+  description: Intelligent memory optimization and compression (ZRAM, ZSwap, THP)
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - core
     - memory
@@ -24,11 +39,12 @@ galaxy_info:
     - zram
     - zswap
     - linux
-    - performance
-    - iso27001
-    - virtualization
-    - automation
     - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - security
+    - automation
+    - performance
 
 collections:
   - ansible.builtin

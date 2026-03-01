@@ -1,18 +1,21 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100029
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
-# Handlers for containers/ops
-- name: reload_systemd
+# Handlers for containers/ops role
+# ISO 27001 §12.1 | NIST CM-7
+
+- name: "ISO 27001 §12.1 | 600013 | reload_systemd"
   ansible.builtin.systemd:
     daemon_reload: true
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
   become: true
-  become_user: "{{ containers_systemd_owner }}"
-- name: restart_caddy
+  listen: "reload systemd"
+
+- name: "ISO 27001 §12.1 | 600013 | restart_caddy"
   ansible.builtin.systemd:
     name: caddy
     state: restarted
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
   become: true
-  become_user: "{{ containers_systemd_owner }}"
-  failed_when: false
+  listen: "restart caddy"
+  when: ansible_service_mgr == 'systemd'

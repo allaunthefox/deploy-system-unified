@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100235
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss tests for ops/preflight role
 # This role performs pre-deployment validation and readiness checks

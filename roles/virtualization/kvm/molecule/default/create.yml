@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000690
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-125 | Virtualization Security
 - name: Create
   hosts: localhost
   connection: local

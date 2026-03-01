@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100160
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Containers - Cosign Image Signing Role
 # WI-CONT | Work Instructions for Containers

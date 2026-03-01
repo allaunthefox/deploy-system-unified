@@ -1,0 +1,54 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100353
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: "Automated secret lifecycle and rotation"
+    description: "Orchestrates the rotation of SSH keys, API tokens, and database credentials."
+    author: "deploy-system-unified"
+    options:
+      secret_rotation_enable:
+        type: "bool"
+        default: true
+        description: "Whether to enable automated secret rotation."
+      secret_rotation_schedule:
+        type: "str"
+        default: "monthly"
+        choices: ["weekly", "monthly", "quarterly"]
+        description: "The default rotation frequency."
+      secret_rotation_notify_enable:
+        type: "bool"
+        default: true
+        description: "Whether to notify before rotation."
+      secret_rotation_notify_days_before:
+        type: "int"
+        default: 7
+        description: "Number of days before rotation to notify."
+      secret_emergency_rotation_enable:
+        type: "bool"
+        default: true
+        description: "Whether to allow emergency rotation via webhook."
+      secret_emergency_rotation_webhook:
+        type: "str"
+        default: ""
+        description: "Webhook URL for emergency rotation triggers."
+      secret_rotation_items:
+        type: "list"
+        elements: "dict"
+        default: []
+        description: "List of specific secrets to rotate."
+        options:
+          type:
+            type: "str"
+            required: true
+            description: "The category of secret (e.g., ssh_host_keys)."
+          frequency:
+            type: "str"
+            default: "monthly"
+            description: "Rotation frequency for this specific secret."
+      secret_rotation_log_dir:
+        type: "str"
+        default: "/var/log/security/rotation"
+        description: "Directory for storing rotation audit logs."

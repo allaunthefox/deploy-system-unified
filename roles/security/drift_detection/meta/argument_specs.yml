@@ -1,0 +1,32 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100315
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: Automated configuration drift detection
+    description:
+      - This role monitors system configuration for drift from the baseline and optionally performs automated remediation.
+    options:
+      drift_detection_enable:
+        type: bool
+        default: true
+        description: Master toggle for drift detection.
+      drift_detection_mode:
+        type: str
+        default: "detect_only"
+        choices: ["detect_only", "detect_and_remediate"]
+        description: The enforcement mode for detected drift.
+      drift_detection_critical_paths:
+        type: list
+        elements: str
+        description: List of critical configuration paths to monitor for drift.
+      drift_detection_alert_enable:
+        type: bool
+        default: true
+        description: Whether to enable alerting for detected drift.
+      drift_detection_alert_email:
+        type: str
+        default: "security@example.com"
+        description: Email address for drift alerts.

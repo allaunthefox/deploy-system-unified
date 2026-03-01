@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000742
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # destroy.yml - Ansible-Native container cleanup for gpu_slicing_arm64
 # This playbook destroys the ARM64 GPU test instance

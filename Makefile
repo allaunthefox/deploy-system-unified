@@ -1,10 +1,26 @@
-.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies
+.PHONY: lint lint-markdown test test-x86 test-arm64 molecule-precheck refresh-dependencies check-dependencies wiki sync-wiki codeql
 
 lint:
 	ansible-lint -x internal-error .
 
+codeql:
+	@echo "Running local CodeQL security audit..."
+	@./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+
+security-scan:
+	@echo "Running comprehensive local security scan (Bandit, Safety, TruffleHog, Checkov, Trivy, Lynis, RKHunter)..."
+	@./dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh
+
 lint-markdown:
 	@echo "Markdown linting not explicitly configured in environment, skipping."
+
+wiki:
+	@echo "Generating wiki pages..."
+	@./scripts/generate_wiki.py
+
+sync-wiki: wiki
+	@echo "Syncing wiki to GitHub..."
+	@./scripts/sync_wiki.sh
 
 molecule-precheck:
 	@./scripts/ensure_podman_access.sh || true

@@ -1,34 +1,33 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100536
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Hybrid Graphics Setup (Prime / Optimus / Switcheroo)
 # Configures interaction between Integrated (iGPU) and Discrete (dGPU) cards.
 
 - name: Setup NVIDIA Prime (Debian/Ubuntu)
-  tags: [hardware, gpu, remediate]
   block:
     - name: Install nvidia-prime
-  tags: [hardware, gpu, remediate]
       ansible.builtin.package:
         name: nvidia-prime
-  tags: [hardware, gpu, remediate]
         state: present
       become: true
 
     - name: Configure Prime Profile (Hybrid/On-Demand)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.command: prime-select on-demand
       become: true
       changed_when: false
       when: gpu_stack_mode == 'hybrid'
 
     - name: Configure Prime Profile (Performance/Discrete)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.command: prime-select nvidia
       become: true
       changed_when: false
       when: gpu_stack_mode == 'desktop'
 
     - name: Configure Prime Profile (Power Saving/Integrated)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.command: prime-select intel
       become: true
       changed_when: false
@@ -40,21 +39,16 @@
     - not _gpu_is_container | default(false)
 
 - name: Setup Switcheroo Control (RedHat/Fedora)
-  tags: [hardware, gpu, remediate]
   block:
     - name: Install switcheroo-control
-  tags: [hardware, gpu, remediate]
       ansible.builtin.package:
         name: switcheroo-control
-  tags: [hardware, gpu, remediate]
         state: present
       become: true
 
     - name: Enable switcheroo-control service
-  tags: [hardware, gpu, remediate]
       ansible.builtin.systemd:
         name: switcheroo-control
-  tags: [hardware, gpu, remediate]
         enabled: true
         state: started
       become: true
@@ -62,3 +56,4 @@
     - ansible_facts['os_family'] == 'RedHat'
     - gpu_stack_mode == 'hybrid'
     - not _gpu_is_container | default(false)
+  tags: [hardware,gpu,remediate]

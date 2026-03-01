@@ -1,3 +1,8 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100583
+# Last Updated: 2026-03-01
+# =============================================================================
+# CIS Kubernetes Benchmark | ISO 27001 §14.2
 # Network Configuration (Industry Standard for Restricted Kernels)
 # Use 172.16.x.x to avoid conflicts with 10.x.x.x VPS management networks
 kubernetes_pod_cidr: "172.16.0.0/16"
@@ -14,3 +19,24 @@ kubernetes_proxy_mode: "nftables"
 # Performance/Stability Flags
 kubernetes_disable_network_policy: true # Avoids ipset dependency on restricted kernels
 kubernetes_prefer_bundled_bin: true     # Ensures K3s uses its own validated toolchain
+
+# Service Configuration
+kubernetes_api_port: 6443
+kubernetes_data_dir: "/var/lib/rancher/k3s"
+kubernetes_token_path: "/var/lib/rancher/k3s/server/node-token"
+kubernetes_tls_san: []
+kubernetes_disable_traefik: false
+kubernetes_disable_servicelb: false
+kubernetes_disable_agent: false
+
+# High Availability (HA) Configuration
+# Enabled via Q3 Execution Plan
+k3s_ha_enabled: false
+k3s_datastore_endpoint: "" # Format: "etcd" or external DB string
+
+# Kube-VIP Configuration (High Availability)
+kubernetes_vip_enabled: false
+kubernetes_vip_address: ""
+kubernetes_vip_interface: "eth0"
+kubernetes_vip_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+kubernetes_vip_image: "ghcr.io/kube-vip/kube-vip:v0.7.1@{{ kubernetes_vip_image_digest }}"

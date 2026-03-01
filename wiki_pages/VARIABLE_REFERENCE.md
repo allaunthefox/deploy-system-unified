@@ -1,16 +1,1044 @@
-# VARIABLE_REFERENCE
+# Variable Reference
 
-This document provides an overview of the variable reference documentation for the Deploy-System-Unified project. For detailed variable information, see the categorized references below.
+## Containers Variables
 
-## Variable Reference Categories
+### `containers/ai`
+- `containers_ai_instance_name`
+- `containers_ollama_enable`
+- `containers_ollama_image`
+- `containers_ollama_config_dir`
+- `containers_open_webui_enable`
+- `containers_open_webui_image`
+- `containers_open_webui_config_dir`
 
-* **[Variable Reference: Containers](REF_VARS_CONTAINERS)**: Variables for container-related roles including Podman, Caddy, media stack, and monitoring
-* **[Variable Reference: Core](REF_VARS_CORE)**: Variables for core system roles including bootstrap, hardware support, and system services
-* **[Variable Reference: Security](REF_VARS_SECURITY)**: Variables for security-related roles including SSH, firewall, and hardening
-* **[Variable Reference: Networking](REF_VARS_NETWORKING)**: Variables for networking roles including firewalls, VPN, and container networks
-* **[Variable Reference: Ingress](REF_VARS_INGRESS)**: Variables for Kubernetes ingress controllers and Helm chart settings
-* **[Variable Reference: Storage](REF_VARS_STORAGE)**: Variables for storage roles including backup and filesystem management
+### `containers/anubis`
+- `anubis_enabled`
+- `anubis_port`
+- `anubis_difficulty`
+- `anubis_target_url`
+- `anubis_image_digest`
+- `anubis_image`
+- `anubis_container_name`
+- `quadlet_enable_gpu_support`
+- `quadlet_gpu_capabilities`
 
-## General Information
+### `containers/archive`
+- `containers_archive_instance_name`
+- `containers_archive_network`
+- `containers_tubearchivist_enable`
+- `containers_tubearchivist_image`
+- `containers_tubearchivist_redis_image`
+- `containers_tubearchivist_es_image`
+- `containers_kiwix_enable`
+- `containers_kiwix_image`
+- `containers_archive_root_dir`
+- `containers_archive_config_dir`
 
-This categorization helps organize the numerous variables used throughout the Deploy-System-Unified project, making them easier to find and reference.
+### `containers/authentik`
+- `containers_authentik_enable`
+- `authentik_version`
+- `containers_authentik_image_digest`
+- `containers_authentik_image`
+- `containers_authentik_redis_image_digest`
+- `containers_authentik_redis_image`
+- `containers_authentik_postgres_image_digest`
+- `containers_authentik_postgres_image`
+- `containers_authentik_base_dir`
+- `containers_authentik_data_dir`
+- `containers_authentik_config_dir`
+- `containers_authentik_port_http`
+- `containers_authentik_port_https`
+- `containers_authentik_pg_user`
+- `containers_authentik_pg_db`
+- `containers_authentik_pg_pass`
+- `containers_authentik_secret_key`
+- `containers_authentik_fail_secure`
+- `containers_authentik_email_host`
+- `containers_authentik_email_port`
+- `containers_authentik_email_username`
+- `containers_authentik_email_password`
+- `containers_authentik_email_from`
+- `containers_authentik_email_use_tls`
+- `containers_authentik_network_name`
+
+### `containers/caddy`
+- `containers_caddy_generate_config`
+- `containers_caddy_acme_email`
+- `containers_caddy_http_port`
+- `containers_caddy_https_port`
+- `containers_caddy_https_port_udp`
+- `containers_porkbun_api_key`
+- `containers_porkbun_secret_api_key`
+- `containers_caddy_network`
+- `containers_caddy_extra_networks`
+- `containers_caddy_use_unix_sockets`
+- `containers_caddy_socket_dir`
+- `containers_crowdsec_enable`
+- `containers_crowdsec_image`
+- `containers_crowdsec_firewall_bouncer_key`
+- `containers_caddy_fail_secure`
+- `containers_crowdsec_firewall_bouncer_version`
+- `containers_crowdsec_firewall_bouncer_sha256`
+- `containers_crowdsec_secrets_dir`
+- `containers_crowdsec_collections`
+- `containers_quadlet_enable_gpu_support`
+- `containers_caddy_timeout_start`
+- `containers_caddy_timeout_stop`
+- `containers_caddy_pull_policy`
+- `containers_caddy_pull_retry`
+- `containers_caddy_pull_retry_delay`
+- `containers_caddy_image_digest`
+- `containers_crowdsec_pull_policy`
+- `containers_crowdsec_pull_retry`
+- `containers_crowdsec_pull_retry_delay`
+
+### `containers/config`
+- `container_linger_users`
+
+### `containers/home_assistant`
+- `containers_home_assistant_image`
+- `containers_home_assistant_config_dir`
+- `containers_home_assistant_network`
+- `containers_home_assistant_enable_hacs`
+- `containers_home_assistant_timezone`
+
+### `containers/immich`
+- `containers_immich_instance_name`
+- `containers_immich_network`
+- `containers_immich_server_image`
+- `containers_immich_machine_learning_image`
+- `containers_immich_postgres_image`
+- `containers_immich_redis_image`
+- `containers_immich_root_dir`
+- `containers_immich_config_dir`
+- `containers_immich_db_user`
+- `containers_immich_db_pass`
+- `containers_immich_db_name`
+- `containers_immich_ml_enabled`
+- `containers_immich_ml_gpu_enabled`
+
+### `containers/life`
+- `containers_life_instance_name`
+- `containers_life_network`
+- `containers_mealie_enable`
+- `containers_mealie_image`
+- `containers_mealie_port`
+- `containers_firefly_enable`
+- `containers_firefly_image`
+- `containers_firefly_port`
+- `containers_vikunja_enable`
+- `containers_vikunja_image`
+- `containers_vikunja_port`
+- `containers_tandoor_enable`
+- `containers_tandoor_image`
+- `containers_tandoor_postgres_image`
+- `containers_tandoor_port`
+- `containers_tandoor_db_pass`
+- `containers_paperless_enable`
+- `containers_paperless_image`
+- `containers_paperless_port`
+- `containers_paperless_admin_user`
+- `containers_paperless_admin_pass`
+- `containers_life_root_dir`
+- `containers_life_config_dir`
+
+### `containers/lxc`
+- `lxc_enable_gpu_support`
+- `lxc_gpu_vendor`
+- `lxc_gpu_slicing`
+- `lxc_gpu_default_configs`
+- `lxc_container_gpu_config`
+- `lxc_gpu_security`
+- `lxc_gpu_resource_limits`
+- `intel_oneapi_gpg_key_url`
+- `intel_oneapi_gpg_keyring_path`
+- `intel_oneapi_repo`
+- `intel_oneapi_gpg_fingerprint`
+- `intel_oneapi_gpg_fingerprint_verify`
+- `lxc_gpu_network`
+
+### `containers/media`
+- `containers_media_instance_name`
+- `containers_media_port_offset`
+- `containers_media_network`
+- `containers_media_hw_accel`
+- `containers_media_require_avx`
+- `containers_media_stack_enable`
+- `containers_media_root_dir`
+- `containers_media_config_dir`
+- `containers_media_puid`
+- `containers_media_pgid`
+- `containers_media_timezone`
+- `containers_jellyfin_enable`
+- `containers_jellyfin_image_digest`
+- `containers_jellyfin_image`
+- `containers_jellyfin_port_http`
+- `containers_jellyfin_memory_max`
+- `containers_jellyfin_use_unix_socket`
+- `containers_jellyfin_socket_path`
+- `containers_plex_enable`
+- `containers_plex_image_digest`
+- `containers_plex_image`
+- `containers_plex_port_http`
+- `containers_plex_claim_token`
+- `containers_radarr_enable`
+- `containers_radarr_image_digest`
+- `containers_radarr_image`
+- `containers_radarr_port`
+- `containers_sonarr_enable`
+- `containers_sonarr_image_digest`
+- `containers_sonarr_image`
+- `containers_sonarr_port`
+- `containers_lidarr_enable`
+- `containers_lidarr_image_digest`
+- `containers_lidarr_image`
+- `containers_lidarr_port`
+- `containers_readarr_enable`
+- `containers_readarr_image_digest`
+- `containers_readarr_image`
+- `containers_readarr_port`
+- `containers_prowlarr_enable`
+- `containers_prowlarr_image_digest`
+- `containers_prowlarr_image`
+- `containers_prowlarr_port`
+- `containers_jellyseerr_enable`
+- `containers_jellyseerr_image_digest`
+- `containers_jellyseerr_image`
+- `containers_jellyseerr_port`
+- `containers_navidrome_enable`
+- `containers_navidrome_image_digest`
+- `containers_navidrome_image`
+- `containers_navidrome_port`
+- `containers_transmission_enable`
+- `containers_transmission_image_digest`
+- `containers_transmission_image`
+- `containers_transmission_port_web`
+- `containers_transmission_port_peer`
+- `containers_transmission_user`
+- `containers_transmission_pass`
+- `containers_media_pod_enable`
+- `containers_media_pod_name`
+- `containers_media_gatekeeper_mode`
+- `containers_media_domain`
+- `containers_media_pod_network`
+- `containers_media_auth_provider`
+- `containers_media_auth_url`
+- `containers_media_fail_secure`
+- `containers_bazarr_enable`
+- `containers_bazarr_image_digest`
+- `containers_bazarr_image`
+- `containers_bazarr_port`
+- `containers_kavita_enable`
+- `containers_kavita_image_digest`
+- `containers_kavita_image`
+- `containers_kavita_port`
+- `containers_audiobookshelf_enable`
+- `containers_audiobookshelf_image_digest`
+- `containers_audiobookshelf_image`
+- `containers_audiobookshelf_port`
+
+### `containers/memcached`
+- `memcached_enable`
+- `memcached_version`
+- `memcached_image_digest`
+- `memcached_image`
+- `memcached_port`
+- `memcached_memory_mb`
+- `memcached_status_check`
+
+### `containers/monitoring`
+- `monitoring_enable`
+- `monitoring_instance`
+- `monitoring_root_dir`
+- `monitoring_config_dir`
+- `monitoring_network`
+- `monitoring_pod_name`
+- `monitoring_prometheus_image`
+- `monitoring_grafana_image`
+- `monitoring_grafana_admin_user`
+- `monitoring_grafana_admin_password`
+- `monitoring_loki_enable`
+- `monitoring_loki_image`
+- `monitoring_loki_port`
+- `monitoring_promtail_enable`
+- `monitoring_promtail_image`
+- `monitoring_forensic_dashboard_enabled`
+- `monitoring_gatus_enable`
+- `monitoring_gatus_image`
+- `monitoring_gatus_port`
+- `containers_monitoring_fail_secure`
+- `monitoring_pull_policy`
+- `monitoring_pull_retry`
+- `monitoring_pull_retry_delay`
+
+### `containers/networking`
+- `containers_networking_instance_name`
+- `containers_adguard_enable`
+- `containers_adguard_image`
+- `containers_adguard_config_dir`
+- `containers_adguard_network`
+
+### `containers/ops`
+- `containers_ops_enable`
+- `containers_ops_pod_name`
+- `containers_ops_pod_network`
+- `containers_ops_root_dir`
+- `containers_ops_config_dir`
+- `ops_enable`
+- `ops_pod_name`
+- `ops_pod_network`
+- `ops_root_dir`
+- `ops_config_dir`
+- `containers_homarr_enable`
+- `containers_homarr_image_digest`
+- `containers_homarr_image`
+- `containers_homarr_port`
+- `homarr_enable`
+- `homarr_image`
+- `homarr_port`
+- `containers_vaultwarden_enable`
+- `containers_vaultwarden_image_digest`
+- `containers_vaultwarden_image`
+- `containers_vaultwarden_port`
+- `containers_vaultwarden_signups_allowed`
+- `containers_vaultwarden_admin_token`
+- `containers_vaultwarden_fail_secure`
+- `vaultwarden_fail_secure`
+- `vaultwarden_enable`
+- `vaultwarden_image`
+- `vaultwarden_port`
+- `vaultwarden_signups_allowed`
+- `vaultwarden_admin_token`
+- `containers_wiki_enable`
+- `containers_wiki_image_digest`
+- `containers_wiki_image`
+- `containers_wiki_port`
+- `containers_wiki_db_secret`
+- `wiki_enable`
+- `wiki_image`
+- `wiki_port`
+- `wiki_db_secret`
+- `containers_wastebin_enable`
+- `containers_wastebin_image_digest`
+- `containers_wastebin_image`
+- `containers_wastebin_port`
+- `wastebin_enable`
+- `wastebin_image`
+- `wastebin_port`
+- `containers_ops_domain`
+- `ops_domain`
+- `containers_filebrowser_enable`
+- `containers_filebrowser_image_digest`
+- `containers_filebrowser_image`
+- `containers_filebrowser_port`
+- `containers_uptime_kuma_enable`
+- `containers_uptime_kuma_image_digest`
+- `containers_uptime_kuma_image`
+- `containers_uptime_kuma_port`
+- `containers_ntfy_enable`
+- `containers_ntfy_image_digest`
+- `containers_ntfy_image`
+- `containers_ntfy_port`
+- `containers_forgejo_enable`
+- `containers_forgejo_image_digest`
+- `containers_forgejo_image`
+- `containers_forgejo_port`
+- `containers_dockge_enable`
+- `containers_dockge_image_digest`
+- `containers_dockge_image`
+- `containers_dockge_port`
+- `containers_syncthing_enable`
+- `containers_syncthing_image_digest`
+- `containers_syncthing_image`
+- `containers_syncthing_port_web`
+- `containers_syncthing_port_sync`
+- `filebrowser_enable`
+- `filebrowser_image`
+- `filebrowser_port`
+
+### `containers/quadlets`
+- `containers_quadlet_network_name`
+- `containers_quadlet_create_network`
+- `containers_quadlet_network_subnet`
+- `containers_quadlet_network_gateway`
+- `containers_quadlet_network_iprange`
+- `containers_quadlet_custom_files`
+- `containers_quadlet_arch_override`
+- `containers_quadlet_enable_gpu_support`
+- `containers_quadlet_gpu_vendor`
+- `containers_quadlet_gpu_devices`
+- `containers_quadlet_gpu_capabilities`
+- `containers_quadlet_gpu_slicing`
+- `containers_quadlet_gpu_default_configs`
+- `containers_quadlet_container_gpu_config`
+
+### `containers/runtime`
+- `containers_install_podman`
+- `containers_enable_socket`
+- `podman_rootless_enabled`
+- `podman_rootless_user`
+- `podman_rootless_user_home`
+- `podman_rootless_network_mode`
+- `podman_rootless_allow_privileged_ports`
+- `podman_rootless_privileged_port_start`
+- `containers_user_name`
+- `containers_user_uid`
+- `containers_user_gid`
+- `containers_systemd_dir`
+- `containers_systemd_scope`
+- `containers_systemd_owner`
+- `containers_systemd_group`
+- `containers_secrets_dir`
+- `containers_secrets_owner`
+- `containers_secrets_group`
+- `containers_systemd_env`
+- `intel_oneapi_gpg_key_url`
+- `intel_oneapi_gpg_keyring_path`
+- `intel_oneapi_repo`
+- `intel_oneapi_gpg_fingerprint`
+- `intel_oneapi_gpg_fingerprint_verify`
+- `containers_pull_retries`
+- `containers_pull_delay`
+- `containers_cosign_enable`
+- `containers_cosign_version`
+- `containers_cosign_checksum`
+- `containers_cosign_arch`
+- `containers_arch_override`
+- `containers_enable_gpu_support`
+- `containers_gpu_vendor`
+- `containers_gpu_count`
+- `containers_gpu_allocation_map`
+- `containers_gpu_slicing`
+- `containers_gpu_profiles`
+- `containers_gpu_device_selectors`
+
+### `containers/security`
+- `containers_security_instance_name`
+- `containers_headscale_enable`
+- `containers_headscale_image`
+- `containers_headscale_config_dir`
+- `containers_headscale_port`
+
+### `containers/signing`
+- `cosign_version`
+- `cosign_arch`
+- `cosign_key_mode`
+- `cosign_skip_keygen`
+- `cosign_keyless_mode`
+- `cosign_fulcio_url`
+- `cosign_rekor_url`
+- `cosign_enable_verification`
+- `cosign_policy_name`
+- `cosign_verify_image`
+- `cosign_root_cert`
+- `cosign_enable_cosignful`
+- `cosign_log_level`
+- `cosign_tags`
+
+## Core Variables
+
+### `core/bootstrap`
+- `core_install_base_packages`
+- `system_base_packages`
+- `system_standard_directories`
+
+### `core/entropy`
+- `entropy_service_mapping`
+
+### `core/grub`
+- `core_grub_enabled`
+- `core_grub_base_params`
+- `core_grub_security_params`
+- `core_grub_hardware_params`
+- `core_grub_isolation_params`
+- `core_grub_performance_params`
+- `core_grub_extra_params`
+- `core_grub_config_path`
+- `core_grub_force_update`
+- `core_grub_backup_enabled`
+- `core_grub_backup_dir`
+- `core_grub_backup_retention_days`
+- `core_grub_backup_encrypt`
+- `core_grub_backup_gpg_recipient`
+
+### `core/hardware_support`
+- `enable_hardware_discovery`
+- `require_avx`
+- `require_aes_ni`
+- `require_crypto_extensions`
+- `warn_on_missing_avx`
+- `warn_on_missing_crypto`
+
+### `core/identity`
+- `identity_set_hostname`
+- `identity_domain`
+
+### `core/logging`
+- `logging_journal_remote_packages`
+- `logging_rate_limit_interval`
+- `logging_rate_limit_burst`
+- `logging_max_file_sec`
+- `logging_max_retention_sec`
+
+### `core/memory`
+- `core_memory_compression_strategy`
+- `core_memory_shared_vram`
+- `core_memory_workload_profile`
+- `core_memory_thp_state`
+- `core_memory_zram_size_percent`
+- `core_memory_zram_algorithm`
+- `core_memory_zram_priority`
+- `core_memory_zswap_compressor`
+- `core_memory_zswap_zpool`
+- `core_memory_zswap_max_pool_percent`
+- `core_memory_swappiness`
+- `core_memory_cache_pressure`
+- `core_memory_dirty_bytes`
+- `core_memory_dirty_background_bytes`
+
+### `core/repositories`
+- `rpmfusion_free_url`
+- `rpmfusion_nonfree_url`
+- `rpmfusion_free_sha256`
+- `rpmfusion_nonfree_sha256`
+- `rpmfusion_verify_checksum`
+
+### `core/secrets`
+- `core_secrets_enabled`
+- `core_secrets_vault_id`
+- `core_secrets_verify_integrity`
+
+### `core/systemd`
+- `systemd_configure_journald`
+- `systemd_configure_resolved`
+- `systemd_persistent_journal`
+
+### `core/time`
+- `core_time_service_mapping`
+
+## Hardware Variables
+
+### `hardware/firmware`
+- `hardware_cpu_tier`
+- `hardware_is_server_cpu`
+- `hardware_monitor_temp`
+- `hardware_enable_watchdog`
+
+### `hardware/gpu`
+- `gpu_stack_enable`
+- `gpu_stack_vendor`
+- `gpu_stack_mode`
+- `gpu_stack_reservation`
+- `gpu_stack_arch`
+- `gpu_stack_enable_egpu`
+- `gpu_stack_egpu_interface`
+- `gpu_stack_enable_rdma`
+- `gpu_stack_enable_dp_alt_mode`
+- `gpu_stack_enable_oneapi`
+- `gpu_stack_enable_level_zero`
+- `gpu_stack_enable_cuda`
+- `gpu_stack_enable_rocm`
+- `gpu_battlemage_force_probe`
+- `intel_oneapi_gpg_key_url`
+- `intel_oneapi_gpg_keyring_path`
+- `intel_oneapi_repo`
+- `intel_oneapi_gpg_fingerprint`
+- `intel_oneapi_gpg_fingerprint_verify`
+- `amd_rocm_gpg_key_url`
+- `amd_rocm_gpg_keyring_path`
+- `amd_rocm_gpg_key_sha256`
+- `amd_rocm_gpg_fingerprint`
+- `amd_rocm_gpg_key_verify`
+- `nvidia_gpg_key_url`
+- `nvidia_gpg_key_sha256`
+- `nvidia_gpg_fingerprint`
+- `nvidia_gpg_key_verify`
+- `gpu_desktop_enable_audio`
+- `gpu_desktop_power_profile`
+- `gpu_desktop_enable_wayland_support`
+- `gpu_desktop_enable_x11_support`
+- `gpu_desktop_grant_user_access`
+- `dsu_encrypt_evidence`
+- `dsu_encrypt_checkpoints`
+
+### `hardware/sas`
+- `hardware_sas_install_tools`
+- `hardware_sas_enable_monitoring`
+- `hardware_sas_configure_smartd`
+- `hardware_sas_load_drivers`
+- `hardware_sas_drivers`
+- `hardware_sas_packages`
+- `hardware_sas_queue_depth`
+- `hardware_sas_smartd_opts`
+
+## Kubernetes Variables
+
+### `kubernetes/ingress`
+- `kubernetes_ingress_enabled`
+- `kubernetes_ingress_controller`
+- `kubernetes_ingress_namespace`
+- `kubernetes_ingress_helm_version`
+- `kubernetes_ingress_helm_repo`
+- `kubernetes_ingress_helm_chart`
+- `kubernetes_ingress_traefik_helm_repo`
+- `kubernetes_ingress_traefik_helm_chart`
+- `kubernetes_ingress_ambassador_helm_repo`
+- `kubernetes_ingress_ambassador_helm_chart`
+- `kubernetes_ingress_class_name`
+- `kubernetes_ingress_class_annotation`
+- `kubernetes_ingress_tls_enabled`
+- `kubernetes_ingress_tls_secret_name`
+- `kubernetes_ingress_tls_letsencrypt_enabled`
+- `kubernetes_ingress_tls_letsencrypt_email`
+- `kubernetes_ingress_tls_letsencrypt_production`
+- `kubernetes_ingress_service_type`
+- `kubernetes_ingress_external_ip`
+- `kubernetes_ingress_http_port`
+- `kubernetes_ingress_https_port`
+- `kubernetes_ingress_controller_resources`
+- `kubernetes_ingress_enable_metrics`
+- `kubernetes_ingress_enable_prometheus_rule`
+- `kubernetes_ingress_rate_limit_enabled`
+- `kubernetes_ingress_rate_limit_requests`
+- `kubernetes_ingress_rate_limit_period`
+- `kubernetes_ingress_default_backend_enabled`
+- `kubernetes_ingress_default_backend_service`
+- `kubernetes_ingress_default_backend_port`
+- `kubernetes_ingress_security_context`
+- `kubernetes_ingress_annotations`
+- `kubernetes_ingress_metrics`
+
+### `kubernetes/master`
+- `kubernetes_pod_cidr`
+- `kubernetes_service_cidr`
+- `kubernetes_cluster_dns`
+- `kubernetes_cluster_domain`
+- `kubernetes_flannel_backend`
+- `kubernetes_proxy_mode`
+- `kubernetes_disable_network_policy`
+- `kubernetes_prefer_bundled_bin`
+- `kubernetes_api_port`
+- `kubernetes_data_dir`
+- `kubernetes_token_path`
+- `kubernetes_tls_san`
+- `kubernetes_disable_traefik`
+- `kubernetes_disable_servicelb`
+- `kubernetes_disable_agent`
+- `k3s_ha_enabled`
+- `k3s_datastore_endpoint`
+- `kubernetes_vip_enabled`
+- `kubernetes_vip_address`
+- `kubernetes_vip_interface`
+- `kubernetes_vip_image_digest`
+- `kubernetes_vip_image`
+
+### `kubernetes/node`
+- `kubernetes_k3s_version`
+- `kubernetes_master_api_ip`
+- `kubernetes_master_api_port`
+- `kubernetes_k3s_token`
+- `kubernetes_node_labels`
+- `kubernetes_node_taints`
+- `kubernetes_data_dir`
+- `kubernetes_k3s_bin_url`
+
+### `kubernetes/service_mesh`
+- `service_mesh_enabled`
+- `service_mesh_provider`
+- `linkerd_version`
+- `linkerd_image_digest`
+- `linkerd_image`
+- `linkerd_identity_trust_anchors_pem`
+- `linkerd_identity_issuer_cert_pem`
+- `linkerd_identity_issuer_key_pem`
+- `linkerd_proxy_cpu_request`
+- `linkerd_proxy_memory_request`
+- `linkerd_proxy_memory_limit`
+
+## Networking Variables
+
+### `networking/container_networks`
+- `container_networks_enable`
+- `podman_rootless_enabled`
+- `podman_rootless_user`
+- `podman_rootless_user_home`
+- `containers_systemd_dir`
+- `containers_systemd_scope`
+- `containers_systemd_owner`
+- `containers_systemd_group`
+- `containers_systemd_env`
+- `container_networks_list`
+
+### `networking/desktop`
+- `networking_desktop_enable_wifi`
+- `networking_desktop_wifi_backend`
+- `networking_desktop_manager`
+- `networking_desktop_install_gui_tools`
+
+### `networking/firewall`
+- `networking_firewall_enabled`
+- `networking_firewall_allowed_tcp_ports`
+- `networking_firewall_allow_endlessh`
+- `networking_firewall_endlessh_port`
+- `networking_firewall_allowed_udp_ports`
+- `networking_firewall_additional_rules`
+- `networking_firewall_forward_policy`
+
+### `networking/istio`
+- `istio_enabled`
+
+### `networking/physical`
+- `interface_capabilities`
+- `networking_physical_install_tools`
+- `networking_physical_manage_mtu`
+- `networking_physical_jumbo_frames_enabled`
+- `networking_physical_jumbo_mtu`
+- `networking_physical_ring_tuning_enabled`
+- `networking_physical_rx_ring_size`
+- `networking_physical_tx_ring_size`
+- `networking_physical_offload_tuning_enabled`
+- `networking_physical_enable_tso`
+- `networking_physical_enable_gso`
+- `networking_physical_enable_lro`
+- `networking_physical_profiles`
+- `networking_physical_default_profile`
+
+## Ops Variables
+
+### `ops/connection_info`
+- `encryption_method`
+- `ssh_rsync_destination`
+- `ops_rsync_enable`
+- `ops_rsync_allowlist`
+- `ops_rsync_ephemeral_allow`
+- `ssh_randomize_port`
+- `ssh_port_cache_dir`
+
+### `ops/health_check`
+- `health_check_enabled`
+- `health_check_output_dir_remote`
+- `health_check_summary_file_remote`
+- `health_check_write_local_artifact`
+- `health_check_artifact_dir_local`
+- `health_check_summary_file_local`
+- `health_check_fail_on_mandatory`
+- `health_check_systemd_mandatory_units`
+- `health_check_systemd_optional_units`
+- `health_check_container_runtime_checks`
+- `health_check_disk_checks`
+- `health_check_endpoint_checks`
+
+### `ops/monitoring`
+- `monitoring_enable_node_exporter`
+- `monitoring_enable_smartmon`
+- `monitoring_enable_nvme_cli`
+- `monitoring_node_exporter_version`
+- `monitoring_node_exporter_port`
+- `monitoring_node_exporter_collectors`
+- `monitoring_smartd_interval`
+
+### `ops/preflight`
+- `preflight_require_systemd`
+- `preflight_check_memory`
+- `preflight_min_memory_mb`
+- `preflight_check_network`
+- `preflight_connectivity_check_url`
+- `preflight_required_binaries`
+- `preflight_check_license`
+- `preflight_strict_license_check`
+- `preflight_install_license_tools`
+- `preflight_become_pip`
+- `preflight_check_gpu_vendor`
+- `preflight_strict_gpu_vendor`
+- `preflight_check_container_runtime`
+- `preflight_required_container_runtime`
+- `preflight_check_kubernetes`
+- `preflight_require_kubectl`
+- `preflight_require_cluster_connectivity`
+
+### `ops/session`
+- `tmux_session_for_deployment`
+- `tmux_session_name`
+
+## Orchestration Variables
+
+## Security Variables
+
+### `security/access`
+- `ssh_match_rules`
+- `access_admin_user`
+- `access_admin_password_hash`
+- `access_admin_password_enforce`
+- `access_admin_password_placeholders`
+
+### `security/advanced`
+- `advanced_security_hardening_enabled`
+- `ssh_randomize_port`
+- `ssh_random_port_range_start`
+- `ssh_random_port_range_end`
+- `ssh_random_port_file_dest`
+- `ssh_rsync_destination`
+- `ssh_key_rotation_enabled`
+- `ssh_key_rotation_interval_days`
+- `tmux_session_for_deployment`
+- `tmux_session_name`
+- `encryption_method`
+
+### `security/audit_integrity`
+- `security_audit_integrity_store_keys`
+- `security_audit_integrity_output_dir`
+- `security_audit_integrity_vault_encrypt_id`
+
+### `security/automated_threat_analysis`
+- `threat_analysis_enabled`
+- `threat_analysis_model`
+- `threat_analysis_backend`
+- `threat_analysis_log_window`
+- `threat_analysis_check_interval`
+- `threat_analysis_purge_threshold`
+- `threat_analysis_loki_url`
+- `threat_analysis_loki_query`
+- `threat_analysis_trigger_purge`
+
+### `security/compliance`
+- `compliance_framework_enable`
+- `compliance_frameworks`
+- `cis_sshd_level`
+- `cis_firewall_level`
+- `cis_auditd_enable`
+- `generate_compliance_report`
+- `compliance_report_path`
+- `stig_profile`
+- `stig_cat_override`
+- `nist_control_families`
+
+### `security/database_hardening`
+- `db_hardening_enabled`
+- `db_encryption_vault_transit_enabled`
+- `db_encryption_vault_transit_key_name`
+- `db_encryption_vault_transit_mount`
+- `db_encryption_rotation_interval`
+- `db_encryption_rotation_script`
+- `db_encryption_rotation_log`
+- `db_hardening_targets`
+
+### `security/falco`
+- `falco_version`
+- `falco_install_method`
+- `falco_package_name`
+- `falco_deb_repo_suffix`
+- `falco_rpm_repo_suffix`
+- `falco_gpg_check`
+- `falco_gpg_key`
+- `falco_binary_checksum`
+- `falco_config`
+- `falco_rules_file`
+- `falco_rules_enabled`
+- `falco_outputs`
+- `falco_alerts`
+- `falco_active_kill`
+- `falco_tags`
+
+### `security/firejail`
+- `firejail_enable_gpu`
+
+### `security/goss`
+- `goss_version`
+- `goss_arch`
+- `goss_install_type`
+- `goss_output_format`
+- `goss_enable_drift_detection`
+- `goss_drift_check_interval`
+- `goss_enable_auto_remediation`
+- `goss_enable_cron`
+- `goss_cron_minute`
+- `goss_cron_hour`
+- `goss_log_dir`
+- `goss_tags`
+
+### `security/hardening`
+- `security_hardening_enabled`
+- `security_enable_ufw`
+- `security_enable_fail2ban`
+- `security_enable_auto_updates`
+- `security_kernel_hardening`
+
+### `security/hardware_isolation`
+- `hardware_isolation_iommu_enabled`
+- `hardware_isolation_iommu_vendor`
+- `hardware_isolation_iommu_pt`
+- `hardware_isolation_dma_protection_enabled`
+- `hardware_isolation_blacklist_modules`
+- `hardware_isolation_acs_override`
+
+### `security/headscale`
+- `headscale_enabled`
+- `headscale_version`
+- `headscale_image_digest`
+- `headscale_image`
+- `headscale_port`
+- `headscale_metrics_port`
+- `headscale_network_interface`
+- `headscale_namespace_prefix`
+
+### `security/ima_enforcement`
+- `ima_enabled`
+- `ima_policy`
+- `ima_appraise_mode`
+- `ima_template`
+- `ima_key_dir`
+- `ima_private_key`
+- `ima_public_key`
+- `ima_x509_cert`
+- `ima_key_rotation_enabled`
+- `ima_key_rotation_interval`
+- `ima_key_rotation_script`
+- `ima_key_rotation_log`
+
+### `security/ips`
+- `ips_fail2ban_sshd_maxretry`
+- `ips_fail2ban_sshd_bantime`
+- `ips_fail2ban_sshd_findtime`
+- `ips_fail2ban_sshd_enabled`
+- `ips_ephemeral_skip`
+- `ips_fail2ban_caddy_enabled`
+- `ips_fail2ban_caddy_maxretry`
+- `ips_fail2ban_caddy_bantime`
+
+### `security/kernel`
+- `kernel_profile`
+- `kernel_enable_iommu`
+- `kernel_restrict_dma`
+- `kernel_hugepages_enabled`
+
+### `security/openscap`
+- `openscap_enabled`
+- `openscap_report_dir`
+- `openscap_report_file`
+- `openscap_profile`
+- `openscap_enforce_compliance`
+- `openscap_fail_threshold`
+- `openscap_ssg_datastream`
+
+### `security/resource_protection`
+- `resource_min_ram_mb`
+- `resource_default_tasks_max`
+- `resource_default_memory_max`
+
+### `security/sandboxing`
+- `sandboxing_enabled`
+- `sandboxing_install_bubblewrap`
+- `sandboxing_policy_dir`
+- `sandboxing_use_seccomp`
+- `sandboxing_use_landlock`
+- `sandboxing_restrict_unprivileged_userns`
+- `sandboxing_max_user_namespaces`
+- `sandboxing_profiles`
+
+### `security/scanning`
+- `security_scanning_enable`
+- `security_scanning_install_tools`
+- `security_scanning_ephemeral_skip`
+- `security_package_mapping`
+- `security_scanning_extra_packages`
+- `security_scanning_optional_tools`
+- `security_scanning_critical_tools`
+- `security_scanning_rkhunter_warning_threshold`
+- `security_scanning_aide_change_threshold`
+- `security_scanning_lynis_issue_threshold`
+- `security_scanning_checkov_issue_threshold`
+
+### `security/sshd`
+- `security_sshd_backup_config`
+- `security_sshd_disable_weak_keys`
+- `security_sshd_use_strong_ciphers`
+- `security_sshd_allow_tcp_forwarding`
+- `security_sshd_allow_agent_forwarding`
+- `security_sshd_allow_x11_forwarding`
+- `security_sshd_permit_root_login`
+- `security_sshd_password_authentication`
+- `security_sshd_client_alive_interval`
+- `security_sshd_client_alive_count_max`
+- `security_sshd_pqc_enabled`
+- `security_sshd_config_path`
+- `security_sshd_config_fallback_path`
+- `security_sshd_enable_trusted_group_exceptions`
+- `security_sshd_trusted_groups`
+- `security_sshd_kex_algorithms_pqc`
+
+### `security/tailscale`
+- `tailscale_enabled`
+- `tailscale_version`
+- `tailscale_image_digest`
+- `tailscale_image`
+- `tailscale_login_server`
+- `tailscale_auth_key`
+- `tailscale_tags`
+- `tailscale_operator`
+- `tailscale_auto_update`
+- `tailscale_args`
+- `tailscale_state_dir`
+- `tailscale_hold_package`
+
+### `security/tpm_guard`
+- `tpm_guard_enabled`
+- `tpm_guard_interval`
+- `tpm_guard_wipe_secrets`
+- `tpm_guard_isolate_network`
+- `tpm_guard_purge_kernel`
+- `tpm_guard_secrets_path`
+
+### `security/vault_integration`
+- `vault_install_mode`
+- `vault_version`
+- `vault_image_digest`
+- `vault_image`
+- `vault_config_dir`
+- `vault_data_dir`
+- `vault_log_dir`
+- `vault_user_group`
+- `vault_enable_k8s_auth`
+- `vault_k8s_host`
+- `vault_k8s_ca_cert`
+- `vault_k8s_token_reviewer_jwt`
+- `vault_k8s_role_name`
+- `vault_k8s_service_account`
+- `vault_k8s_namespace`
+- `vault_k8s_ttl`
+- `vault_enable_dynamic_secrets`
+- `vault_dynamic_secrets_policy_name`
+- `vault_enable_agent_injector`
+- `vault_k8s_annotations_file`
+- `vault_enable_kv_secrets`
+- `vault_secrets_path`
+- `vault_addr`
+- `vault_root_token`
+- `vault_auto_unseal_enabled`
+- `vault_auto_unseal_type`
+- `vault_auto_unseal_transit_address`
+- `vault_auto_unseal_transit_key_name`
+- `vault_auto_unseal_transit_mount_path`
+- `vault_auto_unseal_transit_token`
+- `vault_tags`
+- `vault_enable_rotation`
+- `vault_rotation_policies`
+- `vault_rotation_approle_name`
+
+## Shared Variables
+
+## Sshd Variables
+
+## Storage Variables
+
+### `storage/backup`
+- `backup_security_enabled`
+- `backup_security_dir`
+
+### `storage/dedupe`
+- `storage_dedupe_btrfs_enable`
+- `storage_dedupe_btrfs_paths`
+- `storage_dedupe_schedule`
+- `storage_dedupe_ephemeral_skip`
+
+## Virtualization Variables
+

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500104
+# Last Updated: 2026-02-28
+# =============================================================================
 # Import the rule module directly from file to avoid import collision with installed 'ansiblelint' package
 import importlib.util
 import pathlib

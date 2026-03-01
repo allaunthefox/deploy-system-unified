@@ -112,6 +112,6 @@ This registry is maintained by the Documentation Team and reviewed quarterly.
 
 ## Related Documents
 
-- **[TERMINOLOGY](TERMINOLOGY)** — Formal definitions with ISO/NIST citations
-- **[../development/DOCUMENTATION_STYLE_GUIDE](../development/DOCUMENTATION_STYLE_GUIDE)** — Documentation standards
-- **[../development/ISO_TAGGING_STANDARD](../development/ISO_TAGGING_STANDARD)** — ISO compliance mapping
+- **[TERMINOLOGY](TERMINOLOGY.md)** — Formal definitions with ISO/NIST citations
+- **[../development/DOCUMENTATION_STYLE_GUIDE](../development/DOCUMENTATION_STYLE_GUIDE.md)** — Documentation standards
+- **[../development/ISO_TAGGING_STANDARD](../development/ISO_TAGGING_STANDARD.md)** — ISO compliance mapping

@@ -1249,9 +1249,9 @@ ansible-playbook verify_stig.yml --tags {{ role_name }}
 
 - [CIS Benchmark Documentation](https://www.cisecurity.org/benchmark/ubuntu_linux)
 - [DISA STIG Documentation](https://public.cyber.mil/stigs/)
-- [LAYERED_SECURITY](LAYERED_SECURITY.md)
-- **[PLAN_IMPLICIT_SETTINGS_REMEDIATION.md](PLAN_IMPLICIT_SETTINGS_REMEDIATION.md)** - Remediation of implicit configuration settings
-- **[PLAN_DETERMINISM_ROADMAP.md](PLAN_DETERMINISM_ROADMAP.md)** - Overall determinism strategy
+- [LAYERED_SECURITY](LAYERED_SECURITY)
+- **[PLAN_IMPLICIT_SETTINGS_REMEDIATION.md](PLAN_IMPLICIT_SETTINGS_REMEDIATION)** - Remediation of implicit configuration settings
+- **[PLAN_DETERMINISM_ROADMAP.md](PLAN_DETERMINISM_ROADMAP)** - Overall determinism strategy
 
 ## License
 
@@ -1445,10 +1445,10 @@ molecule test --idempotence
 
 ## 🔗 Related Documentation
 
-- [PLAN_SECURITY_ENHANCEMENT_PLAN_2026](PLAN_SECURITY_ENHANCEMENT_PLAN_2026.md) - Overall security roadmap
-- [ROLE_IMPLEMENTATION_STANDARDS_REVIEW](ROLE_IMPLEMENTATION_STANDARDS_REVIEW.md) - Current state analysis
-- [ROADMAP](../docs/planning/ROADMAP.md) - Project direction
-- [STYLE_GUIDE](STYLE_GUIDE.md) - Implementation standards
+- [PLAN_SECURITY_ENHANCEMENT_PLAN_2026](PLAN_SECURITY_ENHANCEMENT_PLAN_2026) - Overall security roadmap
+- [ROLE_IMPLEMENTATION_STANDARDS_REVIEW](ROLE_IMPLEMENTATION_STANDARDS_REVIEW) - Current state analysis
+- [ROADMAP](ROADMAP) - Project direction
+- [STYLE_GUIDE](STYLE_GUIDE) - Implementation standards
 
 ---
 

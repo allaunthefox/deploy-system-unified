@@ -1,11 +1,14 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100564
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Tasks for Contabo-specific VPS optimization
 # Based on research: Prevents packet loss in virtualized bridge environments
 - name: Configure Contabo Reverse Path Filtering
-  tags: [hardware, virtualization, remediate]
   ansible.posix.sysctl:
     name: "{{ item }}"
-  tags: [hardware, virtualization, remediate]
     value: '1'
     state: present
     sysctl_file: /etc/sysctl.d/99-contabo-networking.conf
@@ -15,7 +18,6 @@
     - net.ipv4.conf.default.rp_filter
   become: true
 - name: Force MTU for Contabo Virtual Bridge stability
-  tags: [hardware, virtualization, remediate]
   ansible.builtin.shell: |
     # Detect the primary interface and set MTU to 1450 to avoid tunnel fragmentation
     PRIMARY_IF=$(ip route | grep default | awk '{print $5}' | head -n 1)
@@ -26,3 +28,4 @@
   changed_when: false
   args:
     
+  tags: [hardware,virtualization,remediate]

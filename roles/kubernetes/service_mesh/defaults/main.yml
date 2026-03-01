@@ -1,0 +1,25 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100900
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for kubernetes/service_mesh (Linkerd)
+# Compliance: ISO 27001 §10.1, NIST SC-7
+
+service_mesh_enabled: false
+service_mesh_provider: "linkerd" # Options: linkerd, kuma
+
+# Linkerd Configuration
+linkerd_version: "2.14.10"
+linkerd_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+linkerd_image: "cr.lnd.dev/linkerd/controller:stable-{{ linkerd_version }}@{{ linkerd_image_digest }}"
+
+# mTLS Certificate settings (Integration with cert-manager or manual)
+linkerd_identity_trust_anchors_pem: ""
+linkerd_identity_issuer_cert_pem: ""
+linkerd_identity_issuer_key_pem: ""
+
+# Resource thresholds for edge nodes
+linkerd_proxy_cpu_request: "10m"
+linkerd_proxy_memory_request: "20Mi"
+linkerd_proxy_memory_limit: "50Mi"

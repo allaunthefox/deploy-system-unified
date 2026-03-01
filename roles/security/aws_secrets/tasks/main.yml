@@ -1,0 +1,58 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100338
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+- name: "FORENSIC: Validate AWS Secrets Manager Environment"
+  ansible.builtin.set_fact:
+    aws_secrets_ready: true
+  when: aws_secrets_enable | bool
+
+- name: "FORENSIC: Ensure AWS Secrets Configuration Directory Exists"
+  ansible.builtin.file:
+    path: "{{ aws_secrets_config_dir }}"
+    state: directory
+    owner: "{{ aws_secrets_owner }}"
+    group: "{{ aws_secrets_group }}"
+    mode: '0700'
+  when: aws_secrets_enable | bool
+
+- name: "FORENSIC: Fetch and Deploy Secrets from AWS"
+  amazon.aws.aws_secret:
+    name: "{{ item.name }}"
+    region: "{{ aws_region }}"
+  loop: "{{ aws_secrets_items }}"
+  register: aws_secret_results
+  when:
+    - aws_secrets_enable | bool
+    - aws_secrets_items | length > 0
+  no_log: true
+
+- name: "FORENSIC: Materialize AWS Secrets Locally"
+  ansible.builtin.copy:
+    content: "{{ (aws_secret_results.results | selectattr('item.name', 'equalto', item.name) | first).secret }}"
+    dest: "{{ item.path }}"
+    owner: "{{ aws_secrets_owner }}"
+    group: "{{ aws_secrets_group }}"
+    mode: '0600'
+  loop: "{{ aws_secrets_items }}"
+  when:
+    - aws_secrets_enable | bool
+    - aws_secrets_items | length > 0
+    - aws_secret_results is defined
+  no_log: true
+
+- name: "FORENSIC: Verify Secret Integrity and Presence"
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  loop: "{{ aws_secrets_items }}"
+  register: secret_stats
+  when: aws_secrets_enable | bool
+
+- name: "FORENSIC: Audit Secret Deployment Status"
+  ansible.builtin.debug:
+    msg: "Secret {{ item.item.name }} is {{ 'PRESENT' if item.stat.exists else 'MISSING' }}"
+  loop: "{{ secret_stats.results }}"
+  when:
+    - aws_secrets_enable | bool
+    - secret_stats is defined

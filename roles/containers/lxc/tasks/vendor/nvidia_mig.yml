@@ -1,31 +1,40 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100082
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Configure LXC container for NVIDIA MIG
   tags: [containers, lxc, gpu, nvidia]
   block:
     - name: Set MIG devices
-  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.set_fact:
         lxc_gpu_mig_devices: []
+      tags: [containers, lxc, gpu, nvidia]
+
     - name: Discover NVIDIA MIG devices
-  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.command:
         cmd: nvidia-smi mig -lgi
       register: nvidia_mig_devices
       changed_when: false
       failed_when: false
       become: true
+      tags: [containers, lxc, gpu, nvidia]
+
     - name: Parse NVIDIA MIG devices
-  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.set_fact:
         lxc_gpu_mig_devices: "{{ nvidia_mig_devices.stdout | regex_findall('GPU-\\w+-\\w+-\\w+-\\w+-\\w+') }}"
       when: nvidia_mig_devices.stdout | length > 0
+      tags: [containers, lxc, gpu, nvidia]
+
     - name: Create LXC MIG configuration template
-  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/mig.conf
         mode: '0644'
       become: true
+      tags: [containers, lxc, gpu, nvidia]
+
   when:
     - lxc_enable_gpu_support
     - lxc_gpu_slicing_strategy == "mig"

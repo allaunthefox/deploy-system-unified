@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100152
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Intel GPU model profiles for GPU slicing
 # SR-IOV-capable GPUs
 intel_sriov_capable_gpus:

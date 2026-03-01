@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500105
+# Last Updated: 2026-02-28
+# =============================================================================
 # Import the rule module directly from file to ensure tests load the local rule
 import importlib.util
 import pathlib

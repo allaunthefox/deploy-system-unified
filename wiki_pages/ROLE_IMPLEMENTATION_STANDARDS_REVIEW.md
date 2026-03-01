@@ -798,9 +798,9 @@ argument_specs:
 
 ## 🔗 Related Documentation
 
-- [SECURITY_ENHANCEMENT_PLAN_2026](../docs/planning/SECURITY_ENHANCEMENT_PLAN_2026.md) - Security roadmap
-- [SECURITY_AUDIT_REPORT](SECURITY_AUDIT_REPORT.md) - Current security assessment
-- [STYLE_GUIDE](STYLE_GUIDE.md) - Ansible implementation standards
+- [SECURITY_ENHANCEMENT_PLAN_2026](SECURITY_ENHANCEMENT_PLAN_2026) - Security roadmap
+- [SECURITY_AUDIT_REPORT](SECURITY_AUDIT_REPORT) - Current security assessment
+- [STYLE_GUIDE](STYLE_GUIDE) - Ansible implementation standards
 
 ---
 

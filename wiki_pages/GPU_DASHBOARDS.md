@@ -157,6 +157,6 @@ podman exec <container> nvidia-smi
 
 ## Related Documentation
 
-- [GPU Stack Setup](GPU_STACK_SETUP.md)
-- [GPU Slicing](GPU_SLICING.md)
-- [Deployment Metrics](DEPLOYMENT_METRICS.md)
+- [GPU Stack Setup](GPU_STACK_SETUP)
+- [GPU Slicing](GPU_SLICING)
+- [Deployment Metrics](DEPLOYMENT_METRICS)

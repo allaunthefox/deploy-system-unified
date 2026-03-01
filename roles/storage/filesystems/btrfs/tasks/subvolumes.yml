@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100731
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Btrfs subvolume management
 - name: Check if path is on a Btrfs filesystem

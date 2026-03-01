@@ -1,12 +1,14 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100415
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core entropy enhancement role
+    short_description: Entropy enhancement and RNG management
     description:
-      - Installs and configures haveged and rng-tools to ensure sufficient system entropy
-      - Critical for cryptographic operations and secure identity generation
-      - Aligns with ISO 27001 §10.1 cryptographic requirements
+      - This role manages entropy-providing services like haveged and rng-tools to ensure high-quality randomness for cryptographic operations.
     options:
       entropy_service_mapping:
         type: dict
-        description: Mapping of OS families to service and package names
+        description: Dictionary mapping OS distributions to their specific entropy and RNG service and package names.

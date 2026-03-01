@@ -15,9 +15,10 @@ deploy_workload_roles:
   - ops/monitoring         # Host Agent (Node Exporter)
   - containers/monitoring  # Stack (Forensic Dashboards - Loki/Promtail/Grafana)
 
-  # 2. Base Container Infrastructure Workload
-  - hardware/sas
   - hardware/gpu
+  - kubernetes/master
+  - kubernetes/node
+  - kubernetes/service_mesh # Q3 2026: Service Mesh (Optional)
   - containers/runtime
   - containers/config
   - containers/quadlets

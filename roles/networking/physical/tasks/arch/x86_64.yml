@@ -1,11 +1,14 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100637
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# RFC Compliance | ISO 27001 §13.1
 # x86_64 specific networking performance tuning
 
 - name: Apply High-Speed Kernel Tuning (Sysctl)
-  tags: [networking, physical, remediate]
   ansible.posix.sysctl:
     name: "{{ item.name }}"
-  tags: [networking, physical, remediate]
     value: "{{ item.value }}"
     state: present
     sysctl_file: /etc/sysctl.d/98-networking-performance.conf
@@ -13,14 +16,10 @@
   ignore_errors: "{{ ansible_virtualization_type in ['docker', 'podman', 'container'] }}"
   loop:
     - { name: 'net.core.rmem_max', value: "{{ active_profile.rmem_max }}" }
-  tags: [networking, physical, remediate]
     - { name: 'net.core.wmem_max', value: "{{ active_profile.wmem_max }}" }
-  tags: [networking, physical, remediate]
     - { name: 'net.core.netdev_max_backlog', value: "{{ active_profile.netdev_backlog }}" }
-  tags: [networking, physical, remediate]
     - { name: 'net.ipv4.tcp_rmem', value: "{{ active_profile.tcp_rmem }}" }
-  tags: [networking, physical, remediate]
     - { name: 'net.ipv4.tcp_wmem', value: "{{ active_profile.tcp_wmem }}" }
-  tags: [networking, physical, remediate]
   become: true
   when: networking_physical_ring_tuning_enabled
+  tags: [networking,physical,remediate]

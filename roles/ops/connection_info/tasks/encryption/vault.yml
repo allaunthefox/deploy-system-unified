@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100192
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §12.4 | System Monitoring
 - name: Encrypt SSH connection info with Ansible Vault (idempotent)
   tags: [ops, secrets, remediate]
   ansible.builtin.shell: |

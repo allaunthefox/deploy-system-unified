@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500042
+# Last Updated: 2026-02-28
+# =============================================================================
 """
 Testinfra tests for security/goss role.
 Tests Goss installation and configuration.

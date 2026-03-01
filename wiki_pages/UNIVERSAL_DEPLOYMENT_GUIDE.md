@@ -20,7 +20,7 @@ This guide outlines the standard operating procedure (SOP) for deploying the **D
 
 ## 2. Infrastructure Profile Selection
 
-The system uses a "Template" architecture. Do not edit `SITE.YML` directly. Instead, select a **Branch Template** that matches your hardware/use-case.
+The system uses a "Template" architecture. Do not edit `SITE.YML` directly. Instead, select a **Branch Template** that matches your hardware/use-case and customize for your specific goal.
 
 **Available Templates (`branch_templates/`)**:
 
@@ -46,7 +46,7 @@ Edit your local `my_deployment.yml` to define environment-specific variables.
 |:---|:---|:---|
 | `media_domain` | The base domain for Caddy proxying | `media.example.com` |
 | `caddy_acme_email` | Email for Let's Encrypt | `admin@example.com` |
-| `porkbun_api_key` | (If using DNS-01 challenge) | `pk1_...` |
+| `porkbun_api_key` | (If using DNS-01 challenge via the custom Caddy Porkbun module) | `pk1_...` |
 | `media_instance_name` | Unique Identifier for this stack | `default`, `node2` |
 | `crowdsec_enable` | Toggle security stack | `true` |
 
@@ -54,7 +54,7 @@ Edit your local `my_deployment.yml` to define environment-specific variables.
 
 ## 4. Deployment Execution
 
-Run the playbook against the inventory.
+Run the playbook against your inventory.
 
 ```bash
 # Validate Syntax
@@ -100,7 +100,7 @@ ops_rsync_allowlist:
 
 ### Ephemeral Profiles (Extra Guard)
 
-For `deployment_profile: "ephemeral"`, explicit opt-in is required:
+For `deployment_profile: "ephemeral"`, you must explicitly opt in:
 
 ```yaml
 storage_nfs_ephemeral_allow: true
@@ -161,7 +161,11 @@ See the GPU Enablement Recipe in `docs/deployment/CONTAINER_RUNTIME.md` for safe
 
 ## 6. Post-Deployment: The "Hybrid Security" Hook
 
-**Critical Step**: The CrowdSec "Hybrid" architecture (Container Agent + Host Binary Bouncer) requires a one-time cryptographic handshake that cannot be fully automated inside the playbook due to circular dependencies between the API readiness and the Host Service.
+**Critical Step**: The CrowdSec "Hybrid" architecture (Container Agent + Host Binary Bouncer) requires a one-time cryptographic handshake that cannot be fully automated inside the playbook due to circular dependencies between the API readiness and the Host Service. **This step is mandatory if `crowdsec_enable` is true.**
+
+**Requirement Context**:
+- **Bouncer Dependency**: Requires the `ipset` package on the host.
+- **Caddy DNS-01**: If using Porkbun for DNS validation, you MUST use a custom Caddy image/binary compiled with the `caddy-dns/porkbun` module.
 
 **Action**:
 Run the included setup script **on the target server**.

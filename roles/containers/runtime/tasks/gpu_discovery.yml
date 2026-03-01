@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100133
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # GPU discovery and detection logic - Container Runtime Integration
 

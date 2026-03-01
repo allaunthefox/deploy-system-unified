@@ -1,0 +1,57 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100348
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+- name: "FORENSIC: Ensure Network Policy Audit Directory"
+  ansible.builtin.file:
+    path: "{{ network_policy_report_dir }}"
+    state: directory
+    owner: "{{ network_policy_owner }}"
+    group: "{{ network_policy_group }}"
+    mode: '0700'
+  when: network_policy_enable | bool
+
+- name: "FORENSIC: Apply Default Deny-All Network Policy"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'default-deny.yaml.j2') | from_yaml }}"
+  loop: "{{ network_policy_namespaces }}"
+  when:
+    - network_policy_enable | bool
+    - network_policy_default_deny | bool
+  register: default_deny_results
+
+- name: "FORENSIC: Apply DNS Egress Network Policy"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'allow-dns.yaml.j2') | from_yaml }}"
+  loop: "{{ network_policy_namespaces }}"
+  when:
+    - network_policy_enable | bool
+    - network_policy_allow_dns | bool
+  register: allow_dns_results
+
+- name: "FORENSIC: Audit Network Policy Deployment State"
+  ansible.builtin.debug:
+    msg: "Network policies applied to namespaces: {{ network_policy_namespaces | join(', ') }}"
+  when: network_policy_enable | bool
+
+- name: "FORENSIC: Verify Kubernetes NetworkPolicy Presence"
+  kubernetes.core.k8s_info:
+    kind: NetworkPolicy
+    namespace: "{{ item }}"
+  loop: "{{ network_policy_namespaces }}"
+  register: policy_info
+  when: network_policy_enable | bool
+
+- name: "FORENSIC: Record Deployment Hashes for Forensic Audit"
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo "Network Policy Audit for {{ inventory_hostname }}" > {{ network_policy_report_dir }}/audit.log
+    echo "Default Deny applied: {{ network_policy_default_deny }}" >> {{ network_policy_report_dir }}/audit.log
+    echo "Allow DNS applied: {{ network_policy_allow_dns }}" >> {{ network_policy_report_dir }}/audit.log
+  args:
+    executable: /bin/bash
+  when: network_policy_enable | bool
+  changed_when: true

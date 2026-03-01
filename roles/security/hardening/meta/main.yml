@@ -1,36 +1,51 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100345
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: hardening
-  author: deploysystemunified
-  description: "POL-SEC | Core system security hardening (Permissions, PAM, User accounts)"
+  author: deploy-system-unified
+  description: Core system security hardening with CIS benchmark alignment
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - security
     - hardening
-    - base
-    - permissions
-    - pam
-    - accounts
     - cis
-    - cislevel1
-    - cislevel2
-    - iso27001
-    - nist80053
-    - systems
+    - stig
+    - compliance
+    - system
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - security_baseline
 
 collections:
   - ansible.builtin
+  - community.general
 
 dependencies: []

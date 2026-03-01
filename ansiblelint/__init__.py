@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500099
+# Last Updated: 2026-02-28
+# =============================================================================
 """Adaptive shim for `ansiblelint` test imports.
 
 This package lives inside the repository so local rule modules can do

@@ -1,0 +1,40 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900251
+# Template Type: Kyverno ClusterPolicy
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+# Copyright 2024 The Kubernetes Authors / CNCF
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-signatures
+  annotations:
+    policies.kyverno.io/title: Check Image Signatures
+    policies.kyverno.io/category: Software Supply Chain Security
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Check signatures of images to ensure they meet minimum requirements.
+spec:
+  validationFailureAction: Enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+    - name: verify-image
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "*"
+        attestors:
+        - entries:
+          - keys:
+              publicKeys: |-
+                {{ cosign_public_key | default('-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE... \n-----END PUBLIC KEY-----') | indent(16) }}

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100207
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss tests for ops/health_check role
 # This role performs post-deployment health checks

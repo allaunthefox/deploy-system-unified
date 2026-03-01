@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100851
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Post-Deployment Container Health Validation
 # Validates that deployed containers are running and healthy

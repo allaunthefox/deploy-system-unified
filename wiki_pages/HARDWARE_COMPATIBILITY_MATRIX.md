@@ -1,5 +1,7 @@
 # HARDWARE_COMPATIBILITY_MATRIX
 
+> ⚠️ **CRITICAL TESTING NOTICE**: As of March 2026, all **GPU-related entries** in this matrix are marked as **UNTESTABLE**. While the logic is implemented, physical hardware verification is delayed indefinitely.
+
 This document details supported hardware platforms, CPU-GPU pairings, and system-level capabilities for the `deploy-system-unified` project. It serves as a guide for selecting hardware for specific deployment roles (Compute, VDI, Edge, Workstation).
 
 ## 1. Platform Tier Definition
@@ -52,15 +54,17 @@ Specialized operational roles (`hardware/sas`, `networking/physical`) optimize t
 
 ## 5. Edge & Experimental Architectures (RISC-V / ARM)
 
-Support matrix for specific non-x86 boards targeted in the restructuring plan.
+Support matrix for specific non-x86 boards. **Note:** All entries below are **Experimental** and unverified on physical hardware.
 
 | Board / Platform | Architecture | Recommended GPU | PCIe Constraints | Usage Scenario |
 | :--- | :--- | :--- | :--- | :--- |
+| **Apple Mac M1/M2/M3** | ARM64 | **Apple Silicon (Metal)** | N/A (Asahi Linux) | **Experimental** Linux port. Limited driver maturity. |
+| **Orange Pi 5/5 Plus** | ARM64 | **Mali-G610 (Integrated)** | PCIe Gen 3 x4 | High-performance SBC. Good for containers. |
+| **Raspberry Pi 5** | ARM64 | **VideoCore VII** | PCIe Gen 2 x1 (via hat) | Industry standard SBC. Best for lightweight `ephemeral` roles. |
 | **NVIDIA Jetson Orin** | ARM64 | **Integrated (Ampere)** | N/A (SoC) | Edge AI, Robotics. Uses `tegra` drivers. |
-| **Raspberry Pi 5** | ARM64 | **Generic (AMD/NVIDIA)** | PCIe Gen 2 x1 (via hat) | Not recommended for heavy GPU loads. Bottlenecked. |
 | **Ampere Altra Dev Kit** | ARM64 | **NVIDIA A100 / AMD Pro** | Full PCIe Gen4 x128 | ARM Native Cloud Native workstation. |
 | **Milk-V Pioneer** | RISC-V | **AMD Radeon (RX 500/6000)** | PCIe Gen3 x16 | Native RISC-V builder. AMD `amdgpu` open driver is best supported. |
-| **StarFive VisionFive 2** | RISC-V | **IMG BXE (Integrated)** | N/A | Basic display/3D. Drivers are still maturing. PCIe x4 slot available for dGPU (experimental). |
+| **StarFive VisionFive 2** | RISC-V | **IMG BXE (Integrated)** | N/A | Basic display/3D. Drivers are still maturing. |
 
 ## 5. Storage & Bandwidth interactions
 

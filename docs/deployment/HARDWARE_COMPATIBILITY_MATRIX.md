@@ -1,5 +1,7 @@
 # HARDWARE_COMPATIBILITY_MATRIX
 
+> ⚠️ **CRITICAL TESTING NOTICE**: As of March 2026, all **GPU-related entries** in this matrix are marked as **UNTESTABLE**. While the logic is implemented, physical hardware verification is delayed indefinitely.
+
 This document details supported hardware platforms, CPU-GPU pairings, and system-level capabilities for the `deploy-system-unified` project. It serves as a guide for selecting hardware for specific deployment roles (Compute, VDI, Edge, Workstation).
 
 ## 1. Platform Tier Definition

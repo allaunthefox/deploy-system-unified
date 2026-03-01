@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100077
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Set AMD variables
   tags: [containers, lxc, gpu, amd]
   ansible.builtin.set_fact:

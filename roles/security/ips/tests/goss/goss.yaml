@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100336
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for security/ips role
 # Fail2Ban, Intrusion Prevention System
 # CIS Benchmark: 4.x, 5.x - Logging and Access Control

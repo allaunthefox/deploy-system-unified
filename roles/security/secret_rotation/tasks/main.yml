@@ -1,0 +1,52 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100354
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+- name: "FORENSIC: Ensure Secret Rotation Log Directory"
+  ansible.builtin.file:
+    path: "{{ secret_rotation_log_dir }}"
+    state: directory
+    owner: "{{ secret_rotation_owner }}"
+    group: "{{ secret_rotation_group }}"
+    mode: '0700'
+  when: secret_rotation_enable | bool
+
+- name: "FORENSIC: Initialize Rotation Audit Log"
+  ansible.builtin.copy:
+    content: "Secret Rotation Audit Started at {{ ansible_date_time.iso8601 }}
+"
+    dest: "{{ secret_rotation_log_dir }}/rotation_history.log"
+    owner: "{{ secret_rotation_owner }}"
+    group: "{{ secret_rotation_group }}"
+    mode: '0600'
+  when: secret_rotation_enable | bool
+
+- name: "FORENSIC: Schedule Regular Secret Rotation"
+  ansible.builtin.cron:
+    name: "Automated Secret Rotation ({{ item.type }})"
+    job: "/usr/local/bin/rotate_secrets.sh --type {{ item.type }} >> {{ secret_rotation_log_dir }}/rotation.log 2>&1"
+    special_time: "{{ item.frequency }}"
+  loop: "{{ secret_rotation_items }}"
+  when:
+    - secret_rotation_enable | bool
+    - secret_rotation_items | length > 0
+  become: true
+
+- name: "FORENSIC: Configure Emergency Rotation Webhook"
+  ansible.builtin.template:
+    src: emergency_rotation.sh.j2
+    dest: /usr/local/bin/emergency_rotate.sh
+    mode: '0700'
+    owner: root
+  when:
+    - secret_rotation_enable | bool
+    - secret_emergency_rotation_enable | bool
+    - secret_emergency_rotation_webhook | length > 0
+
+- name: "FORENSIC: Audit Rotation Configuration"
+  ansible.builtin.debug:
+    msg: "Secret rotation configured for: {{ secret_rotation_items | map(attribute='type') | join(', ') }}"
+  when:
+    - secret_rotation_enable | bool
+    - secret_rotation_items | length > 0

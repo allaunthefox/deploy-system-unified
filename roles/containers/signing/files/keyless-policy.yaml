@@ -1,3 +1,8 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100156
+# Last Updated: 2026-02-28
+# =============================================================================
+# CIS Docker Benchmark | Pod Security Standards
 # Keyless Cosign Verification Policy
 # This policy uses Sigstore's keyless signing infrastructure
 # Managed by Ansible - DO NOT EDIT MANUALLY

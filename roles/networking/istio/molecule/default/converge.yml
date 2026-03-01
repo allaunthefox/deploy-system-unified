@@ -1,0 +1,29 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1003056
+# Test Type: Molecule Converge Phase
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# RFC Compliance | ISO 27001 §13.1
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Ensure kubeconfig is ready
+      ansible.builtin.wait_for:
+        path: /etc/rancher/k3s/k3s.yaml
+        state: present
+        timeout: 60
+    - name: Wait for Kubernetes API
+      ansible.builtin.uri:
+        url: "https://127.0.0.1:6443/version"
+        validate_certs: false
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 5
+    - name: "Include roles/networking/istio"
+      ansible.builtin.include_role:
+        name: "networking/istio"
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml

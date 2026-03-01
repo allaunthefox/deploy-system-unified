@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100271
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for security/audit_integrity role
 # Auditd Configuration, Log Integrity
 # CIS Benchmark: 4.x - Logging and Auditing

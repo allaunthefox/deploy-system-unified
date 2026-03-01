@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100037
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Defaults for containers/authentik
 
 containers_authentik_enable: true
@@ -27,10 +32,10 @@ containers_authentik_port_https: 9443
 # Database Config
 containers_authentik_pg_user: authentik
 containers_authentik_pg_db: authentik
-containers_authentik_pg_pass: "changeme_please_secure_me"
+containers_authentik_pg_pass: "SECURE_GATE_REQUIRED"
 
 # Secret Key (Must be generated)
-containers_authentik_secret_key: "generate_me_with_openssl_rand_base64_60"
+containers_authentik_secret_key: "SECURE_GATE_REQUIRED"
 
 # Hardening: fail-secure gating for Authentik secret checks
 containers_authentik_fail_secure: "{{ containers_fail_secure | default(true) }}"

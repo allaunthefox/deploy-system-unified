@@ -4,7 +4,7 @@
 > of Concerns (SoC)** principle, as defined in ISO/IEC 25010:2011 §4.2.7 (Modularity) and
 > required by NIST SP 800-53 Rev 5 SA-8 (Security and Privacy Engineering Principles).
 >
-> See [TERMINOLOGY](TERMINOLOGY) for formal definitions with ISO/NIST citations.
+> See [TERMINOLOGY](TERMINOLOGY.md) for formal definitions with ISO/NIST citations.
 
 The foundational rule of this project is:
 

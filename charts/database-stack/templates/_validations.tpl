@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300020
+# Last Updated: 2026-02-28
+# =============================================================================
 {{- /*
 CRITICAL SECURITY VALIDATION
 Fail deployment if passwords are not set

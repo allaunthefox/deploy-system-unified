@@ -1,14 +1,19 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100079
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Configure LXC container for Intel Level Zero
   tags: [containers, lxc, gpu, intel]
   block:
     - name: Create LXC Level Zero configuration template
-  tags: [containers, lxc, gpu, intel]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/level-zero.conf
         mode: '0644'
       become: true
+      tags: [containers, lxc, gpu, intel]
   when:
     - lxc_enable_gpu_support
     - lxc_gpu_slicing_strategy == "level-zero"

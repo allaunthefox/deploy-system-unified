@@ -1,0 +1,58 @@
+# Hardware Verification Fidelity Matrix
+
+**Audit Event Identifier:** DSU-DOC-180010  
+**Last Updated:** 2026-03-01  
+**Status:** ✅ Active Standard
+
+This document defines the fidelity levels for hardware verification within the **Deploy-System-Unified** project, ensuring clear distinction between simulated logic and physical validation.
+
+---
+
+## 📊 Fidelity Levels
+
+| Tag | Level | Description | Environment | Confidence |
+| :--- | :--- | :--- | :--- | :--- |
+| **`[SIM]`** | **Simulation** | Software-in-the-Loop (SiL). Uses mock data (e.g., `gpu_mock_lspci_output`) to verify Ansible logic, role dependencies, and task flow. | Molecule / CI | **Logic Only** |
+| **`[HIL]`** | **Hardware-in-the-Loop** | Verification on physical hardware in a controlled test rig. Validates driver loading and basic device initialization. | Dev Lab | **Functional** |
+| **`[PHYS]`** | **Physical** | Full production verification on target hardware. Validates performance, stability, and real-world interactions. | Production | **Complete** |
+
+---
+
+## 🛠️ Verification Scope (GPU Example)
+
+| Feature | `[SIM]` Scope (Mock) | `[PHYS]` Scope (Real) |
+| :--- | :--- | :--- |
+| **Vendor Detection** | String matching against mock PCI IDs. | Real PCI bus scan via `lspci`. |
+| **Role Branching** | Verifies if `nvidia` tasks run when mock ID is `10de`. | Verifies if driver correctly initializes the silicon. |
+| **Slicing Strategy** | Verifies if configuration files are generated correctly. | Verifies if MIG/SR-IOV partitions are created in VRAM. |
+| **Performance** | N/A | Validates compute throughput and latency. |
+
+---
+
+## 🧬 Verified Hardware Signatures (Simulation Database)
+
+The following real-world hardware signatures are maintained in the simulation database to surface edge cases and logic bugs:
+
+| Category | Representative Model | PCI ID | Verified Status |
+| :--- | :--- | :--- | :--- |
+| **Consumer High-End** | NVIDIA GeForce RTX 4090 | `10de:2684` | ✅ Logic Verified |
+| **AI/Deep Learning** | NVIDIA H100 SXM5 | `10de:2321` | ✅ Logic Verified |
+| **Data Center (AMD)** | AMD Instinct MI250X | `1002:740c` | ✅ Logic Verified |
+| **Data Center (Intel)** | Intel Flex 170 | `8086:56c0` | ✅ Logic Verified |
+| **Laptop Hybrid** | Intel iGPU + NVIDIA dGPU | `8086:7d55 / 10de:28a0` | ✅ Logic Verified |
+| **Virtualized** | NVIDIA vGPU (GRID) | `10de:2230` | ✅ Logic Verified |
+| **Virtualized** | Intel GVT-g (Mediated) | `8086:5902` | ✅ Logic Verified |
+| **Virtualized** | AMD SR-IOV (MxGPU) | `1002:6929` | ✅ Logic Verified |
+| **Virtualized** | VirtIO GPU / VirGL | `1af4:1050` | ✅ Logic Verified |
+| **Integrated** | Intel UHD Graphics 630 | `8086:3e92` | ✅ Logic Verified |
+| **Integrated** | AMD Radeon Vega 8 | `1002:15d8` | ✅ Logic Verified |
+| **Server BMC** | ASPEED AST2500/2600 | `1a03:2000` | ✅ Logic Verified |
+| **Legacy/Embedded** | Intel UHD Graphics 770 | `8086:4680` | ✅ Logic Verified |
+
+---
+
+## 🛡️ Compliance Alignment
+
+*   **ISO 26262-6**: Supports early-stage verification using SiL (Software-in-the-Loop) methods.
+*   **NIST SP 800-53 SA-11**: Provides developer-side testing evidence through automated simulation.
+*   **Traceability**: Every `[SIM]` result must be superseded by a `[PHYS]` result before a feature can be marked as "Production Ready" in the Deployment Matrix.

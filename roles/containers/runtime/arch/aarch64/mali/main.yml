@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100122
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Mali GPU Container Runtime Configuration
 # Supports Open Source (Panfrost/Panthor) and Proprietary (Bifrost/Valhall blobs) drivers
 

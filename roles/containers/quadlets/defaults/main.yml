@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100114
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Defaults for containers/quadlets role
 containers_quadlet_network_name: "{{ quadlet_network_name | default('deploy-net') }}"
 containers_quadlet_create_network: "{{ quadlet_create_network | default(true) }}"

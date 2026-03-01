@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100020
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Ansible Collections Requirements
 # Defines the collections required for the Deploy-System-Unified project

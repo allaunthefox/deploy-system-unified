@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100384
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/scanning role
 security_scanning_tool: "trivy"

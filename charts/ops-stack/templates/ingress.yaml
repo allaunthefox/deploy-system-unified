@@ -1,12 +1,15 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300055
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 {{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "ops-stack.fullname" . }}-homarr
-  annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: homarr.{{ .Values.ingress.host }}
       http:
@@ -23,9 +26,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "ops-stack.fullname" . }}-vaultwarden
-  annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: vaultwarden.{{ .Values.ingress.host }}
       http:

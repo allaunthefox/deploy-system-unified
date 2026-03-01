@@ -1,0 +1,43 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100352
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+galaxy_info:
+  role_name: secret_rotation
+  author: deploy-system-unified
+  description: Automated secret lifecycle and rotation orchestration
+  company: Deploy-System-Unified Project
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Fedora
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+  galaxy_tags:
+    - security
+    - secrets
+    - rotation
+    - lifecycle
+    - vault
+    - cloud
+    - compliance
+    - automation
+
+collections:
+  - ansible.builtin
+
+dependencies: []

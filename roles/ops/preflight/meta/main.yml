@@ -1,34 +1,48 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100230
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: preflight
-  author: deploysystemunified
-  description: "SOP-OPS | System readiness validation and inventory sanity checks"
+  author: deploy-system-unified
+  description: Pre-deployment system validation, compliance checking, and environmental audit
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - ops
     - preflight
     - validation
-    - sanity
-    - verification
-    - readiness
-    - inventory
-    - automation
-    - checklist
     - audit
-    - iso9001
-    - iso27001
+    - compliance
+    - verification
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - automation
 
 collections:
   - ansible.builtin

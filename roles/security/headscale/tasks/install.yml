@@ -1,0 +1,65 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100802
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Install Headscale Binary and Dependencies
+# Compliance: NIST CM-6, ISO 27001 §12.1
+
+- name: "ISO 27001 §12.1 | 800101 | Create Headscale System Group"
+  ansible.builtin.group:
+    name: headscale
+    system: true
+    state: present
+  tags: [security, headscale, user, 800101]
+
+- name: "ISO 27001 §12.1 | 800102 | Create Headscale System User"
+  ansible.builtin.user:
+    name: headscale
+    group: headscale
+    system: true
+    shell: /sbin/nologin
+    home: /var/lib/headscale
+    create_home: true
+  tags: [security, headscale, user, 800102]
+
+- name: "ISO 27001 §12.5 | 800103 | Create Headscale Configuration Directory"
+  ansible.builtin.file:
+    path: /etc/headscale
+    state: directory
+    owner: headscale
+    group: headscale
+    mode: '0750'
+  tags: [security, headscale, storage, 800103]
+
+- name: "ISO 27001 §12.5 | 800104 | Create Headscale Data Directory"
+  ansible.builtin.file:
+    path: /var/lib/headscale
+    state: directory
+    owner: headscale
+    group: headscale
+    mode: '0750'
+  tags: [security, headscale, storage, 800104]
+
+- name: "ISO 27001 §12.5 | 800105 | Create Headscale Run Directory"
+  ansible.builtin.file:
+    path: /var/run/headscale
+    state: directory
+    owner: headscale
+    group: headscale
+    mode: '0755'
+  tags: [security, headscale, storage, 800105]
+
+- name: "ISO 27001 §12.6 | 800106 | Download Headscale Binary"
+  ansible.builtin.get_url:
+    url: "https://github.com/juanfont/headscale/releases/download/v{{ headscale_version | default('0.23.0') }}/headscale_{{ headscale_version | default('0.23.0') }}_linux_{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+    dest: /usr/local/bin/headscale
+    mode: '0755'
+    owner: root
+    group: root
+    timeout: 30
+  register: _headscale_download
+  retries: 5
+  delay: 10
+  until: _headscale_download is success
+  tags: [security, headscale, deploy, 800106]

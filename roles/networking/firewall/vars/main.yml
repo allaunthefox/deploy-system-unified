@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100629
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # vars/main.yml for firewall role
 # Role-specific internal variables for UFW, Firewalld, and Nftables

@@ -1,6 +1,13 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110051
+# Playbook Type: Kernel Security Role
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Tasks for security/ima_enforcement - Runtime Binary Integrity
-# NIST SI-7 | ISO 27001 §8.15 | Audit Code 450001
+# NIST SI-7 | ISO 27001 §8.15 
+# is governed by the GPLv2 License. See: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/security/integrity/ima
 
 - name: "INTEGRITY | Detect Virtualization Environment"
   ansible.builtin.set_fact:
@@ -47,14 +54,9 @@
   tags: [security, ima]
 
 - name: "INTEGRITY | Deploy IMA appraisal policy"
-  ansible.builtin.copy:
+  ansible.builtin.template:
+    src: ima-policy.j2
     dest: /etc/ima/ima-policy
-    content: |
-      # IMA Appraisal Policy - Strict Enforcement
-      # Appraise all executables
-      appraise func=BPRM_CHECK appraise_type=imasig
-      # Appraise all mmap'd files
-      appraise func=MMAP_CHECK appraise_type=imasig
     mode: '0644'
     owner: root
     group: root
@@ -63,6 +65,100 @@
     - ima_enabled | bool
     - not _ima_is_container
   tags: [security, ima, policy]
+
+- name: "INTEGRITY | Ensure key directory exists"
+  ansible.builtin.file:
+    path: "{{ ima_key_dir }}"
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima, keys]
+
+- name: "INTEGRITY | Deploy IMA key rotation script"
+  ansible.builtin.template:
+    src: ima-rotate-keys.sh.j2
+    dest: "{{ ima_key_rotation_script }}"
+    mode: '0700'
+    owner: root
+    group: root
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima, automation]
+
+- name: "INTEGRITY | Perform initial IMA key generation and signing"
+  ansible.builtin.command:
+    cmd: "{{ ima_key_rotation_script }}"
+    creates: "{{ ima_private_key }}"
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+    - not ansible_check_mode
+  tags: [security, ima, keys]
+
+- name: "INTEGRITY | Deploy IMA rotation systemd service"
+  ansible.builtin.template:
+    src: ima-rotate.service.j2
+    dest: /etc/systemd/system/ima-rotate.service
+    mode: '0644'
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+    - ima_key_rotation_enabled | bool
+  tags: [security, ima, automation]
+
+- name: "INTEGRITY | Deploy IMA rotation systemd timer"
+  ansible.builtin.template:
+    src: ima-rotate.timer.j2
+    dest: /etc/systemd/system/ima-rotate.timer
+    mode: '0644'
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+    - ima_key_rotation_enabled | bool
+  tags: [security, ima, automation]
+
+- name: "INTEGRITY | Enable and start IMA key rotation timer"
+  ansible.builtin.systemd:
+    name: ima-rotate.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+    - ima_key_rotation_enabled | bool
+    - not ansible_check_mode
+  tags: [security, ima, automation]
+
+- name: "SIEM | Ensure auditd is configured to capture IMA events"
+  ansible.builtin.copy:
+    dest: /etc/audit/rules.d/99-ima.rules
+    content: |
+      # IMA Integrity Monitoring Rules (NIST AU-12)
+      -a always,exit -F arch=b64 -S all -F type=AUDIT_INTEGRITY_DATA -k ima_data
+      -a always,exit -F arch=b64 -S all -F type=AUDIT_INTEGRITY_METADATA -k ima_metadata
+      -a always,exit -F arch=b64 -S all -F type=AUDIT_INTEGRITY_STATUS -k ima_status
+      -a always,exit -F arch=b64 -S all -F type=AUDIT_INTEGRITY_HASH -k ima_hash
+      -a always,exit -F arch=b64 -S all -F type=AUDIT_INTEGRITY_PCR -k ima_pcr
+      -a always,exit -F arch=b64 -S all -F type=AUDIT_INTEGRITY_RULE -k ima_rule
+    mode: '0600'
+  become: true
+  notify: restart_auditd
+  when: 
+    - ima_enabled | bool
+    - not _ima_is_container
+  tags: [security, ima, siem, audit]
 
 - name: VERIFY | IMA is active in kernel (Zero-Tolerance)
   ansible.builtin.shell: |

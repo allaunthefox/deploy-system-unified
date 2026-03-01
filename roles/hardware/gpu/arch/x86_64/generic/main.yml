@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100520
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Generic GPU Setup for x86_64
 # Falls back to standard Mesa / Vulkan software rendering or generic drivers
 

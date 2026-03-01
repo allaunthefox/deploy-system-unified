@@ -19,30 +19,10 @@ ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s \
     server \
+    --config=/etc/rancher/k3s/config.yaml \
+    {% if k3s_ha_enabled | default(false) | bool and inventory_hostname == groups['k8s_master'][0] %}
     --cluster-init \
-    --token-file={{ kubernetes_token_path }} \
-    --cluster-cidr={{ kubernetes_pod_cidr }} \
-    --service-cidr={{ kubernetes_service_cidr }} \
-    --cluster-dns={{ kubernetes_cluster_dns }} \
-    --cluster-domain={{ kubernetes_cluster_domain }} \
-    --https-listen-port={{ kubernetes_api_port }} \
-    --flannel-backend={{ kubernetes_flannel_backend }} \
-    --kube-proxy-arg="proxy-mode={{ kubernetes_proxy_mode }}" \
-    --disable-network-policy \
-    --write-kubeconfig-mode=644 \
-    {% for san in kubernetes_tls_san %}
-    --tls-san={{ san }} \
-    {% endfor %}
-    {% if kubernetes_disable_traefik %}
-    --disable=traefik \
     {% endif %}
-    {% if kubernetes_disable_servicelb %}
-    --disable=servicelb \
-    {% endif %}
-    {% if kubernetes_disable_agent %}
-    --disable-agent \
-    {% endif %}
-    --data-dir={{ kubernetes_data_dir }}
 
 KillMode=process
 Delegate=yes

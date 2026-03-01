@@ -13,7 +13,7 @@ auto-synced from this directory by the CI wiki-lint workflow. Do not edit the Gi
 
 **File naming**: Wiki page filenames MUST use **SCREAMING_SNAKE_CASE.md**.
 
-See **[NAMING_CONVENTION_STANDARD](NAMING_CONVENTION_STANDARD)** for the complete naming standard.
+See **[NAMING_CONVENTION_STANDARD](NAMING_CONVENTION_STANDARD.md)** for the complete naming standard.
 
 Examples: `ONTOLOGY.md`, `SEPARATION_OF_CONCERNS.md`, `DEV_STYLE_YAML_STYLE_GUIDE.md`, `REF_VARS_CORE.md`.
 

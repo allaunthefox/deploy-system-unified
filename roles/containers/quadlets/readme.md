@@ -1,35 +1,51 @@
 # Quadlets Role
 
-## Overview
+**Audit Event Identifier:** DSU-PLY-100117  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-03-01  
 
-This role manages **Podman Quadlets**, which are Systemd generator files for containers. It ensures that container networks and services are managed natively by Systemd, providing robustness and auto-start capabilities.
+This role manages the deployment of Podman Quadlet files, which allow Systemd to natively manage containers as services.
 
-## Standards Compliance
+## Architecture
 
-### 1. Network Naming
+```mermaid
+graph TD
+    subgraph Configuration
+        YAML[Quadlet Definition] --> GEN(Systemd Generator)
+        GEN --> UNIT[Service Unit]
+    end
+    
+    subgraph Execution
+        UNIT --> PODMAN[Podman]
+        PODMAN --> CONTAINER[Container Process]
+    end
+    
+    subgraph Security
+        UNIT --> SECCOMP[Seccomp Profile]
+        UNIT --> USER[User Namespace]
+    end
+    
+    classDef config fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef exec fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef sec fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    
+    class YAML,GEN,UNIT config;
+    class PODMAN,CONTAINER exec;
+    class SECCOMP,USER sec;
+```
 
-* **Bridge Name**: Defaults to `deploy-net` (via `quadlet_network_name`).
-* **File Name**: `/etc/containers/systemd/{{ quadlet_network_name }}.network`.
-* **Variable**: `quadlet_network_name` can be overridden in `defaults/main.yml` or inventory.
-
-### 2. Identity & Auditing
-
-* **UUID Generation**: Uses `core/identity` to assign a high-entropy UUID to the networking object during deployment.
-* **Compliance**: Matches the `networking/virtual` standard for object tracking.
-
-### 3. Checkpoints
-
-* **Status**: Writes completion status to `/var/lib/deploy-system/checkpoints/quadlets_checkpoint.json`.
-* **Persistence**: Ensures that the network deployment ID and state are preserved across runs.
-
-## Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `quadlet_network_name` | `deploy-net` | The name of the Podman bridge network. |
-| `quadlet_network_subnet` | `10.89.0.0/24` | Subnet CIDR. |
-| `quadlet_create_network` | `true` | Whether to create the base network. |
+## Features
+- **Native Integration**: Treat containers like standard system services.
+- **Dependency Management**: Define startup order and dependencies using Systemd logic.
+- **Rootless Support**: Seamless deployment of user-scoped Quadlets.
+- **Auto-Updates**: Integration with Podman Auto-Update for image freshness.
 
 ## Usage
 
-included automatically by the `containers` meta-role.
+```yaml
+- name: Deploy Quadlets
+  hosts: container_nodes
+  roles:
+    - containers/quadlets
+```

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100186
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §12.4 | System Monitoring
 # Defaults for ops/connection_info role
 encryption_method: "plain" # sops or vault (Default changed to plain for dev/test without keys)
 ssh_rsync_destination: ""

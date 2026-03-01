@@ -6,11 +6,19 @@
 # Version: 1.0
 # =============================================================================
 ---
-- name: Preflight Validation - Ontological Contract Enforcement
+- name: "ISO 9001 | 600013 | Preflight Validation - Ontological Contract Enforcement"
   hosts: all
   gather_facts: false
   tasks:
-    - name: Enforce single ontological profile group membership
+    - name: "ISO 27001 §12.4 | DSU-SHS-400100 | Enforce Compliance Metadata Integrity"
+      ansible.builtin.command:
+        cmd: "python3 {{ playbook_dir }}/../scripts/quality/enforce_metadata.py"
+      delegate_to: localhost
+      run_once: true
+      changed_when: false # Script only injects if missing, safe to run repeatedly
+      tags: [preflight, compliance, metadata]
+
+    - name: "ISO 9001 | 600013 | Enforce single ontological profile group membership"
       ansible.builtin.assert:
         that:
           - (group_names | intersect(['hardened', 'ephemeral', 'production', 'dev']) | length) == 1
@@ -18,14 +26,14 @@
           Host {{ inventory_hostname }} must belong to exactly one ontological profile group.
           Found in: {{ group_names | intersect(['hardened', 'ephemeral', 'production', 'dev']) | join(', ') }}
 
-    - name: Assert deployment_profile is defined and typed correctly
+    - name: "ISO 9001 | 600013 | Assert deployment_profile is defined and typed correctly"
       ansible.builtin.assert:
         that:
           - deployment_profile is defined
           - deployment_profile is string
         fail_msg: "CRITICAL: 'deployment_profile' must be defined as a string for {{ inventory_hostname }}."
 
-    - name: Validate 'hardened' profile contract
+    - name: "ISO 9001 | 600013 | Validate 'hardened' profile contract"
       ansible.builtin.assert:
         that:
           - core_security_fail_secure | default(false) | bool == true
@@ -36,7 +44,7 @@
           Expects: fail_secure=true, firewall=true, ssh_randomize=true.
       when: deployment_profile == 'hardened'
 
-    - name: Validate 'ephemeral' profile contract
+    - name: "ISO 9001 | 600013 | Validate 'ephemeral' profile contract"
       ansible.builtin.assert:
         that:
           - ephemeral_volatile_secrets | default(false) | bool == true
@@ -47,7 +55,7 @@
           Expects: volatile_secrets=true, fail_secure=true, firewall=true.
       when: deployment_profile == 'ephemeral'
 
-    - name: Validate 'production' profile contract
+    - name: "ISO 9001 | 600013 | Validate 'production' profile contract"
       ansible.builtin.assert:
         that:
           - core_security_fail_secure | default(false) | bool == true
@@ -58,7 +66,7 @@
           Expects: fail_secure=true, firewall=true, monitoring=true.
       when: deployment_profile == 'production'
 
-    - name: Validate 'dev' profile contract
+    - name: "ISO 9001 | 600013 | Validate 'dev' profile contract"
       ansible.builtin.assert:
         that:
           - core_security_fail_secure | default(true) | bool == false

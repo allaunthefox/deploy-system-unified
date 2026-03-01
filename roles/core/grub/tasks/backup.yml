@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100424
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Bootloader Backup and Recovery Procedures
 # Includes encrypted backups for security

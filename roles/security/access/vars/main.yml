@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100257
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/access role
 security_access_sudoers_dir: "/etc/sudoers.d"

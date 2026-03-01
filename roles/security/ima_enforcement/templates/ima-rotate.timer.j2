@@ -1,0 +1,10 @@
+[Unit]
+# Audit Event Identifier: DSU-TPL-900256
+Description=Run IMA Key Rotation {{ ima_key_rotation_interval | title }}
+
+[Timer]
+OnCalendar={{ ima_key_rotation_interval }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

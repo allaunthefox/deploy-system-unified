@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100518
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Imagination Technologies (IMG) GPU Setup for riscv64
 # Target: BXE-4-32 (StarFive VisionFive 2) and others
 

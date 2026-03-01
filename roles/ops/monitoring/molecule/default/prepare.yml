@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000180
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §12.4 | System Monitoring
 - name: Prepare
   hosts: localhost
   connection: local

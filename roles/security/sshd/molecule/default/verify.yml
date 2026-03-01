@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000366
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # verify.yml - Verification playbook for security/sshd role
 # Validates SSH daemon hardening including configuration, host keys, and security settings

@@ -1,8 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100566
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Tasks for Hetzner-specific VPS optimization
 # Based on research: Protects /32 point-to-point routing connectivity
 - name: Verify Hetzner Point-to-Point routing
-  tags: [hardware, virtualization, remediate]
   ansible.builtin.shell: |
     ip addr show | grep -q "/32"
   register: hetzner_32_check
@@ -11,17 +15,15 @@
   args:
     
 - name: Report Hetzner Routing Status
-  tags: [hardware, virtualization, remediate]
   ansible.builtin.debug:
     msg: "Hetzner /32 networking detected. Ensuring routing table persistence."
   when: hetzner_32_check.rc == 0
 - name: Apply Hetzner-specific sysctl optimizations
-  tags: [hardware, virtualization, remediate]
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.send_redirects
-  tags: [hardware, virtualization, remediate]
     value: '0'
     state: present
     sysctl_file: /etc/sysctl.d/99-hetzner-optimization.conf
     reload: true
   become: true
+  tags: [hardware,virtualization,remediate]

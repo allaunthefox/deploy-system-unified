@@ -6,7 +6,7 @@ This project incorporates third-party open source software components. This docu
 
 **Deploy-System-Unified** is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
 
-See [LICENSE](../LICENSE) for the full license text.
+See [LICENSE](../LICENSE.md) for the full license text.
 
 ---
 
@@ -31,22 +31,39 @@ The following licenses are considered compatible with GPL-3.0 and are allowed fo
 
 ### Ansible Collections
 
-| Collection | License | Notes |
-|------------|---------|-------|
-| `ansible.posix` | GPL-3.0 | Core POSIX module support |
-| `community.sops` | GPL-3.0 | SOPS secrets management |
-| `community.crypto` | GPL-3.0 | Cryptographic operations |
+| Collection | License | Notes | Project Site |
+|------------|---------|-------|--------------|
+| `ansible.posix` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Core POSIX module support | [GitHub](https://github.com/ansible-collections/ansible.posix) |
+| `ansible.utils` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Ansible utility modules | [GitHub](https://github.com/ansible-collections/ansible.utils) |
+| `community.general` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Community maintained modules | [GitHub](https://github.com/ansible-collections/community.general) |
+| `community.crypto` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Cryptographic operations | [GitHub](https://github.com/ansible-collections/community.crypto) |
+| `community.docker` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Docker engine integration | [GitHub](https://github.com/ansible-collections/community.docker) |
+| `containers.podman` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Podman container support | [GitHub](https://github.com/containers/ansible-podman-collections) |
+| `community.sops` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | SOPS secrets management | [GitHub](https://github.com/ansible-collections/community.sops) |
+| `community.libvirt` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Virtualization management | [GitHub](https://github.com/ansible-collections/community.libvirt) |
+| `community.library_inventory_filtering_v1` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Advanced inventory filtering | [GitHub](https://github.com/ansible-collections/community.library_inventory_filtering_v1) |
 
 ### Python Packages
 
-| Package | License | Purpose |
-|---------|---------|---------|
-| `ansible-core` | GPL-3.0 | Ansible runtime |
-| `ansible-lint` | MIT | Linting and validation |
-| `yamllint` | GPL-3.0 | YAML validation |
-| `detect-secrets` | Apache-2.0 | Secret detection |
-| `jinja2` | BSD-3-Clause | Template engine |
-| `pyyaml` | MIT | YAML parsing |
+| Package | License | Purpose | Project Site |
+|---------|---------|---------|--------------|
+| `ansible-core` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | Ansible runtime | [GitHub](https://github.com/ansible/ansible) |
+| `ansible-lint` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | Linting and validation | [GitHub](https://github.com/ansible/ansible-lint) |
+| `yamllint` | [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt) | YAML validation | [GitHub](https://github.com/adrienverge/yamllint) |
+| `detect-secrets` | [Apache-2.0](../../THIRD_PARTY_LICENSES/Apache-2.0.txt) | Secret detection | [GitHub](https://github.com/Yelp/detect-secrets) |
+| `jinja2` | [BSD-3-Clause](../../THIRD_PARTY_LICENSES/BSD-3-Clause.txt) | Template engine | [GitHub](https://github.com/pallets/jinja) |
+| `pyyaml` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | YAML parsing | [GitHub](https://github.com/yaml/pyyaml) |
+| `requests` | [Apache-2.0](../../THIRD_PARTY_LICENSES/Apache-2.0.txt) | HTTP library | [GitHub](https://github.com/psf/requests) |
+| `urllib3` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | HTTP client | [GitHub](https://github.com/urllib3/urllib3) |
+| `certifi` | [MPL-2.0](../../THIRD_PARTY_LICENSES/MPL-2.0.txt) | SSL certificates | [GitHub](https://github.com/certifi/python-certifi) |
+| `idna` | [BSD-3-Clause](../../THIRD_PARTY_LICENSES/BSD-3-Clause.txt) | IDNA support | [GitHub](https://github.com/kjd/idna) |
+| `charset-normalizer` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | Character encoding detection | [GitHub](https://github.com/Ousret/charset_normalizer) |
+| `pip-licenses` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | License audit tool | [GitHub](https://github.com/pypa/pip-licenses) |
+| `prettytable` | [BSD-3-Clause](../../THIRD_PARTY_LICENSES/BSD-3-Clause.txt) | Dependency for pip-licenses | [GitHub](https://github.com/jazzband/prettytable) |
+| `openai` | [Apache-2.0](../../THIRD_PARTY_LICENSES/Apache-2.0.txt) | Qwen Sub-Agent API client | [GitHub](https://github.com/openai/openai-python) |
+| `tiktoken` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | Qwen Sub-Agent tokenization | [GitHub](https://github.com/openai/tiktoken) |
+| `pydantic` | [MIT](../../THIRD_PARTY_LICENSES/MIT.txt) | Data validation for Sub-Agents | [GitHub](https://github.com/pydantic/pydantic) |
+| `python-dotenv` | [BSD-3-Clause](../../THIRD_PARTY_LICENSES/BSD-3-Clause.txt) | Environment variable management | [GitHub](https://github.com/theskumar/python-dotenv) |
 
 ---
 
@@ -100,11 +117,38 @@ pip-licenses --format=plain | grep -iE 'AGPL|SSPL|Proprietary'
 
 ---
 
-## Legal Notice
+---
 
-This document is for informational purposes only and does not constitute legal advice. For questions about license compatibility or compliance, please consult with legal counsel.
+## Vendored Components
+
+The following components are included directly in the repository for specific hardware or environment support:
+
+| Component | Path | License | Origin |
+|-----------|------|---------|--------|
+| GPU Task Scripts | `roles/containers/lxc/tasks/vendor/` | MIT/Apache-2.0 Equivalent | Revised from Vendor Docs (AMD/Intel/NVIDIA) |
+| SSHD Hardening | `roles/security/sshd/` | MIT | Derived from standard hardening patterns |
 
 ---
 
-**Last Updated:** 2026-02-22  
-**Report Generated By:** CI License Compliance Workflow
+## Legal Notices and License Texts
+
+Full license texts for third-party components are available in the [THIRD_PARTY_LICENSES/](../../THIRD_PARTY_LICENSES/) directory:
+
+- [GPL-3.0](../../THIRD_PARTY_LICENSES/GPL-3.0.txt)
+- [Apache-2.0](../../THIRD_PARTY_LICENSES/Apache-2.0.txt)
+- [MIT](../../THIRD_PARTY_LICENSES/MIT.txt)
+- [BSD-3-Clause](../../THIRD_PARTY_LICENSES/BSD-3-Clause.txt)
+
+---
+
+## Attribution Notices
+
+As required by the Apache License 2.0 (Section 4d), the following attribution notices are preserved:
+
+- **Setuptools**: This project utilizes `setuptools` which includes notices from the PSF and other contributors.
+- **Other Components**: No additional `NOTICE` or `ACKNOWLEDGEMENT` files were identified in the current dependency tree.
+
+---
+
+**Last Updated:** 2026-03-01  
+**Report Generated By:** Security Compliance Audit (Phase 13) & Legal Review (Phase 14)

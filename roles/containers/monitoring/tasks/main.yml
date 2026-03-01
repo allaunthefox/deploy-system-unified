@@ -1,8 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100110
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 # Tasks for containers/monitoring
 # Compliance: CIS Docker Benchmark 6.x, STIG V-230450, NIST AU-2/AU-6/CA-7, ISO 27001 §8.15/§8.16
 
-- name: "CIS 6.1 | STIG V-230450 | NIST CA-7 | Check Monitoring Enable"
+- name: "ISO 9001 | 600013 | CIS 6.1 | STIG V-230450 | NIST CA-7 | Check Monitoring Enable"
   ansible.builtin.debug:
     msg: "Monitoring Stack deployment start (Instance: {{ monitoring_instance }})"
   when: monitoring_enable | bool
@@ -12,8 +16,9 @@
     - nist_ca_7
     - containers
     - monitoring
+    - initialization
 
-- name: "CIS 6.2 | STIG V-230450 | NIST AU-2 | Verify monitoring secrets when fail-secure is enabled"
+- name: "ISO 9001 | 600013 | CIS 6.2 | STIG V-230450 | NIST AU-2 | Verify monitoring secrets when fail-secure is enabled"
   ansible.builtin.include_tasks: verify_secrets.yml
   when:
     - monitoring_enable | bool
@@ -24,8 +29,9 @@
     - containers
     - monitoring
     - security
+    - verify
 
-- name: "CIS 6.3 | STIG V-230450 | NIST IA-2 | Validate Grafana admin password is set"
+- name: "ISO 9001 | 600013 | CIS 6.3 | STIG V-230450 | NIST IA-2 | Validate Grafana admin password is set"
   ansible.builtin.assert:
     that:
       - monitoring_grafana_admin_password is defined
@@ -39,8 +45,9 @@
     - containers
     - monitoring
     - security
+    - verify
 
-- name: "CIS 6.4 | STIG V-230450 | NIST CM-6 | Enforce CHANGE_ME policy for monitoring stack"
+- name: "ISO 9001 | 600013 | CIS 6.4 | STIG V-230450 | NIST CM-6 | Enforce CHANGE_ME policy for monitoring stack"
   ansible.builtin.include_tasks: "{{ role_path }}/../common/tasks/policy_change_me.yml"
   vars:
     change_me_policy_items:
@@ -48,8 +55,9 @@
         value: "{{ monitoring_grafana_admin_password | default('') }}"
         bad_values: ["CHANGE_ME_IN_VAULT", "CHANGE_ME_IN_SOPS", ""]
   when: monitoring_enable | bool
+  tags: [security, verify, 600013]
 
-- name: "Audit Code 450002 | Fix | Clear Podman Storage Lock"
+- name: "ISO 27001 §8.26 | 450002 | CIS 6.4 | STIG V-230450 | NIST CM-6 | Fix | Clear Podman Storage Lock"
   ansible.builtin.file:
     path: /var/lib/containers/storage/storage.lock
     state: absent
@@ -58,13 +66,14 @@
     - monitoring
     - security
     - storage
-    - audit_code_450002
+    - deploy
+    - 450002
     - cis_6_4
     - stg_v230450
     - nist_cm_6
     - containers
 
-- name: "CIS 6.5 | STIG V-230450 | NIST SC-8 | ISO 27001 §8.20 | Audit Code 700030 | Create Monitoring Network Quadlet"
+- name: "ISO 27001 §8.20 | 700030 | CIS 6.5 | STIG V-230450 | NIST SC-8 | Create Monitoring Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ monitoring_network }}.network"
     content: |
@@ -80,16 +89,15 @@
     - stg_v230450
     - nist_sc_8
     - iso_27001_8_20
-    - iso_27001_8_26
     - containers
     - monitoring
-    - remediate
+    - network
   when:
     - monitoring_enable | bool
     - monitoring_network != "host"
   notify: reload_systemd
 
-- name: "CIS 6.6 | STIG V-230450 | NIST AU-2 | Create Monitoring Directories"
+- name: "ISO 27040 | 900000 | CIS 6.6 | STIG V-230450 | NIST AU-2 | Create Monitoring Directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -111,6 +119,7 @@
     - nist_au_2
     - containers
     - monitoring
+    - storage
   when: monitoring_enable | bool
 
 - name: "ISO 27001 §12.4 | 840000 | Deploy Gatus Config"
@@ -129,7 +138,7 @@
     mode: '0644'
   become: true
   when: monitoring_gatus_enable
-  tags: [monitoring, gatus, 840000]
+  tags: [monitoring, gatus, 840000, config]
 
 - name: "ISO 27001 §8.20 | 700000 | Create Gatus Container Quadlet"
   ansible.builtin.copy:
@@ -158,9 +167,9 @@
   become: true
   when: monitoring_gatus_enable
   notify: reload_systemd
-  tags: [monitoring, gatus, 700000]
+  tags: [monitoring, gatus, 700000, deploy]
 
-- name: "CIS 6.7 | STIG V-230450 | NIST IA-2 | ISO 27001 §10.1 | Audit Code 400011 | Create Grafana secrets file"
+- name: "ISO 27001 §10.1 | 400011 | CIS 6.7 | STIG V-230450 | NIST IA-2 | Create Grafana secrets file"
   ansible.builtin.template:
     src: grafana.env.j2
     dest: "{{ containers_secrets_dir }}/grafana-{{ monitoring_instance }}.env"
@@ -175,10 +184,10 @@
     - iso_27001_10_1
     - containers
     - monitoring
-    - remediate
+    - secrets
   when: monitoring_enable | bool
 
-- name: "CIS 6.8 | STIG V-230450 | NIST AU-6 | ISO 27001 §12.4 | Audit Code 840000 | Deploy Prometheus Config"
+- name: "ISO 27001 §12.4 | 840000 | CIS 6.8 | STIG V-230450 | NIST AU-6 | Deploy Prometheus Config"
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: "{{ monitoring_config_dir }}/prometheus/prometheus.yml"
@@ -191,11 +200,11 @@
     - iso_27001_12_4
     - containers
     - monitoring
-    - remediate
+    - config
   notify: restart_monitoring_pod
   when: monitoring_enable | bool
 
-- name: "CIS 6.9 | STIG V-230450 | NIST CA-7 | ISO 27001 §8.20 | Audit Code 700000 | Deploy Monitoring Pod Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 6.9 | STIG V-230450 | NIST CA-7 | Deploy Monitoring Pod Quadlet"
   ansible.builtin.template:
     src: mon_pod.pod.j2
     dest: "{{ containers_systemd_dir }}/{{ monitoring_pod_name }}.pod"
@@ -208,14 +217,13 @@
     - stg_v230450
     - nist_ca_7
     - iso_27001_8_20
-    - iso_27001_8_26
     - containers
     - monitoring
-    - remediate
+    - deploy
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: "CIS 6.10 | STIG V-230450 | NIST AU-2 | ISO 27001 §8.20 | Audit Code 700000 | Deploy Prometheus Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 6.10 | STIG V-230450 | NIST AU-2 | Deploy Prometheus Container Quadlet"
   ansible.builtin.template:
     src: prometheus.container.j2
     dest: "{{ containers_systemd_dir }}/prometheus-{{ monitoring_instance }}.container"
@@ -228,14 +236,13 @@
     - stg_v230450
     - nist_au_2
     - iso_27001_8_20
-    - iso_27001_8_26
     - containers
     - monitoring
-    - remediate
+    - deploy
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: "CIS 6.11 | STIG V-230450 | NIST AU-6 | ISO 27001 §8.20 | Audit Code 700000 | Deploy Grafana Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 6.11 | STIG V-230450 | NIST AU-6 | Deploy Grafana Container Quadlet"
   ansible.builtin.template:
     src: grafana.container.j2
     dest: "{{ containers_systemd_dir }}/grafana-{{ monitoring_instance }}.container"
@@ -248,14 +255,13 @@
     - stg_v230450
     - nist_au_6
     - iso_27001_8_20
-    - iso_27001_8_26
     - containers
     - monitoring
-    - remediate
+    - deploy
   notify: reload_systemd
   when: monitoring_enable | bool
 
-- name: "CIS 6.12 | STIG V-230450 | NIST AU-2 | Deploy Forensic Intelligence Stack"
+- name: "ISO 9001 | 600013 | CIS 6.12 | STIG V-230450 | NIST AU-2 | Deploy Forensic Intelligence Stack"
   ansible.builtin.include_tasks: forensic_stack.yml
   when:
     - monitoring_enable | bool
@@ -267,8 +273,9 @@
     - monitoring
     - loki
     - forensic
+    - deploy
 
-- name: "CIS 6.13 | STIG V-230450 | NIST AU-6 | Provision Grafana Dashboard Framework"
+- name: "ISO 9001 | 600013 | CIS 6.13 | STIG V-230450 | NIST AU-6 | Provision Grafana Dashboard Framework"
   ansible.builtin.include_tasks: grafana_provisioning.yml
   when:
     - monitoring_enable | bool
@@ -280,8 +287,9 @@
     - monitoring
     - grafana
     - forensic
+    - config
 
-- name: "CIS 6.14 | STIG V-230450 | NIST CM-7 | Remove legacy generated systemd units (rootless)"
+- name: "ISO 9001 | 600013 | CIS 6.14 | STIG V-230450 | NIST CM-7 | Remove legacy generated systemd units (rootless)"
   ansible.builtin.file:
     path: "{{ podman_rootless_user_home }}/.config/systemd/user/{{ item }}"
     state: absent
@@ -295,11 +303,12 @@
     - nist_cm_7
     - containers
     - monitoring
+    - cleanup
   when:
     - monitoring_enable | bool
     - podman_rootless_enabled | bool
 
-- name: "CIS 6.15 | STIG V-230450 | NIST CM-7 | Reload rootless systemd to pick up quadlets"
+- name: "ISO 27001 §12.1 | 600013 | CIS 6.15 | STIG V-230450 | NIST CM-7 | Reload rootless systemd to pick up quadlets"
   ansible.builtin.systemd:
     daemon_reload: true
     scope: "{{ containers_systemd_scope }}"
@@ -312,11 +321,12 @@
     - nist_cm_7
     - containers
     - monitoring
+    - deploy
   when:
     - monitoring_enable | bool
     - not ansible_check_mode
 
-- name: "CIS 6.16 | STIG V-230450 | NIST CA-7 | ISO 27001 §12.4 | Audit Code 840000 | Start monitoring pod and services (quadlet units)"
+- name: "ISO 27001 §12.4 | 840000 | CIS 6.16 | STIG V-230450 | NIST CA-7 | Start monitoring pod and services (quadlet units)"
   ansible.builtin.service:
     name: "{{ item }}"
     state: started
@@ -334,6 +344,7 @@
     - iso_27001_12_4
     - containers
     - monitoring
+    - deploy
   when:
     - monitoring_enable | bool
     - not ansible_check_mode

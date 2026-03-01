@@ -1,7 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100413
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 CM-5 | ISO 27001 §12.1
 # Handlers for core/entropy role
 
-- name: restart_haveged
+- name: "ISO 9001 | 600013 | restart_haveged"
   ansible.builtin.systemd:
     name: haveged
     state: restarted
@@ -10,7 +15,7 @@
   when: ansible_service_mgr == 'systemd'
   failed_when: false
 
-- name: restart_rngd
+- name: "ISO 9001 | 600013 | restart_rngd"
   ansible.builtin.systemd:
     name: rngd
     state: restarted
@@ -19,7 +24,7 @@
   when: ansible_service_mgr == 'systemd'
   failed_when: false
 
-- name: restart_rng_tools_debian
+- name: "ISO 9001 | 600013 | restart_rng_tools_debian"
   ansible.builtin.systemd:
     name: rng-tools-debian
     state: restarted
@@ -30,7 +35,7 @@
     - ansible_service_mgr == 'systemd'
   failed_when: false
 
-- name: restart_rng_tools_redhat
+- name: "ISO 9001 | 600013 | restart_rng_tools_redhat"
   ansible.builtin.systemd:
     name: rngd
     state: restarted
@@ -41,7 +46,7 @@
     - ansible_service_mgr == 'systemd'
   failed_when: false
 
-- name: restart_jitterentropy
+- name: "ISO 9001 | 600013 | restart_jitterentropy"
   ansible.builtin.systemd:
     name: jitterentropy-rngd
     state: restarted

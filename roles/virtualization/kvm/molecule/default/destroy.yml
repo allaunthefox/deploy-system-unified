@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000691
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-125 | Virtualization Security
 - name: Destroy
   hosts: localhost
   connection: local

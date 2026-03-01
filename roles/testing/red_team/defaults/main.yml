@@ -1,0 +1,20 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100355
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for testing/red_team role
+red_team_enable: false
+red_team_framework: "atomic-red-team"
+red_team_mitre_mapping_enable: true
+
+# Atomic Red Team settings
+red_team_atomic_repo: "https://github.com/redcanaryco/atomic-red-team.git"
+red_team_atomic_dir: "/opt/atomic-red-team"
+red_team_test_ids: []  # e.g., ["T1003", "T1059.001"]
+
+# Simulation and reporting
+red_team_simulation_mode: "dry-run"  # Choices: dry-run, execute
+red_team_report_dir: "/var/log/security/red_team"
+red_team_owner: "root"
+red_team_group: "root"

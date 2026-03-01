@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500103
+# Last Updated: 2026-02-28
+# =============================================================================
 import re
 from pathlib import Path
 from ansiblelint.errors import MatchError

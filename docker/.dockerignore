@@ -73,5 +73,5 @@ SystemBackups/
 
 # Docker-specific (using Podman)
 docker-compose.yml
-docker-compose.yml.legacy
+.github/archive/docker-compose.yml.legacy
 Dockerfile

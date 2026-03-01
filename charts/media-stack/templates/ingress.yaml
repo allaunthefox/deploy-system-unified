@@ -1,12 +1,15 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300032
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 {{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "media-stack.fullname" . }}-jellyfin
-  annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: jellyfin.{{ .Values.ingress.host }}
       http:
@@ -23,9 +26,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "media-stack.fullname" . }}-radarr
-  annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: radarr.{{ .Values.ingress.host }}
       http:
@@ -42,9 +44,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "media-stack.fullname" . }}-sonarr
-  annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
     - host: sonarr.{{ .Values.ingress.host }}
       http:

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100392
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/sshd role
 # security_sshd_config_path: defined in defaults/main.yml (/etc/ssh/sshd_config.d/99-hardened.conf)

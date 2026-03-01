@@ -1,0 +1,55 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100337
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: "AWS Secrets Manager integration"
+    description: "Retrieves and manages secrets from AWS Secrets Manager securely."
+    author: "deploy-system-unified"
+    options:
+      aws_secrets_enable:
+        type: "bool"
+        default: true
+        description: "Whether to enable AWS Secrets Manager integration."
+      aws_region:
+        type: "str"
+        default: "us-east-1"
+        description: "The AWS region where secrets are stored."
+      aws_auth_method:
+        type: "str"
+        default: "instance_profile"
+        choices: ["instance_profile", "credentials", "assume_role"]
+        description: "The authentication method used to access AWS."
+      aws_secrets_items:
+        type: "list"
+        elements: "dict"
+        default: []
+        description: "List of secrets to retrieve and manage."
+        options:
+          name:
+            type: "str"
+            required: true
+            description: "The name of the secret in AWS Secrets Manager."
+          path:
+            type: "str"
+            required: true
+            description: "The local path where the secret should be stored."
+          format:
+            type: "str"
+            default: "plain"
+            choices: ["plain", "json"]
+            description: "The format of the secret content."
+      aws_secrets_config_dir:
+        type: "str"
+        default: "/etc/aws-secrets"
+        description: "The directory where secret configurations are stored."
+      aws_secrets_owner:
+        type: "str"
+        default: "root"
+        description: "The owner of the retrieved secret files."
+      aws_secrets_group:
+        type: "str"
+        default: "root"
+        description: "The group of the retrieved secret files."

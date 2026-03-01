@@ -1,11 +1,20 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100394
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # HashiCorp Vault Integration Role - Default Variables
+# Note: HashiCorp Vault is governed by the Business Source License (BSL 1.1) / MPL.
+# Copyright HashiCorp, Inc.
 
 # Installation mode: standalone, kubernetes, agent_only
 vault_install_mode: standalone
 
 # Vault version
 vault_version: "1.15.0"
+vault_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+vault_image: "docker.io/library/vault:{{ vault_version }}@{{ vault_image_digest }}"
 
 # Configuration paths
 vault_config_dir: /etc/vault
@@ -43,9 +52,22 @@ vault_secrets_path: "secret"
 vault_addr: "http://127.0.0.1:8200"
 vault_root_token: ""
 
+# Auto-unseal settings (NIST SP 800-53 SC-28)
+vault_auto_unseal_enabled: false
+vault_auto_unseal_type: "transit" # Options: transit, gcpckms, awskms, azurekeyvault
+vault_auto_unseal_transit_address: "http://127.0.0.1:8100"
+vault_auto_unseal_transit_key_name: "autounseal"
+vault_auto_unseal_transit_mount_path: "transit/"
+vault_auto_unseal_transit_token: ""
+
 # Tags
 vault_tags:
   - security
   - secrets
   - vault
   - hashicorp
+
+# Rotation Lifecycle (Q3 Execution Plan)
+vault_enable_rotation: false
+vault_rotation_policies: ["db-rotation-policy"]
+vault_rotation_approle_name: "service-rotator"

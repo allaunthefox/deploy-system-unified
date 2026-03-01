@@ -1,17 +1,19 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100443
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core identity management role
+    short_description: System and object identity management
     description:
-      - Generates high-entropy UUIDs for system objects
-      - Manages system hostname and domain
-      - Ensures consistent identification across the infrastructure
+      - This role manages the system hostname and ensures a unique UUID is assigned to the host for forensic tracking.
     options:
       identity_set_hostname:
         type: bool
-        description: Whether to set the system hostname
         default: true
+        description: Whether to manage and set the system hostname.
       identity_domain:
         type: str
-        description: Domain name for the system
-        default: local
+        default: "local"
+        description: The internal domain name to append to the system identity.

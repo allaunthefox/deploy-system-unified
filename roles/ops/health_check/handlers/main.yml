@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100203
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Handlers for ops/health_check role
 # ISO 9001 Structural Consistency - Handler definitions for health check operations

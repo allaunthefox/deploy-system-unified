@@ -1,5 +1,11 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100131
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
-- name: Normalize Architecture for Container Runtime
+# CIS Docker Benchmark | Pod Security Standards
+
+- name: "ISO 9001 | 600013 | Normalize Architecture for Container Runtime"
   ansible.builtin.set_fact:
     _runtime_norm_arch: >-
       {{
@@ -8,27 +14,33 @@
         'riscv64' if ansible_facts['architecture'] | default('unknown') in ['riscv64', 'risc64', 'riscv'] else
         (ansible_facts['architecture'] | default('unknown'))
       }}
+  tags: [runtime, gpu, initialization, 600013]
 
-- name: Normalize Vendor
+- name: "ISO 9001 | 600013 | Normalize Vendor"
   ansible.builtin.set_fact:
     _runtime_norm_vendor: "{{ containers_gpu_vendor | lower }}"
+  tags: [runtime, gpu, initialization, 600013]
 
-- name: Define architecture path for vendor runtime setup
+- name: "ISO 9001 | 600013 | Define architecture path for vendor runtime setup"
   ansible.builtin.set_fact:
     _runtime_arch_path: "{{ role_path }}/arch/{{ _runtime_norm_arch }}/{{ _runtime_norm_vendor }}/main.yml"
+  tags: [runtime, gpu, initialization, 600013]
 
-- name: Check for Architecture/Vendor specific runtime tasks
+- name: "ISO 9001 | 600013 | Check for Architecture/Vendor specific runtime tasks"
   ansible.builtin.stat:
     path: "{{ _runtime_arch_path }}"
   register: runtime_arch_tasks
   delegate_to: localhost
+  tags: [runtime, gpu, verification, 600013]
 
-- name: Include Architecture/Vendor specific runtime tasks
+- name: "ISO 27001 §8.23 | 800410 | Include Architecture/Vendor specific runtime tasks"
   ansible.builtin.include_tasks:
     file: "{{ _runtime_arch_path }}"
   when: runtime_arch_tasks.stat.exists
+  tags: [runtime, gpu, deploy, remediate, 800410]
 
-- name: Fail if no specialized support found
+- name: "ISO 9001 | 600013 | Fail if no specialized support found"
   ansible.builtin.fail:
     msg: "No Container Runtime GPU support found for Arch: {{ _runtime_norm_arch }} / Vendor: {{ _runtime_norm_vendor }}"
   when: not runtime_arch_tasks.stat.exists
+  tags: [runtime, gpu, verification, 600013]

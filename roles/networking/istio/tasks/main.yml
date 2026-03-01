@@ -1,0 +1,24 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110053
+# Playbook Type: Networking Security Role
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# Tasks for networking/istio - Microsegmentation Service Mesh
+# NIST SC-8 | ISO 27001 §13.1
+# Copyright 2024 Istio Authors.
+
+- name: "NETWORK | Install Istio base components"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: install.istio.io/v1alpha1
+      kind: IstioOperator
+      metadata:
+        namespace: istio-system
+        name: istiocontrolplane
+      spec:
+        profile: strict # Enables mTLS by default globally
+  when: istio_enabled | bool
+  tags: [security, networking, istio, mtls]

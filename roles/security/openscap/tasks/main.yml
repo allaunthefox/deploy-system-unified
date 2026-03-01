@@ -1,6 +1,12 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110050
+# Playbook Type: Security Audit Role
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
 # Tasks for security/openscap - Standardized Compliance Auditing
-# NIST AU-2 | ISO 27001 §12.4 | Audit Code 520010
+# NIST AU-2 | ISO 27001 §12.4
 
 - name: "AUDIT | Install OpenSCAP scanner and security guides"
   ansible.builtin.package:

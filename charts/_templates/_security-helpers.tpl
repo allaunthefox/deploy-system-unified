@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300066
+# Last Updated: 2026-02-28
+# =============================================================================
 {{- /*
 Common RBAC and Security Context Templates
 For use across all Deploy-System-Unified Helm charts

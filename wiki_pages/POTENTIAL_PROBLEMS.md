@@ -164,6 +164,7 @@ This document identifies potential issues that may arise when deploying combinat
 5. **Document changes**: Keep track of profile combinations and their configurations
 6. **Run style guide enforcement**: Ensure consistency with `enforce_style_guide.sh`
 7. **Check preflight conditions**: Run `preflight` role to verify system capabilities
+8. **Review resolved blockers**: See [SECURITY_BLOCKER_RESOLUTION.md](SECURITY_BLOCKER_RESOLUTION) for known issues and their resolutions
 
 ## Recommended Profile Combinations
 

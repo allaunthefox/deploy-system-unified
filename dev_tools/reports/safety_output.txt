@@ -1,0 +1,28 @@
+Safety 3.7.0 scanning /home/prod/Workspaces/repos/github/deploy-system-unified
+2026-03-01 04:46:43 UTC
+
+Account: Allaun Silverfox, bigdataiscoming+9i37y6j2@protonmail.com 
+Project: deploy-system-unified
+ Git branch: ci/harden-and-wiki-orchestration
+ Environment: Stage.development
+ Scan policy: fetched from Safety Platform, ignoring any local Safety CLI policy files
+
+Python detected. Found 4 Python requirements files and 2 Python environments
+
+✅ qwen_agents/requirements.txt: No issues found.
+
+✅ requirements.txt: No issues found.
+
+✅ .ansible/collections/ansible_collections/ansible/posix/test-requirements.txt: No issues found.
+
+✅ .ansible/collections/ansible_collections/ansible/posix/requirements.txt: No issues found.
+
+✅ .venv/pyvenv.cfg: No issues found.
+
+✅ venv/pyvenv.cfg: No issues found.
+
+Tested 35 dependencies for security issues using policy fetched from Safety Platform
+8 vulnerabilities found, 8 ignored due to policy.
+0 fixes suggested, resolving 0 vulnerabilities.
+
+Project dashboard: https://platform.safetycli.com/codebases/deploy-system-unified/findings?branch=ci/harden-and-wiki-orchestration

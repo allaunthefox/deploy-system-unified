@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500118
+# Last Updated: 2026-02-28
+# =============================================================================
 """Run a repeat-run idempotence benchmark for all roles/core/* roles.
 
 The benchmark runs each role in an isolated container, applies the role twice,

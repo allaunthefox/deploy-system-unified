@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100403
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 CM-5 | ISO 27001 §12.1
 # Handlers for core/bootstrap role
 # Note: Bootstrap role handles initial system setup and base package installation
 # No service restarts are required as this is a foundational role that runs once

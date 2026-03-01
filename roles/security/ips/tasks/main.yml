@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100335
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Tasks for security/ips - Intrusion Prevention System (Fail2Ban)
 - name: "CIS 5.6.1 | STIG V-230344 | NIST AC-7 | NIST SI-3 | Audit Code 460002 | Install Fail2Ban"

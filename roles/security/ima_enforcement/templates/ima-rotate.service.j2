@@ -1,0 +1,13 @@
+[Unit]
+# Audit Event Identifier: DSU-TPL-900255
+Description=IMA Key Rotation Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart={{ ima_key_rotation_script }}
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

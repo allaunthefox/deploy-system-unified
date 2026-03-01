@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100337
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/ips role
 security_ips_fail2ban_config_path: "/etc/fail2ban/jail.local"

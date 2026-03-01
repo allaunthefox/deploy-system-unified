@@ -2,6 +2,20 @@
 
 The project uses a high-performance enforcement engine to maintain architectural integrity.
 
+## ✅ Stable Local Tooling (Recommended)
+
+To avoid collection version drift and lint warnings, run tooling from the project venv and use the project-local collections cache:
+
+```bash
+python -m venv .venv
+./.venv/bin/pip install ansible-core==2.20.2 ansible-lint==26.1.1
+./.venv/bin/ansible-galaxy collection install -r requirements.yml -p .collections
+```
+
+Notes:
+- `ansible.cfg` pins `collections_path` to `.collections`, so no extra env vars are needed.
+- `dev_tools/tools/style-guide-enforcement/enforce_style_guide.sh` automatically prefers `.venv` when present.
+
 ## 🛠 `enforce_style_guide.sh`
 
 This script is the primary gatekeeper for the project's standards. It utilizes **ripgrep (rg)** and **fd** for near-instant auditing of the codebase.
@@ -31,48 +45,21 @@ python3 -m pytest dev_tools/tools/style-guide-enforcement/tests/
 
 ## 🛡️ Stability Gating Scripts
 
-Located in the `projects/deploy-system-unified/scripts/` directory, these tools are used for pre-deployment verification and CI gates.
+Located in the `scripts/` directory, these tools are used for pre-deployment verification and CI gates.
 
 - **`verify_idempotence.sh`**: Runs a playbook twice and asserts that the second run produces `changed=0`.
+- **`benchmark_core_idempotence.py`**: Runs repeat-run idempotence benchmarks for every `roles/core/*` role in isolated containers and writes artifacts to `ci-artifacts/idempotence/<run_id>/`.
 - **`smoke_test_production.sh`**: Performs a syntax check and a dry-run (`--check`) of the production deployment using the validation inventory.
 
-## 🛠 Operational & Utility Scripts
-
-Additional scripts for specialized tasks:
-
-- **`run_deployment_session.sh`**: Ensures deployments run within a persistent `tmux` session to prevent interruption.
-- **`setup_crowdsec.py`**: Automates the initialization and configuration of the CrowdSec security engine.
-- **`porkbun_dns.py`**: Manages DNS records via the Porkbun API for automated certificate challenges.
-- **`stage_migration_assets.sh`**: Prepares legacy data and assets for migration into the new system structure.
-- **`ensure_podman_access.sh` / `ensure_docker_access.sh`**: Preflight checks to verify container engine accessibility for the current user.
-
-## 🧹 Maintenance & Generation
-
-Scripts used to maintain the documentation and project health:
-
-- **`generate_role_pages.py`**: Automatically generates wiki detail pages from Ansible role source code.
-- **`wiki_wiki_lint.py`**: High-performance linter for maintaining wiki consistency and integrity.
-- **`wiki_check_fix.py`**: Utility for repairing common wiki structural issues.
-
-
-## 🏗️ Core Configuration
-
-The project is optimized for performance and security via `ansible.cfg`:
-
-- **SOPS Integration**: Native support for SOPS-encrypted variables via `community.sops.sops`.
-- **SSH Optimization**: Uses `pipelining` and `piped` transfer methods for speed; includes aggressive retry logic and connection persistence (`ControlPersist=60s`) to bridge network gaps.
-- **Forensic Readiness**: Every run is logged to `./ansible.log` with timing information enabled (`profile_tasks`).
-
-## ⚙️ Makefile
-
-The `Makefile` provides standardized entry points for local development and CI:
-
-- `make lint`: Runs `ansible-lint` against the entire project.
-- `make molecule-precheck`: Verifies Podman access before running integration tests.
-- `make test-x86` / `make test-arm64`: Executes architecture-specific GPU slicing tests via Molecule.
+Example:
+```bash
+python3 projects/deploy-system-unified/scripts/benchmark_core_idempotence.py
+```
 
 ## 🧪 Molecule
 
 Scenario-based testing for idempotency and multi-platform support.
 
+- Always run Molecule from the project venv (or with the venv on `PATH`) so it uses the pinned `ansible-core` and the project `.collections`:
+  `source .venv/bin/activate && molecule test -s <scenario>`
 - Use `molecule test` to run the full sequence (Destroy -> Create -> Converge -> **Idempotence** -> Verify).

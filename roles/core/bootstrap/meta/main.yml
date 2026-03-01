@@ -1,38 +1,55 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100405
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 galaxy_info:
   role_name: bootstrap
-  author: deploysystemunified
-  description: "STD-CORE | System initialization and base configuration with virtualization awareness"
+  author: deploy-system-unified
+  description: System initialization and base configuration with virtualization awareness
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
     - name: Rocky
-      versions: [9]
+      versions:
+        - '9'
+    - name: AlmaLinux
+      versions:
+        - '9'
   galaxy_tags:
     - core
     - bootstrap
+    - system
     - initialization
-    - iso9001
-    - iso27001
-    - iso8000
-    - systems
-    - provisioning
-    - automation
+    - linux
     - multiarch
-    - debian
-    - redhat
-    - archlinux
-    - alpine
+    - virtualization
+    - infrastructure
+    - deploy-system-unified
+    - security
+    - automation
+    - provision
 
 collections:
   - ansible.builtin

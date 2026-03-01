@@ -1,13 +1,16 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100538
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # eGPU Support (Thunderbolt/USB4 or OCuLink)
 
 # --- Thunderbolt/USB4 Config ---
 - name: Configure Thunderbolt eGPU Support
-  tags: [hardware, gpu, remediate]
   when: gpu_stack_egpu_interface | default('thunderbolt') == 'thunderbolt'
   block:
     - name: Define Thunderbolt packages (Debian/Ubuntu)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.set_fact:
         egpu_packages:
           - bolt
@@ -15,14 +18,12 @@
       when: ansible_facts['os_family'] == 'Debian'
 
     - name: Define Thunderbolt packages (RedHat/Fedora)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.set_fact:
         egpu_packages:
           - bolt
       when: ansible_facts['os_family'] == 'RedHat'
 
     - name: Define Thunderbolt packages (Alpine)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.set_fact:
         egpu_packages:
           - bolt
@@ -30,26 +31,21 @@
       when: ansible_os_family == 'Alpine'
 
     - name: Install Thunderbolt management tools
-  tags: [hardware, gpu, remediate]
       ansible.builtin.package:
         name: "{{ egpu_packages }}"
-  tags: [hardware, gpu, remediate]
         state: present
       become: true
       when: egpu_packages is defined
 
     - name: Enable and start bolt service
-  tags: [hardware, gpu, remediate]
       ansible.builtin.service:
         name: bolt
-  tags: [hardware, gpu, remediate]
         enabled: true
         state: started
       become: true
       failed_when: false
 
     - name: Authorize Thunderbolt devices (Optional - All)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.shell: |
         if command -v boltctl >/dev/null 2>&1; then
           for device in $(boltctl list | grep uuid | awk '{print $2}'); do
@@ -62,21 +58,18 @@
         
       when: gpu_stack_egpu_auto_enroll | default(false)
 
+  tags: [hardware,gpu,remediate]
 # --- OCuLink Config ---
 - name: Configure OCuLink eGPU Support
-  tags: [hardware, gpu, remediate]
   when: gpu_stack_egpu_interface | default('thunderbolt') == 'oculink'
   block:
     - name: Install OCuLink dependencies (pciutils)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.package:
         name: pciutils
-  tags: [hardware, gpu, remediate]
         state: present
       become: true
 
     - name: Create OCuLink PCI Rescan Script
-  tags: [hardware, gpu, remediate]
       ansible.builtin.copy:
         dest: /usr/local/bin/gpu-rescan
         mode: '0755'
@@ -89,10 +82,9 @@
       become: true
 
     - name: Ensure pciehp module is loaded (if modular)
-  tags: [hardware, gpu, remediate]
       ansible.builtin.modprobe:
         name: pciehp
-  tags: [hardware, gpu, remediate]
         state: present
       become: true
       failed_when: false # Often built-in, might fail if not compiled as module
+  tags: [hardware,gpu,remediate]

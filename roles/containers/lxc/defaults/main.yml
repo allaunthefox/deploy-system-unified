@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100072
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # LXC GPU configuration variables
 # Enable GPU support for LXC containers
 lxc_enable_gpu_support: false

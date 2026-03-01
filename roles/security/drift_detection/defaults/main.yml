@@ -1,0 +1,27 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100315
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/drift_detection role
+drift_detection_enable: true
+drift_detection_mode: "detect_only"  # Choices: detect_only, detect_and_remediate
+
+# Monitored Paths (CIS/NIST recommendation)
+drift_detection_critical_paths:
+  - "/etc/ssh/sshd_config"
+  - "/etc/ssh/sshd_config.d/"
+  - "/etc/sudoers"
+  - "/etc/sudoers.d/"
+  - "/etc/pam.d/"
+  - "/etc/shadow"
+  - "/etc/passwd"
+
+# Alerting
+drift_detection_alert_enable: true
+drift_detection_alert_email: "security@example.com"
+drift_detection_alert_webhook: ""
+
+# Remediation
+drift_detection_auto_remediate_interval: 3600
+drift_detection_remediate_playbook: "/etc/ansible/remediate_drift.yml"

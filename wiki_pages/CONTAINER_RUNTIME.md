@@ -72,7 +72,7 @@ Label=requires=gpu
 
 This keeps kernel capabilities clean while still declaring intent for GPU-enabled services.
 
-If NVIDIA driver feature gating is needed, use the vendor variable (not Linux capabilities):
+If you need NVIDIA driver feature gating, use the vendor variable (not Linux capabilities):
 
 ```ini
 [Container]

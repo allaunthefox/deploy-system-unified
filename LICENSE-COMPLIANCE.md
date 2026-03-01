@@ -23,6 +23,18 @@ Deploy-System-Unified is licensed under **GPL-3.0**. All dependencies must use G
 - Proprietary/Commercial licenses
 - GPL-2.0 only (not "or later")
 
+## Source Code Availability (GPL-3.0 Compliance)
+
+In accordance with Section 6 of the GNU General Public License v3.0, the "Corresponding Source" for this project is available at:
+- **Repository**: `https://github.com/deploy-system-unified/deploy-system-unified`
+- **Archive**: Contact the maintainers for a formal source archive if required for offline use.
+
+## Preservation of Legal Notices
+
+To comply with Apache License 2.0 (Section 4d) and other attribution-based licenses:
+- All `NOTICE` and `ACKNOWLEDGEMENT` files from third-party distributions must be preserved.
+- These notices are consolidated in `docs/security/THIRD_PARTY_LICENSES.md` for easy reference.
+
 ## Automated Checks
 
 License compliance is enforced via CI:
@@ -49,3 +61,4 @@ Found a license compliance issue? Open an issue with:
 ---
 
 See [docs/security/THIRD_PARTY_LICENSES.md](./docs/security/THIRD_PARTY_LICENSES.md) for full third-party license acknowledgments.
+Full license texts are available in the [THIRD_PARTY_LICENSES/](./THIRD_PARTY_LICENSES/) directory.

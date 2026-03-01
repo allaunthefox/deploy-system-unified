@@ -1,40 +1,34 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100288
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: falco role for runtime security monitoring
+    short_description: Runtime security monitoring with Falco
     description:
-      - Installs and configures Falco for runtime security monitoring
-      - Supports package and binary installation
-      - Includes custom security rules and Kubernetes audit rules
-      - Aligns with ISO 27001 and NIST 800-53 requirements
+      - This role installs and configures Falco for real-time threat detection across host and container workloads.
     options:
       falco_version:
         type: str
-        required: false
         default: "0.36.2"
-        description:
-          - Falco version to install
+        description: The version of Falco to install.
       falco_install_method:
         type: str
-        required: false
         default: "package"
-        description:
-          - Installation method: package, binary, kubernetes
-      falco_log_level:
-        type: str
-        required: false
-        default: "info"
-        description:
-          - Log level for Falco
-      falco_json_output:
+        choices: ["package", "binary", "kubernetes"]
+        description: The installation method for Falco.
+      falco_config:
+        type: dict
+        description: Dictionary of Falco configuration parameters (log_level, priority, etc.).
+      falco_active_kill:
         type: bool
-        required: false
-        default: true
-        description:
-          - Enable JSON output format
-      falco_outputs:
+        default: false
+        description: Whether to enable active enforcement (killing offending processes/containers).
+      falco_alerts:
+        type: dict
+        description: Alerting configuration including webhooks and SIEM integration.
+      falco_rules_enabled:
         type: list
-        required: false
-        default: []
-        description:
-          - List of output configurations
+        elements: str
+        description: List of rule files to enable.

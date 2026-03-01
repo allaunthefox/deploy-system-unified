@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100519
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # AMD GPU Setup for x86_64
 
 - name: Define AMD Graphics Packages (Debian/Ubuntu)

@@ -1,0 +1,51 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100903
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Linkerd Implementation Tracks
+# Compliance: ISO 27001 §10.1, NIST SC-7
+
+- name: "ISO 27001 §14.2 | 800903 | Install Linkerd CRDs via Helm"
+  kubernetes.core.helm:
+    name: linkerd-crds
+    chart_ref: linkerd/linkerd-crds
+    release_namespace: linkerd
+    create_namespace: true
+    wait: true
+  tags: [kubernetes, service_mesh, linkerd, 800903]
+
+- name: "ISO 27001 §10.1 | 800904 | Install Linkerd Control Plane"
+  kubernetes.core.helm:
+    name: linkerd-control-plane
+    chart_ref: linkerd/linkerd-control-plane
+    release_namespace: linkerd
+    values:
+      identityTrustAnchorsPEM: "{{ linkerd_identity_trust_anchors_pem }}"
+      identity:
+        issuer:
+          tls:
+            crtPEM: "{{ linkerd_identity_issuer_cert_pem }}"
+            keyPEM: "{{ linkerd_identity_issuer_key_pem }}"
+      proxy:
+        resources:
+          cpu:
+            request: "{{ linkerd_proxy_cpu_request }}"
+          memory:
+            request: "{{ linkerd_proxy_memory_request }}"
+            limit: "{{ linkerd_proxy_memory_limit }}"
+    wait: true
+  when: 
+    - linkerd_identity_trust_anchors_pem | length > 0
+    - not ansible_check_mode
+  tags: [kubernetes, service_mesh, linkerd, 800904]
+
+- name: "ISO 9001 | 600013 | Verify Linkerd Control Plane Health"
+  ansible.builtin.shell:
+    cmd: "linkerd check"
+  register: _linkerd_check
+  changed_when: false
+  failed_when: "'fail' in _linkerd_check.stdout"
+  become: false
+  when: not ansible_check_mode
+  tags: [kubernetes, service_mesh, linkerd, verify, 600013]

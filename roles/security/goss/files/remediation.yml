@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100309
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss Remediation Playbook
 # This playbook automatically remediates common security issues

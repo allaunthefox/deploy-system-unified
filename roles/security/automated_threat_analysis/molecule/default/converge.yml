@@ -1,9 +1,14 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1003058
+# Test Type: Molecule Converge Phase
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
 ---
-- name: Converge Automated Threat Analysis
+# NIST SP 800-53 | ISO 27001 §14.2
+- name: Converge
   hosts: all
-  vars:
-    threat_analysis_enabled: true
   tasks:
-    - name: "Include security/automated_threat_analysis"
+    - name: "Include roles/security/automated_threat_analysis"
       ansible.builtin.include_role:
         name: "security/automated_threat_analysis"

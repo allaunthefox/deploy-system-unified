@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100304
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/firejail role
 security_firejail_config_path: "/etc/firejail"

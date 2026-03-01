@@ -1,25 +1,29 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100467
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core repository management role
+    short_description: System repository management and supply-chain hardening
     description:
-      - Configures system repositories (Contrib, Non-Free, RPMFusion, etc.)
-      - Implements supply-chain hardening via checksum pinning
-      - Ensures repository management tools are installed
+      - This role manages external system repositories and enforces cryptographic verification of metadata and packages.
     options:
       rpmfusion_free_url:
         type: str
-        description: URL for RPMFusion Free Release
+        description: URL for the RPMFusion free repository release package.
       rpmfusion_nonfree_url:
         type: str
-        description: URL for RPMFusion NonFree Release
+        description: URL for the RPMFusion non-free repository release package.
       rpmfusion_free_sha256:
         type: str
-        description: SHA256 checksum for RPMFusion Free Release
+        default: ""
+        description: SHA256 checksum for the RPMFusion free release package.
       rpmfusion_nonfree_sha256:
         type: str
-        description: SHA256 checksum for RPMFusion NonFree Release
+        default: ""
+        description: SHA256 checksum for the RPMFusion non-free release package.
       rpmfusion_verify_checksum:
         type: bool
-        description: Whether to verify RPMFusion checksums
         default: false
+        description: Whether to strictly verify RPMFusion package checksums.

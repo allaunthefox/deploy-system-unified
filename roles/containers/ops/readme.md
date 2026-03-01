@@ -1,45 +1,49 @@
-# Ops Container Role
+# Ops Role
 
-This role deploys operational dashboard and utility tools alongside the media stack.
+**Audit Event Identifier:** DSU-PLY-100026  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-03-01  
 
-## Storage Locations
+This role deploys operational support containers including dashboards, password managers, and documentation wikis.
 
-Persistence is split between application configuration and potential data storage.
+## Architecture
 
-### Configuration Data
+```mermaid
+graph TD
+    subgraph Ops Stack
+        HOMARR[Homarr Dashboard] --> PROXY(Caddy Proxy)
+        VAULT[Vaultwarden] --> PROXY
+        WIKI[Wiki.js] --> PROXY
+        WASTE[Wastebin] --> PROXY
+        FILE[Filebrowser] --> PROXY
+        
+        WIKI --> DB[(Wiki Postgres)]
+        VAULT --> PERSIST[(Persistent Vol)]
+        
+        PROXY --> NET[ops_net]
+    end
+    
+    USER((Admin User)) --> PROXY
+    
+    classDef container fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef db fill:#fff3e0,stroke:#ff6f00,stroke-width:2px;
+    class HOMARR,VAULT,WIKI,WASTE,FILE,PROXY container;
+    class DB,PERSIST db;
+```
 
-Base Path: `{{ ops_config_dir }}` (Default: `/srv/containers/ops_config`)
+## Features
+- **Homarr**: Centralized dashboard for all services.
+- **Vaultwarden**: Self-hosted Bitwarden compatible password manager.
+- **Wiki.js**: Documentation platform (Postgres backend).
+- **Wastebin**: Minimalist pastebin.
+- **Filebrowser**: Web-based file manager.
 
-| Directory | Service | Description |
-| :--- | :--- | :--- |
-| `/homarr/configs` | Homarr | Dashboard JSON configurations |
-| `/homarr/icons` | Homarr | Uploaded dashboard icons |
-| `/homarr/data` | Homarr | Persistent app data |
-| `/vaultwarden` | Vaultwarden | SQLite DB, RSA Keys, Attachments |
-| `/wiki/data` | Wiki.js | SQLite DB (if used) or Local Git Repo |
-| `/wastebin` | Wastebin | SQLite DB for pastes |
+## Usage
 
-### Operational Data
-
-Base Path: `{{ ops_root_dir }}` (Default: `/srv/ops`)
-
-* *Reserved for future shared operational data dumps (logs, backups).*
-
-## Network
-
-* **Internal Network**: All services run on the `ops_pod` attached to `{{ ops_pod_network }}` (Default: `deploy-net`).
-* **Ingress**: Caddy Reverse Proxy handles all traffic.
-    * `dashboard.{{ ops_domain }}` -> Homarr
-    * `vault.{{ ops_domain }}` -> Vaultwarden
-    * `wiki.{{ ops_domain }}` -> Wiki.js
-    * `paste.{{ ops_domain }}` -> Wastebin
-
-## Key Variables
-
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `ops_enable` | `true` | Main toggle. |
-| `homarr_enable` | `true` | Deploy the dashboard. |
-| `vaultwarden_enable` | `true` | Deploy password manager. |
-| `wiki_enable` | `false` | Deploy Wiki.js. |
-| `wastebin_enable` | `false` | Deploy Pastebin. |
+```yaml
+- name: Deploy Ops Stack
+  hosts: container_nodes
+  roles:
+    - containers/ops
+```

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100390
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # Simple local verification playbook for sshd config directives
 - name: Verify sshd configuration (non-destructive)
   hosts: localhost

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100371
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/sbom role
 security_sbom_tool: "syft"
