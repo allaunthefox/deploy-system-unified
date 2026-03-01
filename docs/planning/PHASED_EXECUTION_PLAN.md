@@ -33,3 +33,4 @@
 - [x] **Zero Trust Foundation**: Implement `security/headscale` role with pinned image digests.
 - [x] **HA Kubernetes Implementation**: Implement shared tokens and Kube-VIP HA logic in `kubernetes/master`.
 - [x] **Automated Rotation Logic**: Implement Vault rotation policies and AppRole lifecycle in `security/vault_integration`.
+- [ ] **Idempotence Audit**: Verify 100% idempotence for all Q3 features (Headscale, HA K8s, Vault).
