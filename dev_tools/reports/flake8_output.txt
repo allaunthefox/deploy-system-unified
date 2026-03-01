@@ -1,0 +1,927 @@
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/link_variable_reference.py:15:1: E302 expected 2 blank lines, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/link_variable_reference.py:29:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:5:1: F401 'os' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:14:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:22:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:37:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:41:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:45:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:53:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:58:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:61:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:63:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:75:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:80:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:83:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:85:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:89:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:99:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/sync_variable_references.py:102:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:6:10: E401 multiple imports on one line
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:12:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:19:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:30:41: E201 whitespace after '['
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:30:44: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:30:61: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:30:74: E202 whitespace before ']'
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:53:41: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:66:56: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:75:45: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:87:22: E701 multiple statements on one line (colon)
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:91:12: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:98:12: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_check_fix.py:98:14: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_wiki_lint.py:67:1: E302 expected 2 blank lines, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_wiki_lint.py:139:13: F841 local variable 'msg' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_wiki_lint.py:230:14: E225 missing whitespace around operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/.scripts/wiki_wiki_lint.py:232:14: E225 missing whitespace around operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:33:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:39:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:43:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:57:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:64:1: F811 redefinition of unused 'Path' from line 29
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:64:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:65:1: F811 redefinition of unused 'os' from line 27
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:65:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:66:1: F811 redefinition of unused 'inspect' from line 26
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:66:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:70:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/__init__.py:94:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_gpu_capabilities.py:79:23: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_roles_in_main.py:36:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_roles_in_main.py:40:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_roles_in_main.py:47:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_roles_in_main.py:60:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_roles_in_main.py:63:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/rules/no_roles_in_main.py:76:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/tests/test_shim_least_privilege.py:7:1: F401 'tempfile' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/tests/test_shim_logging.py:8:1: F401 'os' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/ansiblelint/tests/test_shim_logging.py:24:5: F841 local variable 'mod' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:12:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:13:25: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:17:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:20:49: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:30:18: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:30:26: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:34:18: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:34:29: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:39:18: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:39:29: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:44:18: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:44:25: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:49:21: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:52:22: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:53:18: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:56:19: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/add_placeholders.py:59:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/check_yaml.py:13:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/check_yaml.py:23:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/check_yaml.py:27:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/check_yaml.py:36:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/check_yaml.py:52:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/scripts/check_yaml.py:53:11: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:58:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:72:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:73:39: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:98:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:111:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:112:39: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:142:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:155:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:156:39: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:182:39: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:225:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:226:39: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:244:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_fqcn_and_ignore.py:257:32: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_handler_name_convention.py:21:44: E999 SyntaxError: closing parenthesis ']' does not match opening parenthesis '('
+/home/prod/Workspaces/repos/github/deploy-system-unified/fix_gen.py:14:58: E999 SyntaxError: invalid syntax. Is this intended to be part of the string?
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:13:1: F401 'os' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:16:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:19:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:22:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:25:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:30:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:33:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:36:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/__init__.py:37:29: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:15:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:17:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:19:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:22:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:25:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:28:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:33:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:38:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:43:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:48:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:53:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:58:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:63:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:68:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:72:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:81:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:85:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:88:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_deploy_system.py:89:36: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:15:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:16:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:18:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:20:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:23:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:26:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:29:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:32:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:36:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:38:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:42:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:46:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:53:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:56:66: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:59:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:63:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:70:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:77:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:81:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:88:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:91:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:96:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:100:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:103:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:107:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:110:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:114:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:121:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:129:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:132:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:136:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:139:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:143:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:150:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:152:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:154:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:157:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:160:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:163:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:168:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:175:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:178:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:184:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:187:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:190:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:191:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:194:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/analyze_wiki_content.py:195:27: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:13:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:15:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:18:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:21:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:25:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:34:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:39:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:42:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:45:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/basic_example.py:46:11: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:16:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:18:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:20:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:23:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:26:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:29:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:37:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:42:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:45:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:52:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:55:57: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:58:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:68:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:74:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:81:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:84:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:91:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:98:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:106:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:114:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:121:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:124:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:131:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:138:48: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:141:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:145:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:147:15: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:149:15: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:150:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:152:15: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:154:15: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:156:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:163:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:166:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:173:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:188:21: E722 do not use bare 'except'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:194:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:199:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:213:21: E722 do not use bare 'except'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:219:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:224:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:238:21: E722 do not use bare 'except'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:244:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:250:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:265:21: E722 do not use bare 'except'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:271:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:277:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:281:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:285:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:295:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:307:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:314:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:317:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:320:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:321:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:324:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/comprehensive_deficit_analysis.py:325:37: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:16:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:18:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:20:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:23:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:26:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:29:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:32:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:37:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:40:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:46:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:50:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:59:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:68:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:74:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:78:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:89:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:95:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:99:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:104:70: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:108:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:110:99: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:114:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:116:70: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:123:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:129:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:133:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:136:55: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:139:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:148:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:160:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:163:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:166:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:167:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:170:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/detailed_project_analysis.py:171:32: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:15:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:17:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:19:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:22:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:25:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:28:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:34:20: F821 undefined name 'Path'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:35:47: F821 undefined name 'Path'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:38:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:43:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:46:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:53:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:56:57: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:59:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:69:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:75:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:82:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:85:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:92:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:99:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:107:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:115:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:122:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:125:56: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:128:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:138:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:146:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:153:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:156:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:171:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:174:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:190:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:195:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:209:21: E722 do not use bare 'except'
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:213:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:219:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:223:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:227:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:235:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:239:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:247:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:254:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:257:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:260:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:261:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:264:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/identify_project_deficits.py:265:32: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:13:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:15:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:18:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:21:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:24:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:27:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:32:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:35:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:41:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:43:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:46:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:49:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:51:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:55:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:60:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:62:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:65:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:68:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/on_demand_loading_example.py:69:11: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:13:1: E402 module level import not at top of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:15:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:18:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:26:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:28:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:31:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:43:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:45:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:51:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:56:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:61:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:64:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:66:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:69:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:77:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:80:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:92:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:97:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:99:13: F841 local variable 'agent_config' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:101:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:105:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:108:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:112:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:116:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/examples/real_world_scenario.py:117:67: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:25:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:48:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:62:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:68:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:74:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:84:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:95:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:102:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:114:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:126:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:133:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:143:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:147:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:151:15: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:154:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:157:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/qwen_agent_manager.py:160:76: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/skills/math_calculator.py:25:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/skills/math_calculator.py:38:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/skills/math_calculator.py:41:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/skills/math_calculator.py:44:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/skills/math_calculator.py:65:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/qwen_agents/skills/math_calculator.py:71:54: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/containers/config/tests/testinfra/test_config.py:80:13: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/containers/lxc/tests/testinfra/test_lxc.py:190:29: E128 continuation line under-indented for visual indent
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/containers/quadlets/tests/testinfra/test_quadlets.py:173:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/containers/quadlets/tests/testinfra/test_quadlets.py:178:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/entropy/tests/testinfra/test_entropy.py:13:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/entropy/tests/testinfra/test_entropy.py:107:17: F841 local variable 'has_config' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/entropy/tests/testinfra/test_entropy.py:127:9: F841 local variable 'service_file_etc' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/grub/tests/testinfra/test_grub.py:13:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/grub/tests/testinfra/test_grub.py:39:49: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/grub/tests/testinfra/test_grub.py:86:53: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/identity/tests/testinfra/test_identity.py:13:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/identity/tests/testinfra/test_identity.py:183:9: F841 local variable 'rng_modules' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/identity/tests/testinfra/test_identity.py:184:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/logging/tests/testinfra/test_logging.py:15:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/logging/tests/testinfra/test_logging.py:220:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/logging/tests/testinfra/test_logging.py:240:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/repositories/tests/testinfra/test_repositories.py:15:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/repositories/tests/testinfra/test_repositories.py:92:13: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/repositories/tests/testinfra/test_repositories.py:124:25: F841 local variable 'has_community' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/systemd/tests/testinfra/test_systemd.py:14:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/systemd/tests/testinfra/test_systemd.py:173:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/systemd/tests/testinfra/test_systemd.py:192:13: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/time/tests/testinfra/test_time.py:204:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/firmware/tests/testinfra/test_firmware.py:82:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/firmware/tests/testinfra/test_firmware.py:116:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/firmware/tests/testinfra/test_firmware.py:200:9: F841 local variable 'svc' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:12:1: F401 'sys' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:40:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:61:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:65:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:71:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:79:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:90:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:100:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:104:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:112:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:115:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:129:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:132:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:136:58: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:143:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:149:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:152:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:161:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:179:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:190:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:199:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:216:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:219:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:228:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:241:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:252:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:262:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:269:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:282:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:285:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:295:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:303:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:312:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:323:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:333:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:336:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:345:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:348:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:355:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:362:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:365:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:368:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:389:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:407:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:413:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:415:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:418:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:425:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:431:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:434:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:449:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:451:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:463:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:466:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:468:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:473:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:480:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:485:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:499:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:504:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:508:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:517:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:524:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:533:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:537:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:540:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:542:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:543:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:545:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:551:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:553:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:560:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:565:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:574:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:579:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:591:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:596:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:603:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:608:19: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/files/gpu_discovery.py:618:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:38:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:44:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:120:13: F841 local variable 'lsmod_cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:133:13: F841 local variable 'lsmod_cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:151:13: F841 local variable 'lsmod_cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:175:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:197:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:203:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:219:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:237:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:243:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:253:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/gpu/tests/testinfra/test_gpu.py:259:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:30:20: E261 at least two spaces before inline comment
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:143:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:150:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:158:13: F841 local variable 'content' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:174:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:180:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:190:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:197:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:234:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:241:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:273:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/sas/tests/testinfra/test_sas.py:279:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:45:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:136:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:142:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:160:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:188:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:210:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/storage_tuning/tests/testinfra/test_storage_tuning.py:225:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/virtual_guest/tests/testinfra/test_virtual_guest.py:184:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/virtual_guest/tests/testinfra/test_virtual_guest.py:190:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/virtual_guest/tests/testinfra/test_virtual_guest.py:196:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/virtual_guest/tests/testinfra/test_virtual_guest.py:216:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/hardware/virtual_guest/tests/testinfra/test_virtual_guest.py:262:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:20:9: F841 local variable 'helm' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:63:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:82:9: F841 local variable 'run_as_user' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:99:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:108:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:118:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:129:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/ingress/tests/test_ingress.py:133:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/master/tests/testinfra/test_master.py:189:20: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/master/tests/testinfra/test_master.py:307:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/master/tests/testinfra/test_master.py:313:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/node/tests/testinfra/test_node.py:214:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/node/tests/testinfra/test_node.py:231:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/node/tests/testinfra/test_node.py:231:24: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/kubernetes/node/tests/testinfra/test_node.py:266:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/networking/container_networks/tests/testinfra/test_container_networks.py:268:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/networking/physical/tests/testinfra/test_physical.py:172:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/networking/vpn_mesh/tests/testinfra/test_vpn_mesh.py:118:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/cloud_init/tests/testinfra/test_cloud_init.py:21:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/connection_info/tests/testinfra/test_connection_info.py:184:1: E999 IndentationError: expected an indented block after 'if' statement on line 179
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/health_check/tests/testinfra/test_health_check.py:89:13: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/health_check/tests/testinfra/test_health_check.py:149:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/health_check/tests/testinfra/test_health_check.py:159:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/health_check/tests/testinfra/test_health_check.py:206:9: F841 local variable 'expected_schema' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/monitoring/tests/testinfra/test_monitoring.py:14:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/monitoring/tests/testinfra/test_monitoring.py:138:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:13:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:57:13: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:73:17: F841 local variable 'has_socket_dir' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:106:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:131:13: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/access/tests/testinfra/test_access.py:169:45: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/access/tests/testinfra/test_access.py:228:9: F841 local variable 'valid_options' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/access/tests/testinfra/test_access.py:245:21: F841 local variable 'option' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/audit_integrity/tests/testinfra/test_audit_integrity.py:132:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/audit_integrity/tests/testinfra/test_audit_integrity.py:241:87: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/audit_integrity/tests/testinfra/test_audit_integrity.py:242:29: E128 continuation line under-indented for visual indent
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/audit_integrity/tests/testinfra/test_audit_integrity.py:248:21: F841 local variable 'has_retention' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/compliance/tests/testinfra/test_compliance.py:27:9: F841 local variable 'f' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:10:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:19:9: F841 local variable 'result' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:46:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:76:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:88:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:126:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:134:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:145:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:165:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:197:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/falco/tests/test_falco.py:207:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/firejail/tests/testinfra/test_firejail.py:46:13: F841 local variable 'has_setuid' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/firejail/tests/testinfra/test_firejail.py:171:28: E741 ambiguous variable name 'l'
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/firejail/tests/testinfra/test_firejail.py:176:90: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/firejail/tests/testinfra/test_firejail.py:177:38: E128 continuation line under-indented for visual indent
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/firejail/tests/testinfra/test_firejail.py:199:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/firejail/tests/testinfra/test_firejail.py:285:25: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:10:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:19:9: F841 local variable 'result' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:48:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:73:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:79:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:86:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:101:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:122:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:138:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:194:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:204:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/goss/tests/test_goss.py:210:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/ips/tests/testinfra/test_ips.py:334:13: F841 local variable 'content' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/kernel/tests/testinfra/test_kernel.py:299:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/mac_apparmor/tests/testinfra/test_mac_apparmor.py:119:25: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/mac_apparmor/tests/testinfra/test_mac_apparmor.py:139:40: E741 ambiguous variable name 'l'
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/mac_apparmor/tests/testinfra/test_mac_apparmor.py:239:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sshd/tests/testinfra/test_sshd.py:399:13: F841 local variable 'f' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:10:1: F401 'pytest' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:19:9: F841 local variable 'result' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:21:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:25:9: F841 local variable 'vault_group' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:34:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:48:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:76:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:80:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:87:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:100:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:112:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:120:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:130:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:159:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/vault_integration/tests/test_vault.py:169:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/rclone/tests/testinfra/test_rclone.py:94:17: F841 local variable 'has_section' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/rclone/tests/testinfra/test_rclone.py:103:13: F841 local variable 'content' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/rclone/tests/testinfra/test_rclone.py:156:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/rclone/tests/testinfra/test_rclone.py:166:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/rclone/tests/testinfra/test_rclone.py:172:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/rclone/tests/testinfra/test_rclone.py:204:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/restic/tests/testinfra/test_restic.py:191:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/restic/tests/testinfra/test_restic.py:237:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/timeshift/tests/testinfra/test_timeshift.py:117:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/timeshift/tests/testinfra/test_timeshift.py:123:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/timeshift/tests/testinfra/test_timeshift.py:139:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/timeshift/tests/testinfra/test_timeshift.py:148:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/backup/timeshift/tests/testinfra/test_timeshift.py:154:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:100:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:106:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:116:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:123:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:129:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:164:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:199:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/dedupe/tests/testinfra/test_dedupe.py:206:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:98:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:105:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:123:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:129:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:139:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:145:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:151:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:161:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:189:13: F841 local variable 'has_btrfs' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:190:28: E128 continuation line under-indented for visual indent
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:195:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/btrfs/tests/testinfra/test_btrfs.py:205:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/tests/testinfra/test_filesystems.py:31:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/storage/filesystems/tests/testinfra/test_filesystems.py:43:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/virtualization/kvm/tests/testinfra/test_kvm.py:133:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/roles/virtualization/kvm/tests/testinfra/test_kvm.py:221:9: F841 local variable 'cmd' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:20:1: F401 'sys' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:40:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:67:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:85:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:87:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:90:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:93:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:97:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:100:29: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:103:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:107:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:109:26: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:115:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:139:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:158:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_aggregator.py:175:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:8:1: F401 'sys' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:14:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:21:5: F841 local variable 'e' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:24:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:30:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:37:5: F841 local variable 'e' is assigned to but never used
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:40:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:42:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:45:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:47:10: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:47:10: E117 over-indented
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:48:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:49:35: E261 at least two spaces before inline comment
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:57:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:62:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:68:14: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:68:16: E231 missing whitespace after ','
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:70:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:79:10: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:79:10: E117 over-indented
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:85:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:87:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:91:18: E701 multiple statements on one line (colon)
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:92:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:96:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:98:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:101:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:109:60: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:23:1: F401 'os' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:30:1: F401 'typing.Optional' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:36:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:48:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:56:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:61:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:65:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:71:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:79:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:83:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:86:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:90:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:93:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:108:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:119:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:131:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:142:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:152:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:155:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:169:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:174:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:179:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:181:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:196:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:200:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:203:41: W291 trailing whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:228:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:236:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:240:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:252:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:261:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:273:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:286:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:298:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:309:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:330:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:343:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:350:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:360:24: E128 continuation line under-indented for visual indent
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:362:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:364:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:374:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:376:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:379:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:381:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/compliance_report.py:390:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script.py:12:1: F401 'pathlib.Path' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script.py:26:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script.py:41:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script.py:45:9: E301 expected 1 blank line, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script.py:63:22: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script_correct.py:12:1: F401 'pathlib.Path' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script_correct.py:26:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script_correct.py:41:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script_correct.py:45:9: E301 expected 1 blank line, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_link_script_correct.py:63:22: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_linter_logic.py:12:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_linter_logic.py:21:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_linter_logic.py:21:18: F821 undefined name 'os'
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/debug_linter_logic.py:56:87: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:37:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:43:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:49:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:52:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:61:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:64:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:72:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:76:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:80:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:82:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:87:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:89:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:94:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:101:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:106:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:109:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:116:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:121:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:124:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:130:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:134:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:137:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:143:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:150:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:154:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:158:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:161:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:163:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:166:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:215:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/generate_wiki.py:223:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:12:1: F401 'sys' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:23:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:28:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:31:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:38:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:42:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:45:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:50:13: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:56:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:63:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:66:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:73:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:77:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:81:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/enforce_metadata.py:84:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:11:1: F401 'sys' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:23:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:33:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:35:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:39:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:42:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:46:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:49:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:52:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:56:25: E261 at least two spaces before inline comment
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:57:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:60:25: E261 at least two spaces before inline comment
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:61:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:64:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:68:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:71:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:79:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:86:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:89:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:98:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:102:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:114:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:122:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:127:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/quality/fix_links.py:133:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:19:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:30:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:38:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:43:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:56:49: E261 at least two spaces before inline comment
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:70:26: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:70:26: E117 over-indented
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:71:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:72:26: E114 indentation is not a multiple of 4 (comment)
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:73:26: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:74:26: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:75:30: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:76:30: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:77:26: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:78:30: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:79:30: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:80:30: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:82:18: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:82:18: E117 over-indented
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:85:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:88:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:92:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:103:18: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:103:18: E117 over-indented
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:104:18: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:106:18: E114 indentation is not a multiple of 4 (comment)
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:106:18: E117 over-indented (comment)
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:107:18: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:107:18: E117 over-indented
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:108:18: E111 indentation is not a multiple of 4
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:123:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:148:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:154:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:162:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:167:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:172:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/validate_secrets_schema.py:28:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/validate_secrets_schema.py:58:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/scripts/validate_secrets_schema.py:62:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:12:1: F401 'os' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:29:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:33:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:37:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:41:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:45:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_anchor_processing.py:53:20: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_format.py:33:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_format.py:59:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_format.py:62:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_format.py:67:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:33:21: E226 missing whitespace around arithmetic operator
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:34:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:37:5: E301 expected 1 blank line, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:43:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:45:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:49:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:52:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:67:11: F541 f-string is missing placeholders
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:77:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:79:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_linter_logic.py:87:86: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_pattern.py:24:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_pattern.py:27:5: E301 expected 1 blank line, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_pattern.py:40:38: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:14:1: E302 expected 2 blank lines, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:21:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:25:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:28:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:31:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:34:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:39:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:45:30: E261 at least two spaces before inline comment
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:50:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:52:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:57:1: E302 expected 2 blank lines, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:64:1: E305 expected 2 blank lines after class or function definition, found 1
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_property_based.py:65:5: F401 'sys' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_regex.py:9:1: F401 'pathlib.Path' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_regex.py:20:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_regex.py:23:5: E301 expected 1 blank line, found 0
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_regex.py:32:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_regex.py:53:40: W292 no newline at end of file
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:12:1: F401 'os' imported but unused
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:30:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:37:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:47:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:51:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:61:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:66:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:76:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:79:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:90:1: W293 blank line contains whitespace
+/home/prod/Workspaces/repos/github/deploy-system-unified/tests/test_script_logic.py:95:1: W293 blank line contains whitespace

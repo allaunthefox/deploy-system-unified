@@ -1,0 +1,692 @@
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	running on Python 3.14.3
+[manager]	WARNING	Test in comment: shell is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: True is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: is is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: required is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: here is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: to is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: source is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: and is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: execute is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: shell is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: functions is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: in is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: a is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: controlled is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: test is not a test name or id, ignoring
+[manager]	WARNING	Test in comment: environment is not a test name or id, ignoring
+Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:35
+Run started:2026-03-01 04:12:13.115558+00:00
+
+Test results:
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/bootstrap/tests/testinfra/test_bootstrap.py:143:22
+142	        """Verify /tmp directory exists."""
+143	        d = host.file("/tmp")
+144	        assert d.exists, "/tmp directory should exist"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/bootstrap/tests/testinfra/test_bootstrap.py:144:25
+143	        d = host.file("/tmp")
+144	        assert d.exists, "/tmp directory should exist"
+145	        assert d.is_directory, "/tmp should be a directory"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/core/bootstrap/tests/testinfra/test_bootstrap.py:145:31
+144	        assert d.exists, "/tmp directory should exist"
+145	        assert d.is_directory, "/tmp should be a directory"
+146	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/session/tests/testinfra/test_session.py:68:23
+67	        # Tmux uses /tmp for sockets by default
+68	        socket_dirs = ["/tmp/tmux", "/var/run/tmux"]
+69	        has_socket_dir = False
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:182:22
+181	        """Verify sticky bit is set on /tmp."""
+182	        d = host.file("/tmp")
+183	        if d.exists:
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:187:49
+186	            has_sticky = (mode & 0o1000) != 0
+187	            assert has_sticky or mode == 0o1777, "/tmp should have sticky bit set"
+188	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:191:22
+190	        """Verify sticky bit is set on /var/tmp."""
+191	        d = host.file("/var/tmp")
+192	        if d.exists:
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/hardening/tests/testinfra/test_hardening.py:195:49
+194	            has_sticky = (mode & 0o1000) != 0
+195	            assert has_sticky or mode == 0o1777, "/var/tmp should have sticky bit set"
+196	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sandboxing/tests/testinfra/test_sandboxing.py:265:22
+264	        """Verify /tmp is available for sandboxing."""
+265	        d = host.file("/tmp")
+266	        assert d.exists, "/tmp should exist"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sandboxing/tests/testinfra/test_sandboxing.py:266:25
+265	        d = host.file("/tmp")
+266	        assert d.exists, "/tmp should exist"
+267	        assert d.is_directory, "/tmp should be a directory"
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/roles/security/sandboxing/tests/testinfra/test_sandboxing.py:267:31
+266	        assert d.exists, "/tmp should exist"
+267	        assert d.is_directory, "/tmp should be a directory"
+268	
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:18:13
+17	        req = urllib.request.Request(url)
+18	        with urllib.request.urlopen(req) as response:
+19	            data = json.load(response)
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:27:13
+26	    try:
+27	        with urllib.request.urlopen(auth_url) as response:
+28	            token_data = json.load(response)
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/check_versions.py:34:13
+33	        req.add_header("Authorization", f"Bearer {token}")
+34	        with urllib.request.urlopen(req) as response:
+35	            data = json.load(response)
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/setup_crowdsec.py:22:21
+21	        if shell:
+22	            result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+23	        else:
+
+--------------------------------------------------
+>> Issue: [B604:any_other_function_with_shell_equals_true] Function call with shell=True parameter identified, possible security issue.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b604_any_other_function_with_shell_equals_true.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_internal/commands/completion.py:129:18
+128	            )
+129	            print(BASE_COMPLETION.format(script=script, shell=options.shell))
+130	            return SUCCESS
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_internal/commands/configuration.py:247:12
+246	        try:
+247	            subprocess.check_call(f'{editor} "{fname}"', shell=True)
+248	        except FileNotFoundError as e:
+
+--------------------------------------------------
+>> Issue: [B411:blacklist] Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities.
+   Severity: High   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b411-import-xmlrpclib
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_internal/commands/search.py:7:0
+6	import textwrap
+7	import xmlrpc.client
+8	from collections import OrderedDict
+
+--------------------------------------------------
+>> Issue: [B411:blacklist] Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities.
+   Severity: High   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b411-import-xmlrpclib
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_internal/network/xmlrpc.py:5:0
+4	import urllib.parse
+5	import xmlrpc.client
+6	from typing import TYPE_CHECKING
+
+--------------------------------------------------
+>> Issue: [B411:blacklist] Using _HostType to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities.
+   Severity: High   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b411-import-xmlrpclib
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_internal/network/xmlrpc.py:13:4
+12	if TYPE_CHECKING:
+13	    from xmlrpc.client import _HostType, _Marshallable
+14	
+
+--------------------------------------------------
+>> Issue: [B202:tarfile_unsafe_members] tarfile.extractall used without any validation. Please check and discard dangerous members.
+   Severity: High   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b202_tarfile_unsafe_members.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_internal/utils/unpacking.py:245:12
+244	
+245	            tar.extractall(location, filter=pip_filter)
+246	
+
+--------------------------------------------------
+>> Issue: [B411:blacklist] Using xmlrpclib to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities.
+   Severity: High   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b411-import-xmlrpclib
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/distlib/compat.py:42:4
+41	    import httplib
+42	    import xmlrpclib
+43	    import Queue as queue
+
+--------------------------------------------------
+>> Issue: [B411:blacklist] Using xmlrpc.client to parse untrusted XML data is known to be vulnerable to XML attacks. Use defusedxml.xmlrpc.monkey_patch() function to monkey-patch xmlrpclib and mitigate XML vulnerabilities.
+   Severity: High   Confidence: High
+   CWE: CWE-20 (https://cwe.mitre.org/data/definitions/20.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b411-import-xmlrpclib
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/distlib/compat.py:81:4
+80	    import urllib.request as urllib2
+81	    import xmlrpc.client as xmlrpclib
+82	    import queue
+
+--------------------------------------------------
+>> Issue: [B202:tarfile_unsafe_members] tarfile.extractall used without any validation. Please check and discard dangerous members.
+   Severity: High   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b202_tarfile_unsafe_members.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/distlib/util.py:1285:8
+1284	
+1285	        archive.extractall(dest_dir)
+1286	
+
+--------------------------------------------------
+>> Issue: [B307:blacklist] Use of possibly insecure function - consider using safer ast.literal_eval.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b307-eval
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/packaging/licenses/__init__.py:100:18
+99	    try:
+100	        invalid = eval(python_expression, globals(), locals())
+101	    except Exception:
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/pkg_resources/__init__.py:1714:12
+1713	            code = compile(source, script_filename, 'exec')
+1714	            exec(code, namespace, namespace)
+1715	        else:
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/pkg_resources/__init__.py:1725:12
+1724	            script_code = compile(script_text, script_filename, 'exec')
+1725	            exec(script_code, namespace, namespace)
+1726	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/platformdirs/unix.py:182:29
+181	                if not Path(path).exists():
+182	                    path = f"/tmp/runtime-{getuid()}"  # noqa: S108
+183	            else:
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/pygments/formatters/__init__.py:103:12
+102	        with open(filename, 'rb') as f:
+103	            exec(f.read(), custom_namespace)
+104	        # Retrieve the class `formattername` from that namespace
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/pygments/lexers/__init__.py:154:12
+153	        with open(filename, 'rb') as f:
+154	            exec(f.read(), custom_namespace)
+155	        # Retrieve the class `lexername` from that namespace
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b324_hashlib.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/requests/auth.py:148:23
+147	                    x = x.encode("utf-8")
+148	                return hashlib.md5(x).hexdigest()
+149	
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak SHA1 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b324_hashlib.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/requests/auth.py:156:23
+155	                    x = x.encode("utf-8")
+156	                return hashlib.sha1(x).hexdigest()
+157	
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak SHA1 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b324_hashlib.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/requests/auth.py:205:17
+204	
+205	        cnonce = hashlib.sha1(s).hexdigest()[:16]
+206	        if _algorithm == "MD5-SESS":
+
+--------------------------------------------------
+>> Issue: [B301:blacklist] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b301-pickle
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/rich/style.py:471:66
+470	        """Get meta information (can not be changed after construction)."""
+471	        return {} if self._meta is None else cast(Dict[str, Any], loads(self._meta))
+472	
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/pip/_vendor/urllib3/packages/six.py:787:8
+786	            _locs_ = _globs_
+787	        exec ("""exec _code_ in _globs_, _locs_""")
+788	
+
+--------------------------------------------------
+>> Issue: [B605:start_process_with_a_shell] Starting a process with a shell, possible injection detected, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b605_start_process_with_a_shell.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/command/bdist_rpm.py:357:14
+356	
+357	        out = os.popen(q_cmd)
+358	        try:
+
+--------------------------------------------------
+>> Issue: [B307:blacklist] Use of possibly insecure function - consider using safer ast.literal_eval.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b307-eval
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/compilers/C/base.py:1113:27
+1112	        expected = '"static", "shared", "dylib", "xcode_stub"'
+1113	        if lib_type not in eval(expected):
+1114	            raise ValueError(f"'lib_type' must be {expected}")
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/core.py:268:16
+267	                code = f.read().replace(r'\r\n', r'\n')
+268	                exec(code, g)
+269	        finally:
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_build_ext.py:115:45
+114	                libz_so = sorted(libz_so, key=lambda lib_path: len(lib_path))
+115	                shutil.copyfile(libz_so[-1], '/tmp/libxx_z.so')
+116	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_build_ext.py:120:34
+119	                    [xx_c],
+120	                    library_dirs=['/tmp'],
+121	                    libraries=['xx_z'],
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_build_ext.py:122:42
+121	                    libraries=['xx_z'],
+122	                    runtime_library_dirs=['/tmp'],
+123	                )
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_build_ext.py:145:22
+144	        if sys.platform == 'linux' and copy_so:
+145	            os.unlink('/tmp/libxx_z.so')
+146	
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_build_ext.py:182:23
+181	                # Linked against a library in /tmp
+182	                assert "/tmp" in rpaths
+183	                # The import is the real test here
+
+--------------------------------------------------
+>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (exe).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b103_set_bad_file_permissions.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_spawn.py:32:8
+31	
+32	        os.chmod(exe, 0o777)
+33	        with pytest.raises(DistutilsExecError):
+
+--------------------------------------------------
+>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (exe).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b103_set_bad_file_permissions.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_distutils/tests/test_spawn.py:44:8
+43	
+44	        os.chmod(exe, 0o777)
+45	        spawn([exe])  # should work without any error
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_vendor/jaraco/context/__init__.py:78:14
+77	    try:
+78	        req = urllib.request.urlopen(url)
+79	        with tarfile.open(fileobj=req, mode='r|*') as tf:
+
+--------------------------------------------------
+>> Issue: [B202:tarfile_unsafe_members] tarfile.extractall used without any validation. Please check and discard dangerous members.
+   Severity: High   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b202_tarfile_unsafe_members.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_vendor/jaraco/context/__init__.py:80:12
+79	        with tarfile.open(fileobj=req, mode='r|*') as tf:
+80	            tf.extractall(path=target_dir, filter=_default_filter)
+81	        yield target_dir
+
+--------------------------------------------------
+>> Issue: [B307:blacklist] Use of possibly insecure function - consider using safer ast.literal_eval.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b307-eval
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_vendor/jaraco/functools/__init__.py:563:27
+562	                try:
+563	                    return eval(use)
+564	                except TypeError:
+
+--------------------------------------------------
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b108_hardcoded_tmp_directory.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/_vendor/platformdirs/unix.py:182:29
+181	                if not Path(path).exists():
+182	                    path = f"/tmp/runtime-{getuid()}"  # noqa: S108
+183	            else:
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/build_meta.py:317:12
+316	        try:
+317	            exec(code, locals())
+318	        except SystemExit as e:
+
+--------------------------------------------------
+>> Issue: [B302:blacklist] Deserialization with the marshal module is possibly dangerous.
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b302-marshal
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/command/bdist_egg.py:383:11
+382	    f.read(skip)
+383	    code = marshal.load(f)
+384	    f.close()
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/config/_validate_pyproject/formats.py:152:9
+151	    context = ssl.create_default_context()
+152	    with urlopen(url, context=context) as response:  # noqa: S310 (audit URLs)
+153	        headers = Message()
+
+--------------------------------------------------
+>> Issue: [B302:blacklist] Deserialization with the marshal module is possibly dangerous.
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b302-marshal
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/depends.py:133:23
+132	                f.read(8)  # skip magic & date
+133	                code = marshal.load(f)
+134	            elif kind == PY_FROZEN:
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/launch.py:32:4
+31	    code = compile(norm_script, script_name, 'exec')
+32	    exec(code, namespace)
+33	
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/config/downloads/__init__.py:53:9
+52	def download(url: str, dest: Path):
+53	    with urlopen(url) as f:
+54	        data = f.read()
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/environment.py:77:15
+76	            stderr=_PIPE,
+77	            shell=shell,
+78	            env=env,
+79	            encoding="utf-8",
+80	        )
+81	
+82	        if isinstance(data_stream, tuple):
+83	            data_stream = slice(*data_stream)
+84	        data = proc.communicate()[data_stream]
+85	    except OSError:
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/integration/test_pip_install_sdist.py:174:9
+173	    id_ = package if version is LATEST else f"{package}/{version}"
+174	    with urlopen(f"https://pypi.org/pypi/{id_}/json") as f:
+175	        metadata = json.load(f)
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/integration/test_pip_install_sdist.py:187:9
+186	def download(url, dest, md5_digest):
+187	    with urlopen(url) as f:
+188	        data = f.read()
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b324_hashlib.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/integration/test_pip_install_sdist.py:190:11
+189	
+190	    assert md5(data).hexdigest() == md5_digest
+191	
+
+--------------------------------------------------
+>> Issue: [B102:exec_used] Use of exec detected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b102_exec_used.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/test_editable_install.py:447:8
+446	        loc = {}
+447	        exec(finder, loc, loc)
+448	        loc["install"]()
+
+--------------------------------------------------
+>> Issue: [B301:blacklist] Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.
+   Severity: Medium   Confidence: High
+   CWE: CWE-502 (https://cwe.mitre.org/data/definitions/502.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b301-pickle
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/test_extern.py:15:4
+14	def test_distribution_picklable():
+15	    pickle.loads(pickle.dumps(Distribution()))
+
+--------------------------------------------------
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/test_virtualenv.py:33:12
+32	        try:
+33	            urlopen('https://pypi.org', timeout=1)
+34	        except URLError:
+
+--------------------------------------------------
+>> Issue: [B103:set_bad_file_permissions] Chmod setting a permissive mask 0o777 on file (runsh).
+   Severity: High   Confidence: High
+   CWE: CWE-732 (https://cwe.mitre.org/data/definitions/732.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b103_set_bad_file_permissions.html
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/tests/test_wheel.py:626:12
+625	            runsh = pathlib.Path(source_dir) / "script.sh"
+626	            os.chmod(runsh, 0o777)
+627	            subprocess.check_call(
+
+--------------------------------------------------
+>> Issue: [B307:blacklist] Use of possibly insecure function - consider using safer ast.literal_eval.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_calls.html#b307-eval
+   Location: /home/prod/Workspaces/repos/github/deploy-system-unified/venv/lib/python3.14/site-packages/setuptools/wheel.py:212:63
+211	                    raw_req,
+212	                    (req for req in reqs if for_extra(req) and eval(req, extra=extra)),
+213	                )
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 196277
+	Total lines skipped (#nosec): 5
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 3471
+		Medium: 45
+		High: 19
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 1
+		Medium: 34
+		High: 3500
+Files skipped (3):
+	/home/prod/Workspaces/repos/github/deploy-system-unified/dev_tools/tools/style-guide-enforcement/tests/test_handler_name_convention.py (syntax error while parsing AST from file)
+	/home/prod/Workspaces/repos/github/deploy-system-unified/fix_gen.py (syntax error while parsing AST from file)
+	/home/prod/Workspaces/repos/github/deploy-system-unified/roles/ops/connection_info/tests/testinfra/test_connection_info.py (syntax error while parsing AST from file)

@@ -4,7 +4,7 @@
 # Script Type: Style Enforcement
 # Description: Comprehensive script to enforce project coding standards
 # Last Updated: 2026-03-01
-# Version: 1.3
+# Version: 1.4
 # =============================================================================
 
 # Configuration
@@ -16,13 +16,6 @@ TOTAL_ISSUES=0
 FIXED_ISSUES=0
 AUTO_FIX=false
 REPORT_ONLY=false
-
-# Exclude patterns
-EXCLUDE_DIRS=".git .venv .ansible .pytest_cache node_modules"
-EXCLUDE_FIND_ARGS=""
-for dir in $EXCLUDE_DIRS; do
-    EXCLUDE_FIND_ARGS="$EXCLUDE_FIND_ARGS -not -path \"*/$dir/*\""
-done
 
 # ANSI Colors
 RED='\033[0;31m'
@@ -75,30 +68,71 @@ check_dependencies() {
     else
         warning "bandit not found, basic security scanning will be skipped"
     fi
+
+    if command -v safety >/dev/null 2>&1; then
+        success "All dependencies available (including safety)"
+    else
+        warning "safety not found, dependency vulnerability scanning will be skipped"
+    fi
     
-    if ! command -v codeql >/dev/null 2>&1; then
+    if command -v codeql >/dev/null 2>&1; then
+        success "All dependencies available (including codeql)"
+    else
         warning "codeql not found. For deep security analysis, install CodeQL CLI."
     fi
 }
 
-# Enforce Security Audit (Bandit + Custom Grep)
+# Enforce Security Audit (Bandit + Safety + CodeQL Fallback)
 enforce_security_audit() {
     log "Enforcing Security Audit..."
 
     # 1. Bandit (Local static analysis)
     if command -v bandit >/dev/null 2>&1; then
         log "Running Bandit security scan (excluding external code)..."
-        # We only scan our own codebases, excluding .ansible (third party collections)
-        if bandit -r "$PROJECT_ROOT" -ll --exclude "$PROJECT_ROOT/.venv,$PROJECT_ROOT/.ansible,$PROJECT_ROOT/Offline_Research" 2>&1 | tee /tmp/bandit_output.txt; then
+        if bandit -r "$PROJECT_ROOT" -ll --exclude "$PROJECT_ROOT/.venv,$PROJECT_ROOT/.ansible,$PROJECT_ROOT/Offline_Research" 2>&1 | tee "$REPORT_DIR/bandit_output.txt"; then
             success "Bandit security scan passed"
         else
             warning "Bandit detected potential security issues"
-            issue_count=$(grep -c "Issue:" /tmp/bandit_output.txt 2>/dev/null || echo "0")
+            issue_count=$(grep -c "Issue:" "$REPORT_DIR/bandit_output.txt" 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
 
-    # 2. Custom Forensic Integrity Checks
+    # 2. Safety (Dependency vulnerability scan)
+    if command -v safety >/dev/null 2>&1; then
+        if [ -f "$PROJECT_ROOT/requirements.txt" ]; then
+            log "Running Safety dependency scan..."
+            if safety scan -r "$PROJECT_ROOT/requirements.txt" 2>&1 | tee "$REPORT_DIR/safety_output.txt"; then
+                success "Python dependencies pass safety check"
+            else
+                warning "Safety detected vulnerable dependencies"
+                TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+            fi
+        fi
+    fi
+
+    # 3. CodeQL (Deep analysis - if available)
+    if command -v codeql >/dev/null 2>&1; then
+        log "Running CodeQL deep analysis..."
+        DB_PATH="/tmp/codeql_db_$(date +%s)"
+        if codeql database create "$DB_PATH" --language=python --source-root="$PROJECT_ROOT" --overwrite >/dev/null 2>&1; then
+            if codeql database analyze "$DB_PATH" python-security-and-quality.qls --format=sarif-latest --output="$REPORT_DIR/codeql_results.sarif" >/dev/null 2>&1; then
+                if grep -q "\"ruleId\":" "$REPORT_DIR/codeql_results.sarif"; then
+                    warning "CodeQL detected potential security vulnerabilities!"
+                    TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+                else
+                    success "CodeQL audit passed"
+                fi
+            else
+                warning "CodeQL analysis failed"
+            fi
+        else
+            warning "Failed to create CodeQL database"
+        fi
+        rm -rf "$DB_PATH"
+    fi
+
+    # 4. Custom Forensic Integrity Checks
     log "Checking for insecure image patterns..."
     # Ensure no images use just 'latest' without a digest in our role defaults
     insecure_images=$(grep -r "image:" "$PROJECT_ROOT/roles" --include="main.yml" | grep "latest" | grep -v "@sha256" || true)
@@ -121,11 +155,11 @@ enforce_python_standards() {
 
     if command -v flake8 >/dev/null 2>&1; then
         log "Running flake8..."
-        if flake8 --max-line-length=120 --ignore=E501,W503 $py_files 2>&1 | tee /tmp/flake8_output.txt; then
+        if flake8 --max-line-length=120 --ignore=E501,W503 $py_files 2>&1 | tee "$REPORT_DIR/flake8_output.txt"; then
             success "Python scripts pass flake8"
         else
             warning "flake8 found issues"
-            issue_count=$(grep -cE "^.*:[0-9]+:[0-9]+:" /tmp/flake8_output.txt 2>/dev/null || echo "0")
+            issue_count=$(grep -cE "^.*:[0-9]+:[0-9]+:" "$REPORT_DIR/flake8_output.txt" 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
@@ -137,13 +171,11 @@ enforce_yaml_standards() {
 
     if command -v yamllint >/dev/null 2>&1; then
         log "Running yamllint (excluding external code)..."
-        # Only lint playbooks, roles, and root yml files
-        target_dirs="$PROJECT_ROOT/roles $PROJECT_ROOT/playbooks $PROJECT_ROOT/*.yml"
-        if yamllint -c "$PROJECT_ROOT/.yamllint.yml" $PROJECT_ROOT/roles $PROJECT_ROOT/playbooks 2>&1 | tee /tmp/yaml_output.txt; then
+        if yamllint -c "$PROJECT_ROOT/.yamllint.yml" "$PROJECT_ROOT/roles" "$PROJECT_ROOT/playbooks" 2>&1 | tee "$REPORT_DIR/yaml_output.txt"; then
             success "YAML files pass yamllint"
         else
             warning "yamllint found issues"
-            issue_count=$(grep -cE "^.*:[0-9]+:[0-9]+:" /tmp/yaml_output.txt 2>/dev/null || echo "0")
+            issue_count=$(grep -cE "^.*:[0-9]+:[0-9]+:" "$REPORT_DIR/yaml_output.txt" 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
@@ -155,11 +187,11 @@ enforce_ansible_standards() {
 
     if command -v ansible-lint >/dev/null 2>&1; then
         log "Running ansible-lint (excluding collections)..."
-        if ansible-lint -x internal-error "$PROJECT_ROOT" 2>&1 | tee /tmp/ansible_output.txt; then
+        if ansible-lint -x internal-error "$PROJECT_ROOT" 2>&1 | tee "$REPORT_DIR/ansible_output.txt"; then
             success "Ansible roles pass ansible-lint"
         else
             warning "ansible-lint found issues"
-            issue_count=$(grep -cE "^.*:[0-9]+:" /tmp/ansible_output.txt 2>/dev/null || echo "0")
+            issue_count=$(grep -cE "^.*:[0-9]+:" "$REPORT_DIR/ansible_output.txt" 2>/dev/null || echo "0")
             TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
         fi
     fi
@@ -174,11 +206,11 @@ enforce_shell_standards() {
         sh_files=$(find "$PROJECT_ROOT" -maxdepth 2 -name "*.sh" -not -path "*/.git/*" && find "$PROJECT_ROOT/scripts" -name "*.sh")
         
         if [ -n "$sh_files" ]; then
-            if shellcheck $sh_files 2>&1 | tee /tmp/shell_output.txt; then
+            if shellcheck $sh_files 2>&1 | tee "$REPORT_DIR/shell_output.txt"; then
                 success "Shell scripts pass shellcheck"
             else
                 warning "shellcheck found issues"
-                issue_count=$(grep -cE "^In .* line [0-9]+:" /tmp/shell_output.txt 2>/dev/null || echo "0")
+                issue_count=$(grep -cE "^In .* line [0-9]+:" "$REPORT_DIR/shell_output.txt" 2>/dev/null || echo "0")
                 TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
             fi
         fi
@@ -188,8 +220,7 @@ enforce_shell_standards() {
 # Check naming conventions
 check_naming_conventions() {
     log "Checking forensic naming conventions..."
-    errors=0
-    # Use refined logic to find missing Audit IDs in task names
+    local errors=0
     while IFS= read -r file; do
         non_compliant=$(grep -n -E "^[[:space:]]*- name:" "$file" | \
           grep -v '^[[:space:]]*#' | \
@@ -208,7 +239,7 @@ check_naming_conventions() {
             errors=$((errors + 1))
           fi
         fi
-    done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*" -not -name "meta/main.yml")
+    done < <(find roles playbooks -name "*.yml" -not -path "*/molecule/*" -not -path "*/meta/main.yml" -not -path "*venv*" -not -path "*Offline_Research*")
     
     if [ "$errors" -gt 0 ]; then
         warning "$errors files have tasks missing forensic Audit IDs"
@@ -223,7 +254,7 @@ check_secrets() {
     log "Checking for exposed secrets..."
     if command -v detect-secrets >/dev/null 2>&1; then
         log "Running detect-secrets..."
-        if detect-secrets scan "$PROJECT_ROOT" --exclude-files ".secrets.baseline" --exclude-files ".ansible" 2>&1 | tee /tmp/secrets_output.txt; then
+        if detect-secrets scan "$PROJECT_ROOT" --exclude-files ".secrets.baseline" --exclude-files ".ansible" --exclude-files "venv" --exclude-files "Offline_Research" 2>&1 | tee /tmp/secrets_output.txt; then
             success "No new secrets detected"
         else
             warning "Potential secrets detected!"
@@ -253,7 +284,7 @@ check_permissions() {
 # Main function
 main() {
     echo "========================================"
-    echo "  Style Guide Enforcement Tool (v1.3)"
+    echo "  Style Guide Enforcement Tool (v1.4)"
     echo "========================================"
     echo ""
 

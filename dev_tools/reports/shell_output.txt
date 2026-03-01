@@ -1,0 +1,12 @@
+
+In /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_metrics.sh line 101:
+    mem_num=$(echo "$mem_value" | sed 's/[^0-9.]//g')
+              ^-- SC2001 (style): See if you can use ${variable//search/replace} instead.
+
+
+In /home/prod/Workspaces/repos/github/deploy-system-unified/scripts/benchmark/benchmark_metrics.sh line 103:
+    mem_unit=$(echo "$mem_value" | sed 's/[0-9.]//g')
+               ^-- SC2001 (style): See if you can use ${variable//search/replace} instead.
+
+For more information:
+  https://www.shellcheck.net/wiki/SC2001 -- See if you can use ${variable//se...
