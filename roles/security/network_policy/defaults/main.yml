@@ -1,0 +1,19 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100343
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/network_policy role
+network_policy_enable: true
+network_policy_default_deny: true
+network_policy_allow_dns: true
+network_policy_namespaces: ["default"]
+
+# Calico specific
+network_policy_calico_enable: false
+network_policy_calico_global: false
+
+# Monitoring and reporting
+network_policy_report_dir: "/var/log/security/network_policy"
+network_policy_owner: "root"
+network_policy_group: "root"

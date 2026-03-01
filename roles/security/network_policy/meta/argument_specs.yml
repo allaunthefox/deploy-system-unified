@@ -1,0 +1,48 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100345
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: "Kubernetes and Calico network policy enforcement"
+    description: "Enforces network policies for pod isolation and security."
+    author: "deploy-system-unified"
+    options:
+      network_policy_enable:
+        type: "bool"
+        default: true
+        description: "Whether to enable network policy enforcement."
+      network_policy_default_deny:
+        type: "bool"
+        default: true
+        description: "Whether to apply a default-deny policy for all ingress/egress."
+      network_policy_allow_dns:
+        type: "bool"
+        default: true
+        description: "Whether to allow DNS traffic by default."
+      network_policy_namespaces:
+        type: "list"
+        elements: "str"
+        default: ["default"]
+        description: "Namespaces where the policies should be applied."
+      network_policy_calico_enable:
+        type: "bool"
+        default: false
+        description: "Whether to use Calico-specific GlobalNetworkPolicies."
+      network_policy_calico_global:
+        type: "bool"
+        default: false
+        description: "Whether to apply GlobalNetworkPolicies."
+      network_policy_report_dir:
+        type: "str"
+        default: "/var/log/security/network_policy"
+        description: "Directory for policy enforcement audit logs."
+      network_policy_owner:
+        type: "str"
+        default: "root"
+        description: "Owner of the audit logs."
+      network_policy_group:
+        type: "str"
+        default: "root"
+        description: "Group of the audit logs."

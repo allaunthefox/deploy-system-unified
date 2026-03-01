@@ -1,0 +1,46 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100344
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+galaxy_info:
+  role_name: network_policy
+  author: deploy-system-unified
+  description: Kubernetes and Calico network policy enforcement
+  company: Deploy-System-Unified Project
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Fedora
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+  galaxy_tags:
+    - security
+    - networking
+    - kubernetes
+    - calico
+    - network-policy
+    - compliance
+    - segmentation
+    - isolation
+    - cloud-native
+    - automation
+
+collections:
+  - ansible.builtin
+  - community.kubernetes
+
+dependencies: []
