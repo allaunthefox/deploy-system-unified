@@ -23,3 +23,13 @@
 
 - **Week 1**: Discovery Logic Enhancements & Validation
 - **Week 2**: Slicing Compatibility & Multi-GPU Support
+
+---
+
+## Q3 2026: Zero Trust & HA
+
+**Focus**: Advanced Networking and Control Plane Resilience
+
+- [x] **Zero Trust Foundation**: Implement `security/headscale` role with pinned image digests.
+- [ ] **HA Kubernetes**: Transition K3s to etcd-backed multi-master control plane.
+- [ ] **Automated Rotation**: Deploy Vault Agent secret rotation lifecycle.

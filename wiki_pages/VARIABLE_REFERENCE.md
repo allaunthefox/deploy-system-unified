@@ -848,6 +848,9 @@
 
 ### `security/headscale`
 - `headscale_enabled`
+- `headscale_version`
+- `headscale_image_digest`
+- `headscale_image`
 - `headscale_port`
 - `headscale_metrics_port`
 - `headscale_network_interface`

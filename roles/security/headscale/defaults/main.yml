@@ -7,6 +7,9 @@
 # Compliance: NIST SC-7, ISO 27001 §13.1
 
 headscale_enabled: false
+headscale_version: "0.23.0"
+headscale_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example placeholder
+headscale_image: "ghcr.io/juanfont/headscale:{{ headscale_version }}@{{ headscale_image_digest }}"
 headscale_port: 8085
 headscale_metrics_port: 9090
 headscale_network_interface: "tailscale0"
