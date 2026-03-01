@@ -15,27 +15,13 @@
   when:
     - crowdsec_enable | default(false)
     - containers_caddy_fail_secure | default(true) | bool
-  tags:
-    - cis_3_1
-    - stg_v230480
-    - nist_ia_2
-    - containers
-    - caddy
-    - security
-    - verify
+  tags: [cis_3_1, stg_v230480, nist_ia_2, containers, caddy, security, verify, 600013]
 
 - name: "ISO 9001 | 600013 | CIS 3.2 | STIG V-230480 | NIST IA-2 | Verify Caddy secret files when fail-secure is enabled"
   ansible.builtin.include_tasks: verify_secrets.yml
   when:
     - containers_caddy_fail_secure | default(true) | bool
-  tags:
-    - cis_3_2
-    - stg_v230480
-    - nist_ia_2
-    - containers
-    - caddy
-    - security
-    - verify
+  tags: [cis_3_2, stg_v230480, nist_ia_2, containers, caddy, security, verify, 600013]
 
 - name: "ISO 9001 | 600013 | CIS 3.3 | STIG V-230480 | NIST SC-13 | Validate Porkbun API keys are set"
   ansible.builtin.assert:
@@ -43,14 +29,7 @@
       - porkbun_api_key | default('') | length > 0
       - porkbun_secret_api_key | default('') | length > 0
     fail_msg: "Porkbun API keys are required. Set porkbun_api_key and porkbun_secret_api_key."
-  tags:
-    - cis_3_3
-    - stg_v230480
-    - nist_sc_13
-    - containers
-    - caddy
-    - security
-    - verify
+  tags: [cis_3_3, stg_v230480, nist_sc_13, containers, caddy, security, verify, 600013]
 
 - name: "ISO 27001 §10.1 | 400011 | CIS 3.4 | STIG V-230480 | NIST IA-2 | Create Caddy secrets file"
   ansible.builtin.template:
@@ -60,13 +39,7 @@
     owner: "{{ containers_secrets_owner }}"
     group: "{{ containers_secrets_group }}"
   become: true
-  tags:
-    - cis_3_4
-    - stg_v230480
-    - nist_ia_2
-    - containers
-    - caddy
-    - secrets
+  tags: [cis_3_4, stg_v230480, nist_ia_2, containers, caddy, secrets, 400011]
 
 - name: "ISO 27001 §8.20 | 700030 | CIS 3.5 | STIG V-230480 | NIST SC-8 | Create Proxy Network Quadlet"
   ansible.builtin.copy:
@@ -80,13 +53,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   notify: reload_systemd
-  tags:
-    - cis_3_5
-    - stg_v230480
-    - nist_sc_8
-    - containers
-    - caddy
-    - network
+  tags: [cis_3_5, stg_v230480, nist_sc_8, containers, caddy, network, 700030]
 
 - name: "ISO 27040 | 900000 | CIS 3.6 | STIG V-230480 | NIST AC-3 | Create Caddy directories"
   ansible.builtin.file:
@@ -95,20 +62,9 @@
     mode: '0755'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
-  loop:
-    - /srv/containers/caddy
-    - /srv/containers/caddy/config
-    - /srv/containers/caddy/data
-    - /srv/containers/caddy/logs
-    - /srv/containers/caddy/conf.d
+  loop: [/srv/containers/caddy, /srv/containers/caddy/config, /srv/containers/caddy/data, /srv/containers/caddy/logs, /srv/containers/caddy/conf.d]
   become: true
-  tags:
-    - cis_3_6
-    - stg_v230480
-    - nist_ac_3
-    - containers
-    - caddy
-    - storage
+  tags: [cis_3_6, stg_v230480, nist_ac_3, containers, caddy, storage, 900000]
 
 - name: "ISO 27001 §8.24 | 540001 | CIS 3.7 | STIG V-230480 | NIST SC-8 | Create Caddyfile"
   ansible.builtin.copy:
@@ -140,13 +96,7 @@
   become: true
   when: caddy_generate_config | default(true)
   notify: restart_caddy
-  tags:
-    - cis_3_7
-    - stg_v230480
-    - nist_sc_8
-    - containers
-    - caddy
-    - config
+  tags: [cis_3_7, stg_v230480, nist_sc_8, containers, caddy, config, 540001]
 
 - name: "ISO 9001 | 600013 | CIS 3.8 | STIG V-230480 | NIST CM-6 | Validate Quadlet GPU capabilities (Linux CAP_* only)"
   ansible.builtin.assert:
@@ -154,14 +104,7 @@
       - quadlet_gpu_capabilities | default([]) | reject('match', '^CAP_') | list | length == 0
     fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
   when: containers_quadlet_enable_gpu_support | default(false)
-  tags:
-    - cis_3_8
-    - stg_v230480
-    - nist_cm_6
-    - containers
-    - caddy
-    - security
-    - verify
+  tags: [cis_3_8, stg_v230480, nist_cm_6, containers, caddy, security, verify, 600013]
 
 - name: "ISO 27001 §9.2 | 540000 | Forensic Chain of Trust | Rule [B-03] (The Ingress Lock) | Wait for Authentik readiness"
   ansible.builtin.wait_for:
@@ -239,31 +182,13 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  tags:
-    - cis_3_9
-    - stg_v230480
-    - nist_sc_8
-    - nist_sc_13
-    - iso_27001_8_24
-    - iso_27001_8_26
-    - nist_ia_2
-    - containers
-    - caddy
-    - deploy
-  notify:
-    - reload_systemd
-    - restart_caddy
+  tags: [cis_3_9, stg_v230480, nist_sc_8, iso_27001_8_24, containers, caddy, deploy, 700000]
+  notify: [reload_systemd, restart_caddy]
 
 - name: "ISO 9001 | 600013 | CIS 3.10 | STIG V-230480 | NIST CM-6 | Set containers caddy completion flag"
   ansible.builtin.set_fact:
     containers_caddy_complete: true
-  tags:
-    - cis_3_10
-    - stg_v230480
-    - nist_cm_6
-    - containers
-    - caddy
-    - initialization
+  tags: [cis_3_10, stg_v230480, nist_cm_6, containers, caddy, initialization, 600013]
 
 - name: "ISO 27040 | 900000 | CIS 3.11 | STIG V-230480 | NIST AC-3 | Create Crowdsec Directories"
   ansible.builtin.file:
@@ -272,20 +197,10 @@
     mode: '0755'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
-  loop:
-    - /srv/containers/caddy/crowdsec
-    - /srv/containers/caddy/crowdsec/config
-    - /srv/containers/caddy/crowdsec/data
+  loop: [/srv/containers/caddy/crowdsec, /srv/containers/caddy/crowdsec/config, /srv/containers/caddy/crowdsec/data]
   become: true
   when: crowdsec_enable | default(false)
-  tags:
-    - cis_3_11
-    - stg_v230480
-    - nist_ac_3
-    - containers
-    - caddy
-    - crowdsec
-    - storage
+  tags: [cis_3_11, stg_v230480, nist_ac_3, containers, caddy, crowdsec, storage, 900000]
 
 - name: "ISO 27001 §16.1 | 460002 | CIS 3.12 | STIG V-230480 | NIST SC-8 | Create Crowdsec Container Quadlet"
   ansible.builtin.copy:
@@ -337,15 +252,7 @@
     group: "{{ containers_systemd_group }}"
   become: true
   when: crowdsec_enable | default(false)
-  tags:
-    - cis_3_12
-    - stg_v230480
-    - nist_sc_8
-    - iso_27001_16_1
-    - iso_27001_8_26
-    - containers
-    - crowdsec
-    - deploy
+  tags: [cis_3_12, stg_v230480, nist_sc_8, iso_27001_16_1, containers, crowdsec, deploy, 460002]
   notify: reload_systemd
 
 - name: "ISO 27001 §16.1 | 460002 | CIS 3.13 | STIG V-230480 | NIST CM-7 | Install Crowdsec Bouncer Dependencies"
@@ -354,14 +261,7 @@
     state: present
   become: true
   when: crowdsec_enable | default(false)
-  tags:
-    - cis_3_13
-    - stg_v230480
-    - nist_cm_7
-    - containers
-    - caddy
-    - crowdsec
-    - security
+  tags: [cis_3_13, stg_v230480, nist_cm_7, containers, caddy, crowdsec, security, 460002]
 
 - name: "ISO 27001 §16.1 | 460002 | CIS 3.14 | STIG V-230480 | NIST AC-6 | Create Crowdsec Bouncer Directory (Host)"
   ansible.builtin.file:
@@ -371,14 +271,7 @@
     owner: root
     group: root
   become: true
-  tags:
-    - cis_3_14
-    - stg_v230480
-    - nist_ac_6
-    - containers
-    - caddy
-    - crowdsec
-    - storage
+  tags: [cis_3_14, stg_v230480, nist_ac_6, containers, caddy, crowdsec, storage, 460002]
 
 - name: "ISO 27001 §16.1 | 460002 | CIS 3.15 | STIG V-230480 | NIST SC-8 | Create Firewall Bouncer Config (Host)"
   ansible.builtin.template:
@@ -390,28 +283,14 @@
     force: false
   become: true
   when: crowdsec_enable | default(false)
-  tags:
-    - cis_3_15
-    - stg_v230480
-    - nist_sc_8
-    - containers
-    - caddy
-    - crowdsec
-    - config
+  tags: [cis_3_15, stg_v230480, nist_sc_8, containers, caddy, crowdsec, config, 460002]
 
 - name: "ISO 9001 | 600013 | CIS 3.16 | STIG V-230480 | NIST CA-7 | Check if Bouncer is installed"
   ansible.builtin.stat:
     path: /usr/local/bin/crowdsec-firewall-bouncer
   register: containers_bouncer_bin
   become: true
-  tags:
-    - cis_3_16
-    - stg_v230480
-    - nist_ca_7
-    - containers
-    - caddy
-    - crowdsec
-    - verify
+  tags: [cis_3_16, stg_v230480, nist_ca_7, containers, caddy, crowdsec, verify, 600013]
 
 - name: "ISO 27001 §16.1 | 460002 | CIS 3.17 | STIG V-230480 | NIST CM-7 | Install Firewall Bouncer (Host)"
   block:
@@ -421,17 +300,16 @@
         dest: /tmp/crowdsec-firewall-bouncer.tgz
         mode: '0644'
         checksum: "sha256:{{ crowdsec_firewall_bouncer_sha256 }}"
-      tags: [cis_3_17_1, stg_v230480, nist_sc_8, crowdsec, deploy]
+      tags: [cis_3_17_1, stg_v230480, nist_sc_8, crowdsec, deploy, 460002]
 
     - name: "ISO 27001 §16.1 | 460002 | CIS 3.17.2 | STIG V-230480 | NIST CM-7 | Extract Bouncer"
       ansible.builtin.unarchive:
         src: /tmp/crowdsec-firewall-bouncer.tgz
         dest: /tmp/
         remote_src: true
-        include:
-          - "crowdsec-firewall-bouncer-v{{ crowdsec_firewall_bouncer_version }}/crowdsec-firewall-bouncer"
+        include: ["crowdsec-firewall-bouncer-v{{ crowdsec_firewall_bouncer_version }}/crowdsec-firewall-bouncer"]
         strip_components: 1
-      tags: [cis_3_17_2, stg_v230480, nist_cm_7, crowdsec, deploy]
+      tags: [cis_3_17_2, stg_v230480, nist_cm_7, crowdsec, deploy, 460002]
 
     - name: "ISO 27001 §16.1 | 460002 | CIS 3.17.3 | STIG V-230480 | NIST AC-6 | Copy Binary"
       ansible.builtin.copy:
@@ -439,7 +317,7 @@
         dest: /usr/local/bin/crowdsec-firewall-bouncer
         mode: '0755'
         remote_src: true
-      tags: [cis_3_17_3, stg_v230480, nist_ac_6, crowdsec, deploy]
+      tags: [cis_3_17_3, stg_v230480, nist_ac_6, crowdsec, deploy, 460002]
 
     - name: "ISO 27001 §16.1 | 460002 | CIS 3.17.4 | STIG V-230480 | NIST CM-6 | Install Service File"
       ansible.builtin.copy:
@@ -456,7 +334,7 @@
           [Install]
           WantedBy=multi-user.target
         mode: '0644'
-      tags: [cis_3_17_4, stg_v230480, nist_cm_6, crowdsec, deploy]
+      tags: [cis_3_17_4, stg_v230480, nist_cm_6, crowdsec, deploy, 460002]
   become: true
   when: (crowdsec_enable | default(false)) and (not containers_bouncer_bin.stat.exists)
 
@@ -468,11 +346,4 @@
     daemon_reload: true
   become: true
   when: crowdsec_enable | default(false)
-  tags:
-    - cis_3_18
-    - stg_v230480
-    - nist_ca_7
-    - containers
-    - caddy
-    - crowdsec
-    - deploy
+  tags: [cis_3_18, stg_v230480, nist_ca_7, containers, caddy, crowdsec, deploy, 460002]

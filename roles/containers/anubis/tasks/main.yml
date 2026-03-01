@@ -1,10 +1,12 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100034
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 # Tasks for containers/anubis - Web AI Firewall
-- name: "ISO 27001 §8.26 | Audit Code 700030 | Create Anubis Network Quadlet"
+# Compliance: CIS Docker Benchmark | Pod Security Standards | ISO 27001 §8.26
+
+- name: "ISO 27001 §8.26 | 700030 | Create Anubis Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/anubis_net.network"
     content: |
@@ -17,24 +19,18 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  tags:
-    - iso_27001_8_26
-    - containers
-    - anubis
-    - remediate
+  tags: [iso_27001_8_26, containers, anubis, remediate, 700030]
   notify: reload_systemd
 
-- name: Validate Quadlet GPU capabilities (Linux CAP_* only)
+- name: "ISO 9001 | 600013 | Validate Quadlet GPU capabilities (Linux CAP_* only)"
   ansible.builtin.assert:
     that:
       - quadlet_gpu_capabilities | default([]) | reject('match', '^CAP_') | list | length == 0
     fail_msg: "Invalid quadlet_gpu_capabilities: only Linux CAP_* values are allowed."
   when: quadlet_enable_gpu_support | default(false)
-  tags:
-    - security
-    - containers
+  tags: [security, containers, anubis, verification, 600013]
 
-- name: "ISO 27001 §8.26 | Audit Code 700000 | Create Anubis container quadlet"
+- name: "ISO 27001 §8.26 | 700000 | Create Anubis container quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/anubis.container"
     content: |
@@ -61,7 +57,6 @@
       Label=DSU_IMAGE_DIGEST={{ anubis_image.split('@')[1] | default('none') }}
       {% if podman_rootless_enabled | bool %}
       Network=anubis_net.network
-      # Port 31338 is not published to host; Caddy proxies internally
       {% else %}
       Network=host
       {% endif %}
@@ -69,10 +64,8 @@
       Environment=PORT=31338
       Environment=TARGET={{ anubis_target_url }}
       Environment=DIFFICULTY={{ anubis_difficulty }}
-      # Thoth/GeoIP warnings are non-fatal; Host networking required due to Netlink/VPS limits
       Environment=VALIDATORS=user-agent,proof-of-work
       {% if quadlet_enable_gpu_support %}
-      # GPU support configuration
       {% set caps = quadlet_gpu_capabilities | default([]) | select('match', '^CAP_') | list %}
       {% if caps | length > 0 %}
       Capabilities={{ caps | join(' ') }}
@@ -102,17 +95,13 @@
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
   become: true
-  tags:
-    - iso_27001_8_26
-    - containers
-    - anubis
-    - remediate
+  tags: [iso_27001_8_26, containers, anubis, remediate, deploy, 700000]
   notify:
     - reload_systemd
     - restart anubis
   when: anubis_enabled | bool
 
-- name: "ISO 27001 §8.26 | Audit Code 700001 | Enable and start Anubis service"
+- name: "ISO 27001 §8.26 | 700001 | Enable and start Anubis service"
   ansible.builtin.systemd:
     name: anubis
     enabled: true
@@ -121,9 +110,10 @@
   environment: "{{ containers_systemd_env }}"
   become: true
   become_user: "{{ containers_systemd_owner }}"
-  tags:
-    - iso_27001_8_26
-    - containers
-    - anubis
-  when: anubis_enabled | bool and ansible_service_mgr == "systemd" and ansible_facts['service_mgr'] == "systemd" and (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
-  failed_when: false  # Ignore failures if systemd isn't available
+  tags: [iso_27001_8_26, containers, anubis, deploy, 700001]
+  when: 
+    - anubis_enabled | bool 
+    - ansible_service_mgr == "systemd" 
+    - ansible_facts['service_mgr'] == "systemd" 
+    - (ansible_facts['os_family'] != 'Container' or '/run/systemd/system' in ansible_facts['mounts'] | map(attribute='mount') | list)
+  failed_when: false
