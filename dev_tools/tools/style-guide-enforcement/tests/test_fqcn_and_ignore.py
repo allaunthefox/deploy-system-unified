@@ -14,7 +14,9 @@ SCRIPT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'enf
 
 
 def run_cmd(cmd, env=None, cwd=None):
-    r = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env, cwd=cwd, executable='/bin/bash')
+    # Explicitly use bash to source the script and run functions
+    # nosec: shell=True is required here to source and execute shell functions in a controlled test environment
+    r = subprocess.run(['/bin/bash', '-c', cmd], capture_output=True, text=True, env=env, cwd=cwd)
     return r
 
 

@@ -8,9 +8,36 @@ Basic skill for Qwen agents - Math Calculator
 This skill provides mathematical calculation capabilities to agents.
 """
 
+import ast
+import operator as op
+
+# Supported operators
+OPERATORS = {
+    ast.Add: op.add,
+    ast.Sub: op.sub,
+    ast.Mult: op.mul,
+    ast.Div: op.truediv,
+    ast.Pow: op.pow,
+    ast.BitXor: op.xor,
+    ast.USub: op.neg
+}
+
+def eval_node(node):
+    """Safely evaluate an AST node."""
+    if isinstance(node, ast.Num):  # Python < 3.8
+        return node.n
+    elif isinstance(node, ast.Constant):  # Python >= 3.8
+        return node.value
+    elif isinstance(node, ast.BinOp):
+        return OPERATORS[type(node.op)](eval_node(node.left), eval_node(node.right))
+    elif isinstance(node, ast.UnaryOp):
+        return OPERATORS[type(node.op)](eval_node(node.operand))
+    else:
+        raise TypeError(f"Unsupported node type: {type(node)}")
+
 def calculate(expression: str) -> float:
     """
-    Safely evaluate a mathematical expression.
+    Safely evaluate a mathematical expression using AST parsing.
     
     Args:
         expression: A mathematical expression as a string
@@ -18,14 +45,10 @@ def calculate(expression: str) -> float:
     Returns:
         The result of the calculation
     """
-    # This is a simplified version - in production, use a safer evaluation method
-    allowed_chars = set('0123456789+-*/().% ')
-    if not all(c in allowed_chars for c in expression):
-        raise ValueError("Invalid characters in expression")
-    
     try:
-        result = eval(expression)  # NOQA
-        return float(result)
+        # Parse the expression into an AST
+        node = ast.parse(expression, mode='eval').body
+        return float(eval_node(node))
     except Exception as e:
         raise ValueError(f"Could not evaluate expression: {str(e)}")
 
