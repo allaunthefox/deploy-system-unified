@@ -1048,12 +1048,12 @@ Check: CKV2_ANSIBLE_4: "Ensure that packages with untrusted or missing GPG signa
 	File: /roles/containers/runtime/tasks/install_podman.yml:26-44
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-general-policies/ansible-2-4
 Check: CKV2_ANSIBLE_4: "Ensure that packages with untrusted or missing GPG signatures are not used by dnf"
-	PASSED for resource: tasks.ansible.builtin.dnf.CIS 4.4.3 | STIG V-230662 | NIST SI-4 | Install monitoring packages (RHEL/Rocky)
-	File: /roles/ops/monitoring/tasks/main.yml:45-63
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-general-policies/ansible-2-4
-Check: CKV2_ANSIBLE_4: "Ensure that packages with untrusted or missing GPG signatures are not used by dnf"
 	PASSED for resource: tasks.ansible.builtin.dnf.ISO 27001 §8.19 | 530000 | Ensure security-related packages are installed (RedHat/CentOS)
 	File: /roles/security/hardening/tasks/main.yml:27-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-general-policies/ansible-2-4
+Check: CKV2_ANSIBLE_4: "Ensure that packages with untrusted or missing GPG signatures are not used by dnf"
+	PASSED for resource: tasks.ansible.builtin.dnf.CIS 4.4.3 | STIG V-230662 | NIST SI-4 | Install monitoring packages (RHEL/Rocky)
+	File: /roles/ops/monitoring/tasks/main.yml:45-63
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-general-policies/ansible-2-4
 Check: CKV2_ANSIBLE_4: "Ensure that packages with untrusted or missing GPG signatures are not used by dnf"
 	PASSED for resource: tasks.ansible.builtin.dnf.CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530000 | Ensure base packages are installed (RedHat/CentOS)
@@ -1080,12 +1080,12 @@ Check: CKV2_ANSIBLE_5: "Ensure that SSL validation isn't disabled with dnf"
 	File: /roles/ops/monitoring/tasks/main.yml:45-63
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-networking-policies/ansible-2-5
 Check: CKV2_ANSIBLE_5: "Ensure that SSL validation isn't disabled with dnf"
-	PASSED for resource: tasks.ansible.builtin.dnf.ISO 27001 §8.19 | 530000 | Ensure security-related packages are installed (RedHat/CentOS)
-	File: /roles/security/hardening/tasks/main.yml:27-42
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-networking-policies/ansible-2-5
-Check: CKV2_ANSIBLE_5: "Ensure that SSL validation isn't disabled with dnf"
 	PASSED for resource: tasks.ansible.builtin.dnf.CIS 1.4.1 | STIG V-230240 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530000 | Ensure base packages are installed (RedHat/CentOS)
 	File: /roles/core/bootstrap/tasks/main.yml:85-105
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-networking-policies/ansible-2-5
+Check: CKV2_ANSIBLE_5: "Ensure that SSL validation isn't disabled with dnf"
+	PASSED for resource: tasks.ansible.builtin.dnf.ISO 27001 §8.19 | 530000 | Ensure security-related packages are installed (RedHat/CentOS)
+	File: /roles/security/hardening/tasks/main.yml:27-42
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/ansible-policies/ansible-networking-policies/ansible-2-5
 Check: CKV2_ANSIBLE_5: "Ensure that SSL validation isn't disabled with dnf"
 	PASSED for resource: tasks.ansible.builtin.dnf.CIS 3.3.2 | STIG V-230320 | NIST CM-2 | ISO 27001 §8.9 | Audit Code 530010 | Install RPMFusion Free/NonFree from verified local files (Fedora)
@@ -1157,11 +1157,11 @@ Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	PASSED for resource: block.CIS 5.2.1 | STIG V-230390 | Install Endlessh (SSH Tarpit)
 	File: /roles/networking/services/endlessh/tasks/main.yml:9-52
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	PASSED for resource: block.Scenario B (expected fail) - ROCm checksum mismatch
-	File: /tests/validate_rhel_compat_gpg_keys.yml:147-166
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	PASSED for resource: block.Scenario B (expected fail) - NVIDIA checksum mismatch
 	File: /tests/validate_rhel_compat_gpg_keys.yml:128-148
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	PASSED for resource: block.Scenario B (expected fail) - ROCm checksum mismatch
+	File: /tests/validate_rhel_compat_gpg_keys.yml:147-166
 Check: CKV_ANSIBLE_1: "Ensure that certificate validation isn't disabled with uri"
 	FAILED for resource: tasks.ansible.builtin.uri.CIS 4.6.8 | STIG V-230707 | NIST IR-4 | Run endpoint reachability checks
 	File: /roles/ops/health_check/tasks/main.yml:252-275
@@ -1211,23 +1211,23 @@ Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.block.Install Intel OneAPI toolkit (Debian/Ubuntu)
 	File: /roles/containers/lxc/tasks/vendor/intel_oneapi.yml:10-75
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Configure LXC container for AMD SR-IOV
-	File: /roles/containers/lxc/tasks/vendor/amd_sriov.yml:7-46
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Configure LXC container for NVIDIA MIG
 	File: /roles/containers/lxc/tasks/vendor/nvidia_mig.yml:7-44
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Configure LXC container for NVIDIA vGPU
-	File: /roles/containers/lxc/tasks/vendor/nvidia_vgpu.yml:7-29
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.CIS 4.6.1 | STIG V-230700 | NIST CA-7 | Run post-deploy health checks
-	File: /roles/ops/health_check/tasks/main.yml:9-60
+	FAILED for resource: block.Configure LXC container for AMD SR-IOV
+	File: /roles/containers/lxc/tasks/vendor/amd_sriov.yml:7-46
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Detect NVIDIA Specific Details (Model/MIG)
 	File: /roles/containers/runtime/tasks/gpu_discovery.yml:45-68
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Install Intel OneAPI toolkit (Debian/Ubuntu)
 	File: /roles/containers/runtime/tasks/slicing/oneapi.yml:7-64
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Configure LXC container for NVIDIA vGPU
+	File: /roles/containers/lxc/tasks/vendor/nvidia_vgpu.yml:7-29
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.CIS 4.6.1 | STIG V-230700 | NIST CA-7 | Run post-deploy health checks
+	File: /roles/ops/health_check/tasks/main.yml:9-60
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 5.4.4 | NIST AC-6 | ISO 27001 §9.2 | Audit Code 510005 | Harden system-wide umask (idempotent)
 	File: /roles/security/access/tasks/main.yml:215-246
@@ -1238,80 +1238,83 @@ Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 1.1.1 | STIG V-230217 | ISO 27001 §8.8 | NIST CM-2 | NIST CM-6 | NIST SC-28 | Audit Code 600113 | Harden file system permissions
 	File: /roles/security/hardening/tasks/main.yml:87-126
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.CIS 8.2.1 | CIS 8.2.2 | CIS 8.2.3 | CIS 8.2.4 | STIG V-230233 | NIST CM-6 | Disable unused network protocols
+	File: /roles/security/kernel/tasks/main.yml:150-187
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 1.1.8 | CIS 2.1.13 | STIG V-230218 | ISO 27001 §9.2 | NIST IA-2 | NIST IA-5 | Audit Code 510003 | Harden user accounts
 	File: /roles/security/hardening/tasks/main.yml:125-182
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 1.3.1 | STIG V-230223 | NIST SI-7 | ISO 27001 §8.16 | Audit Code 520026 | Configure file integrity monitoring
 	File: /roles/security/file_integrity/tasks/main.yml:20-57
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §8.26 | Audit Code 450004 | Configure Yama LSM for additional process restrictions
-	File: /roles/security/kernel/tasks/main.yml:314-337
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §8.26 | Audit Code 450005 | Configure TOMOYO LSM for mandatory access control
-	File: /roles/security/kernel/tasks/main.yml:336-373
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §8.26 | NIST SC-3 | Audit Code 450003 | Configure Landlock LSM for filesystem sandboxing
-	File: /roles/security/kernel/tasks/main.yml:209-315
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 2.1.1 | CIS 2.1.2 | CIS 2.1.3 | CIS 2.1.4 | CIS 2.1.5 | CIS 2.1.6 | CIS 2.1.7 | CIS 2.1.8 | CIS 2.1.9 | CIS 2.1.10 | CIS 2.1.11 | CIS 2.1.12 | CIS 2.1.13 | STIG V-230223 | NIST CM-7 | Remove unnecessary packages
 	File: /roles/security/hardening/tasks/main.yml:265-346
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.CIS 8.2.1 | CIS 8.2.2 | CIS 8.2.3 | CIS 8.2.4 | STIG V-230233 | NIST CM-6 | Disable unused network protocols
-	File: /roles/security/kernel/tasks/main.yml:150-187
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 1.1.2 | CIS 1.1.3 | CIS 1.1.4 | CIS 1.1.5 | CIS 1.1.6 | CIS 1.1.7 | CIS 1.1.8 | STIG V-230222 | NIST CM-6 | NIST SC-28 | Disable unused filesystems
 	File: /roles/security/hardening/tasks/main.yml:220-266
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Configure ZRAM (zram-generator)
-	File: /roles/core/memory/tasks/main.yml:90-141
+	FAILED for resource: block.Backup GRUB config file (encrypted)
+	File: /roles/core/grub/tasks/backup.yml:111-173
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.ISO 27001 §8.26 | Audit Code 450005 | Configure TOMOYO LSM for mandatory access control
+	File: /roles/security/kernel/tasks/main.yml:336-373
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.ISO 27001 §8.26 | Audit Code 450004 | Configure Yama LSM for additional process restrictions
+	File: /roles/security/kernel/tasks/main.yml:314-337
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Restart SSHD
 	File: /roles/security/sshd/handlers/main.yml:11-26
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Backup GRUB config file (encrypted)
-	File: /roles/core/grub/tasks/backup.yml:111-173
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Encrypt GRUB menu backup
-	File: /roles/core/grub/tasks/backup.yml:184-197
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27037 | 520030 | Detect Hardware Drift
-	File: /roles/core/hardware_support/tasks/hardware_fingerprint.yml:31-52
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.CIS 3.3.1 | STIG V-230280 | NIST SI-2, CM-2 | ISO 27001 §8.8, §8.9 | Audit Code 530020 | Configure DNF-Automatic (RedHat/Fedora)
-	File: /roles/core/updates/tasks/main.yml:51-91
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Configure Jetson/Tegra specific settings
-	File: /roles/hardware/gpu/arch/aarch64/nvidia/main.yml:50-65
+	FAILED for resource: block.ISO 27001 §8.26 | NIST SC-3 | Audit Code 450003 | Configure Landlock LSM for filesystem sandboxing
+	File: /roles/security/kernel/tasks/main.yml:209-315
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 3.3.1 | STIG V-230280 | NIST SI-2 | ISO 27001 §8.9 | Configure Updates (Arch Linux)
 	File: /roles/core/updates/tasks/main.yml:90-121
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26 | Audit Code 840030 | Configure systemd settings
-	File: /roles/core/systemd/tasks/main.yml:34-127
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Setup NVIDIA CUDA Repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
-	File: /roles/hardware/gpu/arch/x86_64/nvidia/main.yml:84-169
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Setup AMD ROCm Repository (Debian/Ubuntu)
-	File: /roles/hardware/gpu/arch/x86_64/amd/main.yml:90-132
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Install NVIDIA Drivers (ARM Server / PCIe)
-	File: /roles/hardware/gpu/arch/aarch64/nvidia/main.yml:15-51
+	FAILED for resource: block.ISO 27037 | 520030 | Detect Hardware Drift
+	File: /roles/core/hardware_support/tasks/hardware_fingerprint.yml:31-52
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Configure ZSwap (Kernel Modules)
 	File: /roles/core/memory/tasks/main.yml:140-189
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Setup Intel OneAPI Repository (Debian/Ubuntu)
-	File: /roles/hardware/gpu/arch/x86_64/intel/main.yml:119-171
+	FAILED for resource: block.CIS 3.4.2 | STIG V-230310 | NIST SC-4, SC-28 | ISO 27001 §8.20 | Audit Code 450002 | Configure ZRAM (zram-generator)
+	File: /roles/core/memory/tasks/main.yml:90-141
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.CIS 5.2.x, 5.3.x | STIG V-230260, V-230261 | NIST AU-2, AU-3, AU-12, CM-6 | ISO 27001 §12.4, §8.26 | Audit Code 840030 | Configure systemd settings
+	File: /roles/core/systemd/tasks/main.yml:34-127
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 3.3.1 | STIG V-230280 | NIST SI-2, CM-2 | ISO 27001 §8.8, §8.9 | Audit Code 530020 | Configure Unattended-Upgrades (Debian/Ubuntu)
 	File: /roles/core/updates/tasks/main.yml:9-52
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.CIS 3.3.1 | STIG V-230280 | NIST SI-2, CM-2 | ISO 27001 §8.8, §8.9 | Audit Code 530020 | Configure DNF-Automatic (RedHat/Fedora)
+	File: /roles/core/updates/tasks/main.yml:51-91
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Encrypt GRUB menu backup
+	File: /roles/core/grub/tasks/backup.yml:184-197
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.CIS 3.1.11 | STIG V-230520 | NIST SC-39 | Resolve and Validate GPU Vendor
+	File: /roles/hardware/gpu/tasks/main.yml:119-142
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Configure Jetson/Tegra specific settings
+	File: /roles/hardware/gpu/arch/aarch64/nvidia/main.yml:50-65
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Install NVIDIA Drivers (ARM Server / PCIe)
+	File: /roles/hardware/gpu/arch/aarch64/nvidia/main.yml:15-51
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Setup AMD ROCm Repository (Debian/Ubuntu)
+	File: /roles/hardware/gpu/arch/x86_64/amd/main.yml:90-132
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Setup AMD ROCm Repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
 	File: /roles/hardware/gpu/arch/x86_64/amd/main.yml:131-216
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Setup Switcheroo Control (RedHat/Fedora)
-	File: /roles/hardware/gpu/tasks/features/hybrid_setup.yml:41-61
+	FAILED for resource: block.Setup Intel OneAPI Repository (Debian/Ubuntu)
+	File: /roles/hardware/gpu/arch/x86_64/intel/main.yml:119-171
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Setup NVIDIA CUDA Repository (RHEL-compatible (AlmaLinux/Rocky/CentOS Stream))
+	File: /roles/hardware/gpu/arch/x86_64/nvidia/main.yml:84-169
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Detect NVIDIA Specific Capabilities
+	File: /roles/hardware/gpu/tasks/validate_slicing.yml:41-69
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.CIS 3.3.1 | STIG V-230280 | NIST SI-2 | ISO 27001 §8.9 | Configure Updates (Alpine)
 	File: /roles/core/updates/tasks/main.yml:120-146
@@ -1319,47 +1322,38 @@ Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.[Desktop] Configure Kernel Mode Setting (Wayland Support)
 	File: /roles/hardware/gpu/tasks/features/desktop_setup.yml:10-20
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Audit Code 810302 | Deploy K3s API Gateway (Restricted Kernel Workaround)
+	File: /roles/kubernetes/master/tasks/configure.yml:55-110
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.[Desktop] Verify Input Device Support
 	File: /roles/hardware/gpu/tasks/features/desktop_setup.yml:53-91
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.CIS 3.1.11 | STIG V-230520 | NIST SC-39 | Resolve and Validate GPU Vendor
-	File: /roles/hardware/gpu/tasks/main.yml:119-142
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Setup NVIDIA Prime (Debian/Ubuntu)
-	File: /roles/hardware/gpu/tasks/features/hybrid_setup.yml:10-42
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.block.[Desktop] Handle Input Dependency Failure
-	File: /roles/hardware/gpu/tasks/features/desktop_setup.yml:77-90
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Detect NVIDIA Specific Capabilities
-	File: /roles/hardware/gpu/tasks/validate_slicing.yml:41-69
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.[Desktop] Grant GPU Access to Human Users
 	File: /roles/hardware/gpu/tasks/features/desktop_setup.yml:31-54
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.NIST SC-12 | ISO 27001 §10.1 | Audit Code 400015 | Configure cryptographic key rotation
-	File: /roles/networking/services/tasks/main.yml:200-234
+	FAILED for resource: block.block.[Desktop] Handle Input Dependency Failure
+	File: /roles/hardware/gpu/tasks/features/desktop_setup.yml:77-90
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §10.1 | NIST SC-13 | Audit Code 540200 | Configure TLS for network services
-	File: /roles/networking/services/tasks/main.yml:80-133
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §10.1 | NIST SC-13 | Audit Code 540201 | Configure HSTS headers for enhanced security
-	File: /roles/networking/services/tasks/main.yml:132-167
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Configure Thunderbolt eGPU Support
-	File: /roles/hardware/gpu/tasks/features/egpu.yml:10-64
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Handle Vulkan Tools Installation Failure
-	File: /roles/hardware/gpu/tasks/features/vulkan_validation.yml:24-40
+	FAILED for resource: block.Setup Switcheroo Control (RedHat/Fedora)
+	File: /roles/hardware/gpu/tasks/features/hybrid_setup.yml:41-61
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Configure OCuLink eGPU Support
 	File: /roles/hardware/gpu/tasks/features/egpu.yml:63-92
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §10.1 | NIST SC-13 | Audit Code 540202 | Configure certificate transparency logging
-	File: /roles/networking/services/tasks/main.yml:166-201
+	FAILED for resource: block.Configure Thunderbolt eGPU Support
+	File: /roles/hardware/gpu/tasks/features/egpu.yml:10-64
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §12.4 | NIST AU-12 | Audit Code 840030 | Backup Logging - Configure backup audit logging
-	File: /roles/storage/backup/tasks/main.yml:100-121
+	FAILED for resource: block.Setup NVIDIA Prime (Debian/Ubuntu)
+	File: /roles/hardware/gpu/tasks/features/hybrid_setup.yml:10-42
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Handle Vulkan Tools Installation Failure
+	File: /roles/hardware/gpu/tasks/features/vulkan_validation.yml:24-40
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.NIST SC-12 | ISO 27001 §10.1 | Audit Code 400015 | Configure cryptographic key rotation
+	File: /roles/networking/services/tasks/main.yml:200-234
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Apply GPU node labels
+	File: /roles/orchestration/k8s_node/tasks/gpu.yml:80-117
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.ISO 27001 §8.17 | NIST AU-8 | Audit Code 300001 | Configure NTP service for time synchronization
 	File: /roles/networking/services/tasks/main.yml:9-48
@@ -1367,48 +1361,54 @@ Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.ISO 27001 §9.4 | NIST AC-3 | NIST SC-7 | Audit Code 540002 | Configure firewall rules for network services
 	File: /roles/networking/services/tasks/main.yml:47-81
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Deploy AMD GPU device plugin
-	File: /roles/orchestration/k8s_node/tasks/gpu.yml:32-57
+	FAILED for resource: block.ISO 27001 §10.1 | NIST SC-13 | Audit Code 540201 | Configure HSTS headers for enhanced security
+	File: /roles/networking/services/tasks/main.yml:132-167
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Deploy Intel GPU device plugin
-	File: /roles/orchestration/k8s_node/tasks/gpu.yml:56-81
+	FAILED for resource: block.ISO 27001 §10.1 | NIST SC-13 | Audit Code 540200 | Configure TLS for network services
+	File: /roles/networking/services/tasks/main.yml:80-133
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Deploy NVIDIA GPU device plugin
 	File: /roles/orchestration/k8s_node/tasks/gpu.yml:8-33
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27040 §8 | NIST CP-9 | Audit Code 900001 | Backup - Initialize backup repository
-	File: /roles/storage/backup/tasks/main.yml:42-61
+	FAILED for resource: block.ISO 27001 §10.1 | NIST SC-13 | Audit Code 540202 | Configure certificate transparency logging
+	File: /roles/networking/services/tasks/main.yml:166-201
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27040 §8 | NIST CP-9 | Audit Code 900000 | Backup - Configure backup storage pool
-	File: /roles/storage/backup/tasks/main.yml:10-43
+	FAILED for resource: block.Deploy Intel GPU device plugin
+	File: /roles/orchestration/k8s_node/tasks/gpu.yml:56-81
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.Deploy AMD GPU device plugin
+	File: /roles/orchestration/k8s_node/tasks/gpu.yml:32-57
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.ISO 27040 §9 | Audit Code 900003 | Backup Verify - Configure automated restore testing
 	File: /roles/storage/backup/tasks/main.yml:60-81
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Apply GPU node labels
-	File: /roles/orchestration/k8s_node/tasks/gpu.yml:80-117
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.ISO 27040 §9 | Audit Code 900004 | Backup Integrity - Configure cryptographic hash verification
 	File: /roles/storage/backup/tasks/main.yml:80-101
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Audit Code 810302 | Deploy K3s API Gateway (Restricted Kernel Workaround)
-	File: /roles/kubernetes/master/tasks/configure.yml:55-110
+	FAILED for resource: block.ISO 27001 §12.4 | NIST AU-12 | Audit Code 840030 | Backup Logging - Configure backup audit logging
+	File: /roles/storage/backup/tasks/main.yml:100-121
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 27001 §8.19 | 530000 | Install Helm if not present
-	File: /playbooks/deploy_kubernetes.yml:107-139
-Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.ISO 9001 | 600013 | Execute Phase: {{ current_role_name }}
-	File: /tasks/run_role.yml:19-32
+	FAILED for resource: block.Bootstrap SSH for {{ target_host }}
+	File: /tasks/bootstrap_ssh_per_host.yml:9-89
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.ISO 27001 §8.20 | 820000 | Join node to cluster
 	File: /playbooks/deploy_kubernetes.yml:37-65
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Scenario A (expected pass) - NVIDIA fingerprint verify
-	File: /tests/validate_rhel_compat_gpg_keys.yml:51-78
+	FAILED for resource: block.ISO 27001 §8.19 | 530000 | Install Helm if not present
+	File: /playbooks/deploy_kubernetes.yml:107-139
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
 	FAILED for resource: block.Scenario A (expected pass) - ROCm fingerprint verify
 	File: /tests/validate_rhel_compat_gpg_keys.yml:89-116
 Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
-	FAILED for resource: block.Bootstrap SSH for {{ target_host }}
-	File: /tasks/bootstrap_ssh_per_host.yml:9-89
+	FAILED for resource: block.Scenario A (expected pass) - NVIDIA fingerprint verify
+	File: /tests/validate_rhel_compat_gpg_keys.yml:51-78
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.ISO 27040 §8 | NIST CP-9 | Audit Code 900000 | Backup - Configure backup storage pool
+	File: /roles/storage/backup/tasks/main.yml:10-43
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.ISO 9001 | 600013 | Execute Phase: {{ current_role_name }}
+	File: /tasks/run_role.yml:19-32
+Check: CKV2_ANSIBLE_3: "Ensure block is handling task errors properly"
+	FAILED for resource: block.ISO 27040 §8 | NIST CP-9 | Audit Code 900001 | Backup - Initialize backup repository
+	File: /roles/storage/backup/tasks/main.yml:42-61
 

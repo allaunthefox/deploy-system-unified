@@ -125,7 +125,8 @@ def apply_fixes():
     """Apply string replacements and sanitize links."""
     replacements = {
         'preflight_assertions.yml': 'preflight_gate.yml',
-        'preflight_validate.yml': 'preflight_gate.yml'
+        'preflight_validate.yml': 'preflight_gate.yml',
+        'docker-compose.yml.legacy': '.github/archive/docker-compose.yml.legacy'
     }
     
     def sanitize_link(match):

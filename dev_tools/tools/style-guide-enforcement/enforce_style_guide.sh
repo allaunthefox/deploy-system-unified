@@ -117,7 +117,7 @@ enforce_security_audit() {
     if command -v trivy >/dev/null 2>&1; then
         log "Running Trivy filesystem scan..."
         # Scan only our roles and playbooks to avoid venv noise and long scans
-        if trivy fs "$PROJECT_ROOT" --severity HIGH,CRITICAL --security-checks vuln,config --exit-code 0 --skip-dirs venv,.ansible,Offline_Research 2>&1 | tee "$REPORT_DIR/trivy_output.txt"; then
+        if trivy fs "$PROJECT_ROOT" --severity HIGH,CRITICAL --scanners vuln,misconfig --exit-code 0 --skip-dirs venv,.ansible,Offline_Research 2>&1 | tee "$REPORT_DIR/trivy_output.txt"; then
             success "Trivy vulnerability scan completed"
         fi
     fi

@@ -1,15 +1,15 @@
-2026-03-01T05:41:19+01:00	WARN	'--security-checks' is deprecated. Use '--scanners' instead.
-2026-03-01T05:41:19+01:00	WARN	'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.
-2026-03-01T05:41:19+01:00	INFO	[vuln] Vulnerability scanning is enabled
-2026-03-01T05:41:19+01:00	INFO	[misconfig] Misconfiguration scanning is enabled
-2026-03-01T05:41:25+01:00	INFO	[python] Licenses acquired from one or more METADATA files may be subject to additional terms. Use `--debug` flag to see all affected packages.
-2026-03-01T05:41:25+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/database-stack" err="release name \"charts/database-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
-2026-03-01T05:41:26+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/monitoring-stack" err="release name \"charts/monitoring-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
-2026-03-01T05:41:26+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/network-stack" err="release name \"charts/network-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
-2026-03-01T05:41:26+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/security-stack" err="release name \"charts/security-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
-2026-03-01T05:41:27+01:00	INFO	Number of language-specific files	num=1
-2026-03-01T05:41:27+01:00	INFO	[pip] Detecting vulnerabilities...
-2026-03-01T05:41:27+01:00	INFO	Detected config files	num=24
+2026-03-01T05:48:03+01:00	WARN	'--security-checks' is deprecated. Use '--scanners' instead.
+2026-03-01T05:48:03+01:00	WARN	'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.
+2026-03-01T05:48:03+01:00	INFO	[vuln] Vulnerability scanning is enabled
+2026-03-01T05:48:03+01:00	INFO	[misconfig] Misconfiguration scanning is enabled
+2026-03-01T05:48:10+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/database-stack" err="release name \"charts/database-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:48:11+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/monitoring-stack" err="release name \"charts/monitoring-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:48:11+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/network-stack" err="release name \"charts/network-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:48:11+01:00	ERROR	[helm scanner] Failed to render Chart files	file_path="charts/security-stack" err="release name \"charts/security-stack\": invalid release name, must match regex ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ and the length must not be longer than 53"
+2026-03-01T05:48:12+01:00	INFO	[python] Licenses acquired from one or more METADATA files may be subject to additional terms. Use `--debug` flag to see all affected packages.
+2026-03-01T05:48:12+01:00	INFO	Number of language-specific files	num=1
+2026-03-01T05:48:12+01:00	INFO	[pip] Detecting vulnerabilities...
+2026-03-01T05:48:12+01:00	INFO	Detected config files	num=24
 
 Report Summary
 
