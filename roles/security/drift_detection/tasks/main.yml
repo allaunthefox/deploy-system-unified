@@ -1,0 +1,45 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100317
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Tasks for security/drift_detection
+# Compliance: NIST SP 800-53 SI-7 | ISO 27001 §8.16 | CIS 4.x
+
+- name: "ISO 27001 §8.16 | 520030 | Run Goss drift detection scan"
+  ansible.builtin.command:
+    cmd: /usr/local/bin/goss validate --format json
+  register: _goss_drift_raw
+  failed_when: false
+  changed_when: false
+  tags: [security, monitoring, drift, audit, 520030]
+
+- name: "ISO 9001 | 600013 | Parse Goss drift results"
+  ansible.builtin.set_fact:
+    _goss_drift_results: "{{ _goss_drift_raw.stdout | from_json }}"
+  when: _goss_drift_raw.stdout | length > 0
+  tags: [security, monitoring, drift, internal, 600013]
+
+- name: "ISO 27001 §8.16 | 520031 | Detect critical path drift"
+  ansible.builtin.set_fact:
+    _drift_detected: "{{ (_goss_drift_results['summary']['failed-count'] | default(0) | int) > 0 }}"
+  tags: [security, monitoring, drift, audit, 520031]
+
+- name: "ISO 9001 | 600030 | Alert on configuration drift"
+  ansible.builtin.debug:
+    msg: "⚠️ CRITICAL: Configuration drift detected on {{ inventory_hostname }}. Failed checks: {{ _goss_drift_results['summary']['failed-count'] | default(0) }}"
+  when: _drift_detected | bool
+  tags: [security, monitoring, drift, warning, 600030]
+
+- name: "ISO 27001 §8.16 | 800410 | Trigger automated remediation"
+  ansible.builtin.include_role:
+    name: security/hardening
+  when: 
+    - _drift_detected | bool
+    - drift_detection_mode == "detect_and_remediate"
+  tags: [security, monitoring, drift, remediate, 800410]
+
+- name: "ISO 9001 | 600013 | Set drift detection completion flag"
+  ansible.builtin.set_fact:
+    drift_detection_complete: true
+  tags: [security, monitoring, drift, internal, 600013]
