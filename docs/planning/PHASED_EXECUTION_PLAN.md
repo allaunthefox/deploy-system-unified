@@ -5,10 +5,10 @@
 
 ## Track 1: GPU Discovery & Validation
 
-**Goal**: Enhance the reliability of GPU detection and configuration.
+**Goal**: Enhance the reliability of GPU detection and configuration logic. (Verification currently limited to mock data simulation).
 
 - [x] **Hardware Validation**: Enhance GPU discovery logic to validate configured vendor against detected hardware.
-- [x] **Hardware Simulation (Molecule)**: Implement `gpu_mock_lspci_output` logic to allow full validation without physical hardware.
+- [x] **Hardware Simulation (Molecule)**: Implement `gpu_mock_lspci_output` logic to allow full logic validation without physical hardware. (⚠️ **NOTE**: This verifies code logic only using mock data; it is NOT real-world physical verification).
 - [x] **Multi-GPU Support**: Enhance GPU discovery and configuration for nodes with multiple GPUs/vendors.
 - [x] **Runtime Integrity**: Improve container runtime configuration validation (NVIDIA Container Toolkit, Intel Device Plugins).
 

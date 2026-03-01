@@ -38,6 +38,12 @@
   ansible.builtin.set_fact:
     _gpu_discovery_results: "{{ gpu_discovery_raw.stdout | from_json }}"
 
+- name: "⚠️ MOCK DATA WARNING"
+  ansible.builtin.debug:
+    msg: "⚠️ CRITICAL: GPU hardware detection is running in SIMULATION MODE using mock data. Physical hardware has NOT been verified."
+  when: gpu_mock_lspci_output is defined
+  tags: [hardware, gpu, audit, warning]
+
 - name: Apply Detected Vendors (Internal Facts)
   tags: [hardware, gpu, audit]
   ansible.builtin.set_fact:
