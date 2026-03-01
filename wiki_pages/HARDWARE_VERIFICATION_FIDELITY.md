@@ -40,6 +40,10 @@ The following real-world hardware signatures are maintained in the simulation da
 | **Data Center (AMD)** | AMD Instinct MI250X | `1002:740c` | ✅ Logic Verified |
 | **Data Center (Intel)** | Intel Flex 170 | `8086:56c0` | ✅ Logic Verified |
 | **Laptop Hybrid** | Intel iGPU + NVIDIA dGPU | `8086:7d55 / 10de:28a0` | ✅ Logic Verified |
+| **Virtualized** | NVIDIA vGPU (GRID) | `10de:2230` | ✅ Logic Verified |
+| **Virtualized** | Intel GVT-g (Mediated) | `8086:5902` | ✅ Logic Verified |
+| **Virtualized** | AMD SR-IOV (MxGPU) | `1002:6929` | ✅ Logic Verified |
+| **Virtualized** | VirtIO GPU / VirGL | `1af4:1050` | ✅ Logic Verified |
 | **Legacy/Embedded** | Intel UHD Graphics 770 | `8086:4680` | ✅ Logic Verified |
 
 ---

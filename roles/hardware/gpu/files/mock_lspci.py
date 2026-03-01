@@ -6,16 +6,18 @@
 """
 Mock lspci for GPU Hardware Simulation (Extended Matrix)
 Standardized using verified signatures from:
-- NVIDIA (RTX 4090, H100, A100, RTX 3060 Mobile)
-- AMD (RX 7900 XTX, Instinct MI250X)
-- Intel (Arc A770, Flex 170, Max 1550, UHD 770)
+- NVIDIA (RTX 4090, H100, A100, RTX 3060 Mobile, vGPU A10)
+- AMD (RX 7900 XTX, Instinct MI250X, SR-IOV VF S7150)
+- Intel (Arc A770, Flex 170, Max 1550, UHD 770, GVT-g HD 610)
 - Hybrid Systems (Intel + NVIDIA)
+- Virtualized (VirtIO GPU)
 """
 import os
 import sys
 
 # Global Mock Database (Verified Real-World Signatures)
 MOCK_DATABASE = {
+    # Physical Discrete GPUs
     "NVIDIA_RTX_4090": "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD102 [GeForce RTX 4090] [10de:2684] (rev a1)",
     "NVIDIA_H100_SXM": "0000:b4:00.0 3D controller [0302]: NVIDIA Corporation GH100 [H100 SXM5] [10de:2321] (rev a1)",
     "NVIDIA_A100_PCIE": "0000:25:00.0 3D controller [0302]: NVIDIA Corporation GA100 [A100 PCIe 80GB] [10de:20b5] (rev a1)",
@@ -29,6 +31,13 @@ MOCK_DATABASE = {
     "INTEL_MAX_1550": "0000:4d:00.0 Display controller [0380]: Intel Corporation Device [8086:0bd5] (rev 08)",
     "INTEL_UHD_770": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation Alder Lake-S GT1 [UHD Graphics 770] [8086:4680] (rev 0c)",
     
+    # Virtualized & Mediated GPUs
+    "NVIDIA_VGPU_A10": "0000:00:05.0 VGA compatible controller [0300]: NVIDIA Corporation GA102GL [A10] [10de:2230] (rev a1)",
+    "AMD_SRIOV_VF": "0000:00:03.0 Display controller [0380]: Advanced Micro Devices, Inc. [AMD/ATI] TongaXT GL [FirePro S7150] [1002:6929] (rev 00)",
+    "INTEL_GVTG_HD610": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation HD Graphics 610 [8086:5902] (rev 04)",
+    "VIRTIO_GPU": "0000:00:02.0 VGA compatible controller [0300]: Red Hat, Inc. Virtio GPU [1af4:1050] (rev 01)",
+    
+    # Multi-GPU & Hybrid
     "HYBRID_LAPTOP": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation Meteor Lake-P [Intel Arc Graphics] [8086:7d55] (rev 08)\n0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD107M [GeForce RTX 4060 Max-Q / Mobile] [10de:28a0] (rev a1)",
     "SERVER_MULTI_A100": "0000:25:00.0 3D controller [0302]: NVIDIA Corporation GA100 [10de:20b5]\n0000:26:00.0 3D controller [0302]: NVIDIA Corporation GA100 [10de:20b5]",
     
