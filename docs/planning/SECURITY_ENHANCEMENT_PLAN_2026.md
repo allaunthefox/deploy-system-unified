@@ -442,19 +442,18 @@ image_signing_policy: require_all  # require_all, require_one, allow_unsigned
 - Continuous security validation
 - Reduced security incident risk
 
-#### Phase 5.1: Automated Vulnerability Scanning (Weeks 1-6)
+#### Phase 5.1: Automated Vulnerability Scanning (COMPLETED)
 
 **Tasks:**
-1. Enhance Trivy integration
-2. Add container image scanning
-3. Implement infrastructure-as-code scanning
-4. Create vulnerability management workflow
+1. [x] Enhance Trivy integration (Filesystem + Image)
+2. [x] Add container image scanning (Active image verification)
+3. [x] Implement infrastructure-as-code scanning (Checkov)
+4. [x] Create vulnerability management workflow (Validation thresholds)
 
 **Deliverables:**
-- Enhanced `roles/security/scanning`
-- Trivy configuration templates
-- Vulnerability reporting dashboard
-- Remediation workflow documentation
+- Enhanced `roles/security/scanning` - ✅ **Standardized & Hardened**
+- Trivy/Checkov/TruffleHog integrated runner
+- Vulnerability threshold validation logic
 
 **Scanning Configuration:**
 ```yaml
