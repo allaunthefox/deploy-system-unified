@@ -6,7 +6,7 @@
 # Version: 1.0
 # =============================================================================
 ---
-- name: Preflight Assertions - Stability & Secrets Hygiene
+- name: "ISO 9001 | 600013 | Preflight Assertions - Stability & Secrets Hygiene"
   hosts: all
   gather_facts: false
   run_once: true

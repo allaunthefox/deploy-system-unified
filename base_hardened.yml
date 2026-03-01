@@ -15,7 +15,7 @@
 - ansible.builtin.import_playbook: playbooks/preflight_gate.yml
 - ansible.builtin.import_playbook: playbooks/bootstrap_ssh.yml
 
-- name: Apply Secure Infrastructure Base
+- name: "ISO 27001 §9.2 | 100009 | Apply Secure Infrastructure Base"
   hosts: all
   become: true
   vars:
@@ -58,7 +58,7 @@
       - ops/connection_info
 
   tasks:
-    - name: Execute Base Hardened Roles with Granular Checkpoints
+    - name: "ISO 9001 | 600013 | Execute Base Hardened Roles with Granular Checkpoints"
       ansible.builtin.include_tasks: tasks/run_role.yml
       loop: "{{ base_hardened_roles }}"
       loop_control:

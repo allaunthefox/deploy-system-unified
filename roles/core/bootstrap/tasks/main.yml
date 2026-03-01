@@ -24,7 +24,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.1.2 | STIG V-230240 | NIST CM-2 | Set distribution-specific variables"
+- name: "CIS 1.1.2 | STIG V-230240 | NIST CM-2 | ISO 9001 | 600013 | Set distribution-specific variables"
   ansible.builtin.set_fact:
     core_pkg_manager: "{{ ansible_facts['pkg_mgr'] }}"
     core_os_family: "{{ ansible_facts['os_family'] }}"
@@ -36,7 +36,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.1.3 | STIG V-230240 | NIST CM-2 | Load Architecture Specific Variables"
+- name: "CIS 1.1.3 | STIG V-230240 | NIST CM-2 | ISO 9001 | 600013 | Load Architecture Specific Variables"
   ansible.builtin.include_vars:
     file: "arch_{{ ansible_architecture }}.yml"
   failed_when: false
@@ -47,7 +47,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.1.4 | STIG V-230240 | NIST CM-2 | Construct Base Package List"
+- name: "CIS 1.1.4 | STIG V-230240 | NIST CM-2 | ISO 9001 | 600013 | Construct Base Package List"
   ansible.builtin.set_fact:
     _bootstrap_packages: >-
       {{
@@ -159,7 +159,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.1.7 | STIG V-230240 | NIST SC-12 | Determine virt_type (bootstrap fallback)"
+- name: "CIS 1.1.7 | STIG V-230240 | NIST SC-12 | ISO 9001 | 600013 | Determine virt_type (bootstrap fallback)"
   ansible.builtin.set_fact:
     virt_type: >-
       {{
@@ -184,7 +184,7 @@
     - bootstrap
     - initialization
 
-- name: "CIS 1.1.8 | STIG V-230240 | NIST CM-2 | Assert virt_type is a valid ontology value"
+- name: "CIS 1.1.8 | STIG V-230240 | NIST CM-2 | ISO 9001 | 600013 | Assert virt_type is a valid ontology value"
   ansible.builtin.assert:
     that:
       - virt_type is defined
@@ -202,7 +202,7 @@
     - bootstrap
     - initialization
 
-- name: "Audit Code 800001 | Report Virtualization Profile"
+- name: "ISO 9001 | 800001 | Report Virtualization Profile"
   ansible.builtin.debug:
     msg: >-
       Environment detected as {{ virt_type | upper }}
@@ -222,7 +222,7 @@
     - bootstrap
     - forensics
 
-- name: "Audit Code 300011 | Set bootstrap completion flag"
+- name: "ISO 9001 | 300011 | Set bootstrap completion flag"
   ansible.builtin.set_fact:
     core_bootstrap_complete: true
   tags:

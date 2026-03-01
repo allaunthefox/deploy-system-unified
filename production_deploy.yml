@@ -12,18 +12,18 @@
 # Features: Quantum-Ready (PQC Hybrid), ISO 27001 §9.2/10.1 Compliant
 - ansible.builtin.import_playbook: base_hardened.yml
 
-- name: Deploy Production Container Workload
+- name: "ISO 27001 §9.2 | 100002 | Deploy Production Container Workload"
   hosts: all
   become: true
   tasks:
-    - name: Execute Production Roles with Granular Checkpoints
+    - name: "ISO 9001 | 600013 | Execute Production Roles with Granular Checkpoints"
       ansible.builtin.include_tasks: tasks/run_role.yml
       loop: "{{ deploy_workload_roles | default([]) }}"
       loop_control:
         loop_var: role_item
 
   post_tasks:
-    - name: Force systemd reload to pick up new Quadlets
+    - name: "ISO 9001 | 600013 | Force systemd reload to pick up new Quadlets"
       ansible.builtin.systemd:
         daemon_reload: true
         scope: "{{ (podman_rootless_enabled | default(false) | bool) | ternary('user', 'system') }}"
@@ -31,7 +31,7 @@
       become: true
       become_user: "{{ (podman_rootless_enabled | default(false) | bool) | ternary(podman_rootless_user, 'root') }}"
 
-    - name: Ensure Caddy is running
+    - name: "ISO 9001 | 600013 | Ensure Caddy is running"
       ansible.builtin.systemd:
         name: caddy
         state: started

@@ -9,8 +9,8 @@
 # Unified Preflight Gate
 # This playbook imports all necessary preflight checks to ensure system readiness.
 
-- name: Import Preflight Assertions
+- name: "ISO 9001 | 600013 | Import Preflight Assertions"
   ansible.builtin.import_playbook: preflight_assertions.yml
 
-- name: Import Preflight Validation
+- name: "ISO 9001 | 600013 | Import Preflight Validation"
   ansible.builtin.import_playbook: preflight_validate.yml

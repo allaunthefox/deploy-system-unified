@@ -9,32 +9,32 @@
 ---
 - ansible.builtin.import_playbook: bootstrap_ssh.yml
 
-- name: Preflight - Verify backup integrity before restore
+- name: "ISO 27040 | 100011 | Preflight - Verify backup integrity before restore"
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Check for hash verification tools
+    - name: "ISO 9001 | 600013 | Check for hash verification tools"
       ansible.builtin.command: which sha256sum sha512sum openssl
       register: hash_tools_check
       changed_when: false
       failed_when: false
 
-    - name: Fail if hash tools missing
+    - name: "ISO 9001 | 600013 | Fail if hash tools missing"
       ansible.builtin.fail:
         msg: "Hash verification tools required for restore"
       when: hash_tools_check.rc != 0
 
-    - name: Check for hash manifest
+    - name: "ISO 9001 | 600013 | Check for hash manifest"
       ansible.builtin.stat:
         path: "/var/backups/security/hash_manifest.txt"
       register: hash_manifest_check
 
-    - name: Fail if no hash manifest found during restore
+    - name: "ISO 9001 | 600013 | Fail if no hash manifest found during restore"
       ansible.builtin.fail:
         msg: "CRITICAL: No hash manifest found. Cannot verify backup integrity. Restore aborted for security."
       when: not hash_manifest_check.stat.exists
 
-- name: Restore Migration Data
+- name: "ISO 27040 | 100011 | Restore Migration Data"
   hosts: all
   become: true
   vars:
@@ -51,7 +51,7 @@
     # -------------------------------------------------------
 
     # Jellyfin
-    - name: Ensure Jellyfin config dir exists
+    - name: "ISO 9001 | 600013 | Ensure Jellyfin config dir exists"
       ansible.builtin.file:
         path: "{{ containers_media_config_dir }}/jellyfin/data"
         state: directory
@@ -101,14 +101,14 @@
         - sonarr
 
     # Vaultwarden (Volume Archive)
-    - name: Ensure Vaultwarden dir
+    - name: "ISO 9001 | 600013 | Ensure Vaultwarden dir"
       ansible.builtin.file:
         path: "{{ ops_config_dir }}/vaultwarden"
         state: directory
         owner: "{{ containers_media_puid }}"
         group: "{{ containers_media_pgid }}"
 
-    - name: List Vaultwarden archive contents before extraction
+    - name: "ISO 9001 | 600013 | List Vaultwarden archive contents before extraction"
       ansible.builtin.shell:
         cmd:  tar -tf "{{ migration_source }}/databases/volumes/vaultwarden.tar"
         executable: /bin/sh
@@ -117,7 +117,7 @@
       vars:
         ansible_no_log: true
 
-    - name: Validate Vaultwarden archive doesn't contain path traversal
+    - name: "ISO 9001 | 600013 | Validate Vaultwarden archive doesn't contain path traversal"
       ansible.builtin.assert:
         that:
           - "_vaultwarden_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0"
@@ -145,7 +145,7 @@
         - vaultwarden
 
     # Homarr
-    - name: List Homarr archive contents before extraction
+    - name: "ISO 9001 | 600013 | List Homarr archive contents before extraction"
       ansible.builtin.shell:
         cmd:  tar -tf "{{ migration_source }}/databases/volumes/homarr.tar"
         executable: /bin/sh
@@ -154,7 +154,7 @@
       vars:
         ansible_no_log: true
 
-    - name: Validate Homarr archive doesn't contain path traversal
+    - name: "ISO 9001 | 600013 | Validate Homarr archive doesn't contain path traversal"
       ansible.builtin.assert:
         that:
           - "_homarr_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0"
@@ -182,7 +182,7 @@
         - homarr
 
     # Wastebin
-    - name: List Wastebin archive contents before extraction
+    - name: "ISO 9001 | 600013 | List Wastebin archive contents before extraction"
       ansible.builtin.shell:
         cmd:  tar -tf "{{ migration_source }}/databases/volumes/wastebin.tar"
         executable: /bin/sh
@@ -191,7 +191,7 @@
       vars:
         ansible_no_log: true
 
-    - name: Validate Wastebin archive doesn't contain path traversal
+    - name: "ISO 9001 | 600013 | Validate Wastebin archive doesn't contain path traversal"
       ansible.builtin.assert:
         that:
           - "_wastebin_archive_contents.stdout_lines | select('search', '\\.\\./') | list | length == 0"
@@ -223,7 +223,7 @@
     # -------------------------------------------------------
     # Requires containers to be running.
 
-    - name: Copy Authentik SQL to Host Tmp
+    - name: "ISO 9001 | 600013 | Copy Authentik SQL to Host Tmp"
       ansible.builtin.copy:
         src: "{{ migration_source }}/databases/postgres/authentik.sql"
         dest: "/tmp/authentik.sql"
@@ -266,7 +266,7 @@
         - database
         - authentik
 
-    - name: Debug Import
+    - name: "ISO 9001 | 600013 | Debug Import"
       ansible.builtin.debug:
         var: import_result
 
