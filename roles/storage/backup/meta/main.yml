@@ -1,40 +1,52 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100692
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-PLY-100250
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: backup
-  author: deploysystemunified
-  description: "Backup management and configuration - ISO 27040 Storage Security compliant"
+  author: deploy-system-unified
+  description: Forensic data backup and disaster recovery orchestration (Restic, Rclone)
+  company: Deploy-System-Unified Project
   license: MIT
-  min_ansible_version: '2.15'
+  min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Fedora
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+    - name: Alpine
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
-    - backup
     - storage
-    - data_protection
+    - backup
+    - recovery
+    - restic
+    - rclone
     - disaster_recovery
-    - iso27001
-    - iso27001_12_4
-    - iso27040
-    - nist_cp_9
-    - compliance
-    - security
+    - integrity
     - linux
-    - ubuntu
-    - debian
-    - enterprise
+    - multiarch
     - infrastructure
-    - operations
-    - redundancy
-    - archival
-    - restore_test
-    - integrity_verify
-    - audit
+    - deploy-system-unified
+    - automation
+
 collections:
   - ansible.builtin
+  - community.general
 
 dependencies: []

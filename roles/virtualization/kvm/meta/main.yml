@@ -1,41 +1,46 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100746
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-PLY-100280
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: kvm
-  author: deploysystemunified
-  description: KVM/QEMU hypervisor installation and secure configuration
+  author: deploy-system-unified
+  description: KVM hypervisor management and virtual machine orchestration (Libvirt, QEMU)
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
   galaxy_tags:
     - virtualization
+    - hypervisor
     - kvm
     - qemu
     - libvirt
-    - isolation
-    - iso27001
-    - hypervisor
-    - vm
-    - cloud
-    - infrastructure
-    - cis
-    - nist80053
-    - linux
     - automation
-    - compute
+    - infrastructure
+    - linux
+    - multiarch
+    - deploy-system-unified
 
 collections:
   - ansible.builtin
+  - community.libvirt
 
 dependencies: []

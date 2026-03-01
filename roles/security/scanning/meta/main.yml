@@ -1,40 +1,53 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100375
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: scanning
-  author: deploysystemunified
-  description: "POL-SEC | Vulnerability scanning and security baseline verification (Lynis, ClamAV, etc.)"
+  author: deploy-system-unified
+  description: Comprehensive vulnerability and configuration scanning suite (Trivy, Lynis, Checkov)
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - security
     - scanning
     - vulnerability
     - audit
-    - monitoring
-    - lynis
+    - compliance
     - trivy
+    - lynis
     - checkov
-    - clamav
-    - rkhunter
-    - iso27001
-    - nist80053
+    - forensic
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
 
 collections:
   - ansible.builtin
+  - community.general
 
 dependencies: []
