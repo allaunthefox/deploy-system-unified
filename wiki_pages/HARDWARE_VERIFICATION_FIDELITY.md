@@ -44,6 +44,9 @@ The following real-world hardware signatures are maintained in the simulation da
 | **Virtualized** | Intel GVT-g (Mediated) | `8086:5902` | ✅ Logic Verified |
 | **Virtualized** | AMD SR-IOV (MxGPU) | `1002:6929` | ✅ Logic Verified |
 | **Virtualized** | VirtIO GPU / VirGL | `1af4:1050` | ✅ Logic Verified |
+| **Integrated** | Intel UHD Graphics 630 | `8086:3e92` | ✅ Logic Verified |
+| **Integrated** | AMD Radeon Vega 8 | `1002:15d8` | ✅ Logic Verified |
+| **Server BMC** | ASPEED AST2500/2600 | `1a03:2000` | ✅ Logic Verified |
 | **Legacy/Embedded** | Intel UHD Graphics 770 | `8086:4680` | ✅ Logic Verified |
 
 ---

@@ -7,8 +7,9 @@
 Mock lspci for GPU Hardware Simulation (Extended Matrix)
 Standardized using verified signatures from:
 - NVIDIA (RTX 4090, H100, A100, RTX 3060 Mobile, vGPU A10)
-- AMD (RX 7900 XTX, Instinct MI250X, SR-IOV VF S7150)
-- Intel (Arc A770, Flex 170, Max 1550, UHD 770, GVT-g HD 610)
+- AMD (RX 7900 XTX, Instinct MI250X, SR-IOV VF S7150, Radeon Vega 8 iGPU)
+- Intel (Arc A770, Flex 170, Max 1550, UHD 770, Iris Xe, GVT-g HD 610)
+- Server BMC (ASPEED AST2400/2500/2600, Matrox G200e)
 - Hybrid Systems (Intel + NVIDIA)
 - Virtualized (VirtIO GPU)
 """
@@ -30,6 +31,16 @@ MOCK_DATABASE = {
     "INTEL_FLEX_170": "0000:b3:00.0 Display controller [0380]: Intel Corporation Device [8086:56c0] (rev 08)",
     "INTEL_MAX_1550": "0000:4d:00.0 Display controller [0380]: Intel Corporation Device [8086:0bd5] (rev 08)",
     "INTEL_UHD_770": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation Alder Lake-S GT1 [UHD Graphics 770] [8086:4680] (rev 0c)",
+    "INTEL_IRIS_XE": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation TigerLake-LP GT2 [Iris Xe Graphics] [8086:9a49] (rev 01)",
+
+    # Integrated GPUs (iGPUs)
+    "AMD_VEGA_8": "0000:07:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Raven Ridge [Radeon Vega Series] [1002:15d8] (rev c3)",
+    "INTEL_UHD_630": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation UHD Graphics 630 [8086:3e92] (rev 00)",
+
+    # Server BMC / Management Video (Supermicro, etc.)
+    "ASPEED_AST2500": "0000:01:00.0 VGA compatible controller [0300]: ASPEED Technology, Inc. ASPEED Graphics Family [1a03:2000] (rev 41)",
+    "ASPEED_AST2600": "0000:05:00.0 VGA compatible controller [0300]: ASPEED Technology, Inc. ASPEED Graphics Family [1a03:2000] (rev 52)",
+    "MATROX_G200E": "0000:06:03.0 VGA compatible controller [0300]: Matrox Electronics Systems Ltd. MGA G200eW WPCM450 [102b:0532] (rev 0a)",
     
     # Virtualized & Mediated GPUs
     "NVIDIA_VGPU_A10": "0000:00:05.0 VGA compatible controller [0300]: NVIDIA Corporation GA102GL [A10] [10de:2230] (rev a1)",
@@ -40,6 +51,7 @@ MOCK_DATABASE = {
     # Multi-GPU & Hybrid
     "HYBRID_LAPTOP": "0000:00:02.0 VGA compatible controller [0300]: Intel Corporation Meteor Lake-P [Intel Arc Graphics] [8086:7d55] (rev 08)\n0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD107M [GeForce RTX 4060 Max-Q / Mobile] [10de:28a0] (rev a1)",
     "SERVER_MULTI_A100": "0000:25:00.0 3D controller [0302]: NVIDIA Corporation GA100 [10de:20b5]\n0000:26:00.0 3D controller [0302]: NVIDIA Corporation GA100 [10de:20b5]",
+    "SUPERMICRO_HYBRID": "0000:01:00.0 VGA compatible controller [0300]: ASPEED Technology, Inc. ASPEED Graphics Family [1a03:2000] (rev 41)\n0000:02:00.0 3D controller [0302]: NVIDIA Corporation GA100 [A100 PCIe 80GB] [10de:20b5]",
     
     "NONE": ""
 }
