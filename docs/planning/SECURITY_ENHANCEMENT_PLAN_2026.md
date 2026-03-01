@@ -392,19 +392,18 @@ image_signing_trusted_registries:
 image_signing_policy: require_all  # require_all, require_one, allow_unsigned
 ```
 
-#### Phase 4.2: Runtime Security Monitoring (Weeks 7-12)
+#### Phase 4.2: Runtime Security Monitoring (COMPLETED)
 
 **Tasks:**
-1. Implement Falco integration
-2. Add runtime threat detection
-3. Create alerting rules
-4. Integrate with SIEM
+1. [x] Implement Falco integration (Host + Container)
+2. [x] Add runtime threat detection (eBPF driver)
+3. [x] Create alerting rules (Forensic logs)
+4. [x] Integrate with SIEM (Webhooks/Syslog)
 
 **Deliverables:**
-- `roles/security/falco`
-- Falco rule customization
+- `roles/security/falco` - ✅ **Standardized & Hardened**
+- Falco threat detection rule set
 - Alert routing configuration
-- SIEM integration guide
 
 **Falco Rules Example:**
 ```yaml

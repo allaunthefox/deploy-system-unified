@@ -1,39 +1,46 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100287
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: falco
-  author: deploysystemunified
-  description: "POL-SEC | Falco runtime security monitoring with rules configuration and alert integration - ISO 27001 §16.1 compliant"
+  author: deploy-system-unified
+  description: Runtime security monitoring and active threat detection (Falco)
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
-    - name: CentOS
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
   galaxy_tags:
     - security
     - runtime
     - falco
     - monitoring
-    - hardening
-    - linux
-    - iso27001
-    - iso27001_16_1
-    - nist80053
-    - nist_si_4
-    - container
-    - kubernetes
-    - incident_response
+    - ebpf
     - threat_detection
+    - container_security
     - compliance
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - automation
 
 collections:
   - ansible.builtin
