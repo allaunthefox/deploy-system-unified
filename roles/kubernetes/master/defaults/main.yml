@@ -20,6 +20,15 @@ kubernetes_proxy_mode: "nftables"
 kubernetes_disable_network_policy: true # Avoids ipset dependency on restricted kernels
 kubernetes_prefer_bundled_bin: true     # Ensures K3s uses its own validated toolchain
 
+# Service Configuration
+kubernetes_api_port: 6443
+kubernetes_data_dir: "/var/lib/rancher/k3s"
+kubernetes_token_path: "/var/lib/rancher/k3s/server/node-token"
+kubernetes_tls_san: []
+kubernetes_disable_traefik: false
+kubernetes_disable_servicelb: false
+kubernetes_disable_agent: false
+
 # High Availability (HA) Configuration
 # Enabled via Q3 Execution Plan
 k3s_ha_enabled: false

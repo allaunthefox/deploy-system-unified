@@ -19,7 +19,14 @@ ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s \
     server \
+    {% if k3s_ha_enabled | default(false) | bool %}
+    --datastore-endpoint="{{ k3s_datastore_endpoint }}" \
+    {% if inventory_hostname == groups['k8s_master'][0] %}
     --cluster-init \
+    {% endif %}
+    {% else %}
+    --cluster-init \
+    {% endif %}
     --token-file={{ kubernetes_token_path }} \
     --cluster-cidr={{ kubernetes_pod_cidr }} \
     --service-cidr={{ kubernetes_service_cidr }} \

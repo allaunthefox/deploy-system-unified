@@ -617,6 +617,13 @@
 - `kubernetes_proxy_mode`
 - `kubernetes_disable_network_policy`
 - `kubernetes_prefer_bundled_bin`
+- `kubernetes_api_port`
+- `kubernetes_data_dir`
+- `kubernetes_token_path`
+- `kubernetes_tls_san`
+- `kubernetes_disable_traefik`
+- `kubernetes_disable_servicelb`
+- `kubernetes_disable_agent`
 - `k3s_ha_enabled`
 - `k3s_datastore_endpoint`
 
