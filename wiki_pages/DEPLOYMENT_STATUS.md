@@ -29,7 +29,16 @@
 - **Role:** `security/scanning` (Refined)
 - **Preflight:** `PREFLIGHT_ASSERTIONS.YML` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
 
-### E. GPU Hardware Support
+### E. Q3 2026 Foundation (Advanced Networking & HA)
+- **Status:** ✅ **LOGIC COMPLETE**
+- **Features:** 
+    - Zero Trust (Headscale/Tailscale) overlay.
+    - Multi-master HA Kubernetes (Etcd/Kube-VIP).
+    - Automated Secret Rotation (Vault AppRole).
+    - Lightweight Service Mesh (Linkerd mTLS).
+- **Note:** Roles are integrated into `base_hardened.yml` and are disabled by default. Enable via inventory flags.
+
+### F. GPU Hardware Support
 - **Status:** ⚠️ **UNTESTABLE**
 - **Reason:** Semi-permanent delay due to hardware unavailability (March 2026).
 - **Current State:** Functional logic implemented in `hardware/gpu` but **blocked** from verification. Features are disabled by default.

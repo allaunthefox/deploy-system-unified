@@ -50,6 +50,9 @@
       - security/resource_protection
       - networking/container_networks
       - networking/vpn_mesh
+      - security/headscale         # Q3 2026: Zero Trust Controller (Optional)
+      - security/tailscale         # Q3 2026: Zero Trust Client (Optional)
+      - security/vault_integration # Q3 2026: Secret Rotation Lifecycle
       - networking/services/endlessh
       - security/ips
       - security/advanced
