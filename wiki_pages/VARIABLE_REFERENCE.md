@@ -957,6 +957,8 @@
 - `security_sshd_allow_x11_forwarding`
 - `security_sshd_permit_root_login`
 - `security_sshd_password_authentication`
+- `security_sshd_client_alive_interval`
+- `security_sshd_client_alive_count_max`
 - `security_sshd_pqc_enabled`
 - `security_sshd_config_path`
 - `security_sshd_config_fallback_path`

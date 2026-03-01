@@ -43,6 +43,14 @@ argument_specs:
         default: "no"
         choices: ["yes", "no"]
         description: Configure PasswordAuthentication policy.
+      security_sshd_client_alive_interval:
+        type: int
+        default: 300
+        description: Sets a timeout interval in seconds after which if no data has been received from the client, sshd will send a message through the encrypted channel to request a response from the client.
+      security_sshd_client_alive_count_max:
+        type: int
+        default: 2
+        description: Sets the number of client alive messages which may be sent without sshd receiving any messages back from the client.
       security_sshd_pqc_enabled:
         type: bool
         default: true

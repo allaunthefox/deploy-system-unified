@@ -255,8 +255,8 @@
       AllowStreamLocalForwarding no
       PermitTunnel no
       Compression delayed
-      ClientAliveInterval 300
-      ClientAliveCountMax 2
+      ClientAliveInterval {{ security_sshd_client_alive_interval }}
+      ClientAliveCountMax {{ security_sshd_client_alive_count_max }}
       LoginGraceTime 60
       MaxAuthTries 3
       MaxSessions 10

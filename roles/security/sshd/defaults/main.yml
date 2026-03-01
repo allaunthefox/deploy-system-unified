@@ -18,6 +18,10 @@ security_sshd_allow_x11_forwarding: false
 security_sshd_permit_root_login: "no"
 # CIS 5.2.11 | ISO 27001 §9.2
 security_sshd_password_authentication: "no"
+# Idle Timeout Settings (CIS 5.2.23)
+security_sshd_client_alive_interval: 300
+security_sshd_client_alive_count_max: 2
+
 # Post-Quantum Cryptography (PQC) support (Hybrid Mode)
 # Enables sntrup761 and ML-KEM algorithms where supported by OpenSSH
 security_sshd_pqc_enabled: "{{ system_ssh_pqc_enabled | default(true) }}"
