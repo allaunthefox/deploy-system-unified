@@ -88,6 +88,7 @@ This roadmap provides a high-level view of project direction. For detailed execu
 - 🟡 High-Availability Kubernetes (HA Master)
 
 **Status:** **Active** (March 2026)
+**Execution Plan:** [Q3_2026_EXECUTION_PLAN.md](Q3_2026_EXECUTION_PLAN)
 
 **Documentation:**
 - [ROLE_ENHANCEMENT_EXECUTION_PLAN_2026](ROLE_ENHANCEMENT_EXECUTION_PLAN_2026)
