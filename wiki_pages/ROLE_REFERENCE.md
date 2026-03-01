@@ -58,9 +58,9 @@
 
 
 ### `containers/media`
-**Media Container Role**
+**Media Role**
 
-This role deploys a comprehensive media stack using Podman Quadlets. It supports multi-tenancy, allowing multiple isolated instances of the stack to run on a single host.
+**Audit Event Identifier:** DSU-PLY-100090
 
 ### `containers/memcached`
 **memcached**
@@ -68,9 +68,9 @@ This role deploys a comprehensive media stack using Podman Quadlets. It supports
 
 
 ### `containers/monitoring`
-**Container Monitoring Role**
+**Monitoring Role**
 
-This role uses Podman Quadlets to deploy a monitoring stack consisting of Prometheus and Grafana.
+**Audit Event Identifier:** DSU-PLY-100107
 
 ### `containers/networking`
 **networking**
@@ -78,19 +78,19 @@ This role uses Podman Quadlets to deploy a monitoring stack consisting of Promet
 
 
 ### `containers/ops`
-**Ops Container Role**
+**Ops Role**
 
-This role deploys operational dashboard and utility tools alongside the media stack.
+**Audit Event Identifier:** DSU-PLY-100026
 
 ### `containers/quadlets`
 **Quadlets Role**
 
-This role manages **Podman Quadlets**, which are Systemd generator files for containers. It ensures that container networks and services are managed natively by Systemd, providing robustness and auto-start capabilities.
+**Audit Event Identifier:** DSU-PLY-100117
 
 ### `containers/runtime`
-**Container Runtime Role**
+**Runtime Role**
 
-This role handles the installation and configuration of the container runtime environment (Podman/Docker) and associated hardware support (GPU).
+**Audit Event Identifier:** DSU-PLY-100130
 
 ### `containers/security`
 **security**
@@ -98,9 +98,9 @@ This role handles the installation and configuration of the container runtime en
 
 
 ### `containers/signing`
-**Cosign Container Image Signing Role**
+**Signing Role**
 
-This role provides Cosign container image signing and verification for the deploy-system-unified project.
+**Audit Event Identifier:** DSU-PLY-100160
 
 ## Core Roles
 

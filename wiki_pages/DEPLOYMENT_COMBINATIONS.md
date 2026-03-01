@@ -68,17 +68,18 @@ graph TD
 
 ## 📊 Compatibility & Support Matrix
 
-| Dimension | Option | Audit Log Retention Class | Status |
-| :--- | :--- | :--- | :--- |
-| **Posture** | `ephemeral` | Minimal Footprint | Stable |
-| | `hardened` | High Integrity | Stable |
-| | `production` | Full Observability | Stable |
-| **Platform** | Bare Metal | Full HW Access | Verified |
-| | VPS / Cloud | Network Constrained | Verified |
-| | KVM / LXC | Resource Isolated | Verified |
-| **Arch** | `x86_64` | Native | Stable |
-| | `aarch64` | Emulated/Exp | **Experimental** |
-| | `riscv64` | Emulated/Exp | **Experimental** |
+| Dimension | Option | Audit Log Retention Class | Status | Testing Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Posture** | `ephemeral` | Minimal Footprint | Stable | ✅ Fully Verified |
+| | `hardened` | High Integrity | Stable | ✅ Fully Verified |
+| | `production` | Full Observability | Stable | ✅ Fully Verified |
+| **Platform** | Bare Metal | Full HW Access | Verified | ✅ Fully Verified |
+| | VPS / Cloud | Network Constrained | Verified | ✅ Fully Verified |
+| | KVM / LXC | Resource Isolated | Verified | ✅ Fully Verified |
+| **Arch** | `x86_64` | Native | Stable | ✅ Fully Verified |
+| | `aarch64` | Emulated/Exp | **Experimental** | ⚠️ Unverified |
+| | `riscv64` | Emulated/Exp | **Experimental** | ⚠️ Unverified |
+| **Hardware** | **GPU (NV/AMD/Intel)** | Performance | ⏸️ **Postponed** | ⚠️ **UNTESTABLE** |
 
 ---
 

@@ -1,5 +1,8 @@
 # GPU_INTERACTION_MATRIX
 
+> ⚠️ **CRITICAL: UNTESTABLE STATUS**
+> As of March 2026, the entire GPU stack defined in this matrix is considered **UNTESTABLE**. Implementation logic exists but has not passed physical hardware gates. These features are provided as-is and are disabled by default.
+
 This document defines the supported combinations of GPU vendors, architectures, and deployment environments within the `deploy-system-unified` project. It also analyzes potential interactions and edge cases, particularly for hybrid and virtualized setups.
 
 ## 1. Architecture & Vendor Support Matrix
