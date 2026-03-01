@@ -1,53 +1,73 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100421
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100422
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core GRUB management role
+    short_description: Centralized GRUB bootloader and kernel parameter management
     description:
-      - Manages kernel parameters in /etc/default/grub
-      - Aggregates parameters from security, hardware, and performance roles
-      - Provides automated backup and validation of GRUB configuration
+      - This role manages the GRUB bootloader configuration and applies kernel parameters for security, performance, and hardware support.
     options:
       core_grub_enabled:
         type: bool
-        description: Enable or disable GRUB management
         default: true
+        description: Whether to manage GRUB configuration.
       core_grub_base_params:
         type: list
         elements: str
-        description: Base kernel parameters applied to all systems
+        default: ["quiet", "splash"]
+        description: Base kernel parameters applied to all systems.
       core_grub_security_params:
         type: list
         elements: str
-        description: Security-focused kernel parameters
+        default: []
+        description: Security-related kernel parameters.
       core_grub_hardware_params:
         type: list
         elements: str
-        description: Hardware-specific kernel parameters
+        default: []
+        description: Hardware-specific kernel parameters.
       core_grub_isolation_params:
         type: list
         elements: str
-        description: Core/memory isolation parameters
+        default: []
+        description: Resource isolation kernel parameters.
       core_grub_performance_params:
         type: list
         elements: str
-        description: Performance-focused kernel parameters
+        default: []
+        description: Performance-tuning kernel parameters.
       core_grub_extra_params:
         type: list
         elements: str
-        description: Raw parameters for manual overrides
+        default: []
+        description: Extra raw parameters for manual overrides.
       core_grub_config_path:
         type: str
-        description: Path to the GRUB configuration file
-        default: /etc/default/grub
+        default: "/etc/default/grub"
+        description: Path to the GRUB configuration file.
       core_grub_force_update:
         type: bool
-        description: Force update-grub execution
         default: false
+        description: Whether to force a GRUB update even if no changes were detected.
       core_grub_backup_enabled:
         type: bool
-        description: Enable GRUB configuration backups
         default: true
+        description: Whether to enable GRUB configuration backups.
+      core_grub_backup_dir:
+        type: str
+        default: "/var/backups/grub"
+        description: Directory to store GRUB backups.
+      core_grub_backup_retention_days:
+        type: int
+        default: 30
+        description: Number of days to retain GRUB backups.
+      core_grub_backup_encrypt:
+        type: bool
+        default: true
+        description: Whether to encrypt GRUB backups using GPG.
+      core_grub_backup_gpg_recipient:
+        type: str
+        default: ""
+        description: GPG recipient for backup encryption.

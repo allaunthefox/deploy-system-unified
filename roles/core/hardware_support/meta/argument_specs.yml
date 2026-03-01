@@ -1,38 +1,35 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100430
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100431
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
-# NIST SP 800-53 CM-5 | ISO 27001 §12.1
 argument_specs:
   main:
-    short_description: Core hardware support role
+    short_description: Hardware capability discovery and platform-specific tuning
     description:
-      - Discovers CPU features (AVX, AES-NI, SHA) and hardware accelerators
-      - Configures the hardware clock (RTC) and NTP synchronization
-      - Validates system requirements for specialized workloads (Media, DB, Secure Nodes)
+      - This role identifies CPU features (AVX, AES-NI) and hardware accelerators to ensure the host meets workload requirements.
     options:
       enable_hardware_discovery:
         type: bool
-        description: Whether to enable hardware discovery tasks
         default: true
+        description: Whether to perform hardware feature detection.
       require_avx:
         type: bool
-        description: Strictly require AVX support
         default: false
+        description: Whether to fail the play if AVX extensions are not detected.
       require_aes_ni:
         type: bool
-        description: Strictly require AES-NI support
         default: false
+        description: Whether to fail the play if AES-NI hardware acceleration is missing.
       require_crypto_extensions:
         type: bool
-        description: Strictly require cryptographic extensions
         default: false
+        description: Whether to strictly require cryptographic hardware extensions.
       warn_on_missing_avx:
         type: bool
-        description: Warn if AVX is missing
         default: true
+        description: Whether to issue a warning if AVX is missing (useful for MongoDB workloads).
       warn_on_missing_crypto:
         type: bool
-        description: Warn if cryptographic extensions are missing
         default: true
+        description: Whether to issue a warning if crypto acceleration is missing.

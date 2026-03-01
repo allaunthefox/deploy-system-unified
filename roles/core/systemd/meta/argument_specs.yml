@@ -1,29 +1,23 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100482
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100483
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core systemd management role
+    short_description: Core systemd configuration and hardening
     description:
-      - Configures systemd core components including journald and resolved
-      - Hardens DNS resolution settings and persistent logging
-      - Aligns with ISO 27001 logging and access control requirements
+      - This role configures and hardens systemd components, specifically focusing on journald logging and resolved DNS services.
     options:
       systemd_configure_journald:
         type: bool
-        description: Whether to configure journald settings
         default: true
+        description: Whether to apply the project's journald hardening configuration.
       systemd_configure_resolved:
         type: bool
-        description: Whether to configure systemd-resolved settings
         default: true
+        description: Whether to apply the project's systemd-resolved configuration.
       systemd_persistent_journal:
         type: bool
-        description: Whether to enable persistent journal storage
         default: true
-      core_systemd_require_service_manager:
-        type: bool
-        description: Fail if systemd is not the service manager
-        default: false
+        description: Whether to ensure journal logs persist across reboots.
