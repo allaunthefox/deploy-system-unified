@@ -21,6 +21,11 @@
   become: true
   tags: [kubernetes, master, gateway, audit, 810302]
 
+- name: "ISO 27001 §17.1 | 700100 | Initialize High Availability (HA) Control Plane"
+  ansible.builtin.include_tasks: ha_init.yml
+  when: k3s_ha_enabled | default(false) | bool
+  tags: [kubernetes, master, ha, initialization]
+
 - name: "CIS 4.1.1 | STIG V-230501 | NIST CM-6 | Normalize Architecture for Kubernetes"
   ansible.builtin.set_fact:
     _k8s_norm_arch: >-

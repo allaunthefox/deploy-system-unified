@@ -1,0 +1,30 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100700
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# High Availability (HA) Initialization for Kubernetes Master
+# Compliance: ISO 27001 §17.1 | NIST CP-9
+
+- name: "ISO 27001 §17.1 | 700100 | Check HA configuration enabled"
+  ansible.builtin.debug:
+    msg: "Initializing High Availability Control Plane (Etcd)"
+  when: k3s_ha_enabled | default(false) | bool
+  tags:
+    - kubernetes
+    - master
+    - ha
+    - initialization
+
+- name: "ISO 27001 §17.1 | 700101 | Validate Etcd endpoint configuration"
+  ansible.builtin.assert:
+    that:
+      - k3s_datastore_endpoint is defined
+      - (k3s_datastore_endpoint | length) > 0
+    fail_msg: "HA enabled but k3s_datastore_endpoint is missing."
+  when: k3s_ha_enabled | default(false) | bool
+  tags:
+    - kubernetes
+    - master
+    - ha
+    - verify

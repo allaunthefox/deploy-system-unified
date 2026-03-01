@@ -366,6 +366,11 @@ This role provides Goss-based continuous security monitoring for the deploy-syst
 
 
 
+### `security/headscale`
+**headscale**
+
+
+
 ### `security/ima_enforcement`
 **ima_enforcement**
 

@@ -1,0 +1,13 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100800
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/headscale
+# Compliance: NIST SC-7, ISO 27001 §13.1
+
+headscale_enabled: false
+headscale_port: 8085
+headscale_metrics_port: 9090
+headscale_network_interface: "tailscale0"
+headscale_namespace_prefix: "dsu"

@@ -617,6 +617,8 @@
 - `kubernetes_proxy_mode`
 - `kubernetes_disable_network_policy`
 - `kubernetes_prefer_bundled_bin`
+- `k3s_ha_enabled`
+- `k3s_datastore_endpoint`
 
 ### `kubernetes/node`
 - `kubernetes_k3s_version`
@@ -843,6 +845,13 @@
 - `hardware_isolation_dma_protection_enabled`
 - `hardware_isolation_blacklist_modules`
 - `hardware_isolation_acs_override`
+
+### `security/headscale`
+- `headscale_enabled`
+- `headscale_port`
+- `headscale_metrics_port`
+- `headscale_network_interface`
+- `headscale_namespace_prefix`
 
 ### `security/ima_enforcement`
 - `ima_enabled`
