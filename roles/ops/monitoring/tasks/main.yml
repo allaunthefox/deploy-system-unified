@@ -1,12 +1,12 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100214
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 # Tasks for ops/monitoring
 # Compliance: CIS 4.x, STIG V-230540, NIST AU-2/CA-7/IR-4/SI-4, ISO 27001 §8.15/§8.16/§16.1
 
-- name: "CIS 4.4.1 | STIG V-230660 | NIST SI-4 | Load platform-specific variables"
+- name: "ISO 9001 | 600013 | CIS 4.4.1 | STIG V-230660 | NIST SI-4 | Load platform-specific variables"
   ansible.builtin.include_vars:
     file: "{{ item }}"
   with_first_found:
@@ -22,10 +22,12 @@
     - nist_si_4
     - ops
     - monitoring
+    - initialization
+    - 600013
 
 # --- Package Installation ---
 
-- name: "CIS 4.4.2 | STIG V-230661 | NIST SI-4 | Install monitoring packages (Debian/Ubuntu)"
+- name: "ISO 9001 | 600013 | CIS 4.4.2 | STIG V-230661 | NIST SI-4 | Install monitoring packages (Debian/Ubuntu)"
   ansible.builtin.apt:
     name:
       - prometheus-node-exporter
@@ -41,8 +43,10 @@
     - nist_si_4
     - ops
     - monitoring
+    - deploy
+    - 600013
 
-- name: "CIS 4.4.3 | STIG V-230662 | NIST SI-4 | Install monitoring packages (RHEL/Rocky)"
+- name: "ISO 9001 | 600013 | CIS 4.4.3 | STIG V-230662 | NIST SI-4 | Install monitoring packages (RHEL/Rocky)"
   ansible.builtin.dnf:
     name:
       - node_exporter  # Note: Requires EPEL usually
@@ -58,9 +62,11 @@
     - nist_si_4
     - ops
     - monitoring
+    - deploy
+    - 600013
 
-- name: "CIS 4.4.4 | STIG V-230663 | NIST SI-4 | Install monitoring packages (Arch Linux)"
-  ansible.builtin.pacman:
+- name: "ISO 9001 | 600013 | CIS 4.4.4 | STIG V-230663 | NIST SI-4 | Install monitoring packages (Arch Linux)"
+  ansible.builtin.package:
     name:
       - prometheus-node-exporter
       - smartmontools
@@ -75,8 +81,10 @@
     - nist_si_4
     - ops
     - monitoring
+    - deploy
+    - 600013
 
-- name: "CIS 4.4.5 | STIG V-230664 | NIST SI-4 | Install monitoring packages (Alpine)"
+- name: "ISO 9001 | 600013 | CIS 4.4.5 | STIG V-230664 | NIST SI-4 | Install monitoring packages (Alpine)"
   community.general.apk:
     name:
       - prometheus-node-exporter
@@ -92,8 +100,10 @@
     - nist_si_4
     - ops
     - monitoring
+    - deploy
+    - 600013
 
-- name: "CIS 4.4.6 | STIG V-230665 | NIST SI-4 | Determine Node Exporter Service Name"
+- name: "ISO 9001 | 600013 | CIS 4.4.6 | STIG V-230665 | NIST SI-4 | Determine Node Exporter Service Name"
   ansible.builtin.set_fact:
     _node_exporter_service: "{{
       'node-exporter' if ansible_facts['os_family'] == 'Alpine' else
@@ -106,10 +116,12 @@
     - nist_si_4
     - ops
     - monitoring
+    - initialization
+    - 600013
 
 # --- Service Configuration ---
 
-- name: "CIS 4.4.7 | STIG V-230666 | NIST CA-7 | ISO 27001 §12.4 | Audit Code 840000 | Enable and start Node Exporter"
+- name: "ISO 27001 §12.4 | 840000 | CIS 4.4.7 | STIG V-230666 | NIST CA-7 | Enable and start Node Exporter"
   ansible.builtin.service:
     name: "{{ _node_exporter_service }}"
     state: started
@@ -123,8 +135,10 @@
     - iso_27001_12_4
     - ops
     - monitoring
+    - deploy
+    - 840000
 
-- name: "CIS 4.4.8 | STIG V-230667 | NIST SI-4 | Configure Smartd (Basic)"
+- name: "ISO 9001 | 600013 | CIS 4.4.8 | STIG V-230667 | NIST SI-4 | Configure Smartd (Basic)"
   ansible.builtin.lineinfile:
     path: /etc/smartd.conf
     regexp: '^DEVICESCAN'
@@ -133,9 +147,7 @@
   notify: restart_smartd
   when:
     - monitoring_enable_smartmon
-    - ansible_facts['virtualization_type'] != "docker"
-    - ansible_facts['virtualization_type'] != "podman"
-    - ansible_facts['virtualization_type'] != "container"
+    - ansible_facts['virtualization_type'] not in ['docker', 'podman', 'container', 'lxc']
   become: true
   tags:
     - cis_4_4_8
@@ -143,17 +155,17 @@
     - nist_si_4
     - ops
     - monitoring
+    - config
+    - 600013
 
-- name: "CIS 4.4.9 | STIG V-230668 | NIST CA-7 | ISO 27001 §12.4 | Audit Code 840000 | Enable and start Smartd"
+- name: "ISO 27001 §12.4 | 840000 | CIS 4.4.9 | STIG V-230668 | NIST CA-7 | Enable and start Smartd"
   ansible.builtin.service:
     name: smartd
     state: started
     enabled: true
   when:
     - monitoring_enable_smartmon
-    - ansible_facts['virtualization_type'] != "docker"
-    - ansible_facts['virtualization_type'] != "podman"
-    - ansible_facts['virtualization_type'] != "container"
+    - ansible_facts['virtualization_type'] not in ['docker', 'podman', 'container', 'lxc']
   tags:
     - cis_4_4_9
     - stig_v_230668
@@ -161,3 +173,5 @@
     - iso_27001_12_4
     - ops
     - monitoring
+    - deploy
+    - 840000

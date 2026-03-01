@@ -1,17 +1,16 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100132
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 # Shim to forward includes to the repository-level tasks/save_checkpoint.yml
 # Properly isolated via relative path mapping and explicit private scope
 
-- name: Include repository-level save_checkpoint
+- name: "ISO 9001 | 300011 | Include repository-level save_checkpoint"
   ansible.builtin.include_tasks:
     file: "../../../../tasks/save_checkpoint.yml"
   vars:
     # Use explicit phase for this role to avoid recursive variable expansion in test environments
     additional_phases: ["containers/runtime"]
     _checkpoint_status_final: "running"
-  tags: [containers, runtime, checkpoint]
-
+  tags: [containers, runtime, checkpoint, 300011]
