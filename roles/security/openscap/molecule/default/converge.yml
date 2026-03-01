@@ -1,0 +1,14 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1003050
+# Test Type: Molecule Converge Phase
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+---
+# NIST SP 800-53 | ISO 27001 §14.2
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include roles/security/openscap"
+      ansible.builtin.include_role:
+        name: "security/openscap"

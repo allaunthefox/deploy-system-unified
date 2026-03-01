@@ -1,20 +1,22 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100533
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Hardware/GPU Task: Desktop Environment Optimization
 # Configures Wayland support, User Permissions, and Power Profiles
 
 - name: "[Desktop] Configure Kernel Mode Setting (Wayland Support)"
-  tags: [hardware, gpu, remediate]
   when: gpu_desktop_enable_wayland_support | bool
   block:
     - name: "[Desktop] Enable NVIDIA DRM KMS (Kernel Parameter)"
-  tags: [hardware, gpu, remediate]
       ansible.builtin.set_fact:
         core_grub_hardware_params: "{{ core_grub_hardware_params | default([]) + ['nvidia-drm.modeset=1'] }}"
       when:
         - "'nvidia' in _gpu_vendor_list"
 
 - name: "[Desktop] Configure Power Profile (AMD)"
-  tags: [hardware, gpu, remediate]
   when:
     - "'amd' in _gpu_vendor_list"
     - gpu_desktop_power_profile == 'performance'
@@ -27,39 +29,31 @@
   notify: reload_udev
 
 - name: "[Desktop] Grant GPU Access to Human Users"
-  tags: [hardware, gpu, remediate]
   when: gpu_desktop_grant_user_access | bool
   block:
     - name: "[Desktop] Ensure GPU/Input groups exist"
-  tags: [hardware, gpu, remediate]
       ansible.builtin.group:
         name: "{{ item }}"
-  tags: [hardware, gpu, remediate]
         state: present
       loop: [video, render, input]
 
     - name: "[Desktop] Identify human users"
-  tags: [hardware, gpu, remediate]
       ansible.builtin.shell: "awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' /etc/passwd"
       register: human_users
       changed_when: false
 
     - name: "[Desktop] Add users to GPU and Input groups"
-  tags: [hardware, gpu, remediate]
       ansible.builtin.user:
         name: "{{ item }}"
-  tags: [hardware, gpu, remediate]
         groups: "video,render,input"
         append: true
       loop: "{{ human_users.stdout_lines }}"
       when: human_users.stdout_lines | length > 0
 
 - name: "[Desktop] Verify Input Device Support"
-  tags: [hardware, gpu, remediate]
   when: gpu_desktop_enable_wayland_support | bool
   block:
     - name: "[Desktop] Define input packages by OS Family"
-  tags: [hardware, gpu, remediate]
       ansible.builtin.set_fact:
         _input_packages: "{{
           ['libinput-bin', 'libinput-tools'] if ansible_facts['os_family'] == 'Debian' else
@@ -70,10 +64,8 @@
         }}"
 
     - name: "[Desktop] Ensure libinput/evdev dependencies are present"
-  tags: [hardware, gpu, remediate]
       ansible.builtin.package:
         name: "{{ _input_packages }}"
-  tags: [hardware, gpu, remediate]
         state: present
       failed_when: false
       register: _input_deps_install
@@ -83,17 +75,15 @@
       ignore_errors: true
 
     - name: "[Desktop] Handle Input Dependency Failure"
-  tags: [hardware, gpu, remediate]
       block:
         - name: Warn on Optional Failure
-  tags: [hardware, gpu, remediate]
           ansible.builtin.debug:
             msg: "WARNING: Failed to install input device dependencies. Desktop interaction might be limited."
             when: not core_security_fail_secure | default(false)
 
         - name: Fail on Hardened Profile Failure
-  tags: [hardware, gpu, remediate]
           ansible.builtin.fail:
             msg: "CRITICAL: Failed to install input dependencies in hardened environment. Aborting."
             when: core_security_fail_secure | default(false)
       when: _input_deps_install is failed
+  tags: [hardware,gpu,remediate]

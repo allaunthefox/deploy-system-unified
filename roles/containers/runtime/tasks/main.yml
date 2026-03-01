@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100138
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Tasks for containers/runtime role
 # Compliance: CIS Docker/Podman Benchmark 2.x, STIG V-230410/V-230411, NIST SC-39/CM-7/AC-6, ISO 27001 §8.20/§8.23

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100849
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Generic task to save the current session state
 # Requires: '_checkpoint_status' (default: running) and 'additional_phases' (optional)

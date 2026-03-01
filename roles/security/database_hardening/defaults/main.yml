@@ -1,0 +1,26 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100460
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# NIST SP 800-53 SC-28 | ISO 27001 §8.24
+# Defaults for security/database_hardening - Row-Level Encryption & Rotation
+
+# General Settings
+db_hardening_enabled: true
+
+# Vault Transit Integration for Row-Level Encryption
+db_encryption_vault_transit_enabled: true
+db_encryption_vault_transit_key_name: "db_row_encryption"
+db_encryption_vault_transit_mount: "transit"
+
+# Rotation Policy
+db_encryption_rotation_interval: "monthly" # Options: monthly, quarterly, yearly
+db_encryption_rotation_script: "/usr/local/bin/db-rotate-row-keys.sh"
+db_encryption_rotation_log: "/var/log/db-encryption-rotation.log"
+
+# Target Databases for Policy Enforcement
+db_hardening_targets:
+  - name: "authentik"
+    service: "authentik-postgres"
+    sensitive_tables: ["users", "secrets"]

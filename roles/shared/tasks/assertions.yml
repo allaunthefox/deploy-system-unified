@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100683
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §14.2 | System Architecture
 # Shared assertions and validation tasks
 # Use: ansible.builtin.include_tasks: roles/shared/tasks/assertions.yml
 

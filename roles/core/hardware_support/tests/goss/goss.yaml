@@ -1,6 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100438
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for core/hardware_support role
-# ISO 9001 | ISO 27001 §8.17 | ISO 27001 §10.1
 ---
+# ISO 9001 | ISO 27001 §8.17 | ISO 27001 §10.1
 command:
   # Verify CPU info is available
   lscpu:

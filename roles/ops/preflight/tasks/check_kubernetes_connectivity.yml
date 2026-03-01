@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100230
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Preflight Kubernetes Connectivity Validation
 # Validates kubectl availability and K8s cluster connectivity for K8s profiles

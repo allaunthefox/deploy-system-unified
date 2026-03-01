@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100626
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Tasks for networking/firewall role
 # Multi-distro support: UFW (Debian/Arch) | Firewalld (RedHat)

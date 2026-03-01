@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100297
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/file_integrity role
 security_file_integrity_tool: "aide"

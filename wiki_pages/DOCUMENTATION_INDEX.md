@@ -63,7 +63,7 @@ Tools and standards for contributing to DSU.
 *   **[Pre-commit Hooks](PRE_COMMIT)**: Local linting and secret detection setup.
 *   **[Testing Framework](TESTING_NEGATIVE_IMPLEMENTATION)**: Comprehensive guide to [Negative Testing](TESTING_NEGATIVE_IMPLEMENTATION) and [Idempotency Verification](QUALITY_IDEMPOTENCY_BLOCKERS).
 *   **[LLM Context Map](LLM_MAP)**: Technical grounding for AI-assisted engineering.
-*   **[Wiki Improvement Plan](../docs/planning/WIKI_IMPROVEMENT_PLAN.md)**: Plan to address wiki content deficits.
+*   **[Wiki Improvement Plan](WIKI_IMPROVEMENT_PLAN)**: Plan to address wiki content deficits.
 
 ---
 
@@ -94,4 +94,4 @@ Future directions and historical implementation phases.
 
 ### 📚 Documentation Integration
 
-For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](../docs/DOCUMENTATION_BRIDGE.md)**.
+For guidance on navigating between the GitHub wiki and the main project documentation, see the **[Documentation Bridge](DOCUMENTATION_BRIDGE)**.

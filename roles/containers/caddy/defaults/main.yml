@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100045
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Defaults for containers/caddy role
 containers_caddy_generate_config: "{{ caddy_generate_config | default(true) }}"

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100321
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Security hardening role - Enhanced core security configurations
 # Note: Firewalls are managed by networking/firewall

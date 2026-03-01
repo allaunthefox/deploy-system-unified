@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100232
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Non-failing diagnostics for preflight: collects placeholder/secrets issues and writes a JSON report locally.
 - name: "ISO 9001 | Audit Code 600013 | Initialize preflight diagnose report"

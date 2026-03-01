@@ -1,6 +1,13 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-110056
+# Last Updated: 2026-03-01
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # Security - HashiCorp Vault Integration Role
 # Supports: Vault agent injector, Kubernetes auth, dynamic secrets
+# Note: HashiCorp Vault is governed by the Business Source License (BSL 1.1) / MPL.
+# Copyright HashiCorp, Inc.
 
 - name: Check if Vault is already configured
   ansible.builtin.stat:
@@ -94,6 +101,11 @@
     - security
     - secrets
   no_log: true
+
+- name: "VAULT | Configure Dynamic Secrets"
+  ansible.builtin.include_tasks: dynamic_secrets.yml
+  when: vault_enable_dynamic_secrets | bool
+  tags: [security, vault, dynamic-secrets]
 
 - name: Set Vault integration complete flag
   ansible.builtin.set_fact:

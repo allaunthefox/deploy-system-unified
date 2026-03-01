@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500095
+# Last Updated: 2026-02-28
+# =============================================================================
 """
 wiki_wiki_lint.py — enforce GitHub Wiki style and accessibility rules for repo documentation
 

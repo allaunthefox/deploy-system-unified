@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100389
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 | ISO 27001 §14.2
 # Idempotence test: apply the role twice and ensure the second run does not change sshd_config
 - name: Idempotence test for security/sshd
   hosts: localhost

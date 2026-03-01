@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100844
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Time Synchronization Enforcement
 # Ensures NTP/chrony is configured and synchronized

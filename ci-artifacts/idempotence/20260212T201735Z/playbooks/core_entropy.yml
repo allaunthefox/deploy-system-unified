@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100789
+# Last Updated: 2026-02-28
+# =============================================================================
 - name: Benchmark core/entropy
   hosts: localhost
   gather_facts: true

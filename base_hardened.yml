@@ -12,8 +12,7 @@
 # Base Hardened Infrastructure - The Secure Foundation
 # This playbook handles all core system setup and security hardening.
 
-- ansible.builtin.import_playbook: playbooks/preflight_assertions.yml
-- ansible.builtin.import_playbook: playbooks/preflight_validate.yml
+- ansible.builtin.import_playbook: playbooks/preflight_gate.yml
 - ansible.builtin.import_playbook: playbooks/bootstrap_ssh.yml
 
 - name: Apply Secure Infrastructure Base

@@ -40,6 +40,24 @@ log_level = "{{ vault_log_level | default('info') }}"
 
 # Vault data directory
 data_dir = "{{ vault_data_dir }}"
+
+# Auto-unseal configuration (NIST SP 800-53 SC-28)
+{% if vault_auto_unseal_enabled | bool %}
+seal "{{ vault_auto_unseal_type }}" {
+  {% if vault_auto_unseal_type == 'transit' %}
+  address         = "{{ vault_auto_unseal_transit_address }}"
+  disable_renewal = "false"
+  key_name        = "{{ vault_auto_unseal_transit_key_name }}"
+  mount_path      = "{{ vault_auto_unseal_transit_mount_path }}"
+  token           = "{{ vault_auto_unseal_transit_token }}"
+  {% elif vault_auto_unseal_type == 'gcpckms' %}
+  project     = "{{ vault_auto_unseal_gcp_project }}"
+  region      = "{{ vault_auto_unseal_gcp_region }}"
+  key_ring    = "{{ vault_auto_unseal_gcp_key_ring }}"
+  crypto_key  = "{{ vault_auto_unseal_gcp_crypto_key }}"
+  {% endif %}
+}
+{% endif %}
 {% endif %}
 
 # Enable Kubernetes auth if configured

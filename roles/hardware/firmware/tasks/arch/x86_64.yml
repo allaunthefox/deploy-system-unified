@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100509
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # x86_64 specific firmware/microcode tasks
 
 - name: Set distribution-specific hardware package names (x86_64)

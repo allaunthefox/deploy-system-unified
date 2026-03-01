@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100132
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Shim to forward includes to the repository-level tasks/save_checkpoint.yml
 # Properly isolated via relative path mapping and explicit private scope

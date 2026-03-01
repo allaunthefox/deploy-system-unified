@@ -1,16 +1,18 @@
 # GPU_ENHANCED_PLAN
 
-**Status:** In Progress (Phase 1-8 Active)
-**Last Updated:** February 24, 2026
-**Completion:** ~85% (Many features already implemented)
+**Status:** ⏸️ POSTPONED (Untestable - No hardware access)
+**Last Updated:** March 01, 2026
+**Completion:** ~85% (Core logic implemented; Verification BLOCKED)
 
-### **Battlemage Definition**
+### ⚠️ Hardware Delay & Testing Notice
+As of March 2026, all active development and verification of GPU-related features (NVIDIA, AMD, Intel Battlemage) are **postponed indefinitely**. 
 
-Battlemage in this repository refers specifically to Intel GPU driver enablement and acceleration settings (VAAPI/Quick Sync). The term is reserved for Intel GPU drivers to avoid ambiguity.
+**CRITICAL:** These features are currently **UNTESTABLE**. Implementation logic exists in the codebase but cannot be verified or validated. Do not attempt to use these roles in production environments as they have not passed physical hardware gates.
+
 
 ---
 
-## Current Implementation Status
+## Current Implementation Status (Archived/Pending Hardware)
 
 | Feature | Status | Evidence |
 |---------|--------|----------|

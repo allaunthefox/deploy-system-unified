@@ -1,5 +1,8 @@
 # IMPLEMENTATION_REVIEW
 
+**Status:** Historical review snapshot  
+**Note:** Use for context only; execution priorities are governed by `STABILITY_EXECUTION_PLAN_2026.md`.
+
 ## Executive Summary
 
 The recent updates to the `deploy-system-unified` project have been reviewed against the project structure, restructuring plans, and legacy feature requirements. The implementation of "Media Stack V2" and various hardening measures is **ALIGNED** with the project goals.

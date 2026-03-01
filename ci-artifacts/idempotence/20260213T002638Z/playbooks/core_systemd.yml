@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100832
+# Last Updated: 2026-02-28
+# =============================================================================
 - name: Benchmark core/systemd
   hosts: localhost
   gather_facts: true

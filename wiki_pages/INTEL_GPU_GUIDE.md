@@ -1,3 +1,9 @@
+> ⚠️ **UNTESTABLE**: Intel Battlemage support is currently unverified and untestable.
+
+> ⚠️ **UNTESTABLE**: Intel Battlemage support is currently unverified and untestable.
+
+> ⏸️ **POSTPONED**: Intel Battlemage support is unverified due to hardware delay.
+
 # INTEL_GPU_GUIDE
 
 This document outlines the configuration and deployment for Intel GPUs, ranging from integrated UHD/Iris graphics to high-performance discrete Arc and Battlemage cards.

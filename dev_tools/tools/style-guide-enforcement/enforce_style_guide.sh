@@ -163,10 +163,62 @@ check_dependencies() {
         warning "fd not found, falling back to standard find (processing may be slower)"
     fi
 
-    if command -v shellcheck >/dev/null 2>&1; then
-        success "All dependencies available (including shellcheck)"
+    if command -v flake8 >/dev/null 2>&1; then
+        success "All dependencies available (including flake8)"
     else
-        warning "shellcheck not found, internal shell scripts will not be audited"
+        warning "flake8 not found, Python scripts will not be audited"
+    fi
+
+    if command -v black >/dev/null 2>&1; then
+        success "All dependencies available (including black)"
+    else
+        warning "black not found, Python formatting will not be verified"
+    fi
+}
+
+# Enforce Python standards
+enforce_python_standards() {
+    log "Enforcing Python coding standards..."
+
+    py_count=0
+    if command -v fd >/dev/null 2>&1; then
+        py_count=$(fd . "$PROJECT_ROOT" -e py --exclude .git --exclude .venv 2>/dev/null | wc -l)
+    else
+        py_count=$(find "$PROJECT_ROOT" -name "*.py" -not -path "*/.git/*" -not -path "*/.venv/*" | wc -l)
+    fi
+
+    if [ "$py_count" -eq 0 ]; then
+        warning "No Python files found"
+        return 0
+    fi
+
+    if command -v flake8 >/dev/null 2>&1; then
+        log "Running flake8..."
+        if flake8 --max-line-length=120 --ignore=E501,W503 "$PROJECT_ROOT" 2>&1 | tee /tmp/flake8_output.txt; then
+            success "Python scripts pass flake8"
+        else
+            warning "flake8 found issues"
+            issue_count=$(grep -cE "^.*:[0-9]+:[0-9]+:" /tmp/flake8_output.txt 2>/dev/null || echo "0")
+            TOTAL_ISSUES=$((TOTAL_ISSUES + issue_count))
+        fi
+    fi
+
+    if command -v black >/dev/null 2>&1; then
+        log "Running black (check only)..."
+        if black --line-length=120 --check "$PROJECT_ROOT" 2>&1 | tee /tmp/black_output.txt; then
+            success "Python formatting passes black"
+        else
+            warning "black found formatting issues"
+            # black output doesn't give a simple count, so we increment by 1 if there's any failure
+            TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+            
+            if [ "$AUTO_FIX" = true ]; then
+                log "Applying black formatting..."
+                black --line-length=120 "$PROJECT_ROOT"
+                success "Black formatting applied"
+                FIXED_ISSUES=$((FIXED_ISSUES + 1))
+            fi
+        fi
     fi
 }
 
@@ -465,6 +517,7 @@ main() {
     check_dependencies
 
     if [ "$REPORT_ONLY" = false ]; then
+        enforce_python_standards
         enforce_yaml_standards
         enforce_ansible_standards
         enforce_shell_standards

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100150
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for containers/runtime role
 # Container Sandboxing and Runtime Security
 # CIS Benchmark: 2.x - Container Runtime (Podman)

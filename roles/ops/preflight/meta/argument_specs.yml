@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100226
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §12.4 | System Monitoring
 argument_specs:
   main:
     short_description: Pre-deployment validation role

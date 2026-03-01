@@ -1,3 +1,5 @@
+> ⚠️ **UNTESTABLE**: Hardware verification gates are currently blocked.
+
 # GPU_STACK_SETUP
 
 ## Overview
@@ -21,28 +23,8 @@ This role is designed to be **Architecture First**, meaning it first detects the
 ```yaml
 # In group_vars or inventory
 gpu_stack_enable: true
-gpu_stack_vendor: "auto"    # Recommended: automatically detects hardware
+gpu_stack_vendor: "nvidia"  # or "amd", "intel", "generic"
 gpu_stack_mode: "server"    # "server", "desktop", "hybrid"
-```
-
-### Automated Hardware Discovery
-
-The system now features an **Advanced Discovery Engine** (`gpu_discovery.py`):
-*   **Auto-Detection**: Setting `gpu_stack_vendor: auto` enables the Python-based probe.
-*   **Conflict Detection**: Automatically detects and blacklists conflicting drivers (e.g., Nouveau vs NVIDIA) if `deployment_profile: hardened` is active.
-*   **Evidence Logs**: Raw hardware data is stored in `/var/lib/deploy-system/evidence/gpu/` for audit purposes.
-
-### Precision Resource Allocation (Pinning)
-
-For multi-GPU systems, specific containers can be pinned to specific hardware using stable PCI paths.
-
-```yaml
-containers_gpu_allocation_map:
-  - container_name: "jellyfin"
-    pci_id: "0000:00:02.0"  # Map Integrated Intel GPU
-  - container_name: "transcoder"
-    vendor: "nvidia"
-    index: 0                # Map first discrete NVIDIA card
 ```
 
 ### Mixed Vendor Environments
@@ -67,7 +49,7 @@ gpu_stack_enable_oneapi: true  # Intel OneAPI Base Toolkit
 
 ### RHEL-Compatible (AlmaLinux/Rocky/CentOS Stream) GPG Key Verification (Optional)
 
-For hardened environments, repository key verification can be enabled for NVIDIA CUDA and AMD ROCm on RHEL-compatible distributions (AlmaLinux/Rocky/CentOS Stream). Verification is **opt-in** to avoid breaking when vendors rotate keys.
+For hardened environments, you can enable repository key verification for NVIDIA CUDA and AMD ROCm on RHEL-compatible distributions (AlmaLinux/Rocky/CentOS Stream). Verification is **opt-in** to avoid breaking when vendors rotate keys.
 
 ```yaml
 # NVIDIA (RHEL-compatible)
@@ -139,61 +121,11 @@ Branch templates like `gpu_slicing_bare_metal.yml` and `k8s_gpu_worker.yml` are 
 
 ## Verify Installation
 
-After deployment, the role provides a verification task that prints GPU status and Vulkan capabilities:
-
-*   **Host Status**: Prints detected driver version and compute stack health.
-*   **Vulkan Check**: Validates `vulkaninfo` on the host (in `desktop` or `hybrid` mode).
-*   **Container Projection**: Executes a smoke test container to verify hardware acceleration is available within the OCI runtime.
-
-Required reboot is often handled via notify handlers (`Update initramfs`), but a manual reboot may be required for the first installation of kernel modules.
-
-## GPU Discovery Script
-
-The project includes an enhanced GPU discovery script (`roles/hardware/gpu/files/gpu_discovery.py`) that provides comprehensive hardware detection:
-
-### Usage
+After deployment, the role provides a verification task that prints GPU status:
 
 ```bash
-# Basic GPU detection
-python3 roles/hardware/gpu/files/gpu_discovery.py
-
-# JSON output for automation
-python3 roles/hardware/gpu/files/gpu_discovery.py --json
-
-# Vendor validation
-python3 roles/hardware/gpu/files/gpu_discovery.py -c nvidia
-
-# Container runtime GPU support
-python3 roles/hardware/gpu/files/gpu_discovery.py --container-check
-
-# eGPU hot-swap detection
-python3 roles/hardware/gpu/files/gpu_discovery.py --egpu-check
-
-# DisplayPort Alt Mode
-python3 roles/hardware/gpu/files/gpu_discovery.py --dp-alt-mode
-
-# RDMA support
-python3 roles/hardware/gpu/files/gpu_discovery.py --rdma
-
-# eGPU + RDMA integration
-python3 roles/hardware/gpu/files/gpu_discovery.py --egpu-rdma
+# Example verification output
+"GPU Status: NVIDIA GPU detected. Driver: 535.129.03, CUDA: 12.2"
 ```
 
-### Features
-
-- Vendor validation against configured hardware
-- Multi-GPU detection and reporting
-- Intel GPU generation detection (Gen9-Gen12, Xe, Battlemage)
-- Driver version detection (NVIDIA, AMDGPU, Intel)
-- Container runtime GPU support (Podman/Docker)
-- eGPU hot-swap detection (Thunderbolt, USB4, OCuLink)
-- DisplayPort Alt Mode via USB-C
-- RDMA support (InfiniBand, RoCE, iWARP)
-- eGPU + RDMA integration checking
-
-## Related Documentation
-
-- [Intel GPU Guide](INTEL_GPU_GUIDE) - Detailed Intel-specific configuration and Battlemage setup
-- [Vulkan Examples](../docs/deployment/VULKAN_EXAMPLES.md) - Running Vulkan applications in containers
-- [DisplayPort Alt Mode Guide](../docs/deployment/DP_ALT_MODE.md) - USB-C/Thunderbolt eGPU setup
-- [GPU Slicing](GPU_SLICING.md) - Slicing strategies and configuration
+Required reboot is often handled via notify handlers (`Update initramfs`), but a manual reboot may be required for the first installation of kernel modules.

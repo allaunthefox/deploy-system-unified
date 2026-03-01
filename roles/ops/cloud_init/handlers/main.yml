@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100180
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Handlers for ops/cloud_init role
 # ISO 9001 Structural Consistency - Handler definitions for cloud-init synchronization

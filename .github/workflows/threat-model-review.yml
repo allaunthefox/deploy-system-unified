@@ -1,0 +1,16 @@
+name: Threat Model Integrity Review
+on:
+  pull_request:
+    paths:
+      - 'docs/architecture/threat_models/**'
+
+jobs:
+  review_threat_models:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Alert on Threat Model Change
+        run: |
+          echo "::error::Threat model changes detected. Manual security review required by the AppSec team."
+          exit 1

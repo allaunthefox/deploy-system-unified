@@ -95,6 +95,7 @@ These codes schedule periodic reviews for diagram maintenance.
 | `05_resource_requirements.md` | `DSU-MMD-140002` | 1.1 | ✅ Current | `140001` (deprecated) |
 | `06_decision_tree.md` | `DSU-MMD-150001` | 1.1 | ✅ Current | None (logic fixed) |
 | `07_security_architecture.md` | `DSU-MMD-160001` | 1.0 | ✅ Current | None |
+| `10_network_security_posture.md` | `DSU-MMD-160002` | 1.0 | ✅ Current | None |
 | `08_deployment_workflow.md` | `DSU-MMD-170001` | 1.0 | ✅ Current | None |
 | `docs/architecture/SECURITY_LAYERS.md` | `DSU-MMD-180001` | 1.1 | ✅ Current | None (model aligned) |
 | `docs/architecture/NETWORK_TOPOLOGY.md` | `DSU-MMD-180002` | 1.0 | ✅ Current | None |

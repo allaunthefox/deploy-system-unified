@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100641
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# RFC Compliance | ISO 27001 §13.1
 # Defaults for networking/services/endlessh role
 endlessh_port: 22
 endlessh_delay: 10000

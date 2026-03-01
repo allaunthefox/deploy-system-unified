@@ -44,6 +44,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Create CI vault password file
+        run: |
+          echo "ci_test_password" > /tmp/ci_vault_pass
+          chmod 600 /tmp/ci_vault_pass
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -51,6 +56,8 @@ jobs:
           ansible-galaxy collection install -r requirements.yml --force
 
       - name: First run (apply changes)
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: /tmp/ci_vault_pass
         run: |
           ansible-playbook ${{ matrix.playbook }} \
             -i inventory/local.ini \
@@ -60,6 +67,8 @@ jobs:
         continue-on-error: true
 
       - name: Second run (assert idempotence)
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: /tmp/ci_vault_pass
         run: |
           ansible-playbook ${{ matrix.playbook }} \
             -i inventory/local.ini \

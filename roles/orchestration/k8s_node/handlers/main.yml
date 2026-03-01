@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100673
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Handlers for k8s_node role - Kubernetes Node Services
 # ISO 9001 Structural Consistency - Handler definitions for Kubernetes node management

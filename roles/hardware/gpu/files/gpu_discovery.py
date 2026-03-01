@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500067
+# Last Updated: 2026-02-28
+# =============================================================================
 """
 GPU Discovery Script with Vendor Validation and Container Runtime Support
 Enhanced for Phase 1 GPU Backlog

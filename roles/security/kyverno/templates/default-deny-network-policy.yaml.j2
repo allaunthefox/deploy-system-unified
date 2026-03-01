@@ -1,0 +1,90 @@
+---
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900252
+# Template Type: Kyverno ClusterPolicy
+# Last Updated: 2026-02-28
+# Version: 1.0
+# =============================================================================
+# Copyright 2024 The Kubernetes Authors / CNCF
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-default-deny-network-policy
+  annotations:
+    policies.kyverno.io/title: Generate Default Deny Network Policy
+    policies.kyverno.io/category: Multi-Tenancy, Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: NetworkPolicy
+    policies.kyverno.io/description: >-
+      To ensure zero-trust microsegmentation, every namespace must have an explicit
+      NetworkPolicy. This policy automatically generates a default-deny and allow-dns
+      NetworkPolicy acting as a fail-safe in any newly created namespace.
+spec:
+  rules:
+  - name: generate-default-deny
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kyverno
+          - istio-system
+    generate:
+      synchronize: true
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: default-deny-all
+      namespace: "{{request.object.metadata.name}}"
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+  - name: generate-allow-dns
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kyverno
+          - istio-system
+    generate:
+      synchronize: true
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: allow-dns-egress
+      namespace: "{{request.object.metadata.name}}"
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Egress
+          egress:
+          - ports:
+            - port: 53
+              protocol: UDP
+            - port: 53
+              protocol: TCP

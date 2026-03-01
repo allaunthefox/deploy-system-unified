@@ -1,6 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100453
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for core/logging role
-# CIS 4.2.x | STIG V-230330 | NIST AU-2, AU-3 | ISO 27001 §12.3
 ---
+# CIS 4.2.x | STIG V-230330 | NIST AU-2, AU-3 | ISO 27001 §12.3
 package:
   systemd:
     installed: true

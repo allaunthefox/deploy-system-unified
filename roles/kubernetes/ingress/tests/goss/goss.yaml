@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100581
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Kubernetes Benchmark | ISO 27001 §14.2
 # Goss tests for kubernetes/ingress role
 # Tests nginx/traefik installation (ingress controller)
 

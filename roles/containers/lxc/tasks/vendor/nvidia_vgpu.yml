@@ -1,18 +1,25 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100083
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Configure LXC container for NVIDIA vGPU
   tags: [containers, lxc, gpu, nvidia]
   block:
     - name: Set vGPU device
-  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.set_fact:
         lxc_gpu_vgpu_device: "/dev/dri/renderD128"
+      tags: [containers, lxc, gpu, nvidia]
+
     - name: Create LXC vGPU configuration template
-  tags: [containers, lxc, gpu, nvidia]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/vgpu.conf
         mode: '0644'
       become: true
+      tags: [containers, lxc, gpu, nvidia]
+
   when:
     - lxc_enable_gpu_support
     - lxc_gpu_slicing_strategy == "vgpu"

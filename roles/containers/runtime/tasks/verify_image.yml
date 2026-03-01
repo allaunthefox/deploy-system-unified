@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100143
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Reusable task for verifying image signatures via Cosign
 # Use: ansible.builtin.include_tasks: roles/containers/runtime/tasks/verify_image.yml

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500106
+# Last Updated: 2026-02-28
+# =============================================================================
 
 # Import the rule class directly
 # Import the rule module directly from file to ensure tests load the local rule

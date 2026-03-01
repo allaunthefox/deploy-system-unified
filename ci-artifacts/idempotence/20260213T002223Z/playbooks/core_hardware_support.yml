@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100819
+# Last Updated: 2026-02-28
+# =============================================================================
 - name: Benchmark core/hardware_support
   hosts: localhost
   gather_facts: true

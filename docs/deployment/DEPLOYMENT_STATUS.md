@@ -29,6 +29,11 @@
 - **Role:** `security/scanning` (Refined)
 - **Preflight:** `PREFLIGHT_ASSERTIONS.YML` strictly enforces Vault encryption and SOPS hygiene before any deployment tasks run.
 
+### E. GPU Hardware Support
+- **Status:** ⚠️ **UNTESTABLE**
+- **Reason:** Semi-permanent delay due to hardware unavailability (March 2026).
+- **Current State:** Functional logic implemented in `hardware/gpu` but **blocked** from verification. Features are disabled by default.
+
 ## 2. Pre-Deployment Check List
 
 Before running the production playbook, you **MUST** perform the following configuration actions:

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100847
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Firewall Reconciliation - Verify Active Ports Match Firewall Rules
 # Compares listening sockets against configured firewall rules

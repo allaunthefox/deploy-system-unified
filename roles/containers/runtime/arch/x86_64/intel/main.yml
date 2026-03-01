@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100124
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Install GPU drivers and container toolkit (Intel/x86_64)
   ansible.builtin.package:
     name: "{{ containers_gpu_profiles['intel']['driver_packages'][ansible_facts['os_family'] | lower] }}"

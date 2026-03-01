@@ -10,6 +10,14 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: "ISO 27001 §12.4 | DSU-SHS-400100 | Enforce Compliance Metadata Integrity"
+      ansible.builtin.command:
+        cmd: "python3 {{ playbook_dir }}/../scripts/quality/enforce_metadata.py"
+      delegate_to: localhost
+      run_once: true
+      changed_when: false # Script only injects if missing, safe to run repeatedly
+      tags: [preflight, compliance, metadata]
+
     - name: Enforce single ontological profile group membership
       ansible.builtin.assert:
         that:

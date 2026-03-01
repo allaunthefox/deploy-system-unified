@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000724
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # prepare.yml - Prepare test instances for Ansible testing
 # Ensures Python is available for Ansible to work in containers

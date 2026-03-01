@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100535
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # GPU Slicing Support (SR-IOV, MIG, etc.)
 
 - name: Perform Hardware Compatibility Validation

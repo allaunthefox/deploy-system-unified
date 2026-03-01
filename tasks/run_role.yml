@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100848
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Generic wrapper to run a role with checkpointing
 # Input: 'role_item' (the role name or object with role/vars)

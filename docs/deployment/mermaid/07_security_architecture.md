@@ -40,6 +40,11 @@ graph TB
         LOG["Logging Stack<br/>Loki/Promtail"]
     end
 
+    subgraph "Layer 6: Host & Data Integrity"
+        IMA["IMA Enforcement<br/>Kernel-level integrity"]
+        DBE["Row-Level Encryption<br/>Vault Transit rotation"]
+    end
+
     PSC --> CSC
     CSC --> SA
     SA --> ROLE
@@ -52,18 +57,22 @@ graph TB
     K8S --> AUDIT
     AUDIT --> MON
     MON --> LOG
+    LOG --> IMA
+    IMA --> DBE
 
     classDef layer1 fill:#e3f2fd,stroke:#1565c0
     classDef layer2 fill:#e8f5e9,stroke:#2e7d32
     classDef layer3 fill:#fff3e0,stroke:#ef6c00
     classDef layer4 fill:#f3e5f5,stroke:#7b1fa2
     classDef layer5 fill:#ffebee,stroke:#c62828
+    classDef layer6 fill:#fafafa,stroke:#333333
 
     class PSC,CSC layer1
     class SA,ROLE,ROLEBIND layer2
     class NP,TLS,ING layer3
     class SOPS,K8S layer4
     class AUDIT,MON,LOG layer5
+    class IMA,DBE layer6
 ```
 
 ---
@@ -77,6 +86,7 @@ graph TB
 | **3: Network Security** | NetworkPolicies, TLS, Ingress | Traffic control |
 | **4: Secrets Management** | SOPS, Kubernetes Secrets | Encrypted secrets |
 | **5: Monitoring & Audit** | Audit Events, Prometheus, Loki | Forensic traceability |
+| **6: Host & Data Integrity** | IMA Enforcement, DB Row-Encryption | Absolute integrity & Data-at-Rest protection |
 
 ---
 

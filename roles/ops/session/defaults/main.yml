@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100237
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §12.4 | System Monitoring
 # Defaults for ops/session role
 tmux_session_for_deployment: true
 tmux_session_name: "deployment-session"

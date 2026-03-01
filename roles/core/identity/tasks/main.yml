@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100445
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Tasks for core/identity - Entropy-Backed UUID Generation
 # CIS 5.1.x | STIG V-230340 | NIST IA-2, IA-3 | ISO 27001 §9.2

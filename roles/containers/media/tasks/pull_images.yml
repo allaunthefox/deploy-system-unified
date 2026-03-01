@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100092
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Pull Media Stack Images
 # Retry logic implemented to handle transient network issues and avoid aggressive polling
 # Safe Level: 5 retries with 30s delay prevents triggering abuse detection while handling blips.

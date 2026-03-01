@@ -1,4 +1,8 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400000
+# Last Updated: 2026-02-28
+# =============================================================================
 # Run detect-secrets with the same options used by CI.  This allows
 # developers to reproduce the scan locally and understand failures.
 

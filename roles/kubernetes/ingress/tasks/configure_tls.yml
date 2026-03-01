@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100575
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Kubernetes Benchmark | ISO 27001 §14.2
 # Configure TLS for Ingress
 
 - name: "Create TLS secret for Ingress"
@@ -14,8 +19,8 @@
       data:
         # These should be replaced with actual certificates in production
         # For Let's Encrypt, cert-manager should be deployed separately
-        tls.crt: "{{ lookup('file', '/dev/null') | b64encode if false else 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURQekNDQWllZ0F3SUJBZ0lKQUt4bXB0YmhKTUFvR0NDcUdTTTQ5QkFNQ01CNHhIREFhQmdOVkJBTU0KRTJGd2NDNWxlR0Z0Y0d4bExtTnZiU0F3SGhjTk1qTXdNVEF4TURBd01EQXdXaGNOTWpRd01UQXhNREF3TURBdwpXakFlTVJ3d0dnWURWUVFEREJOaGNIQXVaWGhoYlhCc1pTNWpiMjBnTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJCnpqMERBUWNEUWdBRXBsYWNlaG9sZGVyQ2VydGlmaWNhdGVEYXRhCmV4YW1wbGU=
-        tls.key: "{{ lookup('file', '/dev/null') | b64encode if false else 'LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCnBsYWNlaG9sZGVyS2V5RGF0YQpleGFtcGxl'
+        tls.crt: "{{ lookup('file', '/dev/null') | b64encode if false else 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURQekNDQWllZ0F3SUJBZ0lKQUt4bXB0YmhKTUFvR0NDcUdTTTQ5QkFNQ01CNHhIREFhQmdOVkJBTU0KRTJGd2NDNWxlR0Z0Y0d4bExtTnZiU0F3SGhjTk1qTXdNVEF4TURBd01EQXdXaGNOTWpRd01UQXhNREF3TURBdwpXakFlTVJ3d0dnWURWUVFEREJOaGNIQXVaWGhoYlhCc1pTNWpiMjBnTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJCnpqMERBUWNEUWdBRXBsYWNlaG9sZGVyQ2VydGlmaWNhdGVEYXRhCmV4YW1wbGU=' }}"
+        tls.key: "{{ lookup('file', '/dev/null') | b64encode if false else 'LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCnBsYWNlaG9sZGVyS2V5RGF0YQpleGFtcGxl' }}"
   when: kubernetes_ingress_tls_enabled | bool
 
 - name: "Configure Let's Encrypt ClusterIssuer (optional)"
@@ -25,7 +30,7 @@
       apiVersion: cert-manager.io/v1
       kind: ClusterIssuer
       metadata:
-        name: letsencrypt-{{ 'prod' if kubernetes_ingress_tls_letsencrypt_production else 'staging' }}
+        name: "letsencrypt-{{ 'prod' if kubernetes_ingress_tls_letsencrypt_production else 'staging' }}"
       spec:
         acme:
           server: >-
@@ -36,7 +41,7 @@
             }}
           email: "{{ kubernetes_ingress_tls_letsencrypt_email }}"
           privateKeySecretRef:
-            name: letsencrypt-{{ 'prod' if kubernetes_ingress_tls_letsencrypt_production else 'staging' }}
+            name: "letsencrypt-{{ 'prod' if kubernetes_ingress_tls_letsencrypt_production else 'staging' }}"
           solvers:
             - http01:
                 ingress:

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100242
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss tests for ops/session role
 # This role manages TMUX session for deployment operations

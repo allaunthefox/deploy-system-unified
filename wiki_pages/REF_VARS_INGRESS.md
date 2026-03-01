@@ -99,5 +99,5 @@ After setting up ingress, configure DNS:
 
 ## Related Documentation
 
-- [INGRESS_CONTROLLER_SETUP](../docs/deployment/INGRESS_CONTROLLER_SETUP.md)
+- [INGRESS_CONTROLLER_SETUP](INGRESS_CONTROLLER_SETUP)
 - [Kubernetes Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)

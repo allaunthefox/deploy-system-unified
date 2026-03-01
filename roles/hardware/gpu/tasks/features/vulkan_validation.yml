@@ -1,16 +1,18 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100540
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Vulkan Capability Validation
 
 - name: Initialize Vulkan Fact
-  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     gpu_vulkan_supported: false
 
 - name: Ensure Vulkan Tools are Present
-  tags: [hardware, gpu, remediate]
   ansible.builtin.package:
     name: "{{ 'vulkan-tools' if ansible_facts['os_family'] != 'Alpine' else 'vulkan-utils' }}"
-  tags: [hardware, gpu, remediate]
     state: present
   register: _vulkan_tools_install
   until: _vulkan_tools_install is success
@@ -20,16 +22,13 @@
   when: not _gpu_is_container | default(false)
 
 - name: Handle Vulkan Tools Installation Failure
-  tags: [hardware, gpu, remediate]
   block:
     - name: Warn on Optional Failure
-  tags: [hardware, gpu, remediate]
       ansible.builtin.debug:
         msg: "WARNING: Failed to install Vulkan tools. Capability validation will be skipped."
       when: not core_security_fail_secure | default(false)
 
     - name: Fail on Hardened Profile Failure
-  tags: [hardware, gpu, remediate]
       ansible.builtin.fail:
         msg: "CRITICAL: Failed to install Vulkan tools in hardened environment. Aborting for integrity."
       when: core_security_fail_secure | default(false)
@@ -38,14 +37,12 @@
     - _vulkan_tools_install is failed
 
 - name: Check for Vulkan Loader
-  tags: [hardware, gpu, remediate]
   ansible.builtin.shell: "command -v vulkaninfo >/dev/null 2>&1 || command -v vkinfo >/dev/null 2>&1"
   register: vulkan_loader_check
   changed_when: false
   failed_when: false
 
 - name: Run Vulkan Information Probe
-  tags: [hardware, gpu, remediate]
   ansible.builtin.shell: " (vulkaninfo --summary || vkinfo --summary) | grep -i 'Devices:' -A 5"
   register: vulkan_info
   changed_when: false
@@ -53,26 +50,23 @@
   when: vulkan_loader_check.rc == 0
 
 - name: Set Vulkan Support Fact
-  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     gpu_vulkan_supported: "{{ vulkan_info.rc == 0 and 'GPU' in vulkan_info.stdout }}"
   when: vulkan_info.rc is defined and vulkan_info.rc == 0
 
 - name: Check for Standard GPU Device Paths (by-path)
-  tags: [hardware, gpu, remediate]
   ansible.builtin.stat:
     path: /dev/dri/by-path
   register: _gpu_dev_path_stat
 
 - name: Set Device Path Fact
-  tags: [hardware, gpu, remediate]
   ansible.builtin.set_fact:
     gpu_standard_paths_available: "{{ _gpu_dev_path_stat.stat.exists and _gpu_dev_path_stat.stat.isdir }}"
 
 - name: Report Vulkan Support Status
-  tags: [hardware, gpu, remediate]
   ansible.builtin.debug:
     msg:
       - "Vulkan Loader Present: {{ vulkan_loader_check.rc == 0 }}"
       - "Vulkan GPU Support Detected: {{ gpu_vulkan_supported }}"
       - "Vulkan Devices Found: {{ vulkan_info.stdout | default('None') }}"
+  tags: [hardware,gpu,remediate]

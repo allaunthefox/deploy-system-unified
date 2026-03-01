@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100410
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 CM-5 | ISO 27001 §12.1
 # Architecture specific packages for x86_64
 bootstrap_arch_packages:
   Debian:

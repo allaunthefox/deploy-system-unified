@@ -88,7 +88,7 @@ Where `PAGE_NAME` matches the filename without `.md` extension.
 
 Example:
 ```markdown
-See [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS) for the foundational rule.
+See [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS.md) for the foundational rule.
 ```
 
 ## Files Deleted (Stub Consolidation)

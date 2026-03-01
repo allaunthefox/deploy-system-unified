@@ -115,20 +115,6 @@ These tags mark the enhanced observability stack that enables real-time forensic
 
 ---
 
-## 🏷️ AI & LLM Security (ISO 27001:2022 Amd 1)
-
-These tags map to the newest ISO amendment for AI Security (ISO/IEC 27001:2022/Amd 1:2024).
-
-| Tag | Standard | Description | Audit Event Identifier |
-|-----|----------|-------------|-------------|
-| `iso_27001_ai` | **ISO 27001 Amd 1** | General AI Security control compliance. | 480001 |
-| `ai_security` | **AI Security** | Specific hardening for AI/LLM workloads. | 480101 |
-| `model_integrity`| **AI Security** | Verification of AI model weights/hashes. | 480003 |
-| `prompt_filter` | **AI Security** | LLM safety filtering and injection prevention. | 480101 |
-| `ai_firewall` | **AI Security** | Real-time monitoring of AI service traffic. | 480010 |
-
----
-
 ### Role Implementation Roadmap (PQC & Advanced)
 
 | Role | Status | Implementation |

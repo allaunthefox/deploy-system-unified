@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500109
+# Last Updated: 2026-02-28
+# =============================================================================
 """
 Script to analyze the deploy-system-unified project using Qwen sub-agents.
 """

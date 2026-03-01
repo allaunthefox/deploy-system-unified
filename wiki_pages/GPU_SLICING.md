@@ -1,3 +1,5 @@
+> ⚠️ **UNTESTABLE**: This feature is postponed indefinitely until hardware access is secured.
+
 # GPU_SLICING
 
 ## Introduction
@@ -10,9 +12,9 @@ This guide documents the changes made to the Deploy-System-Unified project to su
 
 - **New Role**: `hardware/gpu` handles all driver, firmware, and compute stack installation.
 - **Architecture Aware**: Supports x86_64, aarch64, and riscv64 customization. See architecture guides:
-    - [x86_64 Setup](ARCH_X86)
-    - [ARM64 Setup](ARCH_ARM64)
-    - [RISC-V Setup](ARCH_RISCV64)
+    - [x86_64 Setup](ARCH_GUIDE_X86)
+    - [ARM64 Setup](ARCH_GUIDE_ARM64)
+    - [RISC-V Setup](ARCH_GUIDE_RISCV64)
 - **Boot Integration**: Manages initramfs updates and kernel parameters (e.g., `update-initramfs`, `dracut`).
 
 ### 2. Containers/Runtime Role
@@ -29,14 +31,6 @@ This guide documents the changes made to the Deploy-System-Unified project to su
 
 - Updated the converge.yml file to skip security roles (firewall, hardening, access)
 - Updated the verify.yml file to fix YAML parsing errors and variable access issues
-
-### 4. Automated Capability Validation
-
-The system now includes an automated validation engine (`tasks/validate_slicing.yml`):
-*   **SR-IOV**: Detects Physical Function (PF) support via sysfs.
-*   **MIG**: Probes hardware for Multi-Instance GPU capability.
-*   **MPS**: Checks for NVIDIA Multi-Process Service readiness.
-*   **IOMMU**: Verifies kernel-level isolation for passthrough strategies.
 
 ## Supported GPU Vendors and Frameworks
 
@@ -61,11 +55,11 @@ The implementation supports the following GPU vendors and frameworks:
 - **OneAPI**: Intel's oneAPI toolkit
 - **Passthrough**: Direct GPU access
     - Supported Intel families include Arc A-series (Alchemist, Battlemage), Arc Pro, Data Center GPU Flex/Max, and Xe iGPUs.
-    - See [Intel GPU Guide](INTEL_GPU_GUIDE) for specific setup details.
+    - See [Intel Battlemage Guide](INTEL_BATTLEMAGE_GUIDE) for specific setup details.
 
 ## Usage
 
-To use GPU slicing, variables must be configured for both the **Driver Stack** and the **Container Runtime**.
+To use GPU slicing, you need to configure variables for both the **Driver Stack** and the **Container Runtime**.
 
 ### Driver Stack (`hardware/gpu`)
 

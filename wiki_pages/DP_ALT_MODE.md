@@ -176,6 +176,6 @@ amdconfig --initial
 
 ## Related Links
 
-- [eGPU Setup](GPU_STACK_SETUP)
-- [Vulkan Examples](VULKAN_EXAMPLES.md)
+- 
+- [Vulkan Examples](VULKAN_EXAMPLES)
 - 

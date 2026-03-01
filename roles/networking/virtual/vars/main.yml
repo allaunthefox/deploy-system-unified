@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100662
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # vars/main.yml for virtual networking role
 # Role-specific internal variables for VLAN and VXLAN management

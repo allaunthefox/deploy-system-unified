@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500094
+# Last Updated: 2026-02-28
+# =============================================================================
 import re, sys
 from pathlib import Path
 root = Path("wiki_pages")

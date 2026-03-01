@@ -31,7 +31,7 @@ The core infrastructure and security hardening layers are fully implemented, ver
 - **Validation:** Tested on Contabo VPS (Feb 2026)
 - **Compliance:** 100/100 (ISO 27001, ISO 27040, NIST SP 800-193, CIS)
 
-👉 **[View Detailed Implementation Status](./docs/development/BASE_LAYER_IMPLEMENTATION_STATUS.md)**
+👉 **[View Detailed Implementation Status](./docs/deployment/DEPLOYMENT_STATUS.md)**
 
 ---
 
@@ -218,7 +218,7 @@ This ensures every action performed by Ansible leaves a high-fidelity auditable 
 | **Networking** | 7 | ✅ Production Ready | [docs/architecture](./docs/architecture/) |
 | **Containers** | 13 | ✅ Production Ready | [docs/deployment](./docs/deployment/) |
 | **Storage** | 3 | ✅ Production Ready | [docs/architecture](./docs/architecture/) |
-| **Hardware** | 5 | 🔶 Experimental | [docs/deployment](./docs/deployment/) |
+| **Hardware** | 5 | ⚠️ **UNTESTABLE** | [docs/deployment](./docs/deployment/) |
 | **Virtualization** | 2 | ✅ Production Ready | [docs/deployment](./docs/deployment/) |
 | **Ops** | 8 | ✅ Production Ready | [docs/development](./docs/development/) |
 

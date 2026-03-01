@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000705
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Empty role requirements for Molecule's Ansible Galaxy dependency step.
 # This project vendors roles locally and pins *collections* via requirements.yml.

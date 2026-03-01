@@ -6,6 +6,7 @@
 # Version: 1.0
 # =============================================================================
 ---
+# ISO 27001 §14.2 | Playbook Execution
 - ansible.builtin.import_playbook: bootstrap_ssh.yml
 
 - hosts: all

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100145
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Enable NVIDIA MIG mode
   tags: [containers, runtime, gpu, mig]
   ansible.builtin.command:

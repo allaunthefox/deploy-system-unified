@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100838
+# Last Updated: 2026-02-28
+# =============================================================================
 # Authoritative list of redirects we have configured in RTD,
 # https://pypi.org/project/readthedocs-cli/
 ---

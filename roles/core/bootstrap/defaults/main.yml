@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100402
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-53 CM-5 | ISO 27001 §12.1
 # Defaults for core/bootstrap role
 core_install_base_packages: true
 

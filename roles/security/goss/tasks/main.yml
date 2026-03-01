@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100313
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Security - Goss-based Continuous Monitoring Role
 # Supports: goss installation, security test definitions, drift detection, remediation

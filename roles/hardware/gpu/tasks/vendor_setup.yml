@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100530
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # Per-Vendor Setup Logic (Included by tasks/main.yml)
 
 - name: Normalize vendor name (current iteration)

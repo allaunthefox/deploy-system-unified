@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500100
+# Last Updated: 2026-02-28
+# =============================================================================
 import re
 from ansiblelint.errors import MatchError
 from ansiblelint.file_utils import Lintable

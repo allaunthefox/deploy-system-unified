@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100126
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 # Defaults for containers/runtime role
 containers_install_podman: true
 containers_enable_socket: false  # SECURITY: Disable by default, opt-in only

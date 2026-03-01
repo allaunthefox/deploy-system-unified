@@ -72,7 +72,7 @@ ops_rsync_allowlist:
 
 #### Ephemeral Profiles (Extra Guard)
 
-For `deployment_profile: "ephemeral"`, explicit opt-in is required:
+For `deployment_profile: "ephemeral"`, you must explicitly opt in:
 
 ```yaml
 storage_nfs_ephemeral_allow: true

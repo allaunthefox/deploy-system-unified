@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100620
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# RFC Compliance | ISO 27001 §13.1
 # Defaults for networking/firewall role
 networking_firewall_enabled: true
 networking_firewall_allowed_tcp_ports:

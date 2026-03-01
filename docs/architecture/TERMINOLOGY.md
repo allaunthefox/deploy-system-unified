@@ -28,7 +28,7 @@ bidirectional tracing between a task execution and the compliance control it sat
 **In DSU:** Audit Event Identifiers are 6-digit integers (e.g., `300001`) grouped into suites
 by concern domain. They appear in every task name following the pattern
 `[Standard] | [Identifier] | [Description]`. The full catalog is in
-[DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS).
+[DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS.md).
 
 ---
 
@@ -137,7 +137,7 @@ affecting other components.
 **In DSU:** Separation of Concerns is the primary term used throughout documentation. SoC is
 enforced at three levels: task (one module call, one action), role (one role, one technology
 concern), and playbook (one playbook, one infrastructure concern). See
-[SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS).
+[SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS.md).
 
 ---
 

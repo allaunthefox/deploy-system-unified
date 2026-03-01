@@ -1,0 +1,25 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000608
+# Last Updated: 2026-02-28
+# =============================================================================
+---
+# RFC Compliance | ISO 27001 §13.1
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: istio-test
+    image: docker.io/rancher/k3s:latest
+    command: /bin/sh -c "mount --make-rshared / && /bin/k3s server --disable traefik"
+    privileged: true
+    tmpfs:
+      - /run
+      - /var/run
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

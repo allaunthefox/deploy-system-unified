@@ -1,6 +1,10 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100149
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Create NVIDIA time-slicing configuration file
-  tags: [containers, runtime, gpu, time_slicing]
   ansible.builtin.template:
     src: time_slicing_config.j2
     dest: /etc/nvidia-container-runtime/config.toml
@@ -8,10 +12,9 @@
   become: true
 
 - name: Restart containerd service (if running)
-  tags: [containers, runtime, gpu, time_slicing]
   ansible.builtin.systemd:
     name: containerd
-  tags: [containers, runtime, gpu, time_slicing]
     state: restarted
   become: true
   failed_when: false
+  tags: [containers,runtime,gpu,time_slicing]

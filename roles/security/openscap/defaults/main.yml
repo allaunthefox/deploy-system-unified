@@ -1,9 +1,13 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100248
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Defaults for security/openscap - Standardized Auditing
+# Note: OpenSCAP and SCAP Security Guide components are governed by the LGPLv2 License.
+# See: https://github.com/OpenSCAP/openscap for full license details.
 
 openscap_enabled: true
-
-# Report Configuration
 openscap_report_dir: "/var/lib/deploy-system/reports/openscap"
 openscap_report_file: "compliance_report_{{ ansible_date_time.iso8601_basic_short }}.html"
 

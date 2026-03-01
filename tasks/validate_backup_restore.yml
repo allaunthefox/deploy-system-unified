@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100850
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Backup Restore Validation
 # Verifies restic backup integrity and restore capability

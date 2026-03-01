@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100625
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Alpine/Nftables rules for networking/firewall
 # Compliance: CIS 4.4.x | STIG V-230271 | NIST SC-7, AC-4 | ISO 27001 §8.20, §8.23

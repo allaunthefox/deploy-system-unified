@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100527
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Hardware Detection Logic
 # Detects Installed GPU Vendors to override generic defaults

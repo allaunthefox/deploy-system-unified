@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100854
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Kernel Module Validation
 # Ensures required kernel modules are loaded for container/K8s functionality

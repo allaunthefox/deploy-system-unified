@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000758
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # destroy.yml - Ansible-Native container cleanup
 # This playbook destroys the test instance

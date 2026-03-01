@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100730
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Btrfs maintenance tasks
 - name: Schedule periodic Btrfs scrub

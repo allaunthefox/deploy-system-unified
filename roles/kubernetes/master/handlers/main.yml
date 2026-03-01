@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100584
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Kubernetes Benchmark | ISO 27001 §14.2
 # Handlers for kubernetes/master
 
 - name: reload_systemd

@@ -1,0 +1,109 @@
+# Audit Event Identifier: DSU-PLY-110055
+# Playbook Type: Database Security Hardening
+# Last Updated: 2026-03-01
+# Version: 1.0
+# =============================================================================
+---
+# NIST SP 800-53 SC-28 | ISO 27001 §8.24
+# Tasks for security/database_hardening role
+
+- name: "DB | Detect Virtualization Environment"
+  ansible.builtin.set_fact:
+    _db_is_container: "{{ (ansible_virtualization_type | default('unknown') in ['docker', 'podman', 'container', 'lxc']) or (ansible_is_chroot | default(false)) }}"
+  tags: [security, db, internal]
+
+- name: "DB | Ensure Transit encryption key exists in Vault"
+  hashivault_secret_engine:
+    name: "{{ db_encryption_vault_transit_mount }}"
+    backend: transit
+    state: present
+  environment:
+    VAULT_ADDR: "{{ vault_addr }}"
+    VAULT_TOKEN: "{{ vault_root_token }}"
+  when: 
+    - db_encryption_vault_transit_enabled | bool
+    - not ansible_check_mode
+  tags: [security, db, vault]
+
+- name: "DB | Ensure Vault Transit key is created"
+  hashivault_transit_key:
+    name: "{{ db_encryption_vault_transit_key_name }}"
+    mount_point: "{{ db_encryption_vault_transit_mount }}"
+    state: present
+    type: rsa-2048
+  environment:
+    VAULT_ADDR: "{{ vault_addr }}"
+    VAULT_TOKEN: "{{ vault_root_token }}"
+  when: 
+    - db_encryption_vault_transit_enabled | bool
+    - not ansible_check_mode
+  tags: [security, db, vault]
+
+- name: "DB | Deploy row-level encryption rotation script"
+  ansible.builtin.template:
+    src: db-rotate-row-keys.sh.j2
+    dest: "{{ db_encryption_rotation_script }}"
+    mode: '0700'
+    owner: root
+    group: root
+  become: true
+  when: 
+    - db_hardening_enabled | bool
+    - not _db_is_container
+  tags: [security, db, automation]
+
+- name: "DB | Deploy row-level rotation systemd service"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/db-rotate-row-keys.service
+    content: |
+      [Unit]
+      Description=Database Row-Level Encryption Rotation Service
+      After=vault.service
+
+      [Service]
+      Type=oneshot
+      ExecStart={{ db_encryption_rotation_script }}
+      Environment="VAULT_ADDR={{ vault_addr }}"
+      # In solo-dev, token management is simplified; in prod this would use app-role
+      Environment="VAULT_TOKEN={{ vault_root_token }}"
+      StandardOutput=journal
+      StandardError=journal
+    mode: '0644'
+  become: true
+  when: 
+    - db_hardening_enabled | bool
+    - not _db_is_container
+  tags: [security, db, automation]
+
+- name: "DB | Deploy row-level rotation systemd timer"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/db-rotate-row-keys.timer
+    content: |
+      [Unit]
+      Description=Run Database Row-Level Encryption Rotation {{ db_encryption_rotation_interval | title }}
+
+      [Timer]
+      OnCalendar={{ db_encryption_rotation_interval }}
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    mode: '0644'
+  become: true
+  when: 
+    - db_hardening_enabled | bool
+    - not _db_is_container
+  tags: [security, db, automation]
+
+- name: "DB | Enable and start row-level rotation timer"
+  ansible.builtin.systemd:
+    name: db-rotate-row-keys.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: 
+    - db_hardening_enabled | bool
+    - not _db_is_container
+    - not ansible_check_mode
+  tags: [security, db, automation]

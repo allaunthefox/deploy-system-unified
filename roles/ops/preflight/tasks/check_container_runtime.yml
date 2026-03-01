@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100228
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Preflight Container Runtime Validation
 # Validates container runtime availability for container profiles

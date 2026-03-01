@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100231
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # License Compliance Preflight Checks
 # Ensures license compliance before deployment proceeds

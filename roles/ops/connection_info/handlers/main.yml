@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100187
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Handlers for ops/connection_info role
 # ISO 9001 Structural Consistency - Handler definitions for connection info management

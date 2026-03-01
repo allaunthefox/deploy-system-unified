@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100577
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Kubernetes Benchmark | ISO 27001 §14.2
 # Install Nginx Ingress Controller via Helm
 
 - name: "Ensure Helm is available"
@@ -45,8 +50,8 @@
           type: "{{ kubernetes_ingress_service_type }}"
           externalIPs: "{{ [kubernetes_ingress_external_ip] if kubernetes_ingress_external_ip else omit }}"
         ports:
-          http: {{ kubernetes_ingress_http_port }}
-          https: {{ kubernetes_ingress_https_port }}
+          http: "{{ kubernetes_ingress_http_port }}"
+          https: "{{ kubernetes_ingress_https_port }}"
         resources:
           limits:
             cpu: "{{ kubernetes_ingress_controller_resources.limits.cpu }}"
@@ -55,13 +60,13 @@
             cpu: "{{ kubernetes_ingress_controller_resources.requests.cpu }}"
             memory: "{{ kubernetes_ingress_controller_resources.requests.memory }}"
         metrics:
-          enabled: {{ kubernetes_ingress_enable_metrics | bool }}
+          enabled: "{{ kubernetes_ingress_enable_metrics | bool }}"
           serviceMonitor:
-            enabled: {{ kubernetes_ingress_enable_prometheus_rule | bool }}
-        securityContext: {{ kubernetes_ingress_security_context }}
+            enabled: "{{ kubernetes_ingress_enable_prometheus_rule | bool }}"
+        securityContext: "{{ kubernetes_ingress_security_context }}"
         publishService:
           enabled: true
-      annotations: {{ kubernetes_ingress_annotations | default({}) | to_nice_yaml }}
+      annotations: "{{ kubernetes_ingress_annotations | default({}) | to_nice_yaml }}"
     wait: true
     wait_timeout: "300s"
   when: kubernetes_ingress_enabled | bool

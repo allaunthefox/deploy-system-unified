@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500097
+# Last Updated: 2026-02-28
+# =============================================================================
 """Script to link VARIABLE_REFERENCE.md and its split counterparts to role pages."""
 
 import re

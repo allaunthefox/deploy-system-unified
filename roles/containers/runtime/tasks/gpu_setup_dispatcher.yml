@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100131
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Normalize Architecture for Container Runtime
   ansible.builtin.set_fact:
     _runtime_norm_arch: >-

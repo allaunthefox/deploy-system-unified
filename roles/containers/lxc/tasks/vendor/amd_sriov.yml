@@ -1,33 +1,42 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100084
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Configure LXC container for AMD SR-IOV
   tags: [containers, lxc, gpu, amd]
   block:
     - name: Set SR-IOV devices
-  tags: [containers, lxc, gpu, amd]
       ansible.builtin.set_fact:
         lxc_gpu_sriov_devices: []
+      tags: [containers, lxc, gpu, amd]
+
     - name: Discover AMD SR-IOV devices
-  tags: [containers, lxc, gpu, amd]
       ansible.builtin.shell:
         cmd: lspci -nn | grep -E "(AMD|ATI)" | grep -E "(Virtual|SR-IOV)"
       register: amd_sriov_devices
       changed_when: false
       failed_when: false
       args:
-        
+        executable: /bin/bash
       become: true
+      tags: [containers, lxc, gpu, amd]
+
     - name: Parse AMD SR-IOV devices
-  tags: [containers, lxc, gpu, amd]
       ansible.builtin.set_fact:
         lxc_gpu_sriov_devices: "{{ amd_sriov_devices.stdout_lines | map('split', ' ') | map('first') | list }}"
       when: amd_sriov_devices.stdout | length > 0
+      tags: [containers, lxc, gpu, amd]
+
     - name: Create LXC SR-IOV configuration template
-  tags: [containers, lxc, gpu, amd]
       ansible.builtin.template:
         src: lxc-gpu-config.j2
         dest: /etc/lxc/default.conf.d/sriov.conf
         mode: '0644'
       become: true
+      tags: [containers, lxc, gpu, amd]
+
   when:
     - lxc_enable_gpu_support
     - lxc_gpu_slicing_strategy == "sriov"

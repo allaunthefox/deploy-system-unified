@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100744
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# NIST SP 800-125 | Virtualization Security
 # Handlers for virtualization/kvm
 - name: restart_libvirtd
   ansible.builtin.systemd:

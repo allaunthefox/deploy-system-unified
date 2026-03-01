@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000730
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Prepare playbook for molecule tests
 # Ensures Python is available for Ansible to work in containers

@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100224
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §12.4 | System Monitoring
 # Defaults for preflight role - Validation checks only
 preflight_require_systemd: true
 preflight_check_memory: false

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100611
+# Last Updated: 2026-02-28
+# =============================================================================
 # Goss tests for networking/container_networks role
 # ISO 27001 §8.20 - Network security
 

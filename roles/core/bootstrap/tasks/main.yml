@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100407
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Core bootstrap role - System initialization and base configuration
 # CIS 1.1.x | STIG V-230240 | NIST CM-2, SC-12 | ISO 27001 §8.9 | ISO 9001 | ISO 8000-110

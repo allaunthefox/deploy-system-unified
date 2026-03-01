@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100221
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Tasks for ops/pre_connection role
 # This role runs on the CONTROLLER to ensure connectivity and determine facts.

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100288
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Security - Falco Runtime Security Role
 # POL-SEC | Security Policy Enforcement

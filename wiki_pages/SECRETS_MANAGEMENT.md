@@ -1,103 +1,69 @@
 # SECRETS_MANAGEMENT
 
-**Status:** Planned. Ansible Vault is currently active for deployments.
+**Status:** Transition planned, not active cutover.  
+**Current Provider of Record:** Ansible Vault (`secrets.generated.yml`)  
+**Target Provider:** SOPS + Age (after cutover criteria are met)
 
-This project adopts **SOPS** (Secrets OPerationS) with **Age** encryption for managing sensitive credentials. This approach allows us to keep encrypted secrets in the Git repository while maintaining granular control and diff-ability.
+## Current State
 
-## Why SOPS?
+1. Vault is actively enforced by preflight assertions.
+2. SOPS vars plugin is enabled in `ansible.cfg` for future compatibility.
+3. Placeholder `.sops.yaml` is currently blocked by preflight safety checks.
 
-* **Encrypted Values, Visible Keys**: Unlike Ansible Vault (which encrypts the full file), SOPS only encrypts the *values*. This allows us to see variable names in Git diffs.
-* **No Shared Passwords**: Uses Age public/private key pairs instead of a shared symmetric password.
-* **Ansible Integration**: Using `community.sops`, encrypted files are decrypted on-the-fly during playbook execution.
+## Why This Matters
 
-## Prerequisites
+We want SOPS benefits (diffable encrypted values and key-based access) without breaking existing deployment safety guarantees.
 
-1. **Install Tools**:
+## Cutover Prerequisites
 
-    ```bash
-    # Install SOPS
-    curl -LO https://github.com/getsops/sops/releases/download/v3.9.0/sops-v3.9.0.linux.amd64
-    sudo mv sops-v3.9.0.linux.amd64 /usr/local/bin/sops
-    sudo chmod +x /usr/local/bin/sops
+1. Operator-ready migration guide exists and is approved.
+2. Key rotation SOP exists and is approved.
+3. Real project Age recipient keys are provisioned and tested.
+4. Preflight assertions are updated to enforce valid SOPS config (instead of blocking all `.sops.yaml`).
+5. CI verifies decryption/read path for encrypted SOPS variables.
 
-    # Install Age
-    sudo apt-get install age
-    ```
+## Migration Scope (Initial)
 
-2. **Install Ansible Collection**:
+Move these variables first:
 
-    ```bash
-    ansible-galaxy collection install community.sops
-    ```
+1. `authentik_secret_key`
+2. `postgres_password` (role-specific mappings in migration guide)
+3. `transmission_pass`
+4. `vaultwarden_admin_token`
+5. `access_admin_password_hash`
 
-3. **Generate Keys** (One-time setup per Admin):
+## Execution Phases
 
-    ```bash
-    mkdir -p ~/.config/sops/age
-    age-keygen -o ~/.config/sops/age/keys.txt
-    ```
+### Phase 1: Documentation and Policy (Current Window)
 
-    * **Keep `keys.txt` SAFE.** This is the master key to decrypt everything.
-    * **Note the Public Key** (`age1...`). You will need this for the configuration.
+- Draft SOPS migration guide.
+- Draft key rotation SOP.
+- Define rollback to Vault-only operation.
 
-## Project Configuration
+Current draft artifacts:
 
-### 1. `.sops.yaml`
+- `docs/deployment/SOPS_MIGRATION_GUIDE.md`
+- `docs/deployment/SOPS_KEY_ROTATION_SOP.md`
 
-Root configuration file defining which keys govern which files.
+### Phase 2: Tooling and Gate Update
 
-```yaml
-creation_rules:
-  # Encrypt all secret group_vars
-  - path_regex: group_vars/.*\.sops\.ya?ml$
-    key_groups:
-      - age:
-          - "age1..." # REPLACEME with Recipient Public Keys
-```
+- Add validated `.sops.yaml` template with real recipients.
+- Update preflight assertions to validate SOPS config correctness.
+- Add CI checks for SOPS-encrypted var consumption.
 
-### 2. `ansible.cfg`
+### Phase 3: Secret Migration
 
-Enable the plugin to autoload `.sops.yml` files.
+- Migrate prioritized variables to `secrets.sops.yml`.
+- Remove hardcoded placeholders/default secrets in role defaults.
+- Verify production deploy path with migrated secrets.
 
-```ini
-[defaults]
-vars_plugins_enabled = host_group_vars, community.sops.sops
-```
+## Working Notes
 
-## Workflow
+- Do not add a placeholder `.sops.yaml` until preflight logic is updated.
+- Keep Vault path fully operational until SOPS cutover checks are green.
 
-### Creating a Secret
+## Completion Criteria
 
-Do not edit secret files directly with `nano` or `vim`. Use `sops`.
-
-```bash
-# Creates (or edits) an encrypted file
-sops group_vars/all/secrets.sops.yml
-```
-
-Content should look like standard YAML:
-
-```yaml
-db_password: "my_super_secret_password"
-api_token: "xxyyzz"
-```
-
-### Usage in Playbooks
-
-Simply reference the variable as normal.
-
-```yaml
-- name: Print Secret
-  debug:
-    msg: "The password is {{ db_password }}"
-```
-
-## Migration Checklist
-
-* [ ] Install SOPS and Age binaries.
-* [ ] Generate project Age keys.
-* [ ] Create `.sops.yaml`.
-* [ ] Enable `community.sops.sops` in `ansible.cfg`.
-* [ ] Migrate `authentik_secret_key`, `postgres_password`, `transmission_pass`, `vaultwarden_admin_token` to `group_vars/all/secrets.sops.yml`.
-* [ ] Add `access_admin_password_hash` to `group_vars/all/secrets.sops.yml` (hashed password for admin user).
-* [ ] Remove hardcoded secrets from `defaults/main.yml` files.
+1. SOPS-managed secrets are active in CI and production deploy path.
+2. Vault fallback is documented and tested.
+3. No default secret placeholders remain in production-critical role defaults.

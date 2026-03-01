@@ -1,0 +1,85 @@
+#!/bin/bash
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900254
+# Template Type: IMA Key Rotation Script
+# Last Updated: 2026-03-01
+# Version: 1.0
+# =============================================================================
+set -e
+
+KEY_DIR="{{ ima_key_dir }}"
+PRIV_KEY="{{ ima_private_key }}"
+PUB_KEY="{{ ima_public_key }}"
+X509_CERT="{{ ima_x509_cert }}"
+LOG_FILE="{{ ima_key_rotation_log }}"
+
+# Binary list to sign (core system utilities)
+BINARIES=(
+    "/usr/bin/bash"
+    "/usr/bin/ls"
+    "/usr/bin/cat"
+    "/usr/bin/grep"
+    "/usr/bin/sed"
+    "/usr/bin/awk"
+    "/usr/bin/ssh"
+    "/usr/bin/sudo"
+    "/usr/bin/systemctl"
+    "/usr/bin/podman"
+    "/usr/bin/kubectl"
+)
+
+log() {
+    echo "[$(date +'%Y-%m-%dT%H:%M:%S')] $1" >> "$LOG_FILE"
+}
+
+log "Starting IMA key rotation..."
+
+# 1. Create backup of old keys
+if [ -f "$PRIV_KEY" ]; then
+    log "Backing up old keys..."
+    cp "$PRIV_KEY" "${PRIV_KEY}.old"
+    cp "$PUB_KEY" "${PUB_KEY}.old"
+fi
+
+# 2. Generate new RSA Private Key
+log "Generating new 2048-bit RSA key..."
+openssl genrsa -out "$PRIV_KEY" 2048
+
+# 3. Create X.509 Certificate
+log "Creating X.509 certificate..."
+openssl req -new -x509 -utf8 -sha256 -days 365 \
+    -batch -config <(cat <<EOF
+[ req ]
+distinguished_name = req_distinguished_name
+prompt = no
+[ req_distinguished_name ]
+C = US
+ST = California
+L = San Francisco
+O = NoDupeLabs
+OU = Security
+CN = IMA-Signing-Key-$(hostname)
+EOF
+) \
+    -key "$PRIV_KEY" \
+    -out "$PUB_KEY"
+
+# 4. Convert to DER format for kernel consumption
+openssl x509 -in "$PUB_KEY" -out "$X509_CERT" -outform DER
+
+# 5. Sign Binaries
+log "Signing system binaries..."
+for bin in "${BINARIES[@]}"; do
+    if [ -f "$bin" ]; then
+        evmctl imasig_sign -k "$PRIV_KEY" "$bin"
+        log "Signed $bin"
+    else
+        log "WARN: Binary $bin not found, skipping."
+    fi
+done
+
+# 6. Set correct permissions
+chmod 600 "$PRIV_KEY"
+chmod 644 "$PUB_KEY" "$X509_CERT"
+
+log "IMA key rotation completed successfully."

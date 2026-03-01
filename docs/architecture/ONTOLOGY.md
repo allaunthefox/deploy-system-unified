@@ -5,13 +5,13 @@ term means, what values are valid, and how to choose between them. When a role, 
 decision requires justification, the answer must trace back to this document.
 
 For formal definitions of every term used here, including governing ISO and NIST citations, see
-[TERMINOLOGY](TERMINOLOGY).
+[TERMINOLOGY](TERMINOLOGY.md).
 
 ---
 
 ## Core Principle
 
-**Separation of Concerns (SoC)** governs all classification decisions in this system. See [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS) for the project's implementation of this principle.
+**Separation of Concerns (SoC)** governs all classification decisions in this system. See [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS.md) for the project's implementation of this principle.
 
 The taxonomy below gives SoC operational structure: each axis answers a different question and
 no axis bleeds into another.
@@ -135,7 +135,7 @@ compliance control. Identifiers are grouped into suites by concern domain.
 
 Governing standard: ISO/IEC 27001:2022 §8.15; NIST SP 800-53 Rev 5 AU-3.
 
-The full registry is in [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS).
+The full registry is in [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS.md).
 
 Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [Description]`
 
@@ -177,10 +177,10 @@ Every task name follows the pattern: `[Standard] | [Audit Event Identifier] | [D
 
 ## Related Documents
 
-- [TERMINOLOGY](TERMINOLOGY) — Formal definitions with ISO/NIST citations for every term
-- [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS) — SoC implementation
-- [MODULAR_LAYERS](MODULAR_LAYERS) — The 7-layer defense-in-depth architecture
-- [../development/ISO_TAGGING_STANDARD](../development/ISO_TAGGING_STANDARD) — Tag naming and compliance mapping
+- [TERMINOLOGY](TERMINOLOGY.md) — Formal definitions with ISO/NIST citations for every term
+- [SEPARATION_OF_CONCERNS](SEPARATION_OF_CONCERNS.md) — SoC implementation
+- [MODULAR_LAYERS](MODULAR_LAYERS.md) — The 7-layer defense-in-depth architecture
+- [../development/ISO_TAGGING_STANDARD](../development/ISO_TAGGING_STANDARD.md) — Tag naming and compliance mapping
 - [../wiki_pages/QUALITY_IDEMPOTENCY_BLOCKERS](../wiki_pages/QUALITY_IDEMPOTENCY_BLOCKERS) — Idempotency contract
-- [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS) — Full Audit Event Identifier registry
-- [../development/LLM_MAP](../development/LLM_MAP) — AI agent usage guide
+- [DSU_AUDIT_EVENT_IDENTIFIERS](DSU_AUDIT_EVENT_IDENTIFIERS.md) — Full Audit Event Identifier registry
+- [../development/LLM_MAP](../development/LLM_MAP.md) — AI agent usage guide

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100794
+# Last Updated: 2026-02-28
+# =============================================================================
 - name: Benchmark core/memory
   hosts: localhost
   gather_facts: true

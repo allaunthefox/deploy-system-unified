@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100516
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# ISO 27001 §11.1 | Physical Security
 # AMD GPU Setup for riscv64 (PCIe cards on HiFive/Pioneer boards)
 
 - name: Install AMD firmware and drivers (Debian/Ubuntu)

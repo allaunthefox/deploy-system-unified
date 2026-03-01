@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TST-1000744
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # verify.yml - Verification playbook for molecule tests
 # Validates that deployment was successful by checking directories, packages, and configurations

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100119
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Container quadlets role - Systemd quadlet management
 # Compliance: CIS Docker Benchmark 2.x, STIG V-230470, NIST CM-6/SC-39, ISO 27001 §8.20

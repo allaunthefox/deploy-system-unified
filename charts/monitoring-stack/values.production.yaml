@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300041
+# Last Updated: 2026-02-28
+# =============================================================================
 # Monitoring Stack - Production Values
 # =============================================================================
 # For production deployment with security hardening and proper resource limits

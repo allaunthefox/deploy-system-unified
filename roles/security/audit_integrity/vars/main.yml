@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100272
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Internal variables for security/audit_integrity role
 security_audit_integrity_journal_path: "/var/log/journal"

@@ -1,4 +1,8 @@
 #!/bin/sh
+# =============================================================================
+# Audit Event Identifier: DSU-SHS-400029
+# Last Updated: 2026-02-28
+# =============================================================================
 # Helper script to perform the same steps executed by the CI workflows
 # so that developers can run the check locally and be confident the
 # actions runner will see the same behavior.

@@ -2,18 +2,6 @@
 
 We welcome contributions to Deploy-System-Unified! This document outlines the process for contributing code, documentation, and other improvements.
 
-## AI/LLM Assistance
-
-This project leverages AI-assisted development tools (including Claude, CodeGPT, and similar assistants) to accelerate development and maintain consistency. When using AI tools to contribute:
-
-- **Review all AI-generated code thoroughly** before submitting
-- **Understand** what the code does—do not submit code that cannot be explained
-- **Test changes** in a safe environment before submitting pull requests
-- **Maintain project standards** — AI should follow existing patterns, not create new ones
-- **Document unexpected behavior** if AI assistance produces anything unusual
-
-**Important:** Contributors remain responsible for any code submitted, regardless of how it was generated. Contributors using AI tools should have the same level of understanding and accountability as with manually-written code.
-
 ## Code of Conduct
 
 By participating in this project, contributors agree to abide by the Code of Conduct.
@@ -42,12 +30,6 @@ By participating in this project, contributors agree to abide by the Code of Con
 - Remember that the main repository serves as a base layer with roles and base functionality
 - **Policy:** `projects/deploy-system-unified/main.yml` must remain a pristine base and **must not** include a top-level `roles:` list. Use `branch_templates/` for role-based deployments; CI will enforce this policy.
 
-### Wiki Contributions
-
-- **Separation of Concerns:** The `wiki_pages/` directory is maintained separately from the core project code.
-- **Impact:** Changes to the wiki do not affect the deployment system's functionality.
-- **Publishing:** Merges to `main` involving `wiki_pages/` trigger an automated workflow to update the GitHub Wiki.
-
 ## Style Guides
 
 ### Git Commit Messages
@@ -56,6 +38,38 @@ By participating in this project, contributors agree to abide by the Code of Con
 - Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
 - Limit the first line to 72 characters or less
 - Reference issues and pull requests liberally after the first line
+
+---
+
+## Updating the Wiki
+
+Before editing wiki content or sidebar files, run the wiki linter locally to catch regressions and style issues:
+
+```sh
+python3 .scripts/wiki_wiki_lint.py --json
+```
+
+- To auto-fix H1 mismatches and create placeholders for referenced YAMLs, use:
+
+```sh
+python3 .scripts/wiki_wiki_lint.py --fix-h1 --create-placeholders
+```
+
+- Open a PR with changes and include the linter output (JSON or summary) in the PR description. The repository has a GitHub Action (`.github/workflows/wiki-lint.yml`) that enforces wiki hygiene on PRs and pushes.
+
+Guidelines:
+- Don't change H1s without reviewer consent if it's a content/title-sensitive page.
+- Use placeholder pages under `wiki_pages/` when linking to repo YAMLs or non-wiki resources.
+- Use `wiki_pages/UPDATING.md` for detailed wiki-specific guidance.
+
+## 🎓 Training & Learning
+
+To master the orchestration patterns used in this project, we recommend completing the **Interactive Learning Lab** tutorials. These Jupyter notebooks provide hands-on experience with:
+- **Test Harness Pattern**: Building verifiable AI agents.
+- **Audit Event Identifier System**: Forensic naming and traceability.
+- **Multi-Agent Workflows**: Orchestrating complex deployments.
+
+👉 **[Launch Interactive Lab (14 Tutorials)](https://github.com/jeremylongshore/claude-code-plugins-plus-skills/blob/main/tutorials/README.md)**
 
 ## Development Setup
 

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100222
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss tests for ops/pre_connection role
 # This role runs on the controller to check connectivity and SSH port

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100308
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
 # Goss Drift Detection Playbook
 # This playbook detects configuration drift and generates reports

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# =============================================================================
+# Audit Event Identifier: DSU-PYS-500096
+# Last Updated: 2026-02-28
+# =============================================================================
 """Script to generate role pages from ROLE_REFERENCE.md."""
 
 import re

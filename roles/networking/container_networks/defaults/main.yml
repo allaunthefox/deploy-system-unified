@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100605
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# RFC Compliance | ISO 27001 §13.1
 # Defaults for networking/container_networks
 
 container_networks_enable: true

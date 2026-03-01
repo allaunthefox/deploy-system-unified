@@ -1,58 +1,43 @@
-# Navigation
-### [Documentation Index](DOCUMENTATION_INDEX)
+### [Home](Home)
+- [Role Reference](ROLE_REFERENCE)
+- [Variable Reference](VARIABLE_REFERENCE)
+### [Documentation Index](Documentation_Index)
 
 ---
 
 ### 🏛️ Architecture
-- [Terminology](TERMINOLOGY)
 - [Ontology & Profiles](ONTOLOGY)
 - [Modular Layers](MODULAR_LAYERS)
 - [Layered Security](LAYERED_SECURITY)
-- [Core Philosophy](SEPARATION_OF_CONCERNS)
-- [Arch: x86](ARCH_X86)
-- [Arch: ARM64](ARCH_ARM64)
-- [Arch: RISC-V](ARCH_RISCV64)
-
----
-
-### 🚀 Operations
-- [Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)
-- [Deployment Status](DEPLOYMENT_STATUS)
-- [Quick Reference](QUICK_REFERENCE)
-- [Restore Runbook](RESTORE_RUNBOOK)
-
----
-
-### 🛡️ Compliance
-- [ISO Tagging Standard](ISO_TAGGING_STANDARD)
-- [Compliance Gap Analysis](COMPLIANCE_GAP_ANALYSIS)
-- [Supply-Chain Hardening](SUPPLY_CHAIN_HARDENING)
-- [Audit Event Identifiers](DSU_AUDIT_EVENT_IDENTIFIERS)
-
----
-
-### 🔌 Hardware
-- [GPU Stack Setup](GPU_STACK_SETUP)
-- [Intel GPU Guide](INTEL_GPU_GUIDE)
+- [Ephemeral Design](EPHEMERAL_DESIGN)
+- [Core Philosophy](NON_COMINGLING)
+- [Virtual Networking](VIRTUAL_NETWORKING)
+- [Backup Strategy](BACKUP_STRATEGY)
 - [GPU Slicing](GPU_SLICING)
-- [Hardware Matrix](HARDWARE_COMPATIBILITY_MATRIX)
-- [Vendor Profiles](ARCH_VENDOR_PROFILES)
 
 ---
 
 ### 💻 Development
-- [Documentation Style Guide](DOCUMENTATION_STYLE_GUIDE)
-- [Naming Convention Standard](NAMING_CONVENTION_STANDARD)
-- [Ansible Style Guide](ANSIBLE_STYLE_GUIDE)
+- [Contributing](CONTRIBUTING)
 - [Style Guide](STYLE_GUIDE)
+- [Pre-commit Hooks](PRE_COMMIT)
 - [Tooling](TOOLING)
-- [Testing Framework](TESTING_NEGATIVE_IMPLEMENTATION)
-- [Idempotency](QUALITY_IDEMPOTENCY_BLOCKERS)
 - [LLM Context Map](LLM_MAP)
 
 ---
 
-### 📊 Reference
-- [Role Reference](ROLE_REFERENCE)
-- [Variable Reference](VARIABLE_REFERENCE)
-- [Release Cycles](RELEASE_CYCLES)
+### 🚀 Deployment
+- [Universal SOP](UNIVERSAL_DEPLOYMENT_GUIDE)
+- [Deployment Status](DEPLOYMENT_STATUS)
+- [Examples](EXAMPLES)
+- [OS Configuration](OS_CONFIGURATION)
+- [SSH Idempotence](SSH_IDEMPOTENCE_GUARDRAILS)
+- [Security Hybrid Setup](SECURITY_CROWDSEC_HYBRID)
+
+---
+
+### 📅 Planning
+- [Stability Plan 2026](STABILITY_EXECUTION_PLAN_2026)
+- [Migration Plan](MIGRATION_PLAN)
+- [Restructuring Plan](RESTRUCTURING_PLAN_2026)
+- [GPU Enhanced Plan](GPU_ENHANCED_PLAN)

@@ -20,7 +20,7 @@
 | **SSH Access** | `roles/security/access/tasks/main.yml` | `ansible_documentation/variables.md` |
 | **Containers** | `roles/containers/tasks/main.yml` | `molecule_documentation/overview.md` |
 | **Ephemeral** | `branch_templates/BASE_EPHEMERAL.yml` | `research_guidelines.md` |
-| **Style** | `docs/development/STYLE_GUIDE.md` | `Style_Guide.md` |
+| **Style** | `docs/development/STYLE_GUIDE.md` | `Style_Guide.md` (see also: YAML_Style_Guide, Ansible_Style_Guide, Shell_Style_Guide, Documentation_Style_Guide) |
 | **GPU Slicing** | `docs/gpu_slicing_setup.md` | `planning/GPU_Slicing_Planning_Document.md` |
 
 ## 🛠 Key Role Definitions

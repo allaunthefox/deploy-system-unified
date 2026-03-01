@@ -151,6 +151,22 @@ This directory contains Mermaid diagram files for visualizing the Deploy-System-
 
 ---
 
+### 9. Network Security Posture
+**File:** `10_network_security_posture.md`
+
+**Purpose:** Complete visualization of atomic networking defense layers (UFW, Kyverno, Istio)
+
+**Diagram Type:** Graph (Top-Bottom)
+
+**Key Information:**
+- Host Net Policies (Systemd / UFW)
+- Mesh Layer (Istio mTLS)
+- Fail-Safe Admission (Kyverno)
+
+**Use Case:** Demonstrating overall network security defense posture
+
+---
+
 ## Usage Examples
 
 ### Render in GitHub/GitLab
@@ -236,7 +252,7 @@ Where:
 | `13xxxx` | Incompatibilities | `04_incompatibilities.md` |
 | `14xxxx` | Resource Requirements | `05_resource_requirements.md` |
 | `15xxxx` | Decision Tree | `06_decision_tree.md` |
-| `16xxxx` | Security Architecture | `07_security_architecture.md` |
+| `16xxxx` | Security Architecture | `07_security_architecture.md`, `10_network_security_posture.md` |
 | `17xxxx` | Deployment Workflow | `08_deployment_workflow.md` |
 | `18xxxx` | Architecture Docs | `docs/architecture/*.md` |
 | `19xxxx` | Role Documentation | `roles/*/readme.md` |
@@ -303,6 +319,7 @@ Special audit codes for tracking outdated diagrams and version migration.
 | `05_resource_requirements.md` | `DSU-MMD-140002` | Resource Requirements | graph (LR) |
 | `06_decision_tree.md` | `DSU-MMD-150001` | Decision Tree | graph |
 | `07_security_architecture.md` | `DSU-MMD-160001` | Security Architecture | graph |
+| `10_network_security_posture.md` | `DSU-MMD-160002` | Network Security | graph |
 | `08_deployment_workflow.md` | `DSU-MMD-170001` | Deployment Workflow | sequenceDiagram |
 | `docs/architecture/SECURITY_LAYERS.md` | `DSU-MMD-180001` | Security Layers | graph |
 | `docs/architecture/NETWORK_TOPOLOGY.md` | `DSU-MMD-180002` | Network Topology | graph |

@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300050
+# Last Updated: 2026-02-28
+# =============================================================================
 {{- define "network-stack.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}

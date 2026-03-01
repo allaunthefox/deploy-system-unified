@@ -1,3 +1,7 @@
+# =============================================================================
+# Audit Event Identifier: DSU-HLM-300040
+# Last Updated: 2026-02-28
+# =============================================================================
 suite: Media Stack Deployment Tests
 templates:
   - jellyfin-deployment.yaml

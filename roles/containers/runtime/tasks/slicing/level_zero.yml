@@ -1,4 +1,9 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100144
+# Last Updated: 2026-02-28
+# =============================================================================
 ---
+# CIS Docker Benchmark | Pod Security Standards
 - name: Create Intel Level Zero configuration file
   tags: [containers, runtime, gpu, level_zero]
   ansible.builtin.template:
