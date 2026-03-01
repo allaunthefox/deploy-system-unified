@@ -1,0 +1,66 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100341
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: "Automated penetration testing framework"
+    description: "Runs automated security tests and audits using standard tools."
+    author: "deploy-system-unified"
+    options:
+      pentest_enable:
+        type: "bool"
+        default: false
+        description: "Whether to enable penetration testing."
+      pentest_audit_mode:
+        type: "str"
+        default: "audit"
+        choices: ["audit", "scan", "exploit"]
+        description: "The depth of the penetration test."
+      pentest_nmap_enable:
+        type: "bool"
+        default: true
+        description: "Whether to run nmap port scans."
+      pentest_lynis_enable:
+        type: "bool"
+        default: true
+        description: "Whether to run lynis system audits."
+      pentest_nikto_enable:
+        type: "bool"
+        default: false
+        description: "Whether to run nikto web audits."
+      pentest_sqlmap_enable:
+        type: "bool"
+        default: false
+        description: "Whether to run sqlmap database audits."
+      pentest_nmap_targets:
+        type: "list"
+        elements: "str"
+        default: ["localhost"]
+        description: "Target hosts for nmap scans."
+      pentest_nmap_args:
+        type: "str"
+        default: "-sV -O"
+        description: "Arguments for nmap."
+      pentest_lynis_args:
+        type: "str"
+        default: "--quick"
+        description: "Arguments for lynis."
+      pentest_report_dir:
+        type: "str"
+        default: "/var/log/security/pentest"
+        description: "Directory for storing test reports."
+      pentest_report_owner:
+        type: "str"
+        default: "root"
+        description: "Owner of the report files."
+      pentest_report_group:
+        type: "str"
+        default: "root"
+        description: "Group of the report files."
+      pentest_report_format:
+        type: "str"
+        default: "json"
+        choices: ["json", "txt", "html"]
+        description: "The format of the test reports."

@@ -1,0 +1,27 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100339
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for testing/penetration_testing role
+pentest_enable: false
+pentest_audit_mode: "audit"  # Choices: audit, scan, exploit
+
+# Tool Configuration
+pentest_nmap_enable: true
+pentest_lynis_enable: true
+pentest_nikto_enable: false
+pentest_sqlmap_enable: false
+
+# Nmap settings
+pentest_nmap_targets: ["localhost"]
+pentest_nmap_args: "-sV -O"
+
+# Lynis settings
+pentest_lynis_args: "--quick"
+
+# Reporting
+pentest_report_dir: "/var/log/security/pentest"
+pentest_report_owner: "root"
+pentest_report_group: "root"
+pentest_report_format: "json"

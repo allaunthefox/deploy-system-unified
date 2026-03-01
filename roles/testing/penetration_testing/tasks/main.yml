@@ -1,0 +1,55 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100342
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+- name: "FORENSIC: Ensure Security Testing Report Directory"
+  ansible.builtin.file:
+    path: "{{ pentest_report_dir }}"
+    state: directory
+    owner: "{{ pentest_report_owner }}"
+    group: "{{ pentest_report_group }}"
+    mode: '0700'
+  when: pentest_enable | bool
+
+- name: "FORENSIC: Install Penetration Testing Tools"
+  ansible.builtin.package:
+    name:
+      - nmap
+      - lynis
+    state: present
+  when: pentest_enable | bool
+
+- name: "FORENSIC: Execute Nmap Port Scan"
+  ansible.builtin.command:
+    cmd: "nmap {{ pentest_nmap_args }} {{ item }} -oX {{ pentest_report_dir }}/nmap_{{ item }}.xml"
+  loop: "{{ pentest_nmap_targets }}"
+  register: nmap_scan_results
+  when: 
+    - pentest_enable | bool
+    - pentest_nmap_enable | bool
+  changed_when: true
+
+- name: "FORENSIC: Execute Lynis System Audit"
+  ansible.builtin.command:
+    cmd: "lynis audit system {{ pentest_lynis_args }} --report-file {{ pentest_report_dir }}/lynis_report.dat"
+  register: lynis_audit_results
+  when:
+    - pentest_enable | bool
+    - pentest_lynis_enable | bool
+  changed_when: true
+
+- name: "FORENSIC: Collect and Hash Security Audit Results"
+  ansible.builtin.shell: |
+    set -o pipefail
+    cd {{ pentest_report_dir }}
+    sha256sum * > {{ inventory_hostname }}_audit_hashes.txt
+  args:
+    executable: /bin/bash
+  when: pentest_enable | bool
+  changed_when: true
+
+- name: "FORENSIC: Verify Audit Completion Status"
+  ansible.builtin.debug:
+    msg: "Security audit completed for {{ inventory_hostname }}. Results stored in {{ pentest_report_dir }}"
+  when: pentest_enable | bool
