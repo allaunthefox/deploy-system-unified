@@ -1,0 +1,19 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100325
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/security_dashboard role
+security_dashboard_enable: true
+security_dashboard_grafana_url: "http://localhost:3000"
+security_dashboard_datasource: "Loki"
+
+# Metrics Collection
+security_dashboard_collect_cis: true
+security_dashboard_collect_drift: true
+security_dashboard_collect_vulns: true
+
+# Reporting
+security_dashboard_report_enable: true
+security_dashboard_report_interval: "daily"
+security_dashboard_report_dest: "/var/lib/deploy-system/reports/security"

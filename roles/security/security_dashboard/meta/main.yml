@@ -1,0 +1,51 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100326
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+galaxy_info:
+  role_name: security_dashboard
+  author: deploy-system-unified
+  description: Forensic security dashboard orchestration and automated reporting (Grafana/Loki)
+  company: Deploy-System-Unified Project
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Fedora
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+  galaxy_tags:
+    - security
+    - monitoring
+    - dashboard
+    - grafana
+    - loki
+    - forensic
+    - compliance
+    - reporting
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - automation
+
+collections:
+  - ansible.builtin
+  - community.general
+  - community.grafana
+
+dependencies:
+  - role: ops/monitoring
