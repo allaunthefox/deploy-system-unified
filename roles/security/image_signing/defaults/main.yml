@@ -1,0 +1,33 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100395
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Defaults for security/image_signing role
+image_signing_enable: true
+image_signing_tool: cosign  # Choices: cosign, notation, gpg
+
+# Cosign settings
+image_signing_cosign_version: "v2.2.3"
+image_signing_cosign_binary_path: "/usr/local/bin/cosign"
+
+# Signature Policy
+# require_all: all images must be signed
+# require_one: at least one signature must match
+# warn_only: log warnings but don't block
+image_signing_policy: "require_all"
+
+# Trusted Registries
+image_signing_trusted_registries:
+  - "docker.io"
+  - "ghcr.io"
+  - "quay.io"
+
+# Key Management
+# For production, these should be stored in Vault or KMS
+image_signing_public_key_path: "/etc/cosign/cosign.pub"
+image_signing_public_key_content: ""
+
+# Verification settings
+image_signing_verify_on_pull: true
+image_signing_verify_before_run: true

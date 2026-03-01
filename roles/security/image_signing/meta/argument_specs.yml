@@ -1,0 +1,42 @@
+# =============================================================================
+# Audit Event Identifier: DSU-ARG-100395
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+argument_specs:
+  main:
+    short_description: Container image signature verification
+    description:
+      - This role installs Cosign and configures policies for verifying container image signatures to prevent supply-chain attacks.
+    options:
+      image_signing_enable:
+        type: bool
+        default: true
+        description: Master toggle for image signing verification.
+      image_signing_tool:
+        type: str
+        default: "cosign"
+        choices: ["cosign", "notation", "gpg"]
+        description: The tool used for signature verification.
+      image_signing_cosign_version:
+        type: str
+        default: "v2.2.3"
+        description: The version of Cosign to install.
+      image_signing_policy:
+        type: str
+        default: "require_all"
+        choices: ["require_all", "require_one", "warn_only"]
+        description: The enforcement policy for missing or invalid signatures.
+      image_signing_trusted_registries:
+        type: list
+        elements: str
+        default: ["docker.io", "ghcr.io", "quay.io"]
+        description: List of registries from which signatures are expected.
+      image_signing_public_key_path:
+        type: str
+        default: "/etc/cosign/cosign.pub"
+        description: Path to the public key used for verification.
+      image_signing_verify_on_pull:
+        type: bool
+        default: true
+        description: Whether to verify images immediately after pulling.

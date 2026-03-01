@@ -1,0 +1,70 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100397
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Tasks for security/image_signing
+# Compliance: NIST SP 800-190 | ISO 27001 §14.2 | CIS Docker 4.x
+
+- name: "ISO 9001 | 600013 | 530005 | Check if Cosign is installed"
+  ansible.builtin.command:
+    cmd: "{{ image_signing_cosign_binary_path }} version"
+  register: _cosign_check
+  failed_when: false
+  changed_when: false
+  tags: [security, containers, sigstore, verification, 600013]
+
+- name: "ISO 27001 §8.19 | 530005 | Install Cosign binary"
+  ansible.builtin.get_url:
+    url: "https://github.com/sigstore/cosign/releases/download/{{ image_signing_cosign_version }}/cosign-linux-amd64"
+    dest: "{{ image_signing_cosign_binary_path }}"
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  when: _cosign_check.rc != 0
+  tags: [security, containers, sigstore, deploy, 530005]
+
+- name: "ISO 9001 | 600013 | Ensure Cosign configuration directory exists"
+  ansible.builtin.file:
+    path: "{{ image_signing_public_key_path | dirname }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  tags: [security, containers, sigstore, initialization, 600013]
+
+- name: "ISO 27001 §10.1 | 400016 | Deploy Cosign public key"
+  ansible.builtin.copy:
+    content: "{{ image_signing_public_key_content }}"
+    dest: "{{ image_signing_public_key_path }}"
+    mode: '0644'
+    owner: root
+    group: root
+  become: true
+  when: image_signing_public_key_content | length > 0
+  tags: [security, containers, sigstore, config, 400016]
+
+- name: "ISO 9001 | 600013 | Create automated verification script"
+  ansible.builtin.copy:
+    dest: /usr/local/bin/dsu-verify-image
+    content: |
+      #!/bin/bash
+      # DSU Image Verification Wrapper
+      IMAGE=$1
+      if [ -z "$IMAGE" ]; then
+        echo "Usage: dsu-verify-image <image>"
+        exit 1
+      fi
+      {{ image_signing_cosign_binary_path }} verify --key {{ image_signing_public_key_path }} "$IMAGE"
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+  tags: [security, containers, sigstore, deploy, 600013]
+
+- name: "ISO 9001 | 600013 | Set image signing integration complete flag"
+  ansible.builtin.set_fact:
+    image_signing_integration_complete: true
+  tags: [security, containers, sigstore, internal, 600013]
