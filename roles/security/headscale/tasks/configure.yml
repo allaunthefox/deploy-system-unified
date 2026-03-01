@@ -1,0 +1,34 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100803
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Configure Headscale Service
+# Compliance: NIST CM-6, ISO 27001 §12.1
+
+- name: "ISO 27001 §12.1 | 800107 | Deploy Headscale Configuration"
+  ansible.builtin.template:
+    src: headscale_config.yaml.j2
+    dest: /etc/headscale/config.yaml
+    owner: headscale
+    group: headscale
+    mode: '0640'
+  tags: [security, headscale, config, 800107]
+  notify: restart_headscale
+
+- name: "ISO 27001 §12.1 | 800108 | Deploy Headscale Systemd Unit"
+  ansible.builtin.template:
+    src: headscale.service.j2
+    dest: /etc/systemd/system/headscale.service
+    owner: root
+    group: root
+    mode: '0644'
+  tags: [security, headscale, deploy, 800108]
+  notify: reload_systemd
+
+- name: "ISO 27001 §12.1 | 800109 | Enable and Start Headscale Service"
+  ansible.builtin.systemd:
+    name: headscale
+    state: started
+    enabled: true
+  tags: [security, headscale, deploy, 800109]

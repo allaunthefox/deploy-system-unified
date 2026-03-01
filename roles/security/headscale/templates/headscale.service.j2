@@ -1,0 +1,29 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900801
+# Template Type: Headscale Systemd Service
+# Last Updated: 2026-03-01
+# =============================================================================
+[Unit]
+Description=headscale controller
+After=network.target
+
+[Service]
+Type=simple
+User=headscale
+Group=headscale
+ExecStart=/usr/local/bin/headscale serve
+WorkingDirectory=/var/lib/headscale
+Environment=HEADSCALE_CONFIG=/etc/headscale/config.yaml
+Restart=always
+RestartSec=5s
+
+# Hardening
+ProtectSystem=strict
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+NoNewPrivileges=true
+ReadWritePaths=/var/lib/headscale /var/run/headscale
+
+[Install]
+WantedBy=multi-user.target

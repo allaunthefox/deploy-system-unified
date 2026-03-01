@@ -1,0 +1,50 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900800
+# Template Type: Headscale Configuration
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+server_url: http://0.0.0.0:{{ headscale_port }}
+listen_addr: 0.0.0.0:{{ headscale_port }}
+metrics_listen_addr: 0.0.0.0:{{ headscale_metrics_port }}
+
+grpc_listen_addr: 0.0.0.0:50443
+grpc_allow_insecure: false
+
+private_key_path: /var/lib/headscale/private.key
+noise:
+  private_key_path: /var/lib/headscale/noise_private.key
+
+ip_prefixes:
+  - 100.64.0.0/10
+
+derp:
+  server:
+    enabled: false
+    region_id: 999
+    region_code: "headscale"
+    region_name: "Headscale Embedded DERP"
+    stun_listen_addr: "0.0.0.0:3478"
+  urls:
+    - https://controlplane.tailscale.com/derpmap/default
+
+disable_check_updates: true
+ephemeral_node_inactivity_timeout: 30m
+
+database:
+  type: sqlite3
+  sqlite:
+    path: /var/lib/headscale/db.sqlite
+  debug: false
+
+dns_config:
+  nameservers:
+    - 1.1.1.1
+    - 1.0.0.1
+  domains: []
+  magic_dns: true
+  base_domain: {{ headscale_namespace_prefix }}.internal
+
+log:
+  level: info
+  format: text
