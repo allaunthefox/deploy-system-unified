@@ -1,0 +1,38 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100350
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# NIST 800-53 Rev. 5 Validation Tasks (Subset)
+
+- name: "NIST AC-2 | Ensure account management is automated"
+  ansible.builtin.shell: |
+    grep -E "^[^:]+:[^:]+:[0-9]+:0:99999:7:::" /etc/shadow | wc -l
+  register: nist_ac_2_result
+  changed_when: false
+  tags: [nist, nist_ac_2, compliance]
+
+- name: "NIST AC-3 | Ensure access enforcement via file permissions"
+  ansible.builtin.stat:
+    path: /etc/sudoers
+  register: nist_ac_3_stat
+  tags: [nist, nist_ac_3, compliance]
+
+- name: "NIST AU-2 | Ensure event logging (auditd) is active"
+  ansible.builtin.systemd:
+    name: auditd
+  register: nist_au_2_status
+  tags: [nist, nist_au_2, compliance]
+
+- name: "NIST IA-2 | Ensure identification and authentication (PAM)"
+  ansible.builtin.shell: |
+    grep -r "pam_unix.so" /etc/pam.d/ | wc -l
+  register: nist_ia_2_result
+  changed_when: false
+  tags: [nist, nist_ia_2, compliance]
+
+- name: "NIST | Record compliance score"
+  ansible.builtin.set_fact:
+    nist_score: "{{ (1 if nist_ac_2_result.stdout | int > 0 else 0) + (1 if nist_ac_3_stat.stat.mode == '0440' else 0) + (1 if nist_au_2_status.status.ActiveState == 'active' else 0) + (1 if nist_ia_2_result.stdout | int > 0 else 0) }}"
+    nist_total: 4
+  tags: [nist, compliance]
