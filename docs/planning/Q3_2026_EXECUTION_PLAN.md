@@ -21,6 +21,7 @@ Following the successful stabilization and security hardening in Q1/Q2, the Q3 p
 
 ### Track 1: Zero Trust (Headscale) - *Optional*
 *   **Role**: `security/headscale`
+*   **Strategic Mapping**: See [ZERO_TRUST_NETWORKING.md](../architecture/ZERO_TRUST_NETWORKING.md) for environment-specific guidance.
 *   **Deployment Logic**: 
     *   **Recommended**: Distributed Cloud/VPS targets where public IP isolation is required.
     *   **Optional**: Bare Metal / LAN-only environments (disabled by default).
