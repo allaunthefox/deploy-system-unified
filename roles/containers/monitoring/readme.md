@@ -1,34 +1,55 @@
-# Container Monitoring Role
+# Monitoring Role
 
-This role uses Podman Quadlets to deploy a monitoring stack consisting of Prometheus and Grafana.
+**Audit Event Identifier:** DSU-PLY-100107  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-03-01  
+
+This role deploys a comprehensive observability stack, including Prometheus for metrics, Grafana for visualization, and Loki for forensic log aggregation.
 
 ## Architecture
 
-- Prometheus: Time-series database and metrics scraper for `node_exporter` (host).
-- Prometheus can optionally scrape `cadvisor` for container metrics (planned).
-- Grafana: Visualization dashboard.
+```mermaid
+graph TD
+    subgraph Data Sources
+        NODE[Node Exporter] --> PROM(Prometheus)
+        CAD[cAdvisor] --> PROM
+        LOKI_plugin[Docker/Podman] --> LOKI(Loki)
+        LOGS[System Logs] --> PROMTAIL[Promtail]
+    end
+    
+    subgraph Aggregation
+        PROMTAIL --> LOKI
+        PROM --> GRAF[Grafana]
+        LOKI --> GRAF
+    end
+    
+    subgraph Visualization
+        GRAF --> DASH[Forensic Dashboard]
+        GRAF --> ALERT[Alert Manager]
+    end
+    
+    classDef source fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef agg fill:#fff3e0,stroke:#ff6f00,stroke-width:2px;
+    classDef viz fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    
+    class NODE,CAD,LOKI_plugin,LOGS,PROMTAIL source;
+    class PROM,LOKI,GRAF agg;
+    class DASH,ALERT viz;
+```
 
-## Defaults (Key Variables)
+## Features
+- **Prometheus**: Time-series database for metrics.
+- **Grafana**: Operational and forensic dashboards.
+- **Loki**: Log aggregation system (like Prometheus, but for logs).
+- **Forensic Ready**: Pre-configured dashboards for audit event tracking.
+- **Gatus**: Automated health checking and status page.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `monitoring_enable` | `true` | Enable the stack. |
-| `monitoring_instance` | `default` | Instance name for multi-tenant separation. |
-| `monitoring_root_dir` | `/srv/monitoring/{{ monitoring_instance }}` | Data directory for Prometheus and Grafana. |
-| `monitoring_config_dir` | `/srv/containers/monitoring_config/{{ monitoring_instance }}` | Config directory (Prometheus config). |
-| `monitoring_network` | `host` | Pod network for rootless mode. Rootful mode uses host networking. |
-| `monitoring_pod_name` | `mon-pod-{{ monitoring_instance }}` | Name of the pod. |
-| `monitoring_prometheus_image` | `docker.io/prom/prometheus:v3.9.1` | Prometheus image. |
-| `monitoring_grafana_image` | `docker.io/grafana/grafana:12.3.2` | Grafana image. |
-| `monitoring_grafana_admin_user` | `admin` | Grafana admin user. |
-| `monitoring_grafana_admin_password` | `CHANGE_ME_IN_VAULT` | Secure this via Vault/SOPS. |
+## Usage
 
-## Network
-
-- Rootful mode always uses host networking.
-- Rootless mode uses `monitoring_network`. If it is not `host`, ports `9090` (Prometheus) and `3000` (Grafana) are published to the host.
-- Ensure your firewall allows the ports you expose, or front Grafana/Prometheus with a reverse proxy.
-
-## Persistence
-
-Data is stored in `{{ monitoring_root_dir }}`. Prometheus config lives in `{{ monitoring_config_dir }}/prometheus`.
+```yaml
+- name: Deploy Monitoring Stack
+  hosts: container_nodes
+  roles:
+    - containers/monitoring
+```

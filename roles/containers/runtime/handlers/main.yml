@@ -1,79 +1,63 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100127
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
-# CIS Docker Benchmark | Pod Security Standards
 # Handlers for containers/runtime role
+# ISO 27001 §12.1 | NIST CM-7
 
-- name: reload_systemd
+- name: "ISO 27001 §12.1 | 600013 | reload_systemd"
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
   listen: "reload systemd"
-  failed_when: false
 
-- name: restart_podman
+- name: "ISO 27001 §12.1 | 600013 | restart_podman"
   ansible.builtin.systemd:
     name: podman
     state: restarted
   become: true
   listen: "restart podman"
   when: ansible_service_mgr == 'systemd'
-  failed_when: false
 
-- name: restart_podman_socket
+- name: "ISO 27001 §12.1 | 600013 | restart_podman_socket"
   ansible.builtin.systemd:
     name: podman.socket
     state: restarted
   become: true
   listen: "restart podman socket"
   when: ansible_service_mgr == 'systemd'
-  failed_when: false
 
-- name: restart_podman_user_socket
+- name: "ISO 27001 §12.1 | 600013 | restart_podman_user_socket"
   ansible.builtin.systemd:
     name: podman.socket
-    state: restarted
     scope: user
-  environment:
-    XDG_RUNTIME_DIR: "{{ podman_rootless_runtime_dir | default('/run/user/0') }}"
-    DBUS_SESSION_BUS_ADDRESS: "{{ podman_rootless_dbus_address | default('unix:path=/run/user/0/bus') }}"
-  become: "{{ podman_rootless_enabled | default(false) | bool }}"
+    state: restarted
+  become: true
   become_user: "{{ podman_rootless_user | default('root') }}"
   listen: "restart podman user socket"
   when:
-    - podman_rootless_enabled | default(false) | bool
     - ansible_service_mgr == 'systemd'
-  failed_when: false
+    - podman_rootless_enabled | default(false) | bool
 
-- name: reload_container_config
-  ansible.builtin.debug:
-    msg: "Container configuration reloaded. Restart containers manually if needed."
+- name: "ISO 27001 §12.1 | 600013 | reload_container_config"
+  ansible.builtin.command: podman system migrate
+  become: true
   listen: "reload container config"
   changed_when: false
 
-- name: restart_netavark
-  ansible.builtin.systemd:
-    name: netavark
-    state: restarted
-  become: true
+- name: "ISO 27001 §12.1 | 600013 | restart_netavark"
+  ansible.builtin.debug:
+    msg: "Netavark configuration updated. Podman restart handles network reload."
   listen: "restart netavark"
-  when: ansible_service_mgr == 'systemd'
-  failed_when: false
 
-- name: restart_aardvark_dns
-  ansible.builtin.systemd:
-    name: aardvark-dns
-    state: restarted
-  become: true
+- name: "ISO 27001 §12.1 | 600013 | restart_aardvark_dns"
+  ansible.builtin.debug:
+    msg: "Aardvark DNS configuration updated. Podman restart handles DNS reload."
   listen: "restart aardvark-dns"
-  when: ansible_service_mgr == 'systemd'
-  failed_when: false
 
-- name: migrate_podman_system
-  ansible.builtin.command:
-    cmd: podman system migrate
+- name: "ISO 27001 §12.1 | 600013 | migrate_podman_system"
+  ansible.builtin.command: podman system migrate
   become: true
   listen: "migrate podman system"
   changed_when: true

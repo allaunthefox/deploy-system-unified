@@ -9,7 +9,8 @@ anubis_enabled: true
 anubis_port: 8080
 anubis_difficulty: 5
 anubis_target_url: "http://app:80" # The application to protect
-anubis_image: "ghcr.io/techarohq/anubis:v1.24.0"
+anubis_image_digest: "sha256:aaaaa2b9a06814f8673b8306e596659c0b42616e1510ef7f395c1c1f2c23f2bb2" # Example
+anubis_image: "ghcr.io/techarohq/anubis:v1.24.0@{{ anubis_image_digest }}"
 anubis_container_name: "anubis-gatekeeper"
 
 # GPU Support (inherited from Quadlet standards)

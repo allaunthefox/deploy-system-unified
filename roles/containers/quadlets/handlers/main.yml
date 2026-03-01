@@ -1,14 +1,13 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100115
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
-# CIS Docker Benchmark | Pod Security Standards
 # Handlers for containers/quadlets role
-- name: reload_systemd
+# ISO 27001 §12.1 | NIST CM-7
+
+- name: "ISO 27001 §12.1 | 600013 | reload_systemd"
   ansible.builtin.systemd:
     daemon_reload: true
-    scope: "{{ containers_systemd_scope }}"
-  environment: "{{ containers_systemd_env }}"
   become: true
-  become_user: "{{ containers_systemd_owner }}"
+  listen: "reload systemd"

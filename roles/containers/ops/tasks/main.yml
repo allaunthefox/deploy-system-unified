@@ -1,12 +1,12 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100026
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 # Tasks for containers/ops
 # Compliance: CIS Docker Benchmark 5.x, STIG V-230440, NIST IA-2/SC-8/AC-3, ISO 27001 §9.2/§10.1
 
-- name: "CIS 5.1 | STIG V-230440 | NIST IA-2 | Run ops secret verifications"
+- name: "ISO 9001 | 600013 | CIS 5.1 | STIG V-230440 | NIST IA-2 | Run ops secret verifications"
   ansible.builtin.include_tasks: verify_secrets.yml
   tags:
     - cis_5_1
@@ -15,8 +15,9 @@
     - containers
     - ops
     - security
+    - verify
 
-- name: "CIS 5.2 | STIG V-230440 | NIST SC-8 | Pull Ops Images"
+- name: "ISO 9001 | 600013 | CIS 5.2 | STIG V-230440 | NIST SC-8 | Pull Ops Images"
   ansible.builtin.include_tasks: pull_images.yml
   tags:
     - cis_5_2
@@ -24,12 +25,12 @@
     - nist_sc_8
     - containers
     - ops
+    - image
 
-- name: "CIS 5.3 | STIG V-230440 | NIST IA-2 | Validate Vaultwarden admin token is set"
+- name: "ISO 9001 | 600013 | CIS 5.3 | STIG V-230440 | NIST IA-2 | Validate Vaultwarden admin token is set"
   ansible.builtin.assert:
     that:
       - vaultwarden_admin_token is defined
-      - (vaultwarden_admin_token | default('') | length) > 0
       - (vaultwarden_admin_token | default('') | length) > 0
     fail_msg: "Vaultwarden admin token is not set. Define 'vaultwarden_admin_token' in encrypted inventory."
   when:
@@ -42,8 +43,9 @@
     - containers
     - ops
     - security
+    - verify
 
-- name: "CIS 5.4 | STIG V-230440 | NIST SC-8 | Create Ops Network Quadlet"
+- name: "ISO 27001 §8.20 | 700030 | CIS 5.4 | STIG V-230440 | NIST SC-8 | Create Ops Network Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/ops_net.network"
     content: |
@@ -64,8 +66,9 @@
     - nist_sc_8
     - containers
     - ops
+    - network
 
-- name: "CIS 5.5 | STIG V-230440 | NIST AC-3 | Create Ops Directories"
+- name: "ISO 27040 | 900000 | CIS 5.5 | STIG V-230440 | NIST AC-3 | Create Ops Directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -81,6 +84,11 @@
     - "{{ ops_config_dir }}/wikijs-db/data"
     - "{{ ops_config_dir }}/wiki"
     - "{{ ops_config_dir }}/wiki/data"
+    - "{{ ops_config_dir }}/uptime-kuma"
+    - "{{ ops_config_dir }}/ntfy"
+    - "{{ ops_config_dir }}/forgejo"
+    - "{{ ops_config_dir }}/dockge"
+    - "{{ ops_config_dir }}/filebrowser"
   become: true
   when: ops_enable
   tags:
@@ -89,8 +97,9 @@
     - nist_ac_3
     - containers
     - ops
+    - storage
 
-- name: "CIS 5.6 | STIG V-230440 | NIST SC-8 | Create Ops Pod Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.6 | STIG V-230440 | NIST SC-8 | Create Ops Pod Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/{{ ops_pod_name }}.pod"
     content: |
@@ -98,33 +107,12 @@
       PodName={{ ops_pod_name }}
       {% if ops_pod_network == 'host' or (not podman_rootless_enabled | bool) %}
       Network=host
-
-      # Published Ports are implicit in Network=host mode
-      # Homarr
-      # PublishPort={{ homarr_port }}:7575
-
-      # Vaultwarden (WebSocket + HTTP)
-      # PublishPort=3012:3012
-
-      # Filebrowser
-      # PublishPort={{ filebrowser_port }}:8082
-
-      # HTTP port usually proxied, but exposing for verify
-      # PublishPort={{ vaultwarden_port }}:80
       {% else %}
       Network={{ ops_pod_network }}.network
-
       # Published Ports (rootless)
-      # Homarr
       PublishPort={{ homarr_port }}:7575
-
-      # Vaultwarden (WebSocket + HTTP)
       PublishPort=3012:3012
-
-      # Filebrowser
       PublishPort={{ filebrowser_port }}:8082
-
-      # HTTP port usually proxied, but exposing for verify
       PublishPort=8081:8081
       {% endif %}
 
@@ -142,8 +130,9 @@
     - nist_sc_8
     - containers
     - ops
+    - deploy
 
-- name: "CIS 5.7 | STIG V-230440 | NIST AC-3 | Set Ops proxy hosts"
+- name: "ISO 9001 | 600013 | CIS 5.7 | STIG V-230440 | NIST AC-3 | Set Ops proxy hosts"
   ansible.builtin.set_fact:
     containers_ops_homarr_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'homarr' }}"
     containers_ops_vaultwarden_host: "{{ 'localhost' if (ops_pod_network == 'host' or not podman_rootless_enabled | bool) else 'vaultwarden' }}"
@@ -158,18 +147,17 @@
     - nist_ac_3
     - containers
     - ops
+    - initialization
 
-- name: "CIS 5.8 | STIG V-230440 | NIST SC-8 | ISO 27001 §9.4 | Audit Code 540001 | Deploy Ops Caddy Configuration"
+- name: "ISO 27001 §9.4 | 540001 | CIS 5.8 | STIG V-230440 | NIST SC-8 | Deploy Ops Caddy Configuration"
   ansible.builtin.copy:
     dest: "/srv/containers/caddy/conf.d/ops_stack.caddy"
     content: |
       # Ops Stack Reverse Proxy
-
       # Homarr
       dashboard.{{ ops_domain }} {
         reverse_proxy {{ containers_ops_homarr_host }}:7575
       }
-
       # Vaultwarden
       vault.{{ ops_domain }} {
         reverse_proxy {{ containers_ops_vaultwarden_host }}:8081 {
@@ -178,22 +166,14 @@
         reverse_proxy /notifications/hub/negotiate {{ containers_ops_vaultwarden_host }}:8081
         reverse_proxy /notifications/hub {{ containers_ops_vaultwarden_host }}:3012
       }
-
       # Wiki.js
       wiki.{{ ops_domain }} {
         reverse_proxy {{ containers_ops_wiki_host }}:31337
       }
-
-      # Anubis
-      anubis.{{ ops_domain }} {
-        reverse_proxy {{ containers_ops_anubis_host }}:31338
-      }
-
       # Wastebin
       paste.{{ ops_domain }} {
         reverse_proxy {{ containers_ops_wastebin_host }}:8088
       }
-
       # Filebrowser
       files.{{ ops_domain }} {
         reverse_proxy {{ containers_ops_filebrowser_host }}:8082
@@ -205,14 +185,13 @@
     - stg_v230440
     - nist_sc_8
     - iso_27001_9_4
-    - iso_27001_8_26
     - containers
     - ops
-    - remediate
+    - proxy
   when: ops_enable
   notify: restart_caddy
 
-- name: "CIS 5.9 | STIG V-230440 | NIST AC-3 | ISO 27001 §8.20 | Audit Code 700000 | Create Homarr Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.9 | STIG V-230440 | NIST AC-3 | Create Homarr Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/homarr.container"
     content: |
@@ -220,7 +199,6 @@
       Description=Homarr Dashboard
       After=network-online.target {{ ops_pod_name }}.pod
       Requires={{ ops_pod_name }}.pod
-
       [Container]
       Pod={{ ops_pod_name }}.pod
       Image={{ homarr_image }}
@@ -228,19 +206,12 @@
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-20
       Label=DSU_ACTION_CODE=700000
-      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-      Label=DSU_IMAGE_DIGEST={{ homarr_image.split(':')[1] | default('none') }}
-
+      Label=DSU_IMAGE_DIGEST={{ homarr_image.split('@')[1] | default('none') }}
       Volume={{ ops_config_dir }}/homarr/configs:/app/data/configs:Z
       Volume={{ ops_config_dir }}/homarr/icons:/app/public/icons:Z
       Volume={{ ops_config_dir }}/homarr/data:/data:Z
-
-      # Mount container socket if dashboard needs to control containers (Optional, riskier)
-      # Volume=/run/podman/podman.sock:/var/run/docker.sock:Z
-
       [Service]
       Restart=always
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
@@ -252,19 +223,17 @@
     - stg_v230440
     - nist_ac_3
     - iso_27001_8_20
-    - iso_27001_8_26
     - containers
     - ops
-    - remediate
+    - deploy
   when: homarr_enable
   notify: reload_systemd
 
-- name: "CIS 5.10 | STIG V-230440 | NIST IA-2 | Create Vaultwarden Secrets File"
+- name: "ISO 27001 §10.1 | 400011 | CIS 5.10 | STIG V-230440 | NIST IA-2 | Create Vaultwarden Secrets File"
   ansible.builtin.copy:
     dest: "{{ containers_secrets_dir }}/vaultwarden.env"
     content: |
       ADMIN_TOKEN={{ vaultwarden_admin_token }}
-      # Optional: SMTP credentials could go here
     mode: '0600'
     owner: "{{ containers_secrets_owner }}"
     group: "{{ containers_secrets_group }}"
@@ -276,10 +245,11 @@
     - security
     - containers
     - ops
+    - secrets
   when: vaultwarden_enable
   notify: reload_systemd
 
-- name: "CIS 5.11 | STIG V-230440 | NIST IA-2 | ISO 27001 §8.20 | Audit Code 700000 | Create Vaultwarden Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.11 | STIG V-230440 | NIST IA-2 | Create Vaultwarden Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/vaultwarden.container"
     content: |
@@ -287,7 +257,6 @@
       Description=Vaultwarden Password Manager
       After=network-online.target {{ ops_pod_name }}.pod
       Requires={{ ops_pod_name }}.pod
-
       [Container]
       Pod={{ ops_pod_name }}.pod
       Image={{ vaultwarden_image }}
@@ -295,21 +264,14 @@
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-9-2
       Label=DSU_ACTION_CODE=700000
-      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-      Label=DSU_IMAGE_DIGEST={{ vaultwarden_image.split(':')[1] | default('none') }}
-
+      Label=DSU_IMAGE_DIGEST={{ vaultwarden_image.split('@')[1] | default('none') }}
       Volume={{ ops_config_dir }}/vaultwarden:/data:Z
-
       Environment=SIGNUPS_ALLOWED={{ vaultwarden_signups_allowed }}
       Environment=WEBSOCKET_ENABLED=true
       Environment=ROCKET_PORT=8081
-
-      # Secure Secrets Injection
       EnvironmentFile={{ containers_secrets_dir }}/vaultwarden.env
-
       [Service]
       Restart=always
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
@@ -321,14 +283,13 @@
     - stg_v230440
     - nist_ia_2
     - iso_27001_8_20
-    - iso_27001_8_26
     - containers
     - ops
-    - remediate
+    - deploy
   when: vaultwarden_enable
   notify: reload_systemd
 
-- name: "CIS 5.12 | STIG V-230440 | NIST AC-3 | Create Wiki.js Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.12 | STIG V-230440 | NIST AC-3 | Create Wiki.js Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/wiki.container"
     content: |
@@ -336,7 +297,6 @@
       Description=Wiki.js Documentation Platform
       After=network-online.target {{ ops_pod_name }}.pod wikijs-db.service
       Requires={{ ops_pod_name }}.pod wikijs-db.service
-
       [Container]
       Pod={{ ops_pod_name }}.pod
       Image={{ wiki_image }}
@@ -344,11 +304,8 @@
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-20
       Label=DSU_ACTION_CODE=700000
-      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-      Label=DSU_IMAGE_DIGEST={{ wiki_image.split(':')[1] | default('none') }}
-
+      Label=DSU_IMAGE_DIGEST={{ wiki_image.split('@')[1] | default('none') }}
       Volume={{ ops_config_dir }}/wiki/data:/data:Z
-
       Environment=DB_TYPE=postgres
       Environment=DB_HOST=localhost
       Environment=DB_PORT=5432
@@ -357,10 +314,8 @@
       Environment=DB_NAME=wiki
       Environment=HA_ACTIVE=false
       Environment=PORT=31337
-
       [Service]
       Restart=always
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
@@ -375,44 +330,34 @@
     - nist_ac_3
     - containers
     - ops
+    - deploy
 
-- name: "CIS 5.13 | STIG V-230440 | NIST SC-8 | Create Wiki.js Postgres Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.13 | STIG V-230440 | NIST SC-8 | Create Wiki.js Postgres Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/wikijs-db.container"
     content: |
       [Unit]
       Description=Wiki.js PostgreSQL Database
       After=network-online.target
-
       [Container]
       Image=docker.io/library/postgres:16-alpine
       ContainerName=wikijs-db
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-20
       Label=DSU_ACTION_CODE=700000
-      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
       Label=DSU_IMAGE_DIGEST=16-alpine
-
       {% if ops_pod_network == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
       Network=host
+      Exec=postgres -p {{ wikijs_db_port | default(5433) }}
       {% else %}
       Network={{ ops_pod_network }}.network
       {% endif %}
-
-      # Override default port if in host mode to avoid conflicts
-      {% if ops_pod_network == 'host' or (not podman_rootless_enabled | default(true) | bool) %}
-      Exec=postgres -p {{ wikijs_db_port | default(5433) }}
-      {% endif %}
-
       Environment=POSTGRES_DB=wiki
       Environment=POSTGRES_USER=wiki
       Environment=POSTGRES_PASSWORD={{ wikijs_pg_password | default('wikijs_pass') }}
-
       Volume={{ ops_config_dir }}/wikijs-db/data:/var/lib/postgresql/data:Z
-
       [Service]
       Restart=always
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
@@ -427,8 +372,10 @@
     - nist_sc_8
     - containers
     - ops
+    - deploy
+    - database
 
-- name: "CIS 5.14 | STIG V-230440 | NIST AC-3 | Create Wastebin Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.14 | STIG V-230440 | NIST AC-3 | Create Wastebin Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/wastebin.container"
     content: |
@@ -436,7 +383,6 @@
       Description=Wastebin Paste Service
       After=network-online.target {{ ops_pod_name }}.pod
       Requires={{ ops_pod_name }}.pod
-
       [Container]
       Pod={{ ops_pod_name }}.pod
       Image={{ wastebin_image }}
@@ -444,17 +390,12 @@
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-20
       Label=DSU_ACTION_CODE=700000
-      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-      Label=DSU_IMAGE_DIGEST={{ wastebin_image.split(':')[1] | default('none') }}
-
+      Label=DSU_IMAGE_DIGEST={{ wastebin_image.split('@')[1] | default('none') }}
       Volume={{ ops_config_dir }}/wastebin:/data:Z
-
       Environment=WASTEBIN_DATABASE_PATH=/data/wastebin.db
       Environment=WASTEBIN_TITLE="Ops Pastebin"
-
       [Service]
       Restart=always
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
@@ -469,8 +410,9 @@
     - nist_ac_3
     - containers
     - ops
+    - deploy
 
-- name: "CIS 5.15 | STIG V-230440 | NIST AC-3 | Create Filebrowser Container Quadlet"
+- name: "ISO 27001 §8.20 | 700000 | CIS 5.15 | STIG V-230440 | NIST AC-3 | Create Filebrowser Container Quadlet"
   ansible.builtin.copy:
     dest: "{{ containers_systemd_dir }}/filebrowser.container"
     content: |
@@ -478,7 +420,6 @@
       Description=Filebrowser Web File Manager
       After=network-online.target {{ ops_pod_name }}.pod
       Requires={{ ops_pod_name }}.pod
-
       [Container]
       Pod={{ ops_pod_name }}.pod
       Image={{ filebrowser_image }}
@@ -486,184 +427,184 @@
       Label=DSU_UUID={{ object_uuid | default('unassigned') }}
       Label=DSU_ISO_CODE=ISO-27001-8-20
       Label=DSU_ACTION_CODE=700000
-      Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-      Label=DSU_IMAGE_DIGEST={{ filebrowser_image.split(':')[1] | default('none') }}
-
-      # Override default port 80 to avoid conflict with Vaultwarden in the same Pod
+      Label=DSU_IMAGE_DIGEST={{ filebrowser_image.split('@')[1] | default('none') }}
       Exec=/filebrowser --port 8082 --root /data --database /config/filebrowser.db
-
       Volume={{ ops_config_dir }}/filebrowser:/config:Z
       Volume={{ ops_root_dir }}:/data:Z
-
       [Service]
       Restart=always
-
       [Install]
       WantedBy=multi-user.target default.target
     mode: '0644'
     owner: "{{ containers_systemd_owner }}"
     group: "{{ containers_systemd_group }}"
-        become: true
-    when: filebrowser_enable | default(false)
-    notify: reload_systemd
-    tags:
-      - cis_5_15
-      - stg_v230440
-      - nist_ac_3
-      - containers
-      - ops
-  
-  - name: "ISO 27001 §8.20 | 700000 | Create Uptime Kuma Container Quadlet"
-    ansible.builtin.copy:
-      dest: "{{ containers_systemd_dir }}/uptime-kuma.container"
-      content: |
-        [Unit]
-        Description=Uptime Kuma Monitoring
-        After=network-online.target {{ ops_pod_name }}.pod
-        Requires={{ ops_pod_name }}.pod
-        [Container]
-        Pod={{ ops_pod_name }}.pod
-        Image={{ containers_uptime_kuma_image }}
-        ContainerName=uptime-kuma
-        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
-        Label=DSU_ISO_CODE=ISO-27001-8-20
-        Label=DSU_ACTION_CODE=700000
-        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-        Label=DSU_IMAGE_DIGEST={{ containers_uptime_kuma_image.split('@')[1] | default('none') }}
-        Volume={{ ops_config_dir }}/uptime-kuma:/app/data:Z
-        [Service]
-        Restart=always
-        [Install]
-        WantedBy=multi-user.target default.target
-      mode: '0644'
-    become: true
-    when: containers_uptime_kuma_enable
-    notify: reload_systemd
-    tags: [ops, monitor, 700000]
-  
-  - name: "ISO 27001 §8.20 | 700000 | Create Ntfy Container Quadlet"
-    ansible.builtin.copy:
-      dest: "{{ containers_systemd_dir }}/ntfy.container"
-      content: |
-        [Unit]
-        Description=Ntfy Notification Bus
-        After=network-online.target {{ ops_pod_name }}.pod
-        Requires={{ ops_pod_name }}.pod
-        [Container]
-        Pod={{ ops_pod_name }}.pod
-        Image={{ containers_ntfy_image }}
-        ContainerName=ntfy
-        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
-        Label=DSU_ISO_CODE=ISO-27001-8-20
-        Label=DSU_ACTION_CODE=700000
-        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-        Label=DSU_IMAGE_DIGEST={{ containers_ntfy_image.split('@')[1] | default('none') }}
-        Volume={{ ops_config_dir }}/ntfy:/etc/ntfy:Z
-        Exec=serve
-        [Service]
-        Restart=always
-        [Install]
-        WantedBy=multi-user.target default.target
-      mode: '0644'
-    become: true
-    when: containers_ntfy_enable
-    notify: reload_systemd
-    tags: [ops, notify, 700000]
-  
-  - name: "ISO 27001 §8.20 | 700000 | Create Forgejo Container Quadlet"
-    ansible.builtin.copy:
-      dest: "{{ containers_systemd_dir }}/forgejo.container"
-      content: |
-        [Unit]
-        Description=Forgejo Git Service
-        After=network-online.target {{ ops_pod_name }}.pod
-        Requires={{ ops_pod_name }}.pod
-        [Container]
-        Pod={{ ops_pod_name }}.pod
-        Image={{ containers_forgejo_image }}
-        ContainerName=forgejo
-        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
-        Label=DSU_ISO_CODE=ISO-27001-8-20
-        Label=DSU_ACTION_CODE=700000
-        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-        Label=DSU_IMAGE_DIGEST={{ containers_forgejo_image.split('@')[1] | default('none') }}
-        Volume={{ ops_config_dir }}/forgejo:/data:Z
-        Environment=USER_UID=1000
-        Environment=USER_GID=1000
-        [Service]
-        Restart=always
-        [Install]
-        WantedBy=multi-user.target default.target
-      mode: '0644'
-    become: true
-    when: containers_forgejo_enable
-    notify: reload_systemd
-    tags: [ops, git, 700000]
-  
-  - name: "ISO 27001 §8.20 | 700000 | Create Dockge Container Quadlet"
-    ansible.builtin.copy:
-      dest: "{{ containers_systemd_dir }}/dockge.container"
-      content: |
-        [Unit]
-        Description=Dockge Container Manager
-        After=network-online.target {{ ops_pod_name }}.pod
-        Requires={{ ops_pod_name }}.pod
-        [Container]
-        Pod={{ ops_pod_name }}.pod
-        Image={{ containers_dockge_image }}
-        ContainerName=dockge
-        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
-        Label=DSU_ISO_CODE=ISO-27001-8-20
-        Label=DSU_ACTION_CODE=700000
-        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-        Label=DSU_IMAGE_DIGEST={{ containers_dockge_image.split('@')[1] | default('none') }}
-        Volume={{ ops_config_dir }}/dockge:/app/data:Z
-        Volume=/var/run/podman/podman.sock:/var/run/docker.sock:Z
-        [Service]
-        Restart=always
-        [Install]
-        WantedBy=multi-user.target default.target
-      mode: '0644'
-    become: true
-    when: containers_dockge_enable
-    notify: reload_systemd
-    tags: [ops, deploy, 700000]
-  
-  - name: "ISO 27040 | 900000 | Create Syncthing Config Directory"
-    ansible.builtin.file:
-      path: "{{ ops_config_dir }}/syncthing"
-      state: directory
-      mode: '0755'
-      owner: "{{ containers_user_uid }}"
-      group: "{{ containers_user_gid }}"
-    become: true
-    tags: [ops, storage, 900000]
-  
-  - name: "ISO 27001 §8.20 | 700000 | Create Syncthing Container Quadlet"
-    ansible.builtin.copy:
-      dest: "{{ containers_systemd_dir }}/syncthing.container"
-      content: |
-        [Unit]
-        Description=Syncthing File Synchronization
-        After=network-online.target {{ ops_pod_name }}.pod
-        Requires={{ ops_pod_name }}.pod
-        [Container]
-        Pod={{ ops_pod_name }}.pod
-        Image={{ containers_syncthing_image }}
-        ContainerName=syncthing
-        Label=DSU_UUID={{ object_uuid | default('unassigned') }}
-        Label=DSU_ISO_CODE=ISO-27001-8-20
-        Label=DSU_ACTION_CODE=700000
-        Label=DSU_POSTURE={{ deployment_profile | default('unknown') }}
-        Label=DSU_IMAGE_DIGEST={{ containers_syncthing_image.split('@')[1] | default('none') }}
-        Volume={{ ops_config_dir }}/syncthing:/var/syncthing:Z
-        Volume={{ ops_root_dir }}:/var/syncthing/data:Z
-        [Service]
-        Restart=always
-        [Install]
-        WantedBy=multi-user.target default.target
-      mode: '0644'
-    become: true
-    when: containers_syncthing_enable
-    notify: reload_systemd
-    tags: [ops, deploy, 700000]
+  become: true
+  when: filebrowser_enable | default(false)
+  notify: reload_systemd
+  tags:
+    - cis_5_15
+    - stg_v230440
+    - nist_ac_3
+    - containers
+    - ops
+    - deploy
+
+- name: "ISO 27001 §8.20 | 700000 | Create Uptime Kuma Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/uptime-kuma.container"
+    content: |
+      [Unit]
+      Description=Uptime Kuma Monitoring
+      After=network-online.target {{ ops_pod_name }}.pod
+      Requires={{ ops_pod_name }}.pod
+      [Container]
+      Pod={{ ops_pod_name }}.pod
+      Image={{ containers_uptime_kuma_image }}
+      ContainerName=uptime-kuma
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_uptime_kuma_image.split('@')[1] | default('none') }}
+      Volume={{ ops_config_dir }}/uptime-kuma:/app/data:Z
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_uptime_kuma_enable
+  notify: reload_systemd
+  tags: [ops, monitor, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Ntfy Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/ntfy.container"
+    content: |
+      [Unit]
+      Description=Ntfy Notification Bus
+      After=network-online.target {{ ops_pod_name }}.pod
+      Requires={{ ops_pod_name }}.pod
+      [Container]
+      Pod={{ ops_pod_name }}.pod
+      Image={{ containers_ntfy_image }}
+      ContainerName=ntfy
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_ntfy_image.split('@')[1] | default('none') }}
+      Volume={{ ops_config_dir }}/ntfy:/etc/ntfy:Z
+      Exec=serve
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_ntfy_enable
+  notify: reload_systemd
+  tags: [ops, notify, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Forgejo Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/forgejo.container"
+    content: |
+      [Unit]
+      Description=Forgejo Git Service
+      After=network-online.target {{ ops_pod_name }}.pod
+      Requires={{ ops_pod_name }}.pod
+      [Container]
+      Pod={{ ops_pod_name }}.pod
+      Image={{ containers_forgejo_image }}
+      ContainerName=forgejo
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_forgejo_image.split('@')[1] | default('none') }}
+      Volume={{ ops_config_dir }}/forgejo:/data:Z
+      Environment=USER_UID=1000
+      Environment=USER_GID=1000
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_forgejo_enable
+  notify: reload_systemd
+  tags: [ops, git, deploy, 700000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Dockge Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/dockge.container"
+    content: |
+      [Unit]
+      Description=Dockge Container Manager
+      After=network-online.target {{ ops_pod_name }}.pod
+      Requires={{ ops_pod_name }}.pod
+      [Container]
+      Pod={{ ops_pod_name }}.pod
+      Image={{ containers_dockge_image }}
+      ContainerName=dockge
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_dockge_image.split('@')[1] | default('none') }}
+      Volume={{ ops_config_dir }}/dockge:/app/data:Z
+      Volume=/var/run/podman/podman.sock:/var/run/docker.sock:Z
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_dockge_enable
+  notify: reload_systemd
+  tags: [ops, deploy, 700000]
+
+- name: "ISO 27040 | 900000 | Create Syncthing Config Directory"
+  ansible.builtin.file:
+    path: "{{ ops_config_dir }}/syncthing"
+    state: directory
+    mode: '0755'
+    owner: "{{ containers_user_uid }}"
+    group: "{{ containers_user_gid }}"
+  become: true
+  tags: [ops, storage, 900000]
+
+- name: "ISO 27001 §8.20 | 700000 | Create Syncthing Container Quadlet"
+  ansible.builtin.copy:
+    dest: "{{ containers_systemd_dir }}/syncthing.container"
+    content: |
+      [Unit]
+      Description=Syncthing File Synchronization
+      After=network-online.target {{ ops_pod_name }}.pod
+      Requires={{ ops_pod_name }}.pod
+      [Container]
+      Pod={{ ops_pod_name }}.pod
+      Image={{ containers_syncthing_image }}
+      ContainerName=syncthing
+      Label=DSU_UUID={{ object_uuid | default('unassigned') }}
+      Label=DSU_ISO_CODE=ISO-27001-8-20
+      Label=DSU_ACTION_CODE=700000
+      Label=DSU_IMAGE_DIGEST={{ containers_syncthing_image.split('@')[1] | default('none') }}
+      Volume={{ ops_config_dir }}/syncthing:/var/syncthing:Z
+      Volume={{ ops_root_dir }}:/var/syncthing/data:Z
+      [Service]
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target default.target
+    mode: '0644'
+    owner: "{{ containers_systemd_owner }}"
+    group: "{{ containers_systemd_group }}"
+  become: true
+  when: containers_syncthing_enable
+  notify: reload_systemd
+  tags: [ops, deploy, 700000]
