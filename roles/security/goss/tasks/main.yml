@@ -1,10 +1,11 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100313
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 # Security - Goss-based Continuous Monitoring Role
 # Supports: goss installation, security test definitions, drift detection, remediation
+# Compliance: ISO 27001 §8.15, §8.16 | NIST CA-7 | CIS 4.x
 
 - name: "ISO 27037 | 520030 | Check if goss is already installed"
   ansible.builtin.command:
@@ -12,13 +13,15 @@
   register: goss_check
   failed_when: false
   changed_when: false
+  tags: [security, monitoring, goss, verification, 520030]
 
-- name: "ISO 9001 | 800000 | Get system architecture"
+- name: "ISO 9001 | 600013 | 800000 | Get system architecture for Goss"
   ansible.builtin.set_fact:
     goss_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' }}"
   changed_when: false
+  tags: [security, monitoring, goss, initialization, 600013]
 
-- name: "ISO 27001 §8.19 | 530000 | Install goss binary"
+- name: "ISO 27001 §8.19 | 530000 | Install goss binary (Unarchive)"
   ansible.builtin.unarchive:
     src: "https://github.com/aelsabbahy/goss/releases/download/{{ goss_version }}/goss-linux-{{ goss_arch }}.tar.gz"
     dest: /usr/local/bin
@@ -26,28 +29,18 @@
     creates: /usr/local/bin/goss
   become: true
   when: goss_check.rc != 0
-  tags:
-    - goss
-    - security
-    - monitoring
-    - iso_27001_8_19
-    - 530000
+  tags: [security, monitoring, goss, deploy, 530000]
 
-- name: "ISO 27001 §8.19 | 530000 | Install goss manually from package"
+- name: "ISO 27001 §8.19 | 530000 | Install goss binary (Get URL Fallback)"
   ansible.builtin.get_url:
     url: "https://github.com/aelsabbahy/goss/releases/download/{{ goss_version }}/goss-linux-{{ goss_arch }}-{{ goss_install_type }}.tar.gz"
     dest: "/tmp/goss-linux-{{ goss_arch }}.tar.gz"
     mode: '0644'
   become: true
   when: goss_check.rc != 0
-  tags:
-    - goss
-    - security
-    - monitoring
-    - iso_27001_8_19
-    - 530000
+  tags: [security, monitoring, goss, deploy, 530000]
 
-- name: "ISO 9001 | 600013 | Create goss directories"
+- name: "ISO 9001 | 600013 | Create goss system directories"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -59,13 +52,9 @@
     - /etc/goss
     - /etc/goss/tests
     - /var/log/goss
-  tags:
-    - goss
-    - security
-    - monitoring
-    - 600013
+  tags: [security, monitoring, goss, initialization, 600013]
 
-- name: "ISO 27001 §8.9 | 600111 | Deploy goss configuration"
+- name: "ISO 27001 §8.9 | 600111 | Deploy primary goss configuration"
   ansible.builtin.template:
     src: goss.yaml.j2
     dest: /etc/goss/goss.yaml
@@ -73,14 +62,9 @@
     group: root
     mode: '0644'
   become: true
-  tags:
-    - goss
-    - security
-    - config
-    - iso_27001_8_9
-    - 600111
+  tags: [security, monitoring, goss, config, 600111]
 
-- name: "ISO 27001 §8.9 | 600111 | Deploy security tests"
+- name: "ISO 27001 §8.9 | 600111 | Deploy security state tests"
   ansible.builtin.copy:
     src: security_tests.yaml
     dest: /etc/goss/tests/security_tests.yaml
@@ -88,14 +72,9 @@
     group: root
     mode: '0644'
   become: true
-  tags:
-    - goss
-    - security
-    - tests
-    - iso_27001_8_9
-    - 600111
+  tags: [security, monitoring, goss, tests, 600111]
 
-- name: "ISO 27001 §8.9 | 600111 | Deploy system tests"
+- name: "ISO 27001 §8.9 | 600111 | Deploy system readiness tests"
   ansible.builtin.copy:
     src: system_tests.yaml
     dest: /etc/goss/tests/system_tests.yaml
@@ -103,14 +82,9 @@
     group: root
     mode: '0644'
   become: true
-  tags:
-    - goss
-    - security
-    - tests
-    - iso_27001_8_9
-    - 600111
+  tags: [security, monitoring, goss, tests, 600111]
 
-- name: "ISO 27001 §8.8 | 600110 | Deploy drift detection playbook"
+- name: "ISO 27001 §8.8 | 600110 | Deploy drift detection orchestration playbook"
   ansible.builtin.copy:
     src: drift-detection.yml
     dest: /etc/goss/drift-detection.yml
@@ -118,15 +92,10 @@
     group: root
     mode: '0644'
   become: true
-  when: goss_enable_drift_detection
-  tags:
-    - goss
-    - security
-    - drift
-    - iso_27001_8_8
-    - 600110
+  when: goss_enable_drift_detection | bool
+  tags: [security, monitoring, goss, drift, 600110]
 
-- name: "ISO 27001 §8.8 | 600140 | Deploy remediation playbook"
+- name: "ISO 27001 §8.8 | 600140 | Deploy automated remediation playbook"
   ansible.builtin.copy:
     src: remediation.yml
     dest: /etc/goss/remediation.yml
@@ -134,33 +103,24 @@
     group: root
     mode: '0644'
   become: true
-  when: goss_enable_auto_remediation
-  tags:
-    - goss
-    - security
-    - remediation
-    - iso_27001_8_8
-    - 600140
+  when: goss_enable_auto_remediation | bool
+  tags: [security, monitoring, goss, remediation, 600140]
 
-- name: "ISO 27037 | 520030 | Run initial goss validation"
+- name: "ISO 27037 | 520030 | Run initial system state validation"
   ansible.builtin.command:
     cmd: >
-      goss validate
+      /usr/local/bin/goss validate
       --format {{ goss_output_format }}
       {% if goss_output_format == 'json' %}
-      --output /var/log/goss/goss-{{ ansible_date_time.iso8601 }}.json
+      --output /var/log/goss/goss-initial.json
       {% endif %}
   register: goss_initial_validation
   failed_when: false
   changed_when: false
-  tags:
-    - goss
-    - security
-    - validation
-    - iso_27037
-    - 520030
+  become: true
+  tags: [security, monitoring, goss, verification, 520030]
 
-- name: "ISO 27037 | 520001 | Create goss validation cron job"
+- name: "ISO 27037 | 520001 | Create automated security validation cron job"
   ansible.builtin.cron:
     name: "Goss security validation"
     minute: "{{ goss_cron_minute }}"
@@ -168,14 +128,10 @@
     job: "/usr/local/bin/goss validate --format {{ goss_output_format }} >> /var/log/goss/goss-cron.log 2>&1"
     state: present
   become: true
-  when: goss_enable_cron
-  tags:
-    - goss
-    - security
-    - cron
-    - iso_27037
-    - 520001
+  when: goss_enable_cron | bool
+  tags: [security, monitoring, goss, deploy, 520001]
 
-- name: Set goss integration complete flag
+- name: "ISO 9001 | 600013 | Set goss integration completion fact"
   ansible.builtin.set_fact:
     goss_integration_complete: true
+  tags: [security, monitoring, goss, internal, 600013]

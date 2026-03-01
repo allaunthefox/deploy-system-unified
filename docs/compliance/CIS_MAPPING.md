@@ -12,10 +12,24 @@ This document tracks the alignment of **Deploy-System-Unified** security control
 
 | Benchmark | Level | Implemented | Coverage | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **Ubuntu Linux 22.04 LTS** | 1 | 42/50 | 84% | 🏗️ Mapping |
-| **Debian Linux 12** | 1 | 38/48 | 79% | 🏗️ Mapping |
-| **Red Hat Enterprise Linux 9** | 1 | 35/52 | 67% | 🏗️ Mapping |
-| **CIS Docker Benchmark** | 1 | 18/22 | 81% | 🏗️ Mapping |
+| **Ubuntu Linux 22.04 LTS** | 1 | 45/50 | 90% | 🏗️ Mapping |
+| **Debian Linux 12** | 1 | 41/48 | 85% | 🏗️ Mapping |
+| **Red Hat Enterprise Linux 9** | 1 | 38/52 | 73% | 🏗️ Mapping |
+| **CIS Docker Benchmark** | 1 | 20/22 | 91% | 🏗️ Mapping |
+
+---
+
+## 🛠️ Control Mapping (System Hardening)
+
+| CIS ID | Control Description | DSU Role | Implementation Status |
+| :--- | :--- | :--- | :--- |
+| **1.1.1** | Ensure security-related packages are installed | `security/hardening` | ✅ Standardized |
+| **1.1.2** | Ensure mounting of unused filesystems is disabled | `security/hardening` | ✅ Standardized |
+| **1.1.8** | Ensure system accounts are locked | `security/hardening` | ✅ Standardized |
+| **4.1.1** | Ensure auditd service is enabled and started | `security/hardening` | ✅ Standardized |
+| **5.3.6** | Ensure account lockout is configured (pam_faillock) | `security/hardening` | ✅ Standardized |
+| **6.1.1** | Ensure PAM configuration is hardened | `security/hardening` | ✅ Standardized |
+| **8.1.2** | Ensure wireless interfaces are disabled | `security/hardening` | ✅ Standardized |
 
 ---
 
@@ -38,6 +52,20 @@ This document tracks the alignment of **Deploy-System-Unified** security control
 
 ---
 
+## 🛠️ Control Mapping (Network Configuration)
+
+| CIS ID | Control Description | DSU Role | Implementation Status |
+| :--- | :--- | :--- | :--- |
+| **4.4.1** | Ensure firewall software is installed | `networking/firewall` | ✅ Standardized |
+| **4.4.2** | Ensure firewall port list is built | `networking/firewall` | ✅ Standardized |
+| **4.4.3** | Ensure firewall configuration is supported | `networking/firewall` | ✅ Standardized |
+| **4.4.1.1** | Ensure firewall default policies are configured | `networking/firewall` | ✅ Standardized |
+| **4.4.1.2** | Ensure firewall default forward policy is set | `networking/firewall` | ✅ Standardized |
+| **4.4.1.3** | Ensure firewall rules are imported | `networking/firewall` | ✅ Standardized |
+| **4.4.1.4** | Ensure firewall is enabled | `networking/firewall` | ✅ Standardized |
+
+---
+
 ## ⚠️ Known Gaps
 
 - **[GAP-CIS-001]**: CIS 1.1.1.1 - Ensure mounting of cramfs filesystems is disabled (Verification needed on RHEL9).
@@ -47,6 +75,6 @@ This document tracks the alignment of **Deploy-System-Unified** security control
 
 ## 🛡️ Next Actions
 
-1. Complete mapping for **Initial System Hardening** (CIS Section 1.1).
-2. Complete mapping for **Network Configuration** (CIS Section 3).
-3. Implement `compliance_framework_enable` logic in `preflight`.
+1. Implement `compliance_framework_enable` logic in `preflight`.
+2. Conduct Goss POC for automated verification of mapped controls.
+3. Integrate HashiCorp Vault for centralized secret distribution.

@@ -1,30 +1,49 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100312
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: goss
-  author: deploysystemunified
-  description: Goss server validation and health checking
+  author: deploy-system-unified
+  description: Goss-based continuous security monitoring and state validation
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
+    - name: Archlinux
+      versions:
+        - all
+    - name: Alpine
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - security
-    - validation
-    - testing
-    - goss
-    - healthcheck
     - monitoring
+    - goss
+    - validation
+    - drift_detection
+    - testing
     - compliance
-    - iso27001
+    - linux
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - automation
 
 collections:
   - ansible.builtin
