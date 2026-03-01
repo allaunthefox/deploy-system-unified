@@ -1,80 +1,56 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100396
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100394
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: vault_integration role for HashiCorp Vault management
+    short_description: HashiCorp Vault Integration
     description:
-      - Installs and configures HashiCorp Vault for secrets management
-      - Supports standalone, Kubernetes, and agent-only modes
-      - Manages dynamic secrets and KV secret engines
-      - Aligns with ISO 27001 and ISO 27002 requirements
+      - This role integrates system nodes with HashiCorp Vault for secure secret management, dynamic credential generation, and automated rotation.
     options:
       vault_install_mode:
         type: str
-        required: false
         default: "standalone"
-        description:
-          - Installation mode: standalone, kubernetes, or agent_only
+        choices: ["standalone", "kubernetes", "agent_only"]
+        description: The installation method for Vault or its agent.
       vault_version:
         type: str
-        required: false
         default: "1.15.0"
-        description:
-          - Vault version to install
-      vault_config_dir:
-        type: str
-        required: false
-        default: "/etc/vault"
-        description:
-          - Configuration directory for Vault
-      vault_data_dir:
-        type: str
-        required: false
-        default: "/var/lib/vault"
-        description:
-          - Data directory for Vault
-      vault_log_dir:
-        type: str
-        required: false
-        default: "/var/log/vault"
-        description:
-          - Log directory for Vault
-      vault_enable_k8s_auth:
-        type: bool
-        required: false
-        default: false
-        description:
-          - Enable Kubernetes authentication
-      vault_k8s_host:
-        type: str
-        required: false
-        default: "https://kubernetes.default.svc"
-        description:
-          - Kubernetes API host
-      vault_k8s_role_name:
-        type: str
-        required: false
-        default: "deploy-system"
-        description:
-          - Kubernetes auth role name
-      vault_enable_dynamic_secrets:
-        type: bool
-        required: false
-        default: false
-        description:
-          - Enable dynamic secrets generation
-      vault_enable_agent_injector:
-        type: bool
-        required: false
-        default: false
-        description:
-          - Enable Vault agent injector
+        description: The version of Vault to install.
       vault_addr:
         type: str
-        required: false
         default: "http://127.0.0.1:8200"
-        description:
-          - Vault server address
+        description: The address of the Vault server.
+      vault_enable_k8s_auth:
+        type: bool
+        default: false
+        description: Whether to enable Kubernetes-based authentication.
+      vault_enable_approle_auth:
+        type: bool
+        default: false
+        description: Whether to enable AppRole-based authentication.
+      vault_enable_dynamic_secrets:
+        type: bool
+        default: false
+        description: Whether to enable dynamic secret generation.
+      vault_enable_rotation:
+        type: bool
+        default: false
+        description: Whether to enable automated secret rotation policies.
+      vault_auto_unseal_enabled:
+        type: bool
+        default: false
+        description: Whether to enable automatic unsealing using a transit key or cloud KMS.
+      vault_enable_kv_secrets:
+        type: bool
+        default: false
+        description: Whether to enable Key-Value (KV) engine interactions.
+      vault_secrets_path:
+        type: str
+        default: "secret"
+        description: The base path for KV secrets.
+      vault_root_token:
+        type: str
+        default: ""
+        description: Root token for initial configuration (use only in secure bootstrap).

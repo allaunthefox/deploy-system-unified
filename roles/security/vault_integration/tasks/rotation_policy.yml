@@ -7,7 +7,7 @@
 # Compliance: ISO 27001 §9.3 | NIST IA-4
 
 - name: "ISO 27001 §9.3 | 800700 | Define database credential rotation policy"
-  hashivault_policy_set:
+  community.hashi_vault.vault_policy_set:
     name: "db-rotation-policy"
     rules: |
       path "database/creds/app-dynamic-role" {
@@ -25,7 +25,7 @@
 - name: "ISO 27001 §9.3 | 800701 | Configure AppRole for machine identity"
   block:
     - name: "ISO 27001 §9.3 | 800701 | Enable AppRole auth method"
-      hashivault_auth_method:
+      community.hashi_vault.vault_auth_method:
         method_type: approle
         state: present
       environment:
@@ -33,7 +33,7 @@
         VAULT_TOKEN: "{{ vault_root_token }}"
 
     - name: "ISO 27001 §9.3 | 800701 | Create AppRole for service rotation"
-      hashivault_approle_role:
+      community.hashi_vault.vault_approle_role:
         name: "service-rotator"
         policies: ["db-rotation-policy"]
         token_ttl: "1h"
