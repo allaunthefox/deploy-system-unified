@@ -39,6 +39,11 @@ INTEL_GENERATIONS = {
 
 def get_pci_devices():
     """Run lspci and return raw output with full domains (-D)."""
+    # Check for mock output from environment (Simulation mode)
+    mock_output = os.environ.get("DSU_MOCK_LSPCI_OUTPUT")
+    if mock_output:
+        return mock_output
+
     try:
         result = subprocess.run(
             ["lspci", "-Dnn", "-d", "::0300"], capture_output=True, text=True, check=True

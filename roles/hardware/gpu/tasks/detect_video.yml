@@ -28,6 +28,8 @@
 - name: Run Advanced GPU Discovery Script
   tags: [hardware, gpu, audit]
   ansible.builtin.script: gpu_discovery.py
+  environment:
+    DSU_MOCK_LSPCI_OUTPUT: "{{ gpu_mock_lspci_output | default(omit) }}"
   register: gpu_discovery_raw
   changed_when: false
 

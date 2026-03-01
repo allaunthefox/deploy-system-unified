@@ -64,6 +64,12 @@
       vars:
         monitoring_enable_smartmon: false
 
+    - role: hardware/gpu
+      vars:
+        gpu_stack_enable: true
+        gpu_stack_vendor: "nvidia"
+        gpu_mock_lspci_output: "0000:01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA102 [GeForce RTX 3090] [10de:2204] (rev a1)"
+
     # GPU-specific configuration with slicing
     - role: containers/runtime
       vars:

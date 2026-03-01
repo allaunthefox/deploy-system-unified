@@ -8,6 +8,7 @@
 **Goal**: Enhance the reliability of GPU detection and configuration.
 
 - [x] **Hardware Validation**: Enhance GPU discovery logic to validate configured vendor against detected hardware.
+- [x] **Hardware Simulation (Molecule)**: Implement `gpu_mock_lspci_output` logic to allow full validation without physical hardware.
 - [x] **Multi-GPU Support**: Enhance GPU discovery and configuration for nodes with multiple GPUs/vendors.
 - [x] **Runtime Integrity**: Improve container runtime configuration validation (NVIDIA Container Toolkit, Intel Device Plugins).
 
