@@ -6,7 +6,7 @@
 # Hardware Detection Logic
 # Detects Installed GPU Vendors to override generic defaults
 
-- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] Ensure Discovery Dependencies are Present (pciutils)"
+- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] ISO 9001 | 600013 | Ensure Discovery Dependencies are Present (pciutils)"
   ansible.builtin.package:
     name: pciutils
     state: present
@@ -15,18 +15,17 @@
   retries: 3
   delay: 5
   when: not _gpu_is_container | default(false)
-  tags: [hardware, gpu, audit]
+  tags: [hardware, gpu, audit, inventory, 600013]
 
-- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] VERIFY | pciutils is functional"
+- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] ISO 9001 | 600013 | VERIFY | pciutils is functional"
   ansible.builtin.command: lspci --version
   register: _lspci_ver
   failed_when: _lspci_ver.rc != 0
   when: not _gpu_is_container | default(false)
   changed_when: false
-  tags: [hardware, gpu, verification]
+  tags: [hardware, gpu, verification, 600013]
 
-- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] Run Advanced GPU Discovery Script"
-  tags: [hardware, gpu, audit]
+- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] ISO 9001 | 800400 | Run Advanced GPU Discovery Script"
   ansible.builtin.script: gpu_discovery.py
   environment:
     DSU_MOCK_LSPCI_OUTPUT: "{{ gpu_mock_lspci_output | default(omit) }}"
@@ -35,30 +34,30 @@
     DSU_MOCK_INTEL_GPU_TOP_OUTPUT: "{{ gpu_mock_intel_gpu_top_output | default(omit) }}"
   register: gpu_discovery_raw
   changed_when: false
+  tags: [hardware, gpu, audit, discovery, 800400]
 
-- name: "⚠️ [SIM] MOCK DATA WARNING"
+- name: "⚠️ [SIM] ISO 9001 | 600013 | MOCK DATA WARNING"
   ansible.builtin.debug:
     msg: "⚠️ CRITICAL: GPU hardware detection is running in SIMULATION MODE using mock data. Physical hardware has NOT been verified."
   when: gpu_mock_lspci_output is defined
-  tags: [hardware, gpu, audit, warning]
+  tags: [hardware, gpu, audit, warning, 600013]
 
-- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] Parse GPU Discovery Output"
-  tags: [hardware, gpu, audit]
+- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] ISO 9001 | 600013 | Parse GPU Discovery Output"
   ansible.builtin.set_fact:
     _gpu_discovery_results: "{{ gpu_discovery_raw.stdout | from_json }}"
+  tags: [hardware, gpu, audit, inventory, 600013]
 
-- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] Apply Detected Vendors (Internal Facts)"
-  tags: [hardware, gpu, audit]
+- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] ISO 9001 | 600013 | Apply Detected Vendors (Internal Facts)"
   ansible.builtin.set_fact:
     _gpu_detected_vendor_list: "{{ _gpu_discovery_results.detected_vendor_list }}"
     _gpu_primary_detected_vendor: "{{ _gpu_discovery_results.primary_detected_vendor }}"
     _gpu_detected_devices: "{{ _gpu_discovery_results.detected_devices }}"
     _gpu_count: "{{ _gpu_discovery_results.gpu_count }}"
-    _gpu_is_multi_gpu: "{{ _gpu_discovery_results.is_multi_gpu }}"
-    _gpu_is_multi_vendor: "{{ _gpu_discovery_results.is_multi_vendor }}"
+    _gpu_is_multi_gpu: "{{ _gpu_discovery_results.is_multi_gpu | default(false) }}"
+    _gpu_is_multi_vendor: "{{ _gpu_discovery_results.is_multi_vendor | default(false) }}"
+  tags: [hardware, gpu, audit, inventory, 600013]
 
-- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] Save GPU Discovery Evidence"
-  tags: [hardware, gpu, audit]
+- name: "[{{ (gpu_mock_lspci_output is defined) | ternary('SIM', 'PHYS') }}] ISO 9001 | 600013 | Save GPU Discovery Evidence"
   ansible.builtin.copy:
     content: |
       {
@@ -71,3 +70,4 @@
   become: true
   changed_when: false
   register: _dsu_gpu_evidence_file
+  tags: [hardware, gpu, audit, evidence, 600013]
