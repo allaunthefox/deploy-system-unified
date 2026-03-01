@@ -106,8 +106,13 @@ class TestAnubisContainer:
         if f.exists:
             content = f.content_string
             assert "Image=" in content, "Quadlet should have Image= configured"
-            assert "anubis" in content.lower() or "ghcr.io" in content.lower(), \
-                "Quadlet should reference anubis image"
+            # Ensure image comes from an expected registry and contains 'anubis'
+            import re
+            image_line = [line for line in content.splitlines() if line.startswith("Image=")][0]
+            # Pattern matches common registries at the start of the Image= value
+            valid_registry = re.search(r"^Image=(docker\.io|ghcr\.io|codeberg\.org|quay\.io)/", image_line)
+            assert valid_registry, f"Image should come from a trusted registry, got: {image_line}"
+            assert "anubis" in image_line.lower(), "Image should reference anubis"
 
     def test_anubis_quadlet_container_name(self, host):
         """Verify Anubis quadlet has container name configured."""

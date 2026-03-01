@@ -4,6 +4,9 @@ on:
     paths:
       - 'docs/architecture/threat_models/**'
 
+permissions:
+  contents: read
+
 jobs:
   review_threat_models:
     runs-on: ubuntu-latest
