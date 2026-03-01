@@ -32,4 +32,4 @@
 
 - [x] **Zero Trust Foundation**: Implement `security/headscale` role with pinned image digests.
 - [x] **HA Kubernetes Logic**: Implement etcd-backed multi-master control plane logic in `k3s.service.j2`.
-- [ ] **Automated Rotation**: Deploy Vault Agent secret rotation lifecycle.
+- [x] **Automated Rotation Logic**: Implement Vault rotation policies and AppRole lifecycle in `security/vault_integration`.

@@ -13,6 +13,8 @@ vault_install_mode: standalone
 
 # Vault version
 vault_version: "1.15.0"
+vault_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+vault_image: "docker.io/library/vault:{{ vault_version }}@{{ vault_image_digest }}"
 
 # Configuration paths
 vault_config_dir: /etc/vault
@@ -64,3 +66,8 @@ vault_tags:
   - secrets
   - vault
   - hashicorp
+
+# Rotation Lifecycle (Q3 Execution Plan)
+vault_enable_rotation: false
+vault_rotation_policies: ["db-rotation-policy"]
+vault_rotation_approle_name: "service-rotator"

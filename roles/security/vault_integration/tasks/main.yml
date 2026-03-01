@@ -107,6 +107,11 @@
   when: vault_enable_dynamic_secrets | bool
   tags: [security, vault, dynamic-secrets]
 
+- name: "VAULT | Configure Automated Rotation Lifecycle"
+  ansible.builtin.include_tasks: rotation_policy.yml
+  when: vault_enable_rotation | bool
+  tags: [security, vault, rotation, 800700]
+
 - name: Set Vault integration complete flag
   ansible.builtin.set_fact:
     vault_integration_complete: true

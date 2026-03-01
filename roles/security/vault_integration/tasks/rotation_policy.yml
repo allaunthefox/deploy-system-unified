@@ -1,0 +1,45 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100710
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Track 3: Automated Rotation Lifecycle
+# Compliance: ISO 27001 §9.3 | NIST IA-4
+
+- name: "ISO 27001 §9.3 | 800700 | Define database credential rotation policy"
+  hashivault_policy_set:
+    name: "db-rotation-policy"
+    rules: |
+      path "database/creds/app-dynamic-role" {
+        capabilities = ["read"]
+      }
+      path "auth/token/lookup-self" {
+        capabilities = ["read"]
+      }
+  environment:
+    VAULT_ADDR: "{{ vault_addr }}"
+    VAULT_TOKEN: "{{ vault_root_token }}"
+  when: vault_enable_rotation | default(false) | bool
+  tags: [security, vault, rotation, 800700]
+
+- name: "ISO 27001 §9.3 | 800701 | Configure AppRole for machine identity"
+  block:
+    - name: "ISO 27001 §9.3 | 800701 | Enable AppRole auth method"
+      hashivault_auth_method:
+        method_type: approle
+        state: present
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+        VAULT_TOKEN: "{{ vault_root_token }}"
+
+    - name: "ISO 27001 §9.3 | 800701 | Create AppRole for service rotation"
+      hashivault_approle_role:
+        name: "service-rotator"
+        policies: ["db-rotation-policy"]
+        token_ttl: "1h"
+        token_max_ttl: "4h"
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+        VAULT_TOKEN: "{{ vault_root_token }}"
+  when: vault_enable_rotation | default(false) | bool
+  tags: [security, vault, rotation, approle, 800701]

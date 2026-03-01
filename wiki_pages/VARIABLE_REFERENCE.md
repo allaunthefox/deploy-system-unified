@@ -957,6 +957,8 @@
 ### `security/vault_integration`
 - `vault_install_mode`
 - `vault_version`
+- `vault_image_digest`
+- `vault_image`
 - `vault_config_dir`
 - `vault_data_dir`
 - `vault_log_dir`
@@ -984,6 +986,9 @@
 - `vault_auto_unseal_transit_mount_path`
 - `vault_auto_unseal_transit_token`
 - `vault_tags`
+- `vault_enable_rotation`
+- `vault_rotation_policies`
+- `vault_rotation_approle_name`
 
 ## Shared Variables
 
