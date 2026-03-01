@@ -43,6 +43,17 @@
   become: true
   when: not _k3s_token_stat.stat.exists
 
+- name: "ISO 27001 §14.2 | 810301 | Deploy K3s declarative configuration"
+  ansible.builtin.template:
+    src: k3s_config.yaml.j2
+    dest: /etc/rancher/k3s/config.yaml
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+  notify: restart_k3s
+  tags: [kubernetes, master, config, 810301]
+
 - name: "Audit Code 810303 | Deploy k3s systemd unit"
   tags: [kubernetes, master, remediate, 810303]
   ansible.builtin.template:

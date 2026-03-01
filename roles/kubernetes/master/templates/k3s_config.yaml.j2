@@ -1,0 +1,45 @@
+# =============================================================================
+# Audit Event Identifier: DSU-TPL-900583
+# Template Type: K3s Declarative Configuration
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# K3s Configuration File
+# Documentation: https://docs.k3s.io/installation/configuration#configuration-file
+
+token-file: "{{ kubernetes_token_path }}"
+cluster-cidr: "{{ kubernetes_pod_cidr }}"
+service-cidr: "{{ kubernetes_service_cidr }}"
+cluster-dns: "{{ kubernetes_cluster_dns }}"
+cluster-domain: "{{ kubernetes_cluster_domain }}"
+https-listen-port: {{ kubernetes_api_port }}
+flannel-backend: "{{ kubernetes_flannel_backend }}"
+kube-proxy-arg: "proxy-mode={{ kubernetes_proxy_mode }}"
+disable-network-policy: {{ kubernetes_disable_network_policy | bool | lower }}
+write-kubeconfig-mode: 644
+data-dir: "{{ kubernetes_data_dir }}"
+
+# TLS SANs (Hardened for VIP failover)
+tls-san:
+  - "{{ kubernetes_vip_address }}"
+  {% for san in kubernetes_tls_san %}
+  - "{{ san }}"
+  {% endfor %}
+
+# HA Datastore
+{% if k3s_ha_enabled | default(false) | bool %}
+datastore-endpoint: "{{ k3s_datastore_endpoint }}"
+{% endif %}
+
+# Service Disable Flags
+{% if kubernetes_disable_traefik %}
+disable:
+  - traefik
+{% endif %}
+{% if kubernetes_disable_servicelb %}
+disable:
+  - servicelb
+{% endif %}
+{% if kubernetes_disable_agent %}
+disable-agent: true
+{% endif %}
