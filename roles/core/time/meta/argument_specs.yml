@@ -1,17 +1,14 @@
 # =============================================================================
-# Audit Event Identifier: DSU-PLY-100490
-# Last Updated: 2026-02-28
+# Audit Event Identifier: DSU-ARG-100491
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 argument_specs:
   main:
-    short_description: Core time synchronization role
+    short_description: Time synchronization and NTP configuration
     description:
-      - Ensures accurate system time via Chrony
-      - Critical for forensic log integrity and certificate validation
-      - Aligns with ISO 27001 §8.17
+      - This role manages the chrony time synchronization service to ensure accurate system clocks across the cluster.
     options:
       core_time_service_mapping:
         type: dict
-        description: Map of distributions to service, package, and config directory names
-        default: {}
+        description: Dictionary mapping OS distributions to their specific service names, packages, and configuration paths.
