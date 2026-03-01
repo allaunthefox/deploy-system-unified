@@ -29,7 +29,7 @@
 - name: "Audit Code 810300 | Generate k3s token"
   tags: [kubernetes, master, remediate, 810300]
   ansible.builtin.set_fact:
-    _new_k3s_token: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+    _new_k3s_token: "{{ kubernetes_ha_token | default(lookup('password', '/dev/null length=32 chars=ascii_letters,digits')) }}"
   when: not _k3s_token_stat.stat.exists
 
 - name: "Audit Code 810300 | Save k3s token"

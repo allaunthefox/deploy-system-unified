@@ -31,5 +31,5 @@
 **Focus**: Advanced Networking and Control Plane Resilience
 
 - [x] **Zero Trust Foundation**: Implement `security/headscale` role with pinned image digests.
-- [x] **HA Kubernetes Logic**: Implement etcd-backed multi-master control plane logic in `k3s.service.j2`.
+- [x] **HA Kubernetes Implementation**: Implement shared tokens and Kube-VIP HA logic in `kubernetes/master`.
 - [x] **Automated Rotation Logic**: Implement Vault rotation policies and AppRole lifecycle in `security/vault_integration`.

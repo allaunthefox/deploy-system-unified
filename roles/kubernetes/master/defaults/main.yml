@@ -33,3 +33,10 @@ kubernetes_disable_agent: false
 # Enabled via Q3 Execution Plan
 k3s_ha_enabled: false
 k3s_datastore_endpoint: "" # Format: "etcd" or external DB string
+
+# Kube-VIP Configuration (High Availability)
+kubernetes_vip_enabled: false
+kubernetes_vip_address: ""
+kubernetes_vip_interface: "eth0"
+kubernetes_vip_image_digest: "sha256:0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a0f0e0d0a0b0c0d0e0f0a0b0c0d0e0f0a" # Example
+kubernetes_vip_image: "ghcr.io/kube-vip/kube-vip:v0.7.1@{{ kubernetes_vip_image_digest }}"

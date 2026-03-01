@@ -10,11 +10,7 @@
   ansible.builtin.debug:
     msg: "Initializing High Availability Control Plane (Etcd)"
   when: k3s_ha_enabled | default(false) | bool
-  tags:
-    - kubernetes
-    - master
-    - ha
-    - initialization
+  tags: [kubernetes, master, ha, initialization]
 
 - name: "ISO 27001 §17.1 | 700101 | Validate Etcd endpoint configuration"
   ansible.builtin.assert:
@@ -23,8 +19,47 @@
       - (k3s_datastore_endpoint | length) > 0
     fail_msg: "HA enabled but k3s_datastore_endpoint is missing."
   when: k3s_ha_enabled | default(false) | bool
-  tags:
-    - kubernetes
-    - master
-    - ha
-    - verify
+  tags: [kubernetes, master, ha, verify]
+
+- name: "ISO 27001 §17.1 | 700102 | Handle Shared K3s Token for HA"
+  block:
+    - name: "ISO 9001 | 600013 | Check if token exists on first master"
+      ansible.builtin.stat:
+        path: "{{ kubernetes_token_path }}"
+      register: _first_master_token
+      delegate_to: "{{ groups['k8s_master'][0] }}"
+      run_once: true
+
+    - name: "ISO 9001 | 600013 | Generate token if missing"
+      ansible.builtin.set_fact:
+        k3s_shared_token: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      when: not _first_master_token.stat.exists
+      delegate_to: "{{ groups['k8s_master'][0] }}"
+      run_once: true
+
+    - name: "ISO 9001 | 600013 | Fetch token if exists"
+      ansible.builtin.slurp:
+        src: "{{ kubernetes_token_path }}"
+      register: _slurped_token
+      when: _first_master_token.stat.exists
+      delegate_to: "{{ groups['k8s_master'][0] }}"
+      run_once: true
+
+    - name: "ISO 9001 | 600013 | Set shared token fact"
+      ansible.builtin.set_fact:
+        k3s_shared_token: "{{ _slurped_token.content | b64decode | trim if _first_master_token.stat.exists else k3s_shared_token }}"
+      delegate_to: "{{ groups['k8s_master'][0] }}"
+      run_once: true
+
+    - name: "ISO 9001 | 600013 | Distribute shared token to all masters"
+      ansible.builtin.set_fact:
+        kubernetes_ha_token: "{{ hostvars[groups['k8s_master'][0]]['k3s_shared_token'] }}"
+  when: k3s_ha_enabled | default(false) | bool
+  tags: [kubernetes, master, ha, secrets]
+
+- name: "ISO 27001 §17.1 | 700103 | Configure Virtual IP (Kube-VIP) for HA"
+  ansible.builtin.include_tasks: kube_vip.yml
+  when:
+    - k3s_ha_enabled | default(false) | bool
+    - kubernetes_vip_enabled | default(false) | bool
+  tags: [kubernetes, master, ha, network]

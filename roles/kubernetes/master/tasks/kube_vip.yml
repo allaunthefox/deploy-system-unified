@@ -1,0 +1,22 @@
+# =============================================================================
+# Audit Event Identifier: DSU-PLY-100705
+# Last Updated: 2026-03-01
+# =============================================================================
+---
+# Configure Kube-VIP for HA Control Plane
+# Compliance: ISO 27001 §17.1 | NIST CP-9
+
+- name: "ISO 27001 §17.1 | 700104 | Ensure K3s manifests directory exists"
+  ansible.builtin.file:
+    path: "/var/lib/rancher/k3s/server/manifests"
+    state: directory
+    mode: '0700'
+  become: true
+
+- name: "ISO 27001 §17.1 | 700105 | Deploy Kube-VIP Static Pod Manifest"
+  ansible.builtin.template:
+    src: kube-vip.yaml.j2
+    dest: "/var/lib/rancher/k3s/server/manifests/kube-vip.yaml"
+    mode: '0600'
+  become: true
+  tags: [kubernetes, master, ha, network, 700105]

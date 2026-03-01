@@ -626,6 +626,11 @@
 - `kubernetes_disable_agent`
 - `k3s_ha_enabled`
 - `k3s_datastore_endpoint`
+- `kubernetes_vip_enabled`
+- `kubernetes_vip_address`
+- `kubernetes_vip_interface`
+- `kubernetes_vip_image_digest`
+- `kubernetes_vip_image`
 
 ### `kubernetes/node`
 - `kubernetes_k3s_version`
