@@ -1,23 +1,32 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100483
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: systemd
-  author: deploysystemunified
-  description: "STD-CORE | Core systemd configuration and hardening (journald, resolved)"
+  author: deploy-system-unified
+  description: Core systemd configuration and hardening (journald, resolved)
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
   galaxy_tags:
     - core
     - systemd
@@ -28,8 +37,9 @@ galaxy_info:
     - hardening
     - security
     - linux
-    - iso27001
-    - nist80053
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
     - automation
 
 collections:

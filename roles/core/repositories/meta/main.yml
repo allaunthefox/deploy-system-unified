@@ -1,39 +1,48 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100467
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: repositories
-  author: deploysystemunified
-  description: "STD-CORE | System repository management and supply-chain hardening"
+  author: deploy-system-unified
+  description: System repository management and supply-chain hardening
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - core
     - repositories
-    - supplychain
+    - supply-chain
     - security
-    - gpg
-    - verification
     - hardening
-    - iso27001
-    - nist80053
     - linux
-    - apt
-    - dnf
-    - pacman
+    - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - automation
+    - gpg
 
 collections:
   - ansible.builtin

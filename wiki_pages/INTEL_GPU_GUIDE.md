@@ -44,6 +44,8 @@
 
 > ⚠️ **UNTESTABLE**: Intel Battlemage support is currently unverified and untestable.
 
+> ⚠️ **UNTESTABLE**: Intel Battlemage support is currently unverified and untestable.
+
 > ⏸️ **POSTPONED**: Intel Battlemage support is unverified due to hardware delay.
 
 # INTEL_GPU_GUIDE

@@ -1,37 +1,45 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100422
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: grub
-  author: deploysystemunified
-  description: "STD-CORE | Centralized GRUB bootloader and kernel parameter management"
+  author: deploy-system-unified
+  description: Centralized GRUB bootloader and kernel parameter management
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
   galaxy_tags:
     - core
     - grub
     - bootloader
     - kernel
-    - optimization
     - boot
     - linux
-    - iso27001
-    - iso27040
-    - nist80053
-    - cis
-    - security
     - multiarch
+    - infrastructure
+    - deploy-system-unified
+    - security
+    - automation
+    - optimization
 
 collections:
   - ansible.builtin

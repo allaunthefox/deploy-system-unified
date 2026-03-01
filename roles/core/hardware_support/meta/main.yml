@@ -1,40 +1,50 @@
 # =============================================================================
 # Audit Event Identifier: DSU-PLY-100431
-# Last Updated: 2026-02-28
+# Last Updated: 2026-03-01
 # =============================================================================
 ---
 galaxy_info:
   role_name: hardware_support
-  author: deploysystemunified
-  description: "STD-CORE | Hardware capability discovery and platform-specific tuning"
+  author: deploy-system-unified
+  description: Hardware capability discovery and platform-specific tuning
+  company: Deploy-System-Unified Project
   license: MIT
   min_ansible_version: "2.15"
   platforms:
     - name: Ubuntu
-      versions: [all]
+      versions:
+        - focal
+        - jammy
+        - noble
     - name: Debian
-      versions: [all]
+      versions:
+        - bullseye
+        - bookworm
     - name: Fedora
-      versions: [all]
+      versions:
+        - '39'
+        - '40'
     - name: Archlinux
-      versions: [all]
+      versions:
+        - all
     - name: Alpine
-      versions: [all]
+      versions:
+        - '3.18'
+        - '3.19'
   galaxy_tags:
     - core
     - hardware
     - discovery
     - crypto
-    - iso_9001
-    - iso27001
     - system
     - cpu
     - platform
-    - nist80053
-    - cis
-    - automation
     - linux
+    - multiarch
     - infrastructure
+    - deploy-system-unified
+    - security
+    - automation
     - tuning
 
 collections:
