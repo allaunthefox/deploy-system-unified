@@ -199,9 +199,9 @@ This role provides support for Serial Attached SCSI (SAS) infrastructure, spanni
 
 
 ### `kubernetes/master`
-**master**
+**K3s Master Role**
 
-
+**Audit Event Identifier:** DSU-PLY-100583
 
 ### `kubernetes/node`
 **node**
@@ -209,9 +209,9 @@ This role provides support for Serial Attached SCSI (SAS) infrastructure, spanni
 
 
 ### `kubernetes/service_mesh`
-**service_mesh**
+**Service Mesh Role**
 
-
+**Audit Event Identifier:** DSU-PLY-100900
 
 ## Networking Roles
 
@@ -372,9 +372,9 @@ This role provides Goss-based continuous security monitoring for the deploy-syst
 
 
 ### `security/headscale`
-**headscale**
+**Headscale Role**
 
-
+**Audit Event Identifier:** DSU-PLY-100800
 
 ### `security/ima_enforcement`
 **ima_enforcement**
@@ -432,9 +432,9 @@ This role provides a comprehensive security framework for the Deploy-System-Unif
 
 
 ### `security/tailscale`
-**tailscale**
+**Tailscale Client Role**
 
-
+**Audit Event Identifier:** DSU-PLY-100810
 
 ### `security/tpm_guard`
 **tpm_guard**
@@ -442,9 +442,9 @@ This role provides a comprehensive security framework for the Deploy-System-Unif
 
 
 ### `security/vault_integration`
-**HashiCorp Vault Integration Role**
+**Vault Integration Role**
 
-This role provides HashiCorp Vault integration for the deploy-system-unified project.
+**Audit Event Identifier:** DSU-PLY-110056
 
 ## Shared Roles
 

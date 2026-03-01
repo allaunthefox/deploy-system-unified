@@ -1,67 +1,61 @@
-# HashiCorp Vault Integration Role
+# Vault Integration Role
 
-This role provides HashiCorp Vault integration for the deploy-system-unified project.
+**Audit Event Identifier:** DSU-PLY-110056  
+**Mermaid Version:** 1.2  
+**Renderer Support:** GitHub, GitLab, Mermaid Live  
+**Last Updated:** 2026-03-01  
 
-## Features
+This role provides HashiCorp Vault integration, supporting automated secret rotation, machine identity (AppRole), and Kubernetes-native secret injection.
 
-- **Standalone Vault Installation**: Install and configure Vault in standalone mode
-- **Kubernetes Authentication**: Enable Kubernetes auth method for pod-based authentication
-- **Dynamic Secrets**: Support for dynamic database and cloud credentials
-- **Vault Agent Injector**: Kubernetes-sidecar injection for automatic secret injection
-- **KV Secrets Engine**: KV v2 secrets engine for application secrets
+## Architecture (Secret Rotation Lifecycle)
 
-## Requirements
-
-- Ansible 2.15+
-- Supported OS: Ubuntu, Debian, Fedora, Archlinux
-
-## Role Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `vault_install_mode` | `standalone` | Installation mode: standalone, kubernetes, agent_only |
-| `vault_version` | `1.15.0` | Vault version to install |
-| `vault_addr` | `http://127.0.0.1:8200` | Vault server address |
-| `vault_enable_k8s_auth` | `false` | Enable Kubernetes authentication |
-| `vault_enable_dynamic_secrets` | `false` | Enable dynamic secrets |
-| `vault_enable_agent_injector` | `false` | Enable Vault agent injector |
-| `vault_enable_kv_secrets` | `false` | Enable KV secrets engine |
-
-## Example Playbook
-
-```yaml
-- hosts: vault_servers
-  roles:
-    - role: security.vault_integration
-      vars:
-        vault_install_mode: standalone
-        vault_version: "1.15.0"
+```mermaid
+graph TD
+    subgraph "Vault Control Plane"
+        V[Vault Server] --> APP[AppRole: service-rotator]
+        V --> DB_ENG[Database Engine]
+    end
+    
+    subgraph "Machine Identity"
+        NODE[Target Node] -->|AppRole Auth| V
+        NODE -->|Read Dynamic Creds| DB_ENG
+    end
+    
+    subgraph "Automated Lifecycle"
+        DB_ENG -->|Rotate| DB[(Managed Postgres)]
+        NODE -->|Signal SIGHUP| APP_S[Application Service]
+    end
+    
+    classDef vault fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef node fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef db fill:#fff3e0,stroke:#ff6f00,stroke-width:2px;
+    class V,APP,DB_ENG vault;
+    class NODE,APP_S node;
+    class DB db;
 ```
 
-## Kubernetes Example
+## Features
+- **Standalone Vault Installation**: Secure setup with dedicated system user and hardened directory permissions.
+- **Automated Rotation**: Policies and AppRoles for hands-free credential management.
+- **Kubernetes Native**: Integrated agent injector for automatic sidecar-based secrets.
+- **Dynamic Credentials**: On-demand generation of temporary database access.
+
+## Usage
 
 ```yaml
-- hosts: kubernetes
+- name: Setup Vault Infrastructure
+  hosts: security_nodes
   roles:
-    - role: security.vault_integration
-      vars:
-        vault_install_mode: kubernetes
-        vault_enable_k8s_auth: true
-        vault_enable_dynamic_secrets: true
-        vault_k8s_role_name: "deploy-system"
-        vault_k8s_namespace: "production"
+    - security/vault_integration
 ```
 
 ## Tags
-
 - `security`
 - `secrets`
 - `vault`
-- `hashicorp`
-- `kubernetes`
+- `rotation`
 
 ## Compliance
-
-- ISO 27001 §8.26 (Information security review)
-- NIST 800-53 SC-28 (Protection of information at rest)
-- NIST 800-53 IA-5 (Authenticator management)
+- **ISO 27001 §9.3**: Use of secret authentication information.
+- **NIST 800-53 SC-28**: Protection of information at rest.
+- **NIST 800-53 IA-4**: Identifier Management.
