@@ -57,4 +57,9 @@
     mode: '0755'
     owner: root
     group: root
+    timeout: 30
+  register: _headscale_download
+  retries: 5
+  delay: 10
+  until: _headscale_download is success
   tags: [security, headscale, deploy, 800106]

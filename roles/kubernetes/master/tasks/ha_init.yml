@@ -54,6 +54,9 @@
     - name: "ISO 9001 | 600013 | Distribute shared token to all masters"
       ansible.builtin.set_fact:
         kubernetes_ha_token: "{{ hostvars[groups['k8s_master'][0]]['k3s_shared_token'] }}"
+      retries: 5
+      delay: 5
+      until: hostvars[groups['k8s_master'][0]]['k3s_shared_token'] is defined
   when: k3s_ha_enabled | default(false) | bool
   tags: [kubernetes, master, ha, secrets]
 
